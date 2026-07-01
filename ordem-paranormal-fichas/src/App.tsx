@@ -9,17 +9,26 @@ function App() {
   const [classe, setClasse] = useState<ClasseRPG>(null)
   const [nex, setNex] = useState<number>(5)
   
-  // Atributos Base (Afetam PV, PE e Sanidade)
   const [atributos, setAtributos] = useState({ FOR: 1, AGI: 1, INT: 1, PRE: 1, VIG: 1 })
-  
-  // NOVO: Atributos Bônus (Não afetam status, só para testes/rolagens)
   const [bonusAtributos, setBonusAtributos] = useState({ FOR: 0, AGI: 0, INT: 0, PRE: 0, VIG: 0 })
 
   const [pvAtual, setPvAtual] = useState<number>(-1)
   const [sanAtual, setSanAtual] = useState<number>(-1)
   const [peAtual, setPeAtual] = useState<number>(-1)
 
-  const prevMaxes = useRef({ pv: 0, san: 0, pe: 0 })
+  const [pvMax, setPvMax] = useState<number>(0)
+  const [sanMax, setSanMax] = useState<number>(0)
+  const [peMax, setPeMax] = useState<number>(0)
+
+  const [hasPvTemp, setHasPvTemp] = useState<boolean>(false)
+  const [pvTempAtual, setPvTempAtual] = useState<number>(0)
+  const [pvTempMax, setPvTempMax] = useState<number>(0)
+
+  const [hasPeTemp, setHasPeTemp] = useState<boolean>(false)
+  const [peTempAtual, setPeTempAtual] = useState<number>(0)
+  const [peTempMax, setPeTempMax] = useState<number>(0)
+
+  const prevCalc = useRef({ pv: 0, san: 0, pe: 0, init: false })
 
   // --- 2. LÓGICA DE PONTOS (TELA 1) ---
   const capMaximo = nex === 5 ? 3 : 5
@@ -48,66 +57,97 @@ function App() {
     }
   }
 
-  // --- 3. MATEMÁTICA DOS STATUS MÁXIMOS (Usa apenas os Atributos BASE) ---
+  // --- 3. MATEMÁTICA DOS STATUS BASE ---
   const nivel = nex === 99 ? 20 : Math.floor(nex / 5)
-  let maxPv = 0, maxPe = 0, maxSan = 0
+  let calcMaxPv = 0, calcMaxPe = 0, calcMaxSan = 0
   const peTurno = nivel
 
   if (classe === 'Combatente') {
-    maxPv = (20 + atributos.VIG) + ((nivel - 1) * (4 + atributos.VIG))
-    maxPe = (2 + atributos.PRE) + ((nivel - 1) * (2 + atributos.PRE))
-    maxSan = 12 + ((nivel - 1) * 3)
+    calcMaxPv = (20 + atributos.VIG) + ((nivel - 1) * (4 + atributos.VIG))
+    calcMaxPe = (2 + atributos.PRE) + ((nivel - 1) * (2 + atributos.PRE))
+    calcMaxSan = 12 + ((nivel - 1) * 3)
   } else if (classe === 'Especialista') {
-    maxPv = (16 + atributos.VIG) + ((nivel - 1) * (3 + atributos.VIG))
-    maxPe = (3 + atributos.PRE) + ((nivel - 1) * (3 + atributos.PRE))
-    maxSan = 16 + ((nivel - 1) * 4)
+    calcMaxPv = (16 + atributos.VIG) + ((nivel - 1) * (3 + atributos.VIG))
+    calcMaxPe = (3 + atributos.PRE) + ((nivel - 1) * (3 + atributos.PRE))
+    calcMaxSan = 16 + ((nivel - 1) * 4)
   } else if (classe === 'Ocultista') {
-    maxPv = (12 + atributos.VIG) + ((nivel - 1) * (2 + atributos.VIG))
-    maxPe = (4 + atributos.PRE) + ((nivel - 1) * (4 + atributos.PRE))
-    maxSan = 20 + ((nivel - 1) * 5)
+    calcMaxPv = (12 + atributos.VIG) + ((nivel - 1) * (2 + atributos.VIG))
+    calcMaxPe = (4 + atributos.PRE) + ((nivel - 1) * (4 + atributos.PRE))
+    calcMaxSan = 20 + ((nivel - 1) * 5)
   }
 
-  // --- 4. RITUAL DE SINCRONIZAÇÃO (Aplica o ganho/perda no Atual) ---
+  // --- 4. RITUAL DE SINCRONIZAÇÃO ---
   useEffect(() => {
     if (classe) {
-      if (pvAtual === -1) {
-        setPvAtual(maxPv)
-        setSanAtual(maxSan)
-        setPeAtual(maxPe)
-        prevMaxes.current = { pv: maxPv, san: maxSan, pe: maxPe }
+      if (!prevCalc.current.init) {
+        setPvAtual(calcMaxPv)
+        setPvMax(calcMaxPv)
+        setSanAtual(calcMaxSan)
+        setSanMax(calcMaxSan)
+        setPeAtual(calcMaxPe)
+        setPeMax(calcMaxPe)
+        prevCalc.current = { pv: calcMaxPv, san: calcMaxSan, pe: calcMaxPe, init: true }
       } else {
-        const deltaPv = maxPv - prevMaxes.current.pv
-        const deltaSan = maxSan - prevMaxes.current.san
-        const deltaPe = maxPe - prevMaxes.current.pe
+        const deltaPv = calcMaxPv - prevCalc.current.pv
+        const deltaSan = calcMaxSan - prevCalc.current.san
+        const deltaPe = calcMaxPe - prevCalc.current.pe
 
-        if (deltaPv !== 0) setPvAtual(prev => Math.max(0, Math.min(maxPv, prev + deltaPv)))
-        if (deltaSan !== 0) setSanAtual(prev => Math.max(0, Math.min(maxSan, prev + deltaSan)))
-        if (deltaPe !== 0) setPeAtual(prev => Math.max(0, Math.min(maxPe, prev + deltaPe)))
+        if (deltaPv !== 0) {
+          setPvMax(prev => Math.max(1, prev + deltaPv))
+          setPvAtual(prev => Math.max(0, prev + deltaPv))
+        }
+        if (deltaSan !== 0) {
+          setSanMax(prev => Math.max(1, prev + deltaSan))
+          setSanAtual(prev => Math.max(0, prev + deltaSan))
+        }
+        if (deltaPe !== 0) {
+          setPeMax(prev => Math.max(1, prev + deltaPe))
+          setPeAtual(prev => Math.max(0, prev + deltaPe))
+        }
 
-        prevMaxes.current = { pv: maxPv, san: maxSan, pe: maxPe }
+        prevCalc.current = { pv: calcMaxPv, san: calcMaxSan, pe: calcMaxPe, init: true }
       }
     }
-  }, [maxPv, maxSan, maxPe, classe])
+  }, [calcMaxPv, calcMaxSan, calcMaxPe, classe])
 
-  // --- 5. CONTROLE DAS SETAS MANUAIS ---
+  // --- 5. CONTROLES DA INTERFACE ---
   const alterarStatus = (tipo: 'pv' | 'san' | 'pe', qtd: number) => {
-    if (tipo === 'pv') setPvAtual(prev => Math.max(0, Math.min(maxPv, prev + qtd)))
-    if (tipo === 'san') setSanAtual(prev => Math.max(0, Math.min(maxSan, prev + qtd)))
-    if (tipo === 'pe') setPeAtual(prev => Math.max(0, Math.min(maxPe, prev + qtd)))
+    if (tipo === 'pv') setPvAtual(prev => Math.max(0, Math.min(pvMax, prev + qtd)))
+    if (tipo === 'san') setSanAtual(prev => Math.max(0, Math.min(sanMax, prev + qtd)))
+    if (tipo === 'pe') setPeAtual(prev => Math.max(0, Math.min(peMax, prev + qtd)))
+  }
+
+  const bloquearLetras = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (['e', 'E', '+', '-', '.', ','].includes(e.key)) {
+      e.preventDefault()
+    }
   }
 
   const estiloBotaoSeta = { background: 'transparent', border: 'none', color: '#fff', fontSize: '1.2rem', cursor: 'pointer', padding: '0 8px', fontWeight: 'bold', userSelect: 'none' as const }
+  const estiloInputMaximo = { width: '45px', backgroundColor: 'transparent', color: '#fff', border: 'none', textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold', outline: 'none' }
+  const estiloInputTemp = { width: '35px', backgroundColor: 'transparent', color: '#fff', border: 'none', textAlign: 'center', fontSize: '1rem', fontWeight: 'bold', outline: 'none' }
 
   return (
     <div style={{ padding: '30px', fontFamily: 'sans-serif', backgroundColor: '#121212', color: '#fff', minHeight: '100vh' }}>
       
-      {/* TELA 1: ATRIBUTOS */}
+      {/* CSS Injetado para remover as setinhas nativas de inputs numéricos */}
+      <style>{`
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        input[type=number] {
+          -moz-appearance: textfield;
+        }
+      `}</style>
+      
       {telaAtual === 'atributos' && (
         <div>
           <h1>Criação de Personagem: Atributos</h1>
           <div style={{ marginBottom: '20px', padding: '15px', border: '1px solid #333', borderRadius: '5px' }}>
             <label htmlFor="nex-select-init" style={{ marginRight: '10px', fontWeight: 'bold' }}>Escolha o NEX Inicial:</label>
-            <select id="nex-select-init" value={nex} onChange={(e) => { setNex(Number(e.target.value)); setAtributos({ FOR: 1, AGI: 1, INT: 1, PRE: 1, VIG: 1 }); setBonusAtributos({ FOR: 0, AGI: 0, INT: 0, PRE: 0, VIG: 0 }); }} style={{ padding: '5px', backgroundColor: '#222', color: '#fff', border: '1px solid #555' }}>
+            <select id="nex-select-init" value={nex} onChange={(e) => setNex(Number(e.target.value))} style={{ padding: '5px', backgroundColor: '#222', color: '#fff', border: '1px solid #555' }}>
               {[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 99].map(n => <option key={n} value={n}>{n}%</option>)}
             </select>
           </div>
@@ -128,7 +168,6 @@ function App() {
         </div>
       )}
 
-      {/* TELA 2: CLASSE */}
       {telaAtual === 'classe' && (
         <div>
           <h1>Escolha sua Trilha (Classe)</h1>
@@ -140,7 +179,6 @@ function App() {
         </div>
       )}
 
-      {/* TELA 3: FICHA FINAL */}
       {telaAtual === 'ficha' && (
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
           <h2 style={{ textAlign: 'center', textTransform: 'uppercase', letterSpacing: '2px' }}>Ficha de {classe}</h2>
@@ -159,67 +197,115 @@ function App() {
             </div>
           </div>
 
-          {/* Atributos Editáveis e Bônus */}
           <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '40px', flexWrap: 'wrap' }}>
             {(Object.keys(atributos) as Array<keyof typeof atributos>).map((nome) => (
               <div key={nome} style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: '#1a1a1a', padding: '15px', borderRadius: '50%', width: '70px', height: '70px', border: '2px solid #444' }}>
-                
-                {/* Bônus (Círculo Menor Amarelo) */}
                 <div title="Bônus (Itens/Poderes) - Não afeta PV/PE/SAN" style={{ position: 'absolute', top: '-5px', right: '-5px', width: '28px', height: '28px', backgroundColor: '#333', border: '2px solid #ffcc00', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', boxShadow: '0px 0px 5px rgba(0,0,0,0.5)' }}>
-                  <input 
-                    type="number" 
-                    value={bonusAtributos[nome]}
-                    onChange={(e) => setBonusAtributos({ ...bonusAtributos, [nome]: Number(e.target.value) })}
-                    style={{ width: '100%', backgroundColor: 'transparent', color: '#ffcc00', border: 'none', textAlign: 'center', fontSize: '0.9rem', fontWeight: 'bold', outline: 'none' }}
-                  />
+                  <input type="number" onKeyDown={bloquearLetras} value={bonusAtributos[nome]} onChange={(e) => setBonusAtributos({ ...bonusAtributos, [nome]: Math.max(0, Number(e.target.value)) })} style={{ width: '100%', backgroundColor: 'transparent', color: '#ffcc00', border: 'none', textAlign: 'center', fontSize: '0.9rem', fontWeight: 'bold', outline: 'none' }} />
                 </div>
-
-                {/* Atributo Base */}
                 <span style={{ fontSize: '0.8rem', color: '#aaa', fontWeight: 'bold' }}>{nome}</span>
-                <input 
-                  type="number" 
-                  value={atributos[nome]}
-                  onChange={(e) => setAtributos({ ...atributos, [nome]: Number(e.target.value) })}
-                  style={{ width: '40px', backgroundColor: 'transparent', color: '#fff', border: 'none', textAlign: 'center', fontSize: '1.5rem', fontWeight: 'bold', outline: 'none' }}
-                />
+                <input type="number" onKeyDown={bloquearLetras} value={atributos[nome]} onChange={(e) => setAtributos({ ...atributos, [nome]: Number(e.target.value) })} style={{ width: '40px', backgroundColor: 'transparent', color: '#fff', border: 'none', textAlign: 'center', fontSize: '1.5rem', fontWeight: 'bold', outline: 'none' }} />
               </div>
             ))}
           </div>
 
-          {/* Barras de Status */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* BARRAS DE STATUS */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
+            
             {/* VIDA */}
-            <div style={{ textAlign: 'center' }}>
-              <span style={{ fontWeight: 'bold', color: '#ccc', fontSize: '0.9rem' }}>VIDA</span>
-              <div style={{ backgroundColor: '#220000', border: '1px solid #ff4d4d', padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div><button onClick={() => alterarStatus('pv', -5)} style={estiloBotaoSeta}>«</button><button onClick={() => alterarStatus('pv', -1)} style={estiloBotaoSeta}>‹</button></div>
-                <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{pvAtual} / {maxPv}</span>
-                <div><button onClick={() => alterarStatus('pv', 1)} style={estiloBotaoSeta}>›</button><button onClick={() => alterarStatus('pv', 5)} style={estiloBotaoSeta}>»</button></div>
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+                <span style={{ fontWeight: 'bold', color: '#ccc', fontSize: '0.9rem', marginLeft: '5px' }}>VIDA</span>
+                <label style={{ fontSize: '0.8rem', color: '#aaa', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <input type="checkbox" checked={hasPvTemp} onChange={(e) => { 
+                    const isChecked = e.target.checked;
+                    setHasPvTemp(isChecked);
+                    if (!isChecked) { setPvTempAtual(0); setPvTempMax(0); }
+                  }} />
+                  + Temporário
+                </label>
+              </div>
+              
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <div style={{ flex: hasPvTemp ? '2.5' : '1', backgroundColor: '#220000', border: '1px solid #ff4d4d', padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'all 0.3s' }}>
+                  <div><button onClick={() => alterarStatus('pv', -5)} style={estiloBotaoSeta}>«</button><button onClick={() => alterarStatus('pv', -1)} style={estiloBotaoSeta}>‹</button></div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{pvAtual}</span>
+                    <span style={{ fontSize: '1.2rem', color: '#aaa' }}>/</span>
+                    <input type="number" onKeyDown={bloquearLetras} value={pvMax} onChange={(e) => setPvMax(Math.max(1, Number(e.target.value)))} style={estiloInputMaximo} title="Editar Vida Máxima" />
+                  </div>
+                  <div><button onClick={() => alterarStatus('pv', 1)} style={estiloBotaoSeta}>›</button><button onClick={() => alterarStatus('pv', 5)} style={estiloBotaoSeta}>»</button></div>
+                </div>
+
+                {hasPvTemp && (
+                  <div style={{ flex: '1', backgroundColor: '#331111', border: '1px dashed #ff6666', padding: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '5px' }}>
+                    <input type="number" onKeyDown={bloquearLetras} value={pvTempAtual} onChange={(e) => setPvTempAtual(Math.max(0, Number(e.target.value)))} style={estiloInputTemp} />
+                    <span style={{ color: '#aaa' }}>/</span>
+                    <input type="number" onKeyDown={bloquearLetras} value={pvTempMax} onChange={(e) => setPvTempMax(Math.max(0, Number(e.target.value)))} style={estiloInputTemp} />
+                  </div>
+                )}
               </div>
             </div>
 
             {/* SANIDADE */}
-            <div style={{ textAlign: 'center' }}>
-              <span style={{ fontWeight: 'bold', color: '#ccc', fontSize: '0.9rem' }}>SANIDADE</span>
-              <div style={{ backgroundColor: '#1a0033', border: '1px solid #9933ff', padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ textAlign: 'left' }}>
+              <span style={{ fontWeight: 'bold', color: '#ccc', fontSize: '0.9rem', marginLeft: '5px' }}>SANIDADE</span>
+              <div style={{ backgroundColor: '#1a0033', border: '1px solid #9933ff', padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '5px' }}>
                 <div><button onClick={() => alterarStatus('san', -5)} style={estiloBotaoSeta}>«</button><button onClick={() => alterarStatus('san', -1)} style={estiloBotaoSeta}>‹</button></div>
-                <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{sanAtual} / {maxSan}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{sanAtual}</span>
+                  <span style={{ fontSize: '1.2rem', color: '#aaa' }}>/</span>
+                  <input type="number" onKeyDown={bloquearLetras} value={sanMax} onChange={(e) => setSanMax(Math.max(1, Number(e.target.value)))} style={estiloInputMaximo} title="Editar Sanidade Máxima" />
+                </div>
                 <div><button onClick={() => alterarStatus('san', 1)} style={estiloBotaoSeta}>›</button><button onClick={() => alterarStatus('san', 5)} style={estiloBotaoSeta}>»</button></div>
               </div>
             </div>
 
             {/* ESFORÇO */}
-            <div style={{ textAlign: 'center' }}>
-              <span style={{ fontWeight: 'bold', color: '#ccc', fontSize: '0.9rem' }}>ESFORÇO</span>
-              <div style={{ backgroundColor: '#331a00', border: '1px solid #ff9900', padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div><button onClick={() => alterarStatus('pe', -5)} style={estiloBotaoSeta}>«</button><button onClick={() => alterarStatus('pe', -1)} style={estiloBotaoSeta}>‹</button></div>
-                <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{peAtual} / {maxPe}</span>
-                <div><button onClick={() => alterarStatus('pe', 1)} style={estiloBotaoSeta}>›</button><button onClick={() => alterarStatus('pe', 5)} style={estiloBotaoSeta}>»</button></div>
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+                <span style={{ fontWeight: 'bold', color: '#ccc', fontSize: '0.9rem', marginLeft: '5px' }}>ESFORÇO</span>
+                <label style={{ fontSize: '0.8rem', color: '#aaa', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <input type="checkbox" checked={hasPeTemp} onChange={(e) => { 
+                    const isChecked = e.target.checked;
+                    setHasPeTemp(isChecked);
+                    if (!isChecked) { setPeTempAtual(0); setPeTempMax(0); }
+                  }} />
+                  + Temporário
+                </label>
+              </div>
+              
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <div style={{ flex: hasPeTemp ? '2.5' : '1', backgroundColor: '#331a00', border: '1px solid #ff9900', padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'all 0.3s' }}>
+                  <div><button onClick={() => alterarStatus('pe', -5)} style={estiloBotaoSeta}>«</button><button onClick={() => alterarStatus('pe', -1)} style={estiloBotaoSeta}>‹</button></div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{peAtual}</span>
+                    <span style={{ fontSize: '1.2rem', color: '#aaa' }}>/</span>
+                    <input type="number" onKeyDown={bloquearLetras} value={peMax} onChange={(e) => setPeMax(Math.max(1, Number(e.target.value)))} style={estiloInputMaximo} title="Editar PE Máximo" />
+                  </div>
+                  <div><button onClick={() => alterarStatus('pe', 1)} style={estiloBotaoSeta}>›</button><button onClick={() => alterarStatus('pe', 5)} style={estiloBotaoSeta}>»</button></div>
+                </div>
+
+                {hasPeTemp && (
+                  <div style={{ flex: '1', backgroundColor: '#332200', border: '1px dashed #ffcc00', padding: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '5px' }}>
+                    <input type="number" onKeyDown={bloquearLetras} value={peTempAtual} onChange={(e) => setPeTempAtual(Math.max(0, Number(e.target.value)))} style={estiloInputTemp} />
+                    <span style={{ color: '#aaa' }}>/</span>
+                    <input type="number" onKeyDown={bloquearLetras} value={peTempMax} onChange={(e) => setPeTempMax(Math.max(0, Number(e.target.value)))} style={estiloInputTemp} />
+                  </div>
+                )}
               </div>
             </div>
+
           </div>
 
-          <button onClick={() => { setPvAtual(-1); setSanAtual(-1); setPeAtual(-1); setBonusAtributos({ FOR: 0, AGI: 0, INT: 0, PRE: 0, VIG: 0 }); setTelaAtual('atributos'); }} style={{ marginTop: '50px', padding: '10px', backgroundColor: 'transparent', color: '#666', border: 'none', cursor: 'pointer', width: '100%' }}>
+          <button onClick={() => { 
+            setPvAtual(-1); setSanAtual(-1); setPeAtual(-1); 
+            setPvMax(0); setSanMax(0); setPeMax(0);
+            setBonusAtributos({ FOR: 0, AGI: 0, INT: 0, PRE: 0, VIG: 0 }); 
+            setHasPvTemp(false); setHasPeTemp(false); 
+            prevCalc.current = { pv: 0, san: 0, pe: 0, init: false };
+            setTelaAtual('atributos'); 
+          }} style={{ marginTop: '50px', padding: '10px', backgroundColor: 'transparent', color: '#666', border: 'none', cursor: 'pointer', width: '100%' }}>
             Reiniciar Ficha
           </button>
         </div>

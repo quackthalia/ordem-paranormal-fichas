@@ -1,7 +1,14 @@
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 type Tela = 'atributos' | 'classe' | 'ficha'
 type ClasseRPG = 'Combatente' | 'Especialista' | 'Ocultista' | null
+type AtributoKey = 'FOR' | 'AGI' | 'INT' | 'PRE' | 'VIG'
+
+interface Pericia {
+  atributo: AtributoKey
+  treino: number
+  outros: number
+}
 
 function App() {
   // --- 1. ESTADOS DA APLICAÇÃO ---
@@ -28,6 +35,39 @@ function App() {
   const [peTempAtual, setPeTempAtual] = useState<number>(0)
   const [peTempMax, setPeTempMax] = useState<number>(0)
 
+  // --- ESTADO DAS PERÍCIAS (28 NO TOTAL) ---
+  const periciasIniciais: Record<string, Pericia> = {
+    Acrobacia: { atributo: 'AGI', treino: 0, outros: 0 },
+    Adestramento: { atributo: 'PRE', treino: 0, outros: 0 },
+    Artes: { atributo: 'PRE', treino: 0, outros: 0 },
+    Atletismo: { atributo: 'FOR', treino: 0, outros: 0 },
+    Atualidades: { atributo: 'INT', treino: 0, outros: 0 },
+    Ciências: { atributo: 'INT', treino: 0, outros: 0 },
+    Crime: { atributo: 'AGI', treino: 0, outros: 0 },
+    Diplomacia: { atributo: 'PRE', treino: 0, outros: 0 }, 
+    Enganação: { atributo: 'PRE', treino: 0, outros: 0 },
+    Fortitude: { atributo: 'VIG', treino: 0, outros: 0 },
+    Furtividade: { atributo: 'AGI', treino: 0, outros: 0 },
+    Iniciativa: { atributo: 'AGI', treino: 0, outros: 0 },
+    Intimidação: { atributo: 'PRE', treino: 0, outros: 0 },
+    Intuição: { atributo: 'INT', treino: 0, outros: 0 },
+    Investigação: { atributo: 'INT', treino: 0, outros: 0 },
+    Luta: { atributo: 'FOR', treino: 0, outros: 0 },
+    Medicina: { atributo: 'INT', treino: 0, outros: 0 },
+    Ocultismo: { atributo: 'INT', treino: 0, outros: 0 },
+    Percepção: { atributo: 'PRE', treino: 0, outros: 0 },
+    Pilotagem: { atributo: 'AGI', treino: 0, outros: 0 },
+    Pontaria: { atributo: 'AGI', treino: 0, outros: 0 },
+    Profissão: { atributo: 'INT', treino: 0, outros: 0 },
+    Reflexos: { atributo: 'AGI', treino: 0, outros: 0 },
+    Religião: { atributo: 'PRE', treino: 0, outros: 0 },
+    Sobrevivência: { atributo: 'INT', treino: 0, outros: 0 },
+    Tática: { atributo: 'INT', treino: 0, outros: 0 },
+    Tecnologia: { atributo: 'INT', treino: 0, outros: 0 },
+    Vontade: { atributo: 'PRE', treino: 0, outros: 0 },
+  }
+
+  const [pericias, setPericias] = useState<Record<string, Pericia>>(periciasIniciais)
   const prevCalc = useRef({ pv: 0, san: 0, pe: 0, init: false })
 
   // --- 2. LÓGICA DE PONTOS (TELA 1) ---
@@ -123,27 +163,47 @@ function App() {
     }
   }
 
+  const handleMudarPericia = (nome: string, campo: keyof Pericia, valor: number | string) => {
+    setPericias(prev => ({
+      ...prev,
+      [nome]: {
+        ...prev[nome],
+        [campo]: valor
+      }
+    }))
+  }
+
+  const escolherClasse = (novaClasse: ClasseRPG) => {
+    setClasse(novaClasse)
+    setTelaAtual('ficha')
+  }
+
   const estiloBotaoSeta = { background: 'transparent', border: 'none', color: '#fff', fontSize: '1.2rem', cursor: 'pointer', padding: '0 8px', fontWeight: 'bold', userSelect: 'none' as const }
   const estiloInputMaximo = { width: '45px', backgroundColor: 'transparent', color: '#fff', border: 'none', textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold', outline: 'none' }
   const estiloInputTemp = { width: '35px', backgroundColor: 'transparent', color: '#fff', border: 'none', textAlign: 'center', fontSize: '1rem', fontWeight: 'bold', outline: 'none' }
+  const estiloSelectDropdown = { backgroundColor: 'transparent', color: '#fff', border: 'none', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', outline: 'none', textAlign: 'center' as const, appearance: 'none' as const }
 
   return (
-    <div style={{ padding: '30px', fontFamily: 'sans-serif', backgroundColor: '#121212', color: '#fff', minHeight: '100vh' }}>
+    <div style={{ padding: '30px 40px', fontFamily: 'sans-serif', backgroundColor: '#121212', color: '#fff', minHeight: '100vh', width: '100vw', boxSizing: 'border-box' }}>
       
-      {/* CSS Injetado para remover as setinhas nativas de inputs numéricos */}
-      <style>{`
-        input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button {
-          -webkit-appearance: none;
+      <style dangerouslySetInnerHTML={{ __html: `
+        html, body, #root {
           margin: 0;
+          padding: 0;
+          width: 100%;
+          height: 100%;
+          background-color: #121212;
+          overflow-x: hidden;
         }
-        input[type=number] {
-          -moz-appearance: textfield;
-        }
-      `}</style>
+        * { box-sizing: border-box; }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+        select option { background-color: #1a1a1a; color: #fff; }
+      `}} />
       
       {telaAtual === 'atributos' && (
-        <div>
+        <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
           <h1>Criação de Personagem: Atributos</h1>
           <div style={{ marginBottom: '20px', padding: '15px', border: '1px solid #333', borderRadius: '5px' }}>
             <label htmlFor="nex-select-init" style={{ marginRight: '10px', fontWeight: 'bold' }}>Escolha o NEX Inicial:</label>
@@ -169,130 +229,214 @@ function App() {
       )}
 
       {telaAtual === 'classe' && (
-        <div>
+        <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
           <h1>Escolha sua Trilha (Classe)</h1>
           <div style={{ display: 'flex', gap: '20px', marginTop: '30px' }}>
-            <button onClick={() => setTelaAtual('ficha')} style={{ padding: '20px', fontSize: '1.2rem', cursor: 'pointer', backgroundColor: '#552222', color: '#fff', border: '2px solid #ff4444', borderRadius: '8px' }} onClickCapture={() => setClasse('Combatente')}>Combatente</button>
-            <button onClick={() => setTelaAtual('ficha')} style={{ padding: '20px', fontSize: '1.2rem', cursor: 'pointer', backgroundColor: '#222255', color: '#fff', border: '2px solid #4444ff', borderRadius: '8px' }} onClickCapture={() => setClasse('Especialista')}>Especialista</button>
-            <button onClick={() => setTelaAtual('ficha')} style={{ padding: '20px', fontSize: '1.2rem', cursor: 'pointer', backgroundColor: '#331144', color: '#fff', border: '2px solid #9933ff', borderRadius: '8px' }} onClickCapture={() => setClasse('Ocultista')}>Ocultista</button>
+            <button onClick={() => escolherClasse('Combatente')} style={{ padding: '20px', fontSize: '1.2rem', cursor: 'pointer', backgroundColor: '#552222', color: '#fff', border: '2px solid #ff4444', borderRadius: '8px' }}>Combatente</button>
+            <button onClick={() => escolherClasse('Especialista')} style={{ padding: '20px', fontSize: '1.2rem', cursor: 'pointer', backgroundColor: '#222255', color: '#fff', border: '2px solid #4444ff', borderRadius: '8px' }}>Especialista</button>
+            <button onClick={() => escolherClasse('Ocultista')} style={{ padding: '20px', fontSize: '1.2rem', cursor: 'pointer', backgroundColor: '#331144', color: '#fff', border: '2px solid #9933ff', borderRadius: '8px' }}>Ocultista</button>
           </div>
         </div>
       )}
 
       {telaAtual === 'ficha' && (
-        <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-          <h2 style={{ textAlign: 'center', textTransform: 'uppercase', letterSpacing: '2px' }}>Ficha de {classe}</h2>
+        <div style={{ width: '100%', padding: '0 20px' }}>
+          <h2 style={{ textAlign: 'center', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '40px' }}>Ficha de {classe}</h2>
           
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px', borderBottom: '1px solid #333', paddingBottom: '15px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontWeight: 'bold', color: '#aaa' }}>NEX</span>
-              <select value={nex} onChange={(e) => setNex(Number(e.target.value))} style={{ padding: '5px 10px', backgroundColor: '#121212', color: '#fff', border: '1px solid #fff', fontSize: '1.2rem', fontWeight: 'bold', cursor: 'pointer' }}>
-                {[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 99].map(n => <option key={n} value={n}>{n}%</option>)}
-              </select>
-            </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '60px', width: '100%', justifyContent: 'space-between' }}>
             
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-               <div style={{ padding: '5px 15px', border: '1px solid #fff', fontSize: '1.2rem', fontWeight: 'bold' }}>{peTurno}</div>
-               <span style={{ fontSize: '0.7rem', fontWeight: 'bold', color: '#aaa', marginTop: '5px' }}>PE / TURNO</span>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '40px', flexWrap: 'wrap' }}>
-            {(Object.keys(atributos) as Array<keyof typeof atributos>).map((nome) => (
-              <div key={nome} style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: '#1a1a1a', padding: '15px', borderRadius: '50%', width: '70px', height: '70px', border: '2px solid #444' }}>
-                <div title="Bônus (Itens/Poderes) - Não afeta PV/PE/SAN" style={{ position: 'absolute', top: '-5px', right: '-5px', width: '28px', height: '28px', backgroundColor: '#333', border: '2px solid #ffcc00', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', boxShadow: '0px 0px 5px rgba(0,0,0,0.5)' }}>
-                  <input type="number" onKeyDown={bloquearLetras} value={bonusAtributos[nome]} onChange={(e) => setBonusAtributos({ ...bonusAtributos, [nome]: Math.max(0, Number(e.target.value)) })} style={{ width: '100%', backgroundColor: 'transparent', color: '#ffcc00', border: 'none', textAlign: 'center', fontSize: '0.9rem', fontWeight: 'bold', outline: 'none' }} />
-                </div>
-                <span style={{ fontSize: '0.8rem', color: '#aaa', fontWeight: 'bold' }}>{nome}</span>
-                <input type="number" onKeyDown={bloquearLetras} value={atributos[nome]} onChange={(e) => setAtributos({ ...atributos, [nome]: Number(e.target.value) })} style={{ width: '40px', backgroundColor: 'transparent', color: '#fff', border: 'none', textAlign: 'center', fontSize: '1.5rem', fontWeight: 'bold', outline: 'none' }} />
-              </div>
-            ))}
-          </div>
-
-          {/* BARRAS DE STATUS */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
-            
-            {/* VIDA */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
-                <span style={{ fontWeight: 'bold', color: '#ccc', fontSize: '0.9rem', marginLeft: '5px' }}>VIDA</span>
-                <label style={{ fontSize: '0.8rem', color: '#aaa', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                  <input type="checkbox" checked={hasPvTemp} onChange={(e) => { 
-                    const isChecked = e.target.checked;
-                    setHasPvTemp(isChecked);
-                    if (!isChecked) { setPvTempAtual(0); setPvTempMax(0); }
-                  }} />
-                  + Temporário
-                </label>
-              </div>
+            {/* COLUNA ESQUERDA: Atributos e Status */}
+            <div style={{ flex: '1 1 45%', minWidth: '400px' }}>
               
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <div style={{ flex: hasPvTemp ? '2.5' : '1', backgroundColor: '#220000', border: '1px solid #ff4d4d', padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'all 0.3s' }}>
-                  <div><button onClick={() => alterarStatus('pv', -5)} style={estiloBotaoSeta}>«</button><button onClick={() => alterarStatus('pv', -1)} style={estiloBotaoSeta}>‹</button></div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{pvAtual}</span>
-                    <span style={{ fontSize: '1.2rem', color: '#aaa' }}>/</span>
-                    <input type="number" onKeyDown={bloquearLetras} value={pvMax} onChange={(e) => setPvMax(Math.max(1, Number(e.target.value)))} style={estiloInputMaximo} title="Editar Vida Máxima" />
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px', borderBottom: '1px solid #333', paddingBottom: '15px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontWeight: 'bold', color: '#aaa' }}>NEX</span>
+                  <select value={nex} onChange={(e) => setNex(Number(e.target.value))} style={{ padding: '5px 10px', backgroundColor: '#121212', color: '#fff', border: '1px solid #fff', fontSize: '1.2rem', fontWeight: 'bold', cursor: 'pointer' }}>
+                    {[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 99].map(n => <option key={n} value={n}>{n}%</option>)}
+                  </select>
+                </div>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div style={{ padding: '5px 15px', border: '1px solid #fff', fontSize: '1.2rem', fontWeight: 'bold' }}>{peTurno}</div>
+                  <span style={{ fontSize: '0.7rem', fontWeight: 'bold', color: '#aaa', marginTop: '5px' }}>PE / TURNO</span>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '40px', flexWrap: 'wrap' }}>
+                {(Object.keys(atributos) as Array<keyof typeof atributos>).map((nome) => (
+                  <div key={nome} style={{ position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent', borderRadius: '50%', width: '70px', height: '70px', border: '2px solid #444' }}>
+                    <div title="Bônus (Itens/Poderes)" style={{ position: 'absolute', top: '-5px', right: '-5px', width: '24px', height: '24px', backgroundColor: '#181818', border: '2px solid #ffcc00', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                      <input type="number" onKeyDown={bloquearLetras} value={bonusAtributos[nome]} onChange={(e) => setBonusAtributos({ ...bonusAtributos, [nome]: Math.max(0, Number(e.target.value)) })} style={{ width: '100%', backgroundColor: 'transparent', color: '#ffcc00', border: 'none', textAlign: 'center', fontSize: '0.8rem', fontWeight: 'bold', outline: 'none' }} />
+                    </div>
+                    <span style={{ fontSize: '0.8rem', color: '#aaa', fontWeight: 'bold', marginTop: '10px' }}>{nome}</span>
+                    <input type="number" onKeyDown={bloquearLetras} value={atributos[nome]} onChange={(e) => setAtributos({ ...atributos, [nome]: Number(e.target.value) })} style={{ width: '100%', backgroundColor: 'transparent', color: '#fff', border: 'none', textAlign: 'center', fontSize: '1.6rem', fontWeight: 'bold', outline: 'none', marginTop: '-2px' }} />
                   </div>
-                  <div><button onClick={() => alterarStatus('pv', 1)} style={estiloBotaoSeta}>›</button><button onClick={() => alterarStatus('pv', 5)} style={estiloBotaoSeta}>»</button></div>
+                ))}
+              </div>
+
+              {/* BARRAS DE STATUS */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '25px', marginBottom: '30px' }}>
+                {/* VIDA */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+                    <span style={{ fontWeight: 'bold', color: '#ccc', fontSize: '0.9rem', marginLeft: '5px' }}>VIDA</span>
+                    <label style={{ fontSize: '0.8rem', color: '#aaa', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <input type="checkbox" checked={hasPvTemp} onChange={(e) => { 
+                        const isChecked = e.target.checked;
+                        setHasPvTemp(isChecked);
+                        if (!isChecked) { setPvTempAtual(0); setPvTempMax(0); }
+                      }} />
+                      + Temporário
+                    </label>
+                  </div>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <div style={{ flex: hasPvTemp ? '2.5' : '1', backgroundColor: '#220000', border: '1px solid #ff4d4d', padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'all 0.3s' }}>
+                      <div><button onClick={() => alterarStatus('pv', -5)} style={estiloBotaoSeta}>«</button><button onClick={() => alterarStatus('pv', -1)} style={estiloBotaoSeta}>‹</button></div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{pvAtual}</span>
+                        <span style={{ fontSize: '1.2rem', color: '#aaa' }}>/</span>
+                        <input type="number" onKeyDown={bloquearLetras} value={pvMax} onChange={(e) => setPvMax(Math.max(1, Number(e.target.value)))} style={estiloInputMaximo} title="Editar Vida Máxima" />
+                      </div>
+                      <div><button onClick={() => alterarStatus('pv', 1)} style={estiloBotaoSeta}>›</button><button onClick={() => alterarStatus('pv', 5)} style={estiloBotaoSeta}>»</button></div>
+                    </div>
+
+                    {hasPvTemp && (
+                      <div style={{ flex: '1', backgroundColor: '#331111', border: '1px dashed #ff6666', padding: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '5px' }}>
+                        <input type="number" onKeyDown={bloquearLetras} value={pvTempAtual} onChange={(e) => setPvTempAtual(Math.max(0, Number(e.target.value)))} style={estiloInputTemp} />
+                        <span style={{ color: '#aaa' }}>/</span>
+                        <input type="number" onKeyDown={bloquearLetras} value={pvTempMax} onChange={(e) => setPvTempMax(Math.max(0, Number(e.target.value)))} style={estiloInputTemp} />
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                {hasPvTemp && (
-                  <div style={{ flex: '1', backgroundColor: '#331111', border: '1px dashed #ff6666', padding: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '5px' }}>
-                    <input type="number" onKeyDown={bloquearLetras} value={pvTempAtual} onChange={(e) => setPvTempAtual(Math.max(0, Number(e.target.value)))} style={estiloInputTemp} />
-                    <span style={{ color: '#aaa' }}>/</span>
-                    <input type="number" onKeyDown={bloquearLetras} value={pvTempMax} onChange={(e) => setPvTempMax(Math.max(0, Number(e.target.value)))} style={estiloInputTemp} />
+                {/* SANIDADE */}
+                <div style={{ textAlign: 'left' }}>
+                  <span style={{ fontWeight: 'bold', color: '#ccc', fontSize: '0.9rem', marginLeft: '5px' }}>SANIDADE</span>
+                  <div style={{ backgroundColor: '#1a0033', border: '1px solid #9933ff', padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '5px' }}>
+                    <div><button onClick={() => alterarStatus('san', -5)} style={estiloBotaoSeta}>«</button><button onClick={() => alterarStatus('san', -1)} style={estiloBotaoSeta}>‹</button></div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{sanAtual}</span>
+                      <span style={{ fontSize: '1.2rem', color: '#aaa' }}>/</span>
+                      <input type="number" onKeyDown={bloquearLetras} value={sanMax} onChange={(e) => setSanMax(Math.max(1, Number(e.target.value)))} style={estiloInputMaximo} title="Editar Sanidade Máxima" />
+                    </div>
+                    <div><button onClick={() => alterarStatus('san', 1)} style={estiloBotaoSeta}>›</button><button onClick={() => alterarStatus('san', 5)} style={estiloBotaoSeta}>»</button></div>
                   </div>
-                )}
+                </div>
+
+                {/* ESFORÇO */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+                    <span style={{ fontWeight: 'bold', color: '#ccc', fontSize: '0.9rem', marginLeft: '5px' }}>ESFORÇO</span>
+                    <label style={{ fontSize: '0.8rem', color: '#aaa', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <input type="checkbox" checked={hasPeTemp} onChange={(e) => { 
+                        const isChecked = e.target.checked;
+                        setHasPeTemp(isChecked);
+                        if (!isChecked) { setPeTempAtual(0); setPeTempMax(0); }
+                      }} />
+                      + Temporário
+                    </label>
+                  </div>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <div style={{ flex: hasPeTemp ? '2.5' : '1', backgroundColor: '#331a00', border: '1px solid #ff9900', padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'all 0.3s' }}>
+                      <div><button onClick={() => alterarStatus('pe', -5)} style={estiloBotaoSeta}>«</button><button onClick={() => alterarStatus('pe', -1)} style={estiloBotaoSeta}>‹</button></div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{peAtual}</span>
+                        <span style={{ fontSize: '1.2rem', color: '#aaa' }}>/</span>
+                        <input type="number" onKeyDown={bloquearLetras} value={peMax} onChange={(e) => setPeMax(Math.max(1, Number(e.target.value)))} style={estiloInputMaximo} title="Editar PE Máximo" />
+                      </div>
+                      <div><button onClick={() => alterarStatus('pe', 1)} style={estiloBotaoSeta}>›</button><button onClick={() => alterarStatus('pe', 5)} style={estiloBotaoSeta}>»</button></div>
+                    </div>
+
+                    {hasPeTemp && (
+                      <div style={{ flex: '1', backgroundColor: '#332200', border: '1px dashed #ffcc00', padding: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '5px' }}>
+                        <input type="number" onKeyDown={bloquearLetras} value={peTempAtual} onChange={(e) => setPeTempAtual(Math.max(0, Number(e.target.value)))} style={estiloInputTemp} />
+                        <span style={{ color: '#aaa' }}>/</span>
+                        <input type="number" onKeyDown={bloquearLetras} value={peTempMax} onChange={(e) => setPeTempMax(Math.max(0, Number(e.target.value)))} style={estiloInputTemp} />
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* SANIDADE */}
-            <div style={{ textAlign: 'left' }}>
-              <span style={{ fontWeight: 'bold', color: '#ccc', fontSize: '0.9rem', marginLeft: '5px' }}>SANIDADE</span>
-              <div style={{ backgroundColor: '#1a0033', border: '1px solid #9933ff', padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '5px' }}>
-                <div><button onClick={() => alterarStatus('san', -5)} style={estiloBotaoSeta}>«</button><button onClick={() => alterarStatus('san', -1)} style={estiloBotaoSeta}>‹</button></div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                  <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{sanAtual}</span>
-                  <span style={{ fontSize: '1.2rem', color: '#aaa' }}>/</span>
-                  <input type="number" onKeyDown={bloquearLetras} value={sanMax} onChange={(e) => setSanMax(Math.max(1, Number(e.target.value)))} style={estiloInputMaximo} title="Editar Sanidade Máxima" />
-                </div>
-                <div><button onClick={() => alterarStatus('san', 1)} style={estiloBotaoSeta}>›</button><button onClick={() => alterarStatus('san', 5)} style={estiloBotaoSeta}>»</button></div>
-              </div>
-            </div>
-
-            {/* ESFORÇO */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
-                <span style={{ fontWeight: 'bold', color: '#ccc', fontSize: '0.9rem', marginLeft: '5px' }}>ESFORÇO</span>
-                <label style={{ fontSize: '0.8rem', color: '#aaa', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                  <input type="checkbox" checked={hasPeTemp} onChange={(e) => { 
-                    const isChecked = e.target.checked;
-                    setHasPeTemp(isChecked);
-                    if (!isChecked) { setPeTempAtual(0); setPeTempMax(0); }
-                  }} />
-                  + Temporário
-                </label>
-              </div>
+            {/* COLUNA DIREITA: Perícias */}
+            <div style={{ flex: '1 1 45%', minWidth: '400px', backgroundColor: '#181818', padding: '30px', borderRadius: '8px', border: '1px solid #333' }}>
+              <h3 style={{ textTransform: 'uppercase', letterSpacing: '2px', color: '#ccc', borderBottom: '1px solid #333', paddingBottom: '10px', marginBottom: '25px', textAlign: 'center' }}>Perícias</h3>
               
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <div style={{ flex: hasPeTemp ? '2.5' : '1', backgroundColor: '#331a00', border: '1px solid #ff9900', padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'all 0.3s' }}>
-                  <div><button onClick={() => alterarStatus('pe', -5)} style={estiloBotaoSeta}>«</button><button onClick={() => alterarStatus('pe', -1)} style={estiloBotaoSeta}>‹</button></div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{peAtual}</span>
-                    <span style={{ fontSize: '1.2rem', color: '#aaa' }}>/</span>
-                    <input type="number" onKeyDown={bloquearLetras} value={peMax} onChange={(e) => setPeMax(Math.max(1, Number(e.target.value)))} style={estiloInputMaximo} title="Editar PE Máximo" />
-                  </div>
-                  <div><button onClick={() => alterarStatus('pe', 1)} style={estiloBotaoSeta}>›</button><button onClick={() => alterarStatus('pe', 5)} style={estiloBotaoSeta}>»</button></div>
-                </div>
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '1rem', color: '#fff' }}>
+                  <thead>
+                    <tr style={{ color: '#888', textTransform: 'uppercase', fontSize: '0.85rem', letterSpacing: '1px', borderBottom: '1px solid #444' }}>
+                      <th style={{ textAlign: 'left', padding: '10px 8px' }}>Perícia</th>
+                      <th style={{ padding: '10px 8px' }}>Dados</th>
+                      <th style={{ padding: '10px 8px' }}>Bônus</th>
+                      <th style={{ padding: '10px 8px' }}>Treino</th>
+                      <th style={{ padding: '10px 8px' }}>Outros</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.entries(pericias).map(([nome, dadosPericia]) => {
+                      const totalBonus = dadosPericia.treino + dadosPericia.outros
+                      
+                      // --- LÓGICA DE CORES DOS NÍVEIS DE TREINAMENTO ---
+                      let corTexto = '#ccc' // Padrão
+                      if (dadosPericia.treino === 5) corTexto = '#43a047' // Verde
+                      else if (dadosPericia.treino === 10) corTexto = '#1e88e5' // Azul
+                      else if (dadosPericia.treino === 15) corTexto = '#f57c00' // Laranja
 
-                {hasPeTemp && (
-                  <div style={{ flex: '1', backgroundColor: '#332200', border: '1px dashed #ffcc00', padding: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '5px' }}>
-                    <input type="number" onKeyDown={bloquearLetras} value={peTempAtual} onChange={(e) => setPeTempAtual(Math.max(0, Number(e.target.value)))} style={estiloInputTemp} />
-                    <span style={{ color: '#aaa' }}>/</span>
-                    <input type="number" onKeyDown={bloquearLetras} value={peTempMax} onChange={(e) => setPeTempMax(Math.max(0, Number(e.target.value)))} style={estiloInputTemp} />
-                  </div>
-                )}
+                      return (
+                        <tr key={nome} style={{ borderBottom: '1px solid #222', backgroundColor: 'transparent' }}>
+                          <td style={{ padding: '10px 8px', fontWeight: 'bold', color: corTexto }}>{nome}</td>
+                          
+                          <td style={{ textAlign: 'center', padding: '10px 8px', color: corTexto }}>
+                            <span style={{ marginRight: '4px' }}>(</span>
+                            <select 
+                              value={dadosPericia.atributo} 
+                              onChange={(e) => handleMudarPericia(nome, 'atributo', e.target.value as AtributoKey)}
+                              style={{ ...estiloSelectDropdown, color: corTexto }}
+                            >
+                              <option value="FOR">FOR</option>
+                              <option value="AGI">AGI</option>
+                              <option value="INT">INT</option>
+                              <option value="PRE">PRE</option>
+                              <option value="VIG">VIG</option>
+                            </select>
+                            <span style={{ marginLeft: '4px' }}>)</span>
+                          </td>
+                          
+                          <td style={{ textAlign: 'center', padding: '10px 8px', fontWeight: 'bold', color: corTexto, fontSize: '1.05rem' }}>
+                            ( {totalBonus} )
+                          </td>
+                          
+                          <td style={{ textAlign: 'center', padding: '10px 8px' }}>
+                            <select 
+                              value={dadosPericia.treino} 
+                              onChange={(e) => handleMudarPericia(nome, 'treino', Number(e.target.value))}
+                              style={{ ...estiloSelectDropdown, borderBottom: `1px solid ${corTexto}`, width: '50px', color: corTexto }}
+                            >
+                              <option value={0}>0</option>
+                              <option value={5}>5</option>
+                              <option value={10}>10</option>
+                              <option value={15}>15</option>
+                            </select>
+                          </td>
+                          
+                          <td style={{ textAlign: 'center', padding: '10px 8px' }}>
+                            <input 
+                              type="number" 
+                              onKeyDown={bloquearLetras} 
+                              value={dadosPericia.outros === 0 ? '' : dadosPericia.outros} 
+                              placeholder="0"
+                              onChange={(e) => handleMudarPericia(nome, 'outros', Math.max(0, Number(e.target.value)))}
+                              style={{ width: '45px', backgroundColor: 'transparent', color: corTexto, border: 'none', borderBottom: `1px solid ${corTexto}`, textAlign: 'center', fontSize: '1rem', fontWeight: 'bold', outline: 'none' }}
+                            />
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
               </div>
             </div>
 
@@ -303,9 +447,10 @@ function App() {
             setPvMax(0); setSanMax(0); setPeMax(0);
             setBonusAtributos({ FOR: 0, AGI: 0, INT: 0, PRE: 0, VIG: 0 }); 
             setHasPvTemp(false); setHasPeTemp(false); 
+            setPericias(periciasIniciais);
             prevCalc.current = { pv: 0, san: 0, pe: 0, init: false };
             setTelaAtual('atributos'); 
-          }} style={{ marginTop: '50px', padding: '10px', backgroundColor: 'transparent', color: '#666', border: 'none', cursor: 'pointer', width: '100%' }}>
+          }} style={{ marginTop: '50px', padding: '15px', backgroundColor: '#333', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer', width: '100%', fontSize: '1.1rem', fontWeight: 'bold' }}>
             Reiniciar Ficha
           </button>
         </div>

@@ -8,14 +8,17 @@ function App() {
   const [telaAtual, setTelaAtual] = useState<Tela>('atributos')
   const [classe, setClasse] = useState<ClasseRPG>(null)
   const [nex, setNex] = useState<number>(5)
+  
+  // Atributos Base (Afetam PV, PE e Sanidade)
   const [atributos, setAtributos] = useState({ FOR: 1, AGI: 1, INT: 1, PRE: 1, VIG: 1 })
+  
+  // NOVO: Atributos Bônus (Não afetam status, só para testes/rolagens)
+  const [bonusAtributos, setBonusAtributos] = useState({ FOR: 0, AGI: 0, INT: 0, PRE: 0, VIG: 0 })
 
-  // Valores ATUAIS das barras
   const [pvAtual, setPvAtual] = useState<number>(-1)
   const [sanAtual, setSanAtual] = useState<number>(-1)
   const [peAtual, setPeAtual] = useState<number>(-1)
 
-  // O "Gravador" que lembra os valores máximos da última vez que o site renderizou
   const prevMaxes = useRef({ pv: 0, san: 0, pe: 0 })
 
   // --- 2. LÓGICA DE PONTOS (TELA 1) ---
@@ -45,7 +48,7 @@ function App() {
     }
   }
 
-  // --- 3. MATEMÁTICA DOS STATUS MÁXIMOS ---
+  // --- 3. MATEMÁTICA DOS STATUS MÁXIMOS (Usa apenas os Atributos BASE) ---
   const nivel = nex === 99 ? 20 : Math.floor(nex / 5)
   let maxPv = 0, maxPe = 0, maxSan = 0
   const peTurno = nivel
@@ -64,27 +67,23 @@ function App() {
     maxSan = 20 + ((nivel - 1) * 5)
   }
 
-  // --- 4. NOVO RITUAL DE SINCRONIZAÇÃO (Aplica o ganho/perda no Atual) ---
+  // --- 4. RITUAL DE SINCRONIZAÇÃO (Aplica o ganho/perda no Atual) ---
   useEffect(() => {
     if (classe) {
       if (pvAtual === -1) {
-        // Primeira vez carregando a ficha: começa 100% cheio
         setPvAtual(maxPv)
         setSanAtual(maxSan)
         setPeAtual(maxPe)
         prevMaxes.current = { pv: maxPv, san: maxSan, pe: maxPe }
       } else {
-        // Calcula quanto ganhou ou perdeu de limite máximo
         const deltaPv = maxPv - prevMaxes.current.pv
         const deltaSan = maxSan - prevMaxes.current.san
         const deltaPe = maxPe - prevMaxes.current.pe
 
-        // Soma/subtrai a diferença diretamente no seu valor ATUAL
         if (deltaPv !== 0) setPvAtual(prev => Math.max(0, Math.min(maxPv, prev + deltaPv)))
         if (deltaSan !== 0) setSanAtual(prev => Math.max(0, Math.min(maxSan, prev + deltaSan)))
         if (deltaPe !== 0) setPeAtual(prev => Math.max(0, Math.min(maxPe, prev + deltaPe)))
 
-        // Atualiza o gravador para a próxima mudança
         prevMaxes.current = { pv: maxPv, san: maxSan, pe: maxPe }
       }
     }
@@ -97,16 +96,7 @@ function App() {
     if (tipo === 'pe') setPeAtual(prev => Math.max(0, Math.min(maxPe, prev + qtd)))
   }
 
-  const estiloBotaoSeta = {
-    background: 'transparent',
-    border: 'none',
-    color: '#fff',
-    fontSize: '1.2rem',
-    cursor: 'pointer',
-    padding: '0 8px',
-    fontWeight: 'bold',
-    userSelect: 'none' as const
-  }
+  const estiloBotaoSeta = { background: 'transparent', border: 'none', color: '#fff', fontSize: '1.2rem', cursor: 'pointer', padding: '0 8px', fontWeight: 'bold', userSelect: 'none' as const }
 
   return (
     <div style={{ padding: '30px', fontFamily: 'sans-serif', backgroundColor: '#121212', color: '#fff', minHeight: '100vh' }}>
@@ -117,25 +107,11 @@ function App() {
           <h1>Criação de Personagem: Atributos</h1>
           <div style={{ marginBottom: '20px', padding: '15px', border: '1px solid #333', borderRadius: '5px' }}>
             <label htmlFor="nex-select-init" style={{ marginRight: '10px', fontWeight: 'bold' }}>Escolha o NEX Inicial:</label>
-            <select 
-              id="nex-select-init"
-              value={nex} 
-              onChange={(e) => {
-                setNex(Number(e.target.value))
-                setAtributos({ FOR: 1, AGI: 1, INT: 1, PRE: 1, VIG: 1 })
-              }}
-              style={{ padding: '5px', backgroundColor: '#222', color: '#fff', border: '1px solid #555' }}
-            >
-              {[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 99].map(n => (
-                <option key={n} value={n}>{n}%</option>
-              ))}
+            <select id="nex-select-init" value={nex} onChange={(e) => { setNex(Number(e.target.value)); setAtributos({ FOR: 1, AGI: 1, INT: 1, PRE: 1, VIG: 1 }); setBonusAtributos({ FOR: 0, AGI: 0, INT: 0, PRE: 0, VIG: 0 }); }} style={{ padding: '5px', backgroundColor: '#222', color: '#fff', border: '1px solid #555' }}>
+              {[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 99].map(n => <option key={n} value={n}>{n}%</option>)}
             </select>
           </div>
-
-          <div style={{ fontSize: '1.2rem', marginBottom: '25px', color: pontosRestantes < 0 ? '#ff4d4d' : '#4dff4d' }}>
-            <strong>Pontos Restantes: {pontosRestantes}</strong>
-          </div>
-
+          <div style={{ fontSize: '1.2rem', marginBottom: '25px', color: pontosRestantes < 0 ? '#ff4d4d' : '#4dff4d' }}><strong>Pontos Restantes: {pontosRestantes}</strong></div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', maxWidth: '400px', marginBottom: '30px' }}>
             {(Object.keys(atributos) as Array<keyof typeof atributos>).map((nome) => (
               <div key={nome} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', backgroundColor: '#1e1e1e', borderRadius: '5px' }}>
@@ -148,10 +124,7 @@ function App() {
               </div>
             ))}
           </div>
-
-          <button onClick={() => setTelaAtual('classe')} style={{ padding: '15px 30px', fontSize: '1.2rem', backgroundColor: '#fff', color: '#000', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}>
-            Avançar para Classe ➔
-          </button>
+          <button onClick={() => setTelaAtual('classe')} style={{ padding: '15px 30px', fontSize: '1.2rem', backgroundColor: '#fff', color: '#000', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}>Avançar para Classe ➔</button>
         </div>
       )}
 
@@ -175,14 +148,8 @@ function App() {
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px', borderBottom: '1px solid #333', paddingBottom: '15px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <span style={{ fontWeight: 'bold', color: '#aaa' }}>NEX</span>
-              <select 
-                value={nex} 
-                onChange={(e) => setNex(Number(e.target.value))}
-                style={{ padding: '5px 10px', backgroundColor: '#121212', color: '#fff', border: '1px solid #fff', fontSize: '1.2rem', fontWeight: 'bold', cursor: 'pointer' }}
-              >
-                {[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 99].map(n => (
-                  <option key={n} value={n}>{n}%</option>
-                ))}
+              <select value={nex} onChange={(e) => setNex(Number(e.target.value))} style={{ padding: '5px 10px', backgroundColor: '#121212', color: '#fff', border: '1px solid #fff', fontSize: '1.2rem', fontWeight: 'bold', cursor: 'pointer' }}>
+                {[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 99].map(n => <option key={n} value={n}>{n}%</option>)}
               </select>
             </div>
             
@@ -192,10 +159,22 @@ function App() {
             </div>
           </div>
 
-          {/* Atributos Editáveis */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginBottom: '40px', flexWrap: 'wrap' }}>
+          {/* Atributos Editáveis e Bônus */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '40px', flexWrap: 'wrap' }}>
             {(Object.keys(atributos) as Array<keyof typeof atributos>).map((nome) => (
-              <div key={nome} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: '#1a1a1a', padding: '15px', borderRadius: '50%', width: '70px', height: '70px', border: '2px solid #444' }}>
+              <div key={nome} style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: '#1a1a1a', padding: '15px', borderRadius: '50%', width: '70px', height: '70px', border: '2px solid #444' }}>
+                
+                {/* Bônus (Círculo Menor Amarelo) */}
+                <div title="Bônus (Itens/Poderes) - Não afeta PV/PE/SAN" style={{ position: 'absolute', top: '-5px', right: '-5px', width: '28px', height: '28px', backgroundColor: '#333', border: '2px solid #ffcc00', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', boxShadow: '0px 0px 5px rgba(0,0,0,0.5)' }}>
+                  <input 
+                    type="number" 
+                    value={bonusAtributos[nome]}
+                    onChange={(e) => setBonusAtributos({ ...bonusAtributos, [nome]: Number(e.target.value) })}
+                    style={{ width: '100%', backgroundColor: 'transparent', color: '#ffcc00', border: 'none', textAlign: 'center', fontSize: '0.9rem', fontWeight: 'bold', outline: 'none' }}
+                  />
+                </div>
+
+                {/* Atributo Base */}
                 <span style={{ fontSize: '0.8rem', color: '#aaa', fontWeight: 'bold' }}>{nome}</span>
                 <input 
                   type="number" 
@@ -209,64 +188,38 @@ function App() {
 
           {/* Barras de Status */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            
-            {/* VIDA (PV) */}
+            {/* VIDA */}
             <div style={{ textAlign: 'center' }}>
               <span style={{ fontWeight: 'bold', color: '#ccc', fontSize: '0.9rem' }}>VIDA</span>
               <div style={{ backgroundColor: '#220000', border: '1px solid #ff4d4d', padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <button onClick={() => alterarStatus('pv', -5)} style={estiloBotaoSeta}>«</button>
-                  <button onClick={() => alterarStatus('pv', -1)} style={estiloBotaoSeta}>‹</button>
-                </div>
+                <div><button onClick={() => alterarStatus('pv', -5)} style={estiloBotaoSeta}>«</button><button onClick={() => alterarStatus('pv', -1)} style={estiloBotaoSeta}>‹</button></div>
                 <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{pvAtual} / {maxPv}</span>
-                <div>
-                  <button onClick={() => alterarStatus('pv', 1)} style={estiloBotaoSeta}>›</button>
-                  <button onClick={() => alterarStatus('pv', 5)} style={estiloBotaoSeta}>»</button>
-                </div>
+                <div><button onClick={() => alterarStatus('pv', 1)} style={estiloBotaoSeta}>›</button><button onClick={() => alterarStatus('pv', 5)} style={estiloBotaoSeta}>»</button></div>
               </div>
             </div>
 
-            {/* SANIDADE (SAN) */}
+            {/* SANIDADE */}
             <div style={{ textAlign: 'center' }}>
               <span style={{ fontWeight: 'bold', color: '#ccc', fontSize: '0.9rem' }}>SANIDADE</span>
               <div style={{ backgroundColor: '#1a0033', border: '1px solid #9933ff', padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <button onClick={() => alterarStatus('san', -5)} style={estiloBotaoSeta}>«</button>
-                  <button onClick={() => alterarStatus('san', -1)} style={estiloBotaoSeta}>‹</button>
-                </div>
+                <div><button onClick={() => alterarStatus('san', -5)} style={estiloBotaoSeta}>«</button><button onClick={() => alterarStatus('san', -1)} style={estiloBotaoSeta}>‹</button></div>
                 <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{sanAtual} / {maxSan}</span>
-                <div>
-                  <button onClick={() => alterarStatus('san', 1)} style={estiloBotaoSeta}>›</button>
-                  <button onClick={() => alterarStatus('san', 5)} style={estiloBotaoSeta}>»</button>
-                </div>
+                <div><button onClick={() => alterarStatus('san', 1)} style={estiloBotaoSeta}>›</button><button onClick={() => alterarStatus('san', 5)} style={estiloBotaoSeta}>»</button></div>
               </div>
             </div>
 
-            {/* PONTOS DE ESFORÇO (PE) */}
+            {/* ESFORÇO */}
             <div style={{ textAlign: 'center' }}>
               <span style={{ fontWeight: 'bold', color: '#ccc', fontSize: '0.9rem' }}>ESFORÇO</span>
               <div style={{ backgroundColor: '#331a00', border: '1px solid #ff9900', padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <button onClick={() => alterarStatus('pe', -5)} style={estiloBotaoSeta}>«</button>
-                  <button onClick={() => alterarStatus('pe', -1)} style={estiloBotaoSeta}>‹</button>
-                </div>
+                <div><button onClick={() => alterarStatus('pe', -5)} style={estiloBotaoSeta}>«</button><button onClick={() => alterarStatus('pe', -1)} style={estiloBotaoSeta}>‹</button></div>
                 <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{peAtual} / {maxPe}</span>
-                <div>
-                  <button onClick={() => alterarStatus('pe', 1)} style={estiloBotaoSeta}>›</button>
-                  <button onClick={() => alterarStatus('pe', 5)} style={estiloBotaoSeta}>»</button>
-                </div>
+                <div><button onClick={() => alterarStatus('pe', 1)} style={estiloBotaoSeta}>›</button><button onClick={() => alterarStatus('pe', 5)} style={estiloBotaoSeta}>»</button></div>
               </div>
             </div>
-
           </div>
 
-          <button 
-            onClick={() => { 
-              setPvAtual(-1); setSanAtual(-1); setPeAtual(-1);
-              setTelaAtual('atributos'); 
-            }} 
-            style={{ marginTop: '50px', padding: '10px', backgroundColor: 'transparent', color: '#666', border: 'none', cursor: 'pointer', width: '100%' }}
-          >
+          <button onClick={() => { setPvAtual(-1); setSanAtual(-1); setPeAtual(-1); setBonusAtributos({ FOR: 0, AGI: 0, INT: 0, PRE: 0, VIG: 0 }); setTelaAtual('atributos'); }} style={{ marginTop: '50px', padding: '10px', backgroundColor: 'transparent', color: '#666', border: 'none', cursor: 'pointer', width: '100%' }}>
             Reiniciar Ficha
           </button>
         </div>

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react'
 
 type Tela = 'atributos' | 'classe' | 'ficha'
@@ -73,6 +74,25 @@ function App() {
 
   const [pericias, setPericias] = useState<Record<string, Pericia>>(JSON.parse(JSON.stringify(periciasIniciais)))
   const prevCalc = useRef({ pv: 0, san: 0, pe: 0, init: false })
+
+  // CONTROLES DE DEFESA, BLOQUEIO E ESQUIVA (Movido para cá para ler 'pericias' corretamente)
+  const [defEquip, setDefEquip] = useState<number>(0)
+  const [defOutros, setDefOutros] = useState<number>(0)
+  const [bloqueio, setBloqueio] = useState<number>(0)
+  const [esquiva, setEsquiva] = useState<number>(0)
+
+  const defesaTotal = 10 + atributos.AGI + defEquip + defOutros
+
+  useEffect(() => {
+    const bonusFortitude = pericias.Fortitude.treino + pericias.Fortitude.outros
+    setBloqueio(bonusFortitude)
+  }, [pericias.Fortitude.treino, pericias.Fortitude.outros])
+
+  useEffect(() => {
+    const bonusReflexos = pericias.Reflexos.treino + pericias.Reflexos.outros
+    setEsquiva(defesaTotal + bonusReflexos)
+  }, [defesaTotal, pericias.Reflexos.treino, pericias.Reflexos.outros])
+
 
   // --- 2. LÓGICA DE PONTOS (TELA 1) ---
   const capMaximo = nex === 5 ? 3 : 5
@@ -167,7 +187,7 @@ function App() {
     }
   }
 
-  const handleMudarPericia = (nome: string, campo: keyof Pericia, valor: number | string) => {
+  const handleMudarPericia = (nome: string, campo: keyof Pericia, valor: any) => {
     setPericias(prev => ({
       ...prev,
       [nome]: {
@@ -303,7 +323,7 @@ function App() {
             {/* BLOCO OCULTISTA */}
             <div style={{ flex: 1, backgroundColor: '#12051a', border: '1px solid #9933ff', padding: '25px', borderRadius: '12px', display: 'flex', flexDirection: 'column' }}>
               <h2 style={{ color: '#9933ff', marginBottom: '15px', textAlign: 'center' }}>Ocultista</h2>
-              <p style={{ fontSize: '0.9rem', color: '#ccc', flexGrow: 1, lineHeight: '1.5' }}>Muitos estudiosos das entidades se perdem em busca de poder, mas existem aqueles que visam compreender e dominar os mistérios paranormais para usá-los contra o próprio Outro Lado. Possui talento para se conectar com elements paranormais.</p>
+              <p style={{ fontSize: '0.9rem', color: '#ccc', flexGrow: 1, lineHeight: '1.5' }}>Muitos estudiosos das entidades se perdem em busca de poder, mas existem aqueles que visam compreender e dominar os mistérios paranormais para usá-los contra o próprio Outro Lado. Possui talento para se conectar com elementos paranormais.</p>
               
               <div style={{ margin: '20px 0', padding: '15px', backgroundColor: '#000', borderRadius: '8px', border: '1px solid #331111', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '102px' }}>
                 <p style={{ fontSize: '0.95rem', color: '#d4aaff', margin: 0, fontWeight: 'bold' }}>Vontade & Ocultismo</p>
@@ -435,6 +455,74 @@ function App() {
                   </div>
                 </div>
               </div>
+
+              {/* BLOCO DE DEFESA, BLOQUEIO E ESQUIVA */}
+                <div style={{ marginTop: '30px', padding: '20px', border: '1px solid #333', borderRadius: '8px', backgroundColor: '#161616', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px', flexWrap: 'wrap' }}>
+                  
+                  {/* DEFESA */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                    <div style={{ border: '2px solid #fff', borderRadius: '8px', width: '55px', height: '55px', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '1.6rem', fontWeight: 'bold' }}>
+                      {defesaTotal}
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#aaa', letterSpacing: '1px' }}>DEFESA</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.95rem', marginTop: '2px' }}>
+                        <span>= 10 + AGI +</span>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                          <input 
+                            type="number" 
+                            onKeyDown={bloquearLetras} 
+                            value={defEquip === 0 ? '' : defEquip} 
+                            placeholder="0"
+                            onChange={(e) => setDefEquip(Math.max(0, Number(e.target.value)))} 
+                            style={{ width: '40px', backgroundColor: 'transparent', color: '#fff', border: 'none', borderBottom: '1px solid #fff', textAlign: 'center', fontSize: '1.1rem', fontWeight: 'bold', outline: 'none' } as React.CSSProperties} 
+                          />
+                          <span style={{ fontSize: '0.65rem', color: '#777', marginTop: '2px' }}>Equip.</span>
+                        </div>
+                        <span>+</span>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                          <input 
+                            type="number" 
+                            onKeyDown={bloquearLetras} 
+                            value={defOutros === 0 ? '' : defOutros} 
+                            placeholder="0"
+                            onChange={(e) => setDefOutros(Math.max(0, Number(e.target.value)))} 
+                            style={{ width: '40px', backgroundColor: 'transparent', color: '#fff', border: 'none', borderBottom: '1px solid #fff', textAlign: 'center', fontSize: '1.1rem', fontWeight: 'bold', outline: 'none' } as React.CSSProperties} 
+                          />
+                          <span style={{ fontSize: '0.65rem', color: '#777', marginTop: '2px' }}>Outros.</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* BLOQUEIO */}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#aaa', letterSpacing: '1px' }}>BLOQUEIO</span>
+                    <input 
+                      type="number" 
+                      onKeyDown={bloquearLetras} 
+                      value={bloqueio === 0 ? '' : bloqueio} 
+                      placeholder="0"
+                      onChange={(e) => setBloqueio(Math.max(0, Number(e.target.value)))} 
+                      style={{ width: '50px', backgroundColor: 'transparent', color: '#fff', border: 'none', borderBottom: '1px solid #fff', textAlign: 'center', fontSize: '1.3rem', fontWeight: 'bold', outline: 'none', marginTop: '5px' } as React.CSSProperties} 
+                    />
+                  </div>
+
+                  {/* ESQUIVA */}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#aaa', letterSpacing: '1px' }}>ESQUIVA</span>
+                    <input 
+                      type="number" 
+                      onKeyDown={bloquearLetras} 
+                      value={esquiva === 0 ? '' : esquiva} 
+                      placeholder="0"
+                      onChange={(e) => setEsquiva(Math.max(0, Number(e.target.value)))} 
+                      style={{ width: '50px', backgroundColor: 'transparent', color: '#fff', border: 'none', borderBottom: '1px solid #fff', textAlign: 'center', fontSize: '1.3rem', fontWeight: 'bold', outline: 'none', marginTop: '5px' } as React.CSSProperties} 
+                    />
+                  </div>
+
+                </div>
+
             </div>
 
             {/* COLUNA DIREITA: Perícias */}
@@ -470,7 +558,7 @@ function App() {
                             <span style={{ marginRight: '4px' }}>(</span>
                             <select 
                               value={dadosPericia.atributo} 
-                              onChange={(e) => handleMudarPericia(nome, 'atributo', e.target.value as AtributoKey)}
+                              onChange={(e) => handleMudarPericia(nome, 'atributo', e.target.value)}
                               style={{ ...estiloSelectDropdown, color: corTexto }}
                             >
                               <option value="FOR">FOR</option>

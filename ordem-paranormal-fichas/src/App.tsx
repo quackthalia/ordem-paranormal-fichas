@@ -35,6 +35,10 @@ function App() {
   const [peTempAtual, setPeTempAtual] = useState<number>(0)
   const [peTempMax, setPeTempMax] = useState<number>(0)
 
+  // CONTROLES DO COMBATENTE
+  const [skillCombatente1, setSkillCombatente1] = useState<string>('')
+  const [skillCombatente2, setSkillCombatente2] = useState<string>('')
+
   // --- ESTADO DAS PERÍCIAS (28 NO TOTAL) ---
   const periciasIniciais: Record<string, Pericia> = {
     Acrobacia: { atributo: 'AGI', treino: 0, outros: 0 },
@@ -67,7 +71,7 @@ function App() {
     Vontade: { atributo: 'PRE', treino: 0, outros: 0 },
   }
 
-  const [pericias, setPericias] = useState<Record<string, Pericia>>(periciasIniciais)
+  const [pericias, setPericias] = useState<Record<string, Pericia>>(JSON.parse(JSON.stringify(periciasIniciais)))
   const prevCalc = useRef({ pv: 0, san: 0, pe: 0, init: false })
 
   // --- 2. LÓGICA DE PONTOS (TELA 1) ---
@@ -174,14 +178,28 @@ function App() {
   }
 
   const escolherClasse = (novaClasse: ClasseRPG) => {
-    setClasse(novaClasse)
-    setTelaAtual('ficha')
+    let novasPericias = JSON.parse(JSON.stringify(periciasIniciais));
+
+    if (novaClasse === 'Ocultista') {
+      novasPericias['Vontade'].treino = 5;
+      novasPericias['Ocultismo'].treino = 5;
+    } else if (novaClasse === 'Combatente') {
+      if (!skillCombatente1 || !skillCombatente2) return;
+      novasPericias[skillCombatente1].treino = 5;
+      novasPericias[skillCombatente2].treino = 5;
+    }
+
+    setPericias(novasPericias);
+    setClasse(novaClasse);
+    setTelaAtual('ficha');
   }
 
   const estiloBotaoSeta = { background: 'transparent', border: 'none', color: '#fff', fontSize: '1.2rem', cursor: 'pointer', padding: '0 8px', fontWeight: 'bold', userSelect: 'none' as const }
   const estiloInputMaximo = { width: '45px', backgroundColor: 'transparent', color: '#fff', border: 'none', textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold', outline: 'none' }
   const estiloInputTemp = { width: '35px', backgroundColor: 'transparent', color: '#fff', border: 'none', textAlign: 'center', fontSize: '1rem', fontWeight: 'bold', outline: 'none' }
   const estiloSelectDropdown = { backgroundColor: 'transparent', color: '#fff', border: 'none', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', outline: 'none', textAlign: 'center' as const, appearance: 'none' as const }
+
+  const combatentePronto = skillCombatente1 !== '' && skillCombatente2 !== ''
 
   return (
     <div style={{ padding: '30px 40px', fontFamily: 'sans-serif', backgroundColor: '#121212', color: '#fff', minHeight: '100vh', width: '100vw', boxSizing: 'border-box' }}>
@@ -229,12 +247,71 @@ function App() {
       )}
 
       {telaAtual === 'classe' && (
-        <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
-          <h1>Escolha sua Trilha (Classe)</h1>
-          <div style={{ display: 'flex', gap: '20px', marginTop: '30px' }}>
-            <button onClick={() => escolherClasse('Combatente')} style={{ padding: '20px', fontSize: '1.2rem', cursor: 'pointer', backgroundColor: '#552222', color: '#fff', border: '2px solid #ff4444', borderRadius: '8px' }}>Combatente</button>
-            <button onClick={() => escolherClasse('Especialista')} style={{ padding: '20px', fontSize: '1.2rem', cursor: 'pointer', backgroundColor: '#222255', color: '#fff', border: '2px solid #4444ff', borderRadius: '8px' }}>Especialista</button>
-            <button onClick={() => escolherClasse('Ocultista')} style={{ padding: '20px', fontSize: '1.2rem', cursor: 'pointer', backgroundColor: '#331144', color: '#fff', border: '2px solid #9933ff', borderRadius: '8px' }}>Ocultista</button>
+        <div style={{ width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
+          <h1 style={{ textAlign: 'center', marginBottom: '40px' }}>Escolha sua Classe</h1>
+          
+          <div style={{ display: 'flex', gap: '20px', alignItems: 'stretch' }}>
+            
+            {/* BLOCO COMBATENTE */}
+            <div style={{ flex: 1, backgroundColor: '#1a0505', border: '1px solid #ff4444', padding: '25px', borderRadius: '12px', display: 'flex', flexDirection: 'column' }}>
+              <h2 style={{ color: '#ff4444', marginBottom: '15px', textAlign: 'center' }}>Combatente</h2>
+              <p style={{ fontSize: '0.9rem', color: '#ccc', flexGrow: 1, lineHeight: '1.5' }}>Treinado para lutar com todo tipo de armas, e com a força e a coragem para encarar os perigos de frente. É o tipo de agente que prefere abordagens mais diretas e costuma atirar primeiro e perguntar depois.</p>
+              
+              <div style={{ margin: '20px 0', padding: '15px', backgroundColor: '#000', borderRadius: '8px', border: '1px solid #331111', minHeight: '102px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <div style={{ marginBottom: '15px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px' }}>
+                  <label style={{ cursor: 'pointer' }}><input type="radio" name="c1" onChange={() => setSkillCombatente1('Luta')} /> Luta</label>
+                  <span style={{ color: '#555' }}>//</span>
+                  <label style={{ cursor: 'pointer' }}><input type="radio" name="c1" onChange={() => setSkillCombatente1('Pontaria')} /> Pontaria</label>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px' }}>
+                  <label style={{ cursor: 'pointer' }}><input type="radio" name="c2" onChange={() => setSkillCombatente2('Fortitude')} /> Fortitude</label>
+                  <span style={{ color: '#555' }}>//</span>
+                  <label style={{ cursor: 'pointer' }}><input type="radio" name="c2" onChange={() => setSkillCombatente2('Reflexos')} /> Reflexos</label>
+                </div>
+              </div>
+
+              <button 
+                onClick={() => escolherClasse('Combatente')} 
+                disabled={!combatentePronto}
+                style={{ 
+                  padding: '15px', 
+                  cursor: combatentePronto ? 'pointer' : 'not-allowed', 
+                  backgroundColor: combatentePronto ? '#552222' : '#2a2a2a', 
+                  color: combatentePronto ? '#fff' : '#666', 
+                  border: 'none', 
+                  borderRadius: '8px', 
+                  fontWeight: 'bold', 
+                  width: '100%' 
+                }}
+              >
+                Selecionar Combatente
+              </button>
+            </div>
+
+            {/* BLOCO ESPECIALISTA */}
+            <div style={{ flex: 1, backgroundColor: '#05051a', border: '1px solid #4444ff', padding: '25px', borderRadius: '12px', display: 'flex', flexDirection: 'column' }}>
+              <h2 style={{ color: '#4444ff', marginBottom: '15px', textAlign: 'center' }}>Especialista</h2>
+              <p style={{ fontSize: '0.9rem', color: '#ccc', flexGrow: 1, lineHeight: '1.5' }}>Um agente que confia mais em esperteza do que em força bruta. Um especialista se vale de conhecimento técnico, raciocínio rápido ou mesmo lábia para resolver mistérios e enfrentar o paranormal.</p>
+              
+              <div style={{ margin: '20px 0', padding: '15px', backgroundColor: 'transparent', minHeight: '102px' }}>
+                {/* Espaço intencionalmente vazio */}
+              </div>
+
+              <button onClick={() => escolherClasse('Especialista')} style={{ padding: '15px', cursor: 'pointer', backgroundColor: '#222255', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', width: '100%' }}>Selecionar Especialista</button>
+            </div>
+
+            {/* BLOCO OCULTISTA */}
+            <div style={{ flex: 1, backgroundColor: '#12051a', border: '1px solid #9933ff', padding: '25px', borderRadius: '12px', display: 'flex', flexDirection: 'column' }}>
+              <h2 style={{ color: '#9933ff', marginBottom: '15px', textAlign: 'center' }}>Ocultista</h2>
+              <p style={{ fontSize: '0.9rem', color: '#ccc', flexGrow: 1, lineHeight: '1.5' }}>Muitos estudiosos das entidades se perdem em busca de poder, mas existem aqueles que visam compreender e dominar os mistérios paranormais para usá-los contra o próprio Outro Lado. Possui talento para se conectar com elements paranormais.</p>
+              
+              <div style={{ margin: '20px 0', padding: '15px', backgroundColor: '#000', borderRadius: '8px', border: '1px solid #331111', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '102px' }}>
+                <p style={{ fontSize: '0.95rem', color: '#d4aaff', margin: 0, fontWeight: 'bold' }}>Vontade & Ocultismo</p>
+              </div>
+
+              <button onClick={() => escolherClasse('Ocultista')} style={{ padding: '15px', cursor: 'pointer', backgroundColor: '#331144', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', width: '100%' }}>Selecionar Ocultista</button>
+            </div>
+
           </div>
         </div>
       )}
@@ -379,11 +456,11 @@ function App() {
                     {Object.entries(pericias).map(([nome, dadosPericia]) => {
                       const totalBonus = dadosPericia.treino + dadosPericia.outros
                       
-                      // --- LÓGICA DE CORES DOS NÍVEIS DE TREINAMENTO ---
-                      let corTexto = '#ccc' // Padrão
-                      if (dadosPericia.treino === 5) corTexto = '#43a047' // Verde
-                      else if (dadosPericia.treino === 10) corTexto = '#1e88e5' // Azul
-                      else if (dadosPericia.treino === 15) corTexto = '#f57c00' // Laranja
+                      // LÓGICA DE CORES DOS NÍVEIS DE TREINAMENTO
+                      let corTexto = '#ccc'
+                      if (dadosPericia.treino === 5) corTexto = '#43a047'
+                      else if (dadosPericia.treino === 10) corTexto = '#1e88e5'
+                      else if (dadosPericia.treino === 15) corTexto = '#f57c00'
 
                       return (
                         <tr key={nome} style={{ borderBottom: '1px solid #222', backgroundColor: 'transparent' }}>
@@ -447,7 +524,8 @@ function App() {
             setPvMax(0); setSanMax(0); setPeMax(0);
             setBonusAtributos({ FOR: 0, AGI: 0, INT: 0, PRE: 0, VIG: 0 }); 
             setHasPvTemp(false); setHasPeTemp(false); 
-            setPericias(periciasIniciais);
+            setPericias(JSON.parse(JSON.stringify(periciasIniciais)));
+            setSkillCombatente1(''); setSkillCombatente2('');
             prevCalc.current = { pv: 0, san: 0, pe: 0, init: false };
             setTelaAtual('atributos'); 
           }} style={{ marginTop: '50px', padding: '15px', backgroundColor: '#333', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer', width: '100%', fontSize: '1.1rem', fontWeight: 'bold' }}>

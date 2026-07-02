@@ -81,7 +81,10 @@ function App() {
   const [bloqueio, setBloqueio] = useState<number>(0)
   const [esquiva, setEsquiva] = useState<number>(0)
 
-  const defesaTotal = 10 + atributos.AGI + defEquip + defOutros
+  // Controle para ativar/desativar as limitações automáticas de perícia
+  const [limitarPericias, setLimitarPericias] = useState<boolean>(true)
+
+const defesaTotal = 10 + atributos.AGI + bonusAtributos.AGI + defEquip + defOutros
 
   useEffect(() => {
     const bonusFortitude = pericias.Fortitude.treino + pericias.Fortitude.outros
@@ -140,39 +143,42 @@ function App() {
     calcMaxSan = 20 + ((nivel - 1) * 5)
   }
 
-  // --- 4. RITUAL DE SINCRONIZAÇÃO ---
+//  4. RITUAL DE SINCRONIZAÇÃO CORRIGIDO (SEM -1)
   useEffect(() => {
-    if (classe) {
-      if (!prevCalc.current.init) {
-        setPvAtual(calcMaxPv)
-        setPvMax(calcMaxPv)
-        setSanAtual(calcMaxSan)
-        setSanMax(calcMaxSan)
-        setPeAtual(calcMaxPe)
-        setPeMax(calcMaxPe)
-        prevCalc.current = { pv: calcMaxPv, san: calcMaxSan, pe: calcMaxPe, init: true }
-      } else {
-        const deltaPv = calcMaxPv - prevCalc.current.pv
-        const deltaSan = calcMaxSan - prevCalc.current.san
-        const deltaPe = calcMaxPe - prevCalc.current.pe
+    if (!classe) return;
 
-        if (deltaPv !== 0) {
-          setPvMax(prev => Math.max(1, prev + deltaPv))
-          setPvAtual(prev => Math.max(0, prev + deltaPv))
-        }
-        if (deltaSan !== 0) {
-          setSanMax(prev => Math.max(1, prev + deltaSan))
-          setSanAtual(prev => Math.max(0, prev + deltaSan))
-        }
-        if (deltaPe !== 0) {
-          setPeMax(prev => Math.max(1, prev + deltaPe))
-          setPeAtual(prev => Math.max(0, prev + deltaPe))
-        }
+    if (!prevCalc.current.init) {
+      // Primeira vez carregando a ficha: define o valor atual igual ao máximo correto
+      setPvMax(calcMaxPv);
+      setPvAtual(calcMaxPv);
+      setSanMax(calcMaxSan);
+      setSanAtual(calcMaxSan);
+      setPeMax(calcMaxPe);
+      setPeAtual(calcMaxPe);
+      
+      prevCalc.current = { pv: calcMaxPv, san: calcMaxSan, pe: calcMaxPe, init: true };
+    } else {
+      // Quando muda o NEX ou Atributos, calcula apenas a diferença (delta)
+      const deltaPv = calcMaxPv - prevCalc.current.pv;
+      const deltaSan = calcMaxSan - prevCalc.current.san;
+      const deltaPe = calcMaxPe - prevCalc.current.pe;
 
-        prevCalc.current = { pv: calcMaxPv, san: calcMaxSan, pe: calcMaxPe, init: true }
+      if (deltaPv !== 0) {
+        setPvMax(calcMaxPv);
+        setPvAtual(prev => (prev === -1 ? calcMaxPv : Math.max(0, prev + deltaPv)));
       }
+      if (deltaSan !== 0) {
+        setSanMax(calcMaxSan);
+        setSanAtual(prev => (prev === -1 ? calcMaxSan : Math.max(0, prev + deltaSan)));
+      }
+      if (deltaPe !== 0) {
+        setPeMax(calcMaxPe);
+        setPeAtual(prev => (prev === -1 ? calcMaxPe : Math.max(0, prev + deltaPe)));
+      }
+
+      prevCalc.current = { pv: calcMaxPv, san: calcMaxSan, pe: calcMaxPe, init: true };
     }
-  }, [calcMaxPv, calcMaxSan, calcMaxPe, classe])
+  }, [calcMaxPv, calcMaxSan, calcMaxPe, classe]);
 
   // --- 5. CONTROLES DA INTERFACE ---
   const alterarStatus = (tipo: 'pv' | 'san' | 'pe', qtd: number) => {
@@ -187,16 +193,106 @@ function App() {
     }
   }
 
-  const handleMudarPericia = (nome: string, campo: keyof Pericia, valor: any) => {
-    setPericias(prev => ({
-      ...prev,
-      [nome]: {
-        ...prev[nome],
-        [campo]: valor
-      }
-    }))
+// --- 1. MATEMÁTICA DE PERÍCIAS (REGRAS OFICIAIS ACUMULATIVAS) ---
+  let maxTreinadas = 0;
+  let maxUpgrades = 0; // Reserva única de pontos de Aumentar Grau (Veterano ou Expert)
+
+  // Define os limites base de cada classe
+  if (classe === 'Combatente') {
+    maxTreinadas = 1 + atributos.INT;
+    if (nex >= 35) maxUpgrades += (2 + atributos.INT);
+    if (nex >= 70) maxUpgrades += (2 + atributos.INT);
+  } else if (classe === 'Especialista') {
+    maxTreinadas = 7 + atributos.INT;
+    if (nex >= 35) maxUpgrades += (5 + atributos.INT);
+    if (nex >= 70) maxUpgrades += (5 + atributos.INT);
+  } else if (classe === 'Ocultista') {
+    maxTreinadas = 3 + atributos.INT;
+    if (nex >= 35) maxUpgrades += (3 + atributos.INT);
+    if (nex >= 70) maxUpgrades += (3 + atributos.INT);
   }
 
+  // Identifica quais perícias vieram automáticas da classe para NÃO contá-las no limite máximo
+  const periciasGratis: string[] = [];
+  if (classe === 'Ocultista') {
+    periciasGratis.push('Vontade', 'Ocultismo');
+  } else if (classe === 'Combatente') {
+    if (skillCombatente1) periciasGratis.push(skillCombatente1);
+    if (skillCombatente2) periciasGratis.push(skillCombatente2);
+  }
+
+  let totalTreinadasUsadas = 0;
+  let totalUpgradesGastos = 0;
+
+  Object.entries(pericias).forEach(([nome, dados]) => {
+    // Só conta no limite de "Treinar" se o usuário treinou E não é uma perícia grátis da classe
+    if (dados.treino >= 5) {
+      if (!periciasGratis.includes(nome)) {
+        totalTreinadasUsadas += 1;
+      }
+    }
+
+    // Regra de Upgrades (Aumentar Grau)
+    if (dados.treino === 10) {
+      totalUpgradesGastos += 1;
+    } else if (dados.treino === 15) {
+      totalUpgradesGastos += 2;
+    }
+  });
+
+const handleMudarPericia = (nome: string, campo: keyof Pericia, valor: any) => {
+    // Se NÃO estiver liberado (caixinha desmarcada), aplica as regras oficiais
+    if (campo === 'treino' && !limitarPericias) {
+      const novoValor = Number(valor);
+      
+      // BLOQUEIO: Impede o usuário de destreinar (< 5) as perícias obrigatórias da classe
+      if (novoValor < 5 && periciasGratis.includes(nome)) {
+        alert(`Você não pode destreinar a perícia "${nome}", pois ela é obrigatória da sua Classe!`);
+        return;
+      }
+
+      // Bloqueio por NEX mínimo exigido pelo livro
+      if (novoValor === 10 && nex < 35) {
+        alert("Perícias Veteranas exigem no mínimo NEX 35%!");
+        return;
+      }
+      if (novoValor === 15 && nex < 70) {
+        alert("Perícias Expert exigem no mínimo NEX 70%!");
+        return;
+      }
+
+      // Simulação em tempo real para verificar se estoura os limites máximos
+      const periciasSimuladas = {
+        ...pericias,
+        [nome]: { ...pericias[nome], treino: novoValor }
+      };
+
+      let simTreinadas = 0;
+      let simUpgrades = 0;
+
+      Object.entries(periciasSimuladas).forEach(([n, d]) => {
+        if (d.treino >= 5 && !periciasGratis.includes(n)) {
+          simTreinadas += 1;
+        }
+        if (d.treino === 10) simUpgrades += 1;
+        else if (d.treino === 15) simUpgrades += 2;
+      });
+
+      if (simTreinadas > maxTreinadas) {
+        alert(`Limite de perícias para Treinar atingido! Máximo permitido: ${maxTreinadas}`);
+        return;
+      }
+      if (simUpgrades > maxUpgrades) {
+        alert(`Limite de pontos de Aumentar Grau atingido! Você possui ${maxUpgrades} pontos totais e tentou gastar ${simUpgrades}.\n\n(Veterano consome 1 ponto, Expert consome 2)`);
+        return;
+      }
+    }
+
+    setPericias(prev => ({
+      ...prev,
+      [nome]: { ...prev[nome], [campo]: valor }
+    }));
+  };
   const escolherClasse = (novaClasse: ClasseRPG) => {
     let novasPericias = JSON.parse(JSON.stringify(periciasIniciais));
 
@@ -525,10 +621,33 @@ function App() {
 
             </div>
 
-            {/* COLUNA DIREITA: Perícias */}
+          {/* COLUNA DIREITA: Perícias */}
             <div style={{ flex: '1 1 45%', minWidth: '400px', backgroundColor: '#181818', padding: '30px', borderRadius: '8px', border: '1px solid #333' }}>
               <h3 style={{ textTransform: 'uppercase', letterSpacing: '2px', color: '#ccc', borderBottom: '1px solid #333', paddingBottom: '10px', marginBottom: '25px', textAlign: 'center' }}>Perícias</h3>
-              
+{/* PAINEL COMPACTO DE REGRAS DE PERÍCIA (NOVO E MINIMALISTA) */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#050505', padding: '6px 12px', borderRadius: '4px', border: '1px solid #222', marginBottom: '15px', fontSize: '0.8rem' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: '#aaa' }}>
+                <input 
+                  type="checkbox" 
+                  checked={limitarPericias} 
+                  onChange={(e) => setLimitarPericias(e.target.checked)} 
+                  style={{ cursor: 'pointer' }}
+                />
+                Liberar Perícias
+              </label>
+
+              {/* Só exibe os pontos se o botão de liberar estiver DESLIGADO (!limitarPericias) */}
+              {!limitarPericias && (
+                <div style={{ display: 'flex', gap: '15px', fontWeight: 'bold' }}>
+                  <span style={{ color: maxTreinadas - totalTreinadasUsadas < 0 ? '#ff4d4d' : '#8fa0f0' }}>
+                    Treinar: {maxTreinadas - totalTreinadasUsadas}
+                  </span>
+                  <span style={{ color: maxUpgrades - totalUpgradesGastos < 0 ? '#ff4d4d' : '#68bd82' }}>
+                    Aumentar Grau: {maxUpgrades - totalUpgradesGastos}
+                  </span>
+                </div>
+              )}
+            </div>
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '1rem', color: '#fff' }}>
                   <thead>

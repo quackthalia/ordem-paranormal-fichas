@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 
 import { supabase } from './supabase'
 
-type Tela = 'atributos' | 'classe' | 'ficha'
+type Tela = 'atributos' | 'origens' | 'classe' | 'ficha'
 type ClasseRPG = 'Combatente' | 'Especialista' | 'Ocultista' | null
 type AtributoKey = 'FOR' | 'AGI' | 'INT' | 'PRE' | 'VIG'
 
@@ -17,6 +17,11 @@ function App() {
   const [telaAtual, setTelaAtual] = useState<Tela>('atributos')
   const [classe, setClasse] = useState<ClasseRPG>(null)
   const [nex, setNex] = useState<number>(5)
+
+  const [origens, setOrigens] = useState<any[]>([]);
+  const [origemSelecionada, setOrigemSelecionada] = useState<any>(null);
+  const [origensExpandidas, setOrigensExpandidas] = useState<number[]>([]); 
+  const [nomesPericias, setNomesPericias] = useState<Record<number, string>>({});
   
   const [atributos, setAtributos] = useState({ FOR: 1, AGI: 1, INT: 1, PRE: 1, VIG: 1 })
   const [bonusAtributos, setBonusAtributos] = useState({ FOR: 0, AGI: 0, INT: 0, PRE: 0, VIG: 0 })
@@ -63,7 +68,7 @@ function App() {
         data.forEach((pericia) => {
           objetoPericias[pericia.Nome_Pericia] = {
             id: pericia.Codigo_Pericia,
-            atributo: pericia.Atributo_Pericia, // DEIXE EXATAMENTE ASSIM!
+            atributo: pericia.Atributo_Pericia,
             treino: 0,
             outros: 0
           };
@@ -74,6 +79,32 @@ function App() {
     };
 
     puxarPericiasDoBanco();
+  }, []);
+
+  // BUSCAR ORIGENS DO SUPABASE
+  useEffect(() => {
+    const puxarDados = async () => {
+      // Puxa as Origens
+      const { data: dataOrigens } = await supabase
+        .from('Origens')
+        .select('Codigo_Origem, Nome, Descricao, Pericia_Treinada_1, Pericia_Treinada_2, Pericia_Treinada_Especial, Nome_Poder, Descricao_Poder, Fonte');
+      
+      if (dataOrigens) setOrigens(dataOrigens);
+
+      // Puxa as Perícias para traduzir o ID para Nome (AGORA COM ACENTO NA TABELA)
+      const { data: dataPericias } = await supabase
+        .from('Perícias') 
+        .select('Codigo_Pericia, Nome_Pericia');
+        
+      if (dataPericias) {
+        const mapa: Record<number, string> = {};
+        dataPericias.forEach((p: any) => {
+          mapa[p.Codigo_Pericia] = p.Nome_Pericia;
+        });
+        setNomesPericias(mapa);
+      }
+    };
+    puxarDados();
   }, []);
 
   // CONTROLES DE DEFESA, BLOQUEIO E ESQUIVA (Movido para cá para ler 'pericias' corretamente)
@@ -218,12 +249,17 @@ useEffect(() => {
   }
 
   // Identifica quais perícias vieram automáticas da classe para NÃO contá-las no limite máximo
-  const periciasGratis: string[] = [];
+const periciasGratis: string[] = [];
   if (classe === 'Ocultista') {
     periciasGratis.push('Vontade', 'Ocultismo');
   } else if (classe === 'Combatente') {
     if (skillCombatente1) periciasGratis.push(skillCombatente1);
     if (skillCombatente2) periciasGratis.push(skillCombatente2);
+  }
+  if (origemSelecionada) {
+    if (origemSelecionada.nome_p1) periciasGratis.push(origemSelecionada.nome_p1);
+    if (origemSelecionada.nome_p2) periciasGratis.push(origemSelecionada.nome_p2);
+    if (origemSelecionada.nome_pesp) periciasGratis.push(origemSelecionada.nome_pesp);
   }
 
   let totalTreinadasUsadas = 0;
@@ -299,8 +335,19 @@ const handleMudarPericia = (nome: string, campo: keyof Pericia, valor: any) => {
   };
   
   const escolherClasse = (novaClasse: ClasseRPG) => {
-    // Pegamos as perícias atuais (que vieram ou estão vindo do Supabase)
     let novasPericias = JSON.parse(JSON.stringify(pericias || {}));
+
+    if (origemSelecionada) {
+      if (origemSelecionada.nome_p1 && novasPericias[origemSelecionada.nome_p1]) {
+        novasPericias[origemSelecionada.nome_p1].treino = 5;
+      }
+      if (origemSelecionada.nome_p2 && novasPericias[origemSelecionada.nome_p2]) {
+        novasPericias[origemSelecionada.nome_p2].treino = 5;
+      }
+      if (origemSelecionada.nome_pesp && novasPericias[origemSelecionada.nome_pesp]) {
+        novasPericias[origemSelecionada.nome_pesp].treino = 5;
+      }
+    }
 
     if (novaClasse === 'Ocultista') {
       if (novasPericias['Vontade']) novasPericias['Vontade'].treino = 5;
@@ -315,7 +362,6 @@ const handleMudarPericia = (nome: string, campo: keyof Pericia, valor: any) => {
     setClasse(novaClasse);
     setTelaAtual('ficha');
   }
-
   const estiloBotaoSeta = { background: 'transparent', border: 'none', color: '#fff', fontSize: '1.2rem', cursor: 'pointer', padding: '0 8px', fontWeight: 'bold', userSelect: 'none' as const }
   const estiloInputMaximo = { width: '45px', backgroundColor: 'transparent', color: '#fff', border: 'none', textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold', outline: 'none' }
   const estiloInputTemp = { width: '35px', backgroundColor: 'transparent', color: '#fff', border: 'none', textAlign: 'center', fontSize: '1rem', fontWeight: 'bold', outline: 'none' }
@@ -326,8 +372,8 @@ const handleMudarPericia = (nome: string, campo: keyof Pericia, valor: any) => {
   return (
     <div style={{ padding: '30px 40px', fontFamily: 'sans-serif', backgroundColor: '#121212', color: '#fff', minHeight: '100vh', width: '100vw', boxSizing: 'border-box' }}>
       
-      <style dangerouslySetInnerHTML={{ __html: `
-        html, body, #root {
+      <style dangerouslySetInnerHTML={{ __html:
+      `html, body, #root {
           margin: 0;
           padding: 0;
           width: 100%;
@@ -364,9 +410,109 @@ const handleMudarPericia = (nome: string, campo: keyof Pericia, valor: any) => {
               </div>
             ))}
           </div>
-          <button onClick={() => setTelaAtual('classe')} style={{ padding: '15px 30px', fontSize: '1.2rem', backgroundColor: '#fff', color: '#000', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}>Avançar para Classe ➔</button>
+          <button onClick={() => setTelaAtual('origens')} style={{ padding: '15px 30px', fontSize: '1.2rem', backgroundColor: '#fff', color: '#000', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}>Avançar para Origens ➔</button>
         </div>
       )}
+
+{telaAtual === 'origens' && (
+        <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto', textAlign: 'left' }}>
+          <h1 style={{ marginBottom: '30px' }}>Escolha sua Origem</h1>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '30px' }}>
+            {origens.map((origem) => {
+              const estaExpandida = origensExpandidas.includes(origem.Codigo_Origem);
+
+              const nomeP1 = nomesPericias[origem.Pericia_Treinada_1] || origem.Pericia_Treinada_1;
+              const nomeP2 = nomesPericias[origem.Pericia_Treinada_2] || origem.Pericia_Treinada_2;
+              const nomePEsp = origem.Pericia_Treinada_Especial ? (nomesPericias[origem.Pericia_Treinada_Especial] || origem.Pericia_Treinada_Especial) : null;
+
+              return (
+                <div 
+                  key={origem.Codigo_Origem} 
+                  style={{ 
+                    backgroundColor: '#151515', 
+                    borderLeft: '4px solid #4da6ff',
+                    overflow: 'hidden',
+                  }}
+                >
+                  {/* BARRA DO TOPO */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 20px' }}>
+                    
+                    {/* ÁREA CLICÁVEL (TÍTULO) PARA EXPANDIR */}
+                    <div 
+                      onClick={() => {
+                        setOrigensExpandidas(prev => 
+                          prev.includes(origem.Codigo_Origem) 
+                            ? prev.filter(id => id !== origem.Codigo_Origem) 
+                            : [...prev, origem.Codigo_Origem]
+                        );
+                      }}
+                      style={{ flex: 1, cursor: 'pointer', textAlign: 'left' }}
+                    >
+                      <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#fff' }}>
+                        {origem.Nome}
+                      </span>
+                    </div>
+
+                    {/* BOTÃO "ESCOLHER ORIGEM" NO CANTO */}
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation(); 
+                        setOrigemSelecionada({
+                          ...origem,
+                          nome_p1: nomeP1,
+                          nome_p2: nomeP2,
+                          nome_pesp: nomePEsp
+                        });
+                        setTelaAtual('classe');
+                      }}
+                      style={{ 
+                        padding: '10px 15px', 
+                        backgroundColor: '#4da6ff', 
+                        color: '#000', 
+                        border: 'none', 
+                        borderRadius: '3px', 
+                        fontWeight: 'bold', 
+                        cursor: 'pointer',
+                        textTransform: 'uppercase',
+                        marginLeft: '15px'
+                      }}
+                    >
+                      ESCOLHER ORIGEM
+                    </button>
+                  </div>
+
+                  {/* CONTEÚDO EXPANDIDO */}
+                  {estaExpandida && (
+                    <div style={{ padding: '0px 20px 20px 20px', backgroundColor: '#151515', color: '#ccc', lineHeight: '1.6', textAlign: 'left' }}>
+                      
+                      <p style={{ marginTop: '0', marginBottom: '10px' }}>
+                        {origem.Descricao}
+                      </p>
+                      
+                      <p style={{ margin: '10px 0' }}>
+                        <strong style={{ color: '#fff' }}>Perícias treinadas. </strong> 
+                        {nomeP1} e {nomeP2}{nomePEsp ? ` e ${nomePEsp}` : ''}.
+                      </p>
+
+                      <p style={{ margin: '10px 0' }}>
+                        <strong style={{ color: '#fff' }}>{origem.Nome_Poder}. </strong> 
+                        {origem.Descricao_Poder}
+                      </p>
+
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: '20px' }}>
+            <button onClick={() => setTelaAtual('atributos')} style={{ padding: '12px 25px', backgroundColor: '#333', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>◀ Voltar</button>
+          </div>
+        </div>
+      )}
+
 
       {telaAtual === 'classe' && (
         <div style={{ width: '100%', maxWidth: '1200px', margin: '0 auto' }}>

@@ -241,23 +241,20 @@ const defesaTotal = 10 + atributos.AGI + bonusAtributos.AGI + defEquip + defOutr
   });
 
 const handleMudarPericia = (nome: string, campo: keyof Pericia, valor: any) => {
-    // Se NÃO estiver liberado (caixinha desmarcada), aplica as regras oficiais
+    // Se NÃO estiver liberado (caixinha "Liberar Perícias" desmarcada), aplica as regras oficiais
     if (campo === 'treino' && !limitarPericias) {
       const novoValor = Number(valor);
       
-      // BLOQUEIO: Impede o usuário de destreinar (< 5) as perícias obrigatórias da classe
+      // BLOQUEIO SILENCIOSO: Impede o usuário de destreinar (< 5) as perícias obrigatórias da classe
       if (novoValor < 5 && periciasGratis.includes(nome)) {
-        alert(`Você não pode destreinar a perícia "${nome}", pois ela é obrigatória da sua Classe!`);
         return;
       }
 
-      // Bloqueio por NEX mínimo exigido pelo livro
+      // BLOQUEIO SILENCIOSO: NEX mínimo exigido pelo livro
       if (novoValor === 10 && nex < 35) {
-        alert("Perícias Veteranas exigem no mínimo NEX 35%!");
         return;
       }
       if (novoValor === 15 && nex < 70) {
-        alert("Perícias Expert exigem no mínimo NEX 70%!");
         return;
       }
 
@@ -278,16 +275,18 @@ const handleMudarPericia = (nome: string, campo: keyof Pericia, valor: any) => {
         else if (d.treino === 15) simUpgrades += 2;
       });
 
+      // BLOQUEIO SILENCIOSO: Se estourar o limite de vagas para Treinar
       if (simTreinadas > maxTreinadas) {
-        alert(`Limite de perícias para Treinar atingido! Máximo permitido: ${maxTreinadas}`);
         return;
       }
+      
+      // BLOQUEIO SILENCIOSO: Se estourar a reserva de pontos de Aumentar Grau
       if (simUpgrades > maxUpgrades) {
-        alert(`Limite de pontos de Aumentar Grau atingido! Você possui ${maxUpgrades} pontos totais e tentou gastar ${simUpgrades}.\n\n(Veterano consome 1 ponto, Expert consome 2)`);
         return;
       }
     }
 
+    // Se passou por todas as regras (ou se o "Liberar Perícias" estiver ativado), atualiza o estado normalmente
     setPericias(prev => ({
       ...prev,
       [nome]: { ...prev[nome], [campo]: valor }

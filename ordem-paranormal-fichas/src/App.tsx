@@ -1,5 +1,6 @@
-
 import React, { useState, useEffect, useRef } from 'react'
+
+import { supabase } from './supabase'
 
 type Tela = 'atributos' | 'classe' | 'ficha'
 type ClasseRPG = 'Combatente' | 'Especialista' | 'Ocultista' | null
@@ -40,40 +41,40 @@ function App() {
   const [skillCombatente1, setSkillCombatente1] = useState<string>('')
   const [skillCombatente2, setSkillCombatente2] = useState<string>('')
 
-  // --- ESTADO DAS PERÍCIAS (28 NO TOTAL) ---
-  const periciasIniciais: Record<string, Pericia> = {
-    Acrobacia: { atributo: 'AGI', treino: 0, outros: 0 },
-    Adestramento: { atributo: 'PRE', treino: 0, outros: 0 },
-    Artes: { atributo: 'PRE', treino: 0, outros: 0 },
-    Atletismo: { atributo: 'FOR', treino: 0, outros: 0 },
-    Atualidades: { atributo: 'INT', treino: 0, outros: 0 },
-    Ciências: { atributo: 'INT', treino: 0, outros: 0 },
-    Crime: { atributo: 'AGI', treino: 0, outros: 0 },
-    Diplomacia: { atributo: 'PRE', treino: 0, outros: 0 }, 
-    Enganação: { atributo: 'PRE', treino: 0, outros: 0 },
-    Fortitude: { atributo: 'VIG', treino: 0, outros: 0 },
-    Furtividade: { atributo: 'AGI', treino: 0, outros: 0 },
-    Iniciativa: { atributo: 'AGI', treino: 0, outros: 0 },
-    Intimidação: { atributo: 'PRE', treino: 0, outros: 0 },
-    Intuição: { atributo: 'INT', treino: 0, outros: 0 },
-    Investigação: { atributo: 'INT', treino: 0, outros: 0 },
-    Luta: { atributo: 'FOR', treino: 0, outros: 0 },
-    Medicina: { atributo: 'INT', treino: 0, outros: 0 },
-    Ocultismo: { atributo: 'INT', treino: 0, outros: 0 },
-    Percepção: { atributo: 'PRE', treino: 0, outros: 0 },
-    Pilotagem: { atributo: 'AGI', treino: 0, outros: 0 },
-    Pontaria: { atributo: 'AGI', treino: 0, outros: 0 },
-    Profissão: { atributo: 'INT', treino: 0, outros: 0 },
-    Reflexos: { atributo: 'AGI', treino: 0, outros: 0 },
-    Religião: { atributo: 'PRE', treino: 0, outros: 0 },
-    Sobrevivência: { atributo: 'INT', treino: 0, outros: 0 },
-    Tática: { atributo: 'INT', treino: 0, outros: 0 },
-    Tecnologia: { atributo: 'INT', treino: 0, outros: 0 },
-    Vontade: { atributo: 'PRE', treino: 0, outros: 0 },
-  }
+  const [pericias, setPericias] = useState<Record<string, any>>({});
 
-  const [pericias, setPericias] = useState<Record<string, Pericia>>(JSON.parse(JSON.stringify(periciasIniciais)))
   const prevCalc = useRef({ pv: 0, san: 0, pe: 0, init: false })
+
+  // BUSCAR PERÍCIAS DO SUPABASE
+  useEffect(() => {
+    const puxarPericiasDoBanco = async () => {
+      const { data, error } = await supabase
+        .from('Perícias') // Nome exato da sua tabela no Supabase
+        .select('Codigo_Pericia, Nome_Pericia, Atributo_Pericia');
+
+      if (error) {
+        console.error("Erro ao buscar perícias no Supabase:", error);
+        return;
+      }
+
+      if (data) {
+        const objetoPericias: Record<string, any> = {};
+        
+        data.forEach((pericia) => {
+          objetoPericias[pericia.Nome_Pericia] = {
+            id: pericia.Codigo_Pericia,
+            atributo: pericia.Atributo_Pericia, // DEIXE EXATAMENTE ASSIM!
+            treino: 0,
+            outros: 0
+          };
+        });
+
+        setPericias(objetoPericias);
+      }
+    };
+
+    puxarPericiasDoBanco();
+  }, []);
 
   // CONTROLES DE DEFESA, BLOQUEIO E ESQUIVA (Movido para cá para ler 'pericias' corretamente)
   const [defEquip, setDefEquip] = useState<number>(0)
@@ -86,15 +87,19 @@ function App() {
 
 const defesaTotal = 10 + atributos.AGI + bonusAtributos.AGI + defEquip + defOutros
 
-  useEffect(() => {
-    const bonusFortitude = pericias.Fortitude.treino + pericias.Fortitude.outros
-    setBloqueio(bonusFortitude)
-  }, [pericias.Fortitude.treino, pericias.Fortitude.outros])
+useEffect(() => {
+    if (pericias.Fortitude) {
+      const bonusFortitude = pericias.Fortitude.treino + pericias.Fortitude.outros;
+      setBloqueio(bonusFortitude);
+    }
+  }, [pericias]);
 
   useEffect(() => {
-    const bonusReflexos = pericias.Reflexos.treino + pericias.Reflexos.outros
-    setEsquiva(defesaTotal + bonusReflexos)
-  }, [defesaTotal, pericias.Reflexos.treino, pericias.Reflexos.outros])
+    if (pericias.Reflexos) {
+      const bonusReflexos = pericias.Reflexos.treino + pericias.Reflexos.outros;
+      setEsquiva(defesaTotal + bonusReflexos);
+    }
+  }, [defesaTotal, pericias]);
 
 
   // --- 2. LÓGICA DE PONTOS (TELA 1) ---
@@ -292,16 +297,18 @@ const handleMudarPericia = (nome: string, campo: keyof Pericia, valor: any) => {
       [nome]: { ...prev[nome], [campo]: valor }
     }));
   };
+  
   const escolherClasse = (novaClasse: ClasseRPG) => {
-    let novasPericias = JSON.parse(JSON.stringify(periciasIniciais));
+    // Pegamos as perícias atuais (que vieram ou estão vindo do Supabase)
+    let novasPericias = JSON.parse(JSON.stringify(pericias || {}));
 
     if (novaClasse === 'Ocultista') {
-      novasPericias['Vontade'].treino = 5;
-      novasPericias['Ocultismo'].treino = 5;
+      if (novasPericias['Vontade']) novasPericias['Vontade'].treino = 5;
+      if (novasPericias['Ocultismo']) novasPericias['Ocultismo'].treino = 5;
     } else if (novaClasse === 'Combatente') {
       if (!skillCombatente1 || !skillCombatente2) return;
-      novasPericias[skillCombatente1].treino = 5;
-      novasPericias[skillCombatente2].treino = 5;
+      if (novasPericias[skillCombatente1]) novasPericias[skillCombatente1].treino = 5;
+      if (novasPericias[skillCombatente2]) novasPericias[skillCombatente2].treino = 5;
     }
 
     setPericias(novasPericias);
@@ -730,7 +737,7 @@ const handleMudarPericia = (nome: string, campo: keyof Pericia, valor: any) => {
             setPvMax(0); setSanMax(0); setPeMax(0);
             setBonusAtributos({ FOR: 0, AGI: 0, INT: 0, PRE: 0, VIG: 0 }); 
             setHasPvTemp(false); setHasPeTemp(false); 
-            setPericias(JSON.parse(JSON.stringify(periciasIniciais)));
+            setPericias(JSON.parse(JSON.stringify(pericias)));
             setSkillCombatente1(''); setSkillCombatente2('');
             prevCalc.current = { pv: 0, san: 0, pe: 0, init: false };
             setTelaAtual('atributos'); 

@@ -61,6 +61,12 @@ function App() {
   const [proficiencias, setProficiencias] = useState<string[]>([]);
   const [inputProficiencia, setInputProficiencia] = useState('');
 
+  // --- Estados para a aba Habilidades ---
+  const [filtroHabilidades, setFiltroHabilidades] = useState('');
+  const [modalHabilidadesAberto, setModalHabilidadesAberto] = useState(false);
+  const [habilidadesExpandidas, setHabilidadesExpandidas] = useState<string[]>([]);
+  const [habilidades, setHabilidades] = useState<any[]>([]); // Para as futuras que você adicionar no botão
+
   // Carrega as proficiências iniciais baseadas na classe escolhida
   useEffect(() => {
     if (classe === 'Combatente') {
@@ -157,6 +163,37 @@ useEffect(() => {
       setEsquiva(defesaTotal + bonusReflexos);
     }
   }, [defesaTotal, pericias]);
+
+  // Estado para guardar o poder inicial da classe vindo do banco
+  const [poderClasse, setPoderClasse] = useState<any>(null);
+
+  // Busca o poder padrão na tabela 'Poderes' quando a classe muda
+  useEffect(() => {
+    async function carregarPoderClasse() {
+      if (classe === 'Combatente') {
+        const { data, error } = await supabase
+          .from('Poderes')
+          .select('*')
+          .eq('Codigo_Poder', 179)
+          .single();
+        
+        if (!error && data) {
+          setPoderClasse(data);
+        }
+      } else {
+        setPoderClasse(null);
+      }
+    }
+    carregarPoderClasse();
+  }, [classe]);
+
+  // Função extra apenas para calcular o bônus de NEX do Ataque Especial
+  const calcularBonusAtaqueEspecial = () => {
+    if (nex >= 85) return '5 PE , +20';
+    if (nex >= 55) return '4 PE , +15';
+    if (nex >= 25) return '3 PE , +10';
+    return '2 PE , +5';
+  };
 
 
   // --- 2. LÓGICA DE PONTOS (TELA 1) ---
@@ -1123,13 +1160,130 @@ const obterCorBadge = (texto: string) => {
                 ))}
               </div>
 
-              {/* CONTEÚDO DA ABA SELECIONADA */}
-              <div style={{ flex: 1, color: '#aaa', fontStyle: 'italic', textAlign: 'center', marginTop: '20px' }}>
-                {abaDireita === 'combate' && <div>Conteúdo de Combate</div>}
-                {abaDireita === 'habilidades' && <div>Conteúdo de Habilidades</div>}
-                {abaDireita === 'rituais' && <div>Conteúdo de Rituais</div>}
-                {abaDireita === 'inventario' && <div>Conteúdo de Inventário</div>}
-                {abaDireita === 'descricao' && <div>Conteúdo de Descrição</div>}
+{/* CONTEÚDO DAS ABAS */}
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', marginTop: '10px' }}>
+                
+                {/* ABA 1: COMBATE */}
+                {abaDireita === 'combate' && <div style={{ color: '#666', fontStyle: 'italic', textAlign: 'center', marginTop: '20px' }}>Conteúdo de Combate</div>}
+
+                {/* ABA 2: HABILIDADES */}
+                {/* ABA 2: HABILIDADES */}
+                {abaDireita === 'habilidades' && (
+                  (() => {
+                    const listaHabilidades = [];
+                    
+                    // 1. Puxa o poder da Origem (como já fazia)
+                    if (origemSelecionada && origemSelecionada.Nome_Poder) {
+                      listaHabilidades.push({
+                        id: 'origem_poder',
+                        nome: origemSelecionada.Nome_Poder,
+                        descricao: origemSelecionada.Descricao_Poder,
+                        tipo: 'Origem',
+                        extra: null // Origem não tem o extra de NEX
+                      });
+                    }
+                    
+                    // 2. Puxa o poder da Classe direto da sua tabela 'Poderes'
+                    if (classe === 'Combatente' && poderClasse) {
+                      listaHabilidades.push({
+                        id: 'classe_poder',
+                        nome: poderClasse.Nome,         // Coluna Nome da sua tabela
+                        descricao: poderClasse.Descricao, // Coluna Descricao da sua tabela
+                        tipo: 'Classe',
+                        extra: calcularBonusAtaqueEspecial() // O extra do NEX separado aqui
+                      });
+                    }
+
+                    // Aplica o filtro da barra de pesquisa
+                    const habilidadesFiltradas = listaHabilidades.filter(hab => hab.nome.toLowerCase().includes(filtroHabilidades.toLowerCase()));
+
+                    return (
+                      <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                        
+                        {/* TOPO: Filtro e Botão Adicionar */}
+                        <div style={{ display: 'flex', gap: '15px', alignItems: 'center', marginBottom: '20px' }}>
+                          <input 
+                            type="text" 
+                            value={filtroHabilidades}
+                            onChange={(e) => setFiltroHabilidades(e.target.value)}
+                            placeholder="Filtrar Habilidades..."
+                            style={{ flex: 1, backgroundColor: 'transparent', color: '#fff', border: 'none', borderBottom: '1px solid #444', padding: '8px 0', fontSize: '1rem', outline: 'none' }}
+                          />
+                          <button 
+                            onClick={() => setModalHabilidadesAberto(true)}
+                            style={{ backgroundColor: '#2a2a2a', color: '#fff', border: '1px solid #444', borderRadius: '4px', padding: '8px 12px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                          >
+                            + Adicionar Habilidade
+                          </button>
+                        </div>
+
+                        {/* LISTA DE HABILIDADES EXPANSÍVEIS */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', overflowY: 'auto', flex: 1, paddingRight: '5px' }}>
+                          {habilidadesFiltradas.length > 0 ? habilidadesFiltradas.map((hab) => {
+                            const estaExpandida = habilidadesExpandidas.includes(hab.id);
+                            
+                            return (
+                              <div key={hab.id} style={{ backgroundColor: '#111', borderLeft: '4px solid #4facfe', borderRadius: '0 4px 4px 0', overflow: 'hidden', borderTop: '1px solid #222', borderRight: '1px solid #222', borderBottom: '1px solid #222' }}>
+                                
+                                {/* CABEÇALHO DA HABILIDADE (PARTE NÃO SUSPENSA) */}
+                                <div 
+                                  onClick={() => {
+                                    setHabilidadesExpandidas(prev => 
+                                      prev.includes(hab.id) ? prev.filter(id => id !== hab.id) : [...prev, hab.id]
+                                    );
+                                  }}
+                                  style={{ padding: '12px 15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', backgroundColor: '#1a1a1a' }}
+                                >
+                                  {/* Lado Esquerdo: Nome + O Extra do NEX separado */}
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    <span style={{ fontWeight: 'bold', color: '#fff', fontSize: '0.95rem' }}>{hab.nome}</span>
+                                    
+                                    {/* Exibe o bônus de NEX separado, caso exista */}
+                                    {hab.extra && (
+                                      <span style={{ color: '#ffcc00', fontSize: '0.8rem', fontWeight: 'bold', backgroundColor: '#222', padding: '2px 6px', borderRadius: '4px', border: '1px solid #333' }}>
+                                        {hab.extra}
+                                      </span>
+                                    )}
+                                  </div>
+                                  
+                                  {/* Lado Direito: Tag da Classe/Origem e a Seta */}
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    {hab.tipo && (
+                                      <span style={{ backgroundColor: '#050505', border: '1px solid #333', padding: '2px 8px', borderRadius: '4px', fontSize: '0.65rem', color: '#aaa', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                        {hab.tipo}
+                                      </span>
+                                    )}
+                                    <span style={{ color: '#666', fontSize: '0.8rem' }}>{estaExpandida ? '▲' : '▼'}</span>
+                                  </div>
+                                </div>
+
+                                {/* DESCRIÇÃO EXPANDIDA */}
+                                {estaExpandida && (
+                                  <div style={{ padding: '15px', color: '#ccc', fontSize: '0.85rem', lineHeight: '1.5', backgroundColor: '#111', fontStyle: 'normal', textAlign: 'left' }}>
+                                    {hab.descricao}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          }) : (
+                            <div style={{ textAlign: 'center', color: '#555', fontStyle: 'italic', marginTop: '20px' }}>Nenhuma habilidade encontrada.</div>
+                          )}
+                        </div>
+
+                      </div>
+                    );
+                  })()
+                )}
+
+                {/* ABA 3: RITUAIS */}
+                {abaDireita === 'rituais' && <div style={{ color: '#666', fontStyle: 'italic', textAlign: 'center', marginTop: '20px' }}>Conteúdo de Rituais</div>}
+                
+                {/* ABA 4: INVENTÁRIO */}
+                {abaDireita === 'inventario' && <div style={{ color: '#666', fontStyle: 'italic', textAlign: 'center', marginTop: '20px' }}>Conteúdo de Inventário</div>}
+                
+                {/* ABA 5: DESCRIÇÃO */}
+                {abaDireita === 'descricao' && <div style={{ color: '#666', fontStyle: 'italic', textAlign: 'center', marginTop: '20px' }}>Conteúdo de Descrição</div>}
+                
               </div>
 
             </div>

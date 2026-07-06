@@ -17,11 +17,16 @@ function App() {
   const [telaAtual, setTelaAtual] = useState<Tela>('atributos')
   const [classe, setClasse] = useState<ClasseRPG>(null)
   const [nex, setNex] = useState<number>(5)
+  
+  const [abaDireita, setAbaDireita] = useState<'combate' | 'habilidades' | 'rituais' | 'inventario' | 'descricao'>('combate');
 
   const [origens, setOrigens] = useState<any[]>([]);
   const [origemSelecionada, setOrigemSelecionada] = useState<any>(null);
   const [origensExpandidas, setOrigensExpandidas] = useState<number[]>([]); 
   const [nomesPericias, setNomesPericias] = useState<Record<number, string>>({});
+
+  const [deslocM, setDeslocM] = useState<number>(9);
+  const [deslocQ, setDeslocQ] = useState<number>(6);
   
   const [atributos, setAtributos] = useState({ FOR: 1, AGI: 1, INT: 1, PRE: 1, VIG: 1 })
   const [bonusAtributos, setBonusAtributos] = useState({ FOR: 0, AGI: 0, INT: 0, PRE: 0, VIG: 0 })
@@ -45,6 +50,27 @@ function App() {
   // CONTROLES DO COMBATENTE
   const [skillCombatente1, setSkillCombatente1] = useState<string>('')
   const [skillCombatente2, setSkillCombatente2] = useState<string>('')
+
+  // Estados para Proteções, Resistências e Proficiências
+  const [protecoes, setProtecoes] = useState<string[]>([]);
+  const [inputProtecao, setInputProtecao] = useState('');
+
+  const [resistencias, setResistencias] = useState<string[]>([]);
+  const [inputResistencia, setInputResistencia] = useState('');
+
+  const [proficiencias, setProficiencias] = useState<string[]>([]);
+  const [inputProficiencia, setInputProficiencia] = useState('');
+
+  // Carrega as proficiências iniciais baseadas na classe escolhida
+  useEffect(() => {
+    if (classe === 'Combatente') {
+      setProficiencias(['Armas Simples', 'Armas Táticas', 'Proteções Leves']);
+    } else if (classe === 'Especialista') {
+      setProficiencias(['Armas Simples', 'Proteções Leves']);
+    } else if (classe === 'Ocultista') {
+      setProficiencias(['Armas Simples']);
+    }
+  }, [classe]);
 
   const [pericias, setPericias] = useState<Record<string, any>>({});
 
@@ -369,6 +395,39 @@ const handleMudarPericia = (nome: string, campo: keyof Pericia, valor: any) => {
 
   const combatentePronto = skillCombatente1 !== '' && skillCombatente2 !== ''
 
+// Função para definir a cor da badge dinamicamente
+const obterCorBadge = (texto: string) => {
+  // Tira acentos e deixa tudo minúsculo (ex: "Proteções Leves" vira "protecoes leves")
+  const txt = texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+  // Elementos
+  if (txt.includes('sangue')) return '#CD0000';
+  if (txt.includes('morte')) return '#363636';
+  if (txt.includes('conhecimento')) return '#FFC125';
+  if (txt.includes('energia')) return '#BF3EFF';
+  if (txt.includes('medo')) return '#E8E8E8';
+
+  // Físicos
+  if (txt.includes('balistico') || txt.includes('corte') || txt.includes('impacto') || txt.includes('perfuracao')) return '#B5B5B5';
+  
+  // Outros Danos
+  if (txt.includes('calor')) return '#FF4500';
+  if (txt.includes('frio')) return '#98F5FF';
+  if (txt.includes('eletricidade')) return '#FFFF00';
+  if (txt.includes('quimico')) return '#00EE00';
+  if (txt.includes('mental') || txt.includes('mentais')) return '#436EEE';
+
+  // Proficiências e Proteções (Ajustado para aceitar variações como "leves", "pesadas" ou só o termo)
+  if (txt.includes('arma') && txt.includes('simples')) return '#BCD2EE';
+  if (txt.includes('arma') && txt.includes('tatica')) return '#A2B5CD';
+  if (txt.includes('arma') && txt.includes('pesada')) return '#6E7B8B';
+  if (txt.includes('leve')) return '#9BCD9B'; // Agora aceita "Leve", "Leves", "Proteção Leve", etc.
+  if (txt.includes('pesada')) return '#698B69'; // Agora aceita "Pesada", "Pesadas", "Proteção Pesada", etc.
+
+  // Cor Padrão (se não bater com nada)
+  return '#4da6ff'; 
+};
+
   return (
     <div style={{ padding: '30px 40px', fontFamily: 'sans-serif', backgroundColor: '#121212', color: '#fff', minHeight: '100vh', width: '100vw', boxSizing: 'border-box' }}>
       
@@ -414,7 +473,7 @@ const handleMudarPericia = (nome: string, campo: keyof Pericia, valor: any) => {
         </div>
       )}
 
-{telaAtual === 'origens' && (
+      {telaAtual === 'origens' && (
         <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto', textAlign: 'left' }}>
           <h1 style={{ marginBottom: '30px' }}>Escolha sua Origem</h1>
           
@@ -588,36 +647,80 @@ const handleMudarPericia = (nome: string, campo: keyof Pericia, valor: any) => {
         <div style={{ width: '100%', padding: '0 20px' }}>
           <h2 style={{ textAlign: 'center', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '40px' }}>Ficha de {classe}</h2>
           
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '60px', width: '100%', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', width: '100%', justifyContent: 'space-between' }}>
             
             {/* COLUNA ESQUERDA: Atributos e Status */}
-            <div style={{ flex: '1 1 45%', minWidth: '400px' }}>
+          <div style={{ flex: '1 1 30%', minWidth: '400px' }}>
+
+            {/* ATRIBUTOS (Agora no topo) */}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '30px', flexWrap: 'wrap' }}>
+              {(Object.keys(atributos) as Array<keyof typeof atributos>).map((nome) => (
+                <div key={nome} style={{ position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent', borderRadius: '50%', width: '70px', height: '70px', border: '2px solid #444' }}>
+                  <div title="Bônus (Itens/Poderes)" style={{ position: 'absolute', top: '-5px', right: '-5px', width: '24px', height: '24px', backgroundColor: '#181818', border: '2px solid #ffcc00', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <input type="number" onKeyDown={bloquearLetras} value={bonusAtributos[nome]} onChange={(e) => setBonusAtributos({ ...bonusAtributos, [nome]: Math.max(0, Number(e.target.value)) })} style={{ width: '100%', backgroundColor: 'transparent', color: '#ffcc00', border: 'none', textAlign: 'center', fontSize: '0.8rem', fontWeight: 'bold', outline: 'none' }} />
+                  </div>
+                  <span style={{ fontSize: '0.8rem', color: '#aaa', fontWeight: 'bold', marginTop: '10px' }}>{nome}</span>
+                  <input type="number" onKeyDown={bloquearLetras} value={atributos[nome]} onChange={(e) => setAtributos({ ...atributos, [nome]: Number(e.target.value) })} style={{ width: '100%', backgroundColor: 'transparent', color: '#fff', border: 'none', textAlign: 'center', fontSize: '1.6rem', fontWeight: 'bold', outline: 'none', marginTop: '-2px' }} />
+                </div>
+              ))}
+            </div>
+
+            {/* CAIXAS: NEX, PE/TURNO e DESLOCAMENTO (Embaixo dos atributos) */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px', borderBottom: '1px solid #333', paddingBottom: '20px' }}>
               
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px', borderBottom: '1px solid #333', paddingBottom: '15px' }}>
+              {/* Lado Esquerdo: NEX e PE/TURNO */}
+              <div style={{ display: 'flex', gap: '30px', alignItems: 'flex-start' }}>
+                
+                {/* BLOCO NEX */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontWeight: 'bold', color: '#aaa' }}>NEX</span>
-                  <select value={nex} onChange={(e) => setNex(Number(e.target.value))} style={{ padding: '5px 10px', backgroundColor: '#121212', color: '#fff', border: '1px solid #fff', fontSize: '1.2rem', fontWeight: 'bold', cursor: 'pointer' }}>
+                  <span style={{ fontWeight: 'bold', color: '#aaa', fontSize: '1.2rem' }}>NEX</span>
+                  <select value={nex} onChange={(e) => setNex(Number(e.target.value))} style={{ padding: '8px 10px', backgroundColor: '#121212', color: '#fff', border: '1px solid #fff', fontSize: '1.2rem', fontWeight: 'bold', cursor: 'pointer', appearance: 'none', textAlign: 'center' }}>
                     {[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 99].map(n => <option key={n} value={n}>{n}%</option>)}
                   </select>
                 </div>
-                
+
+                {/* BLOCO PE/TURNO */}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <div style={{ padding: '5px 15px', border: '1px solid #fff', fontSize: '1.2rem', fontWeight: 'bold' }}>{peTurno}</div>
-                  <span style={{ fontSize: '0.7rem', fontWeight: 'bold', color: '#aaa', marginTop: '5px' }}>PE / TURNO</span>
+                  <div style={{ padding: '8px 15px', border: '1px solid #fff', fontSize: '1.2rem', fontWeight: 'bold', minWidth: '60px', textAlign: 'center' }}>
+                    {peTurno}
+                  </div>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 'bold', color: '#aaa', marginTop: '5px' }}>PE/TURNO</span>
                 </div>
+
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '40px', flexWrap: 'wrap' }}>
-                {(Object.keys(atributos) as Array<keyof typeof atributos>).map((nome) => (
-                  <div key={nome} style={{ position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent', borderRadius: '50%', width: '70px', height: '70px', border: '2px solid #444' }}>
-                    <div title="Bônus (Itens/Poderes)" style={{ position: 'absolute', top: '-5px', right: '-5px', width: '24px', height: '24px', backgroundColor: '#181818', border: '2px solid #ffcc00', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                      <input type="number" onKeyDown={bloquearLetras} value={bonusAtributos[nome]} onChange={(e) => setBonusAtributos({ ...bonusAtributos, [nome]: Math.max(0, Number(e.target.value)) })} style={{ width: '100%', backgroundColor: 'transparent', color: '#ffcc00', border: 'none', textAlign: 'center', fontSize: '0.8rem', fontWeight: 'bold', outline: 'none' }} />
-                    </div>
-                    <span style={{ fontSize: '0.8rem', color: '#aaa', fontWeight: 'bold', marginTop: '10px' }}>{nome}</span>
-                    <input type="number" onKeyDown={bloquearLetras} value={atributos[nome]} onChange={(e) => setAtributos({ ...atributos, [nome]: Number(e.target.value) })} style={{ width: '100%', backgroundColor: 'transparent', color: '#fff', border: 'none', textAlign: 'center', fontSize: '1.6rem', fontWeight: 'bold', outline: 'none', marginTop: '-2px' }} />
-                  </div>
-                ))}
+              {/* Lado Direito: DESLOCAMENTO */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #fff', padding: '5px 10px', fontSize: '1.2rem', fontWeight: 'bold' }}>
+                  <input 
+                    type="number" 
+                    value={deslocM} 
+                    onChange={(e) => {
+                      const m = Number(e.target.value);
+                      setDeslocM(m);
+                      setDeslocQ(Math.floor(m / 1.5)); // Calcula o quadrado automaticamente (ex: 12 / 1.5 = 8)
+                    }} 
+                    style={{ width: '40px', backgroundColor: 'transparent', color: '#fff', border: 'none', textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold', outline: 'none' }} 
+                  />
+                  <span>m /</span>
+                  <input 
+                    type="number" 
+                    value={deslocQ} 
+                    onChange={(e) => {
+                      const q = Number(e.target.value);
+                      setDeslocQ(q);
+                      setDeslocM(q * 1.5); // Calcula os metros automaticamente (ex: 8 * 1.5 = 12)
+                    }} 
+                    style={{ width: '40px', backgroundColor: 'transparent', color: '#fff', border: 'none', textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold', outline: 'none' }} 
+                  />
+                  <span>q</span>
+                </div>
+                <span style={{ fontSize: '0.8rem', fontWeight: 'bold', color: '#aaa', marginTop: '5px' }}>Deslocamento</span>
               </div>
+
+            </div>
+
+            {/* BARRAS DE STATUS (Daqui pra baixo o código continua igual) */}
 
               {/* BARRAS DE STATUS */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '25px', marginBottom: '30px' }}>
@@ -705,101 +808,215 @@ const handleMudarPericia = (nome: string, campo: keyof Pericia, valor: any) => {
               </div>
 
               {/* BLOCO DE DEFESA, BLOQUEIO E ESQUIVA */}
-                <div style={{ marginTop: '30px', padding: '20px', border: '1px solid #333', borderRadius: '8px', backgroundColor: '#161616', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px', flexWrap: 'wrap' }}>
-                  
-                  {/* DEFESA */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                    <div style={{ border: '2px solid #fff', borderRadius: '8px', width: '55px', height: '55px', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '1.6rem', fontWeight: 'bold' }}>
-                      {defesaTotal}
-                    </div>
-                    <div>
-                      <div style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#aaa', letterSpacing: '1px' }}>DEFESA</div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.95rem', marginTop: '2px' }}>
-                        <span>= 10 + AGI +</span>
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                          <input 
-                            type="number" 
-                            onKeyDown={bloquearLetras} 
-                            value={defEquip === 0 ? '' : defEquip} 
-                            placeholder="0"
-                            onChange={(e) => setDefEquip(Math.max(0, Number(e.target.value)))} 
-                            style={{ width: '40px', backgroundColor: 'transparent', color: '#fff', border: 'none', borderBottom: '1px solid #fff', textAlign: 'center', fontSize: '1.1rem', fontWeight: 'bold', outline: 'none' } as React.CSSProperties} 
-                          />
-                          <span style={{ fontSize: '0.65rem', color: '#777', marginTop: '2px' }}>Equip.</span>
-                        </div>
-                        <span>+</span>
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                          <input 
-                            type="number" 
-                            onKeyDown={bloquearLetras} 
-                            value={defOutros === 0 ? '' : defOutros} 
-                            placeholder="0"
-                            onChange={(e) => setDefOutros(Math.max(0, Number(e.target.value)))} 
-                            style={{ width: '40px', backgroundColor: 'transparent', color: '#fff', border: 'none', borderBottom: '1px solid #fff', textAlign: 'center', fontSize: '1.1rem', fontWeight: 'bold', outline: 'none' } as React.CSSProperties} 
-                          />
-                          <span style={{ fontSize: '0.65rem', color: '#777', marginTop: '2px' }}>Outros.</span>
-                        </div>
+              <div style={{ marginTop: '30px', padding: '20px', border: '1px solid #333', borderRadius: '8px', backgroundColor: '#161616', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px', flexWrap: 'wrap' }}>
+                
+                {/* DEFESA */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                  <div style={{ border: '2px solid #fff', borderRadius: '8px', width: '55px', height: '55px', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '1.6rem', fontWeight: 'bold' }}>
+                    {defesaTotal}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#aaa', letterSpacing: '1px' }}>DEFESA</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.95rem', marginTop: '2px' }}>
+                      <span>= 10 + AGI +</span>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <input 
+                          type="number" 
+                          onKeyDown={bloquearLetras} 
+                          value={defEquip === 0 ? '' : defEquip} 
+                          placeholder="0"
+                          onChange={(e) => setDefEquip(Math.max(0, Number(e.target.value)))} 
+                          style={{ width: '40px', backgroundColor: 'transparent', color: '#fff', border: 'none', borderBottom: '1px solid #fff', textAlign: 'center', fontSize: '1.1rem', fontWeight: 'bold', outline: 'none' } as React.CSSProperties} 
+                        />
+                        <span style={{ fontSize: '0.65rem', color: '#777', marginTop: '2px' }}>Equip.</span>
+                      </div>
+                      <span>+</span>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <input 
+                          type="number" 
+                          onKeyDown={bloquearLetras} 
+                          value={defOutros === 0 ? '' : defOutros} 
+                          placeholder="0"
+                          onChange={(e) => setDefOutros(Math.max(0, Number(e.target.value)))} 
+                          style={{ width: '40px', backgroundColor: 'transparent', color: '#fff', border: 'none', borderBottom: '1px solid #fff', textAlign: 'center', fontSize: '1.1rem', fontWeight: 'bold', outline: 'none' } as React.CSSProperties} 
+                        />
+                        <span style={{ fontSize: '0.65rem', color: '#777', marginTop: '2px' }}>Outros.</span>
                       </div>
                     </div>
                   </div>
-
-                  {/* BLOQUEIO */}
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#aaa', letterSpacing: '1px' }}>BLOQUEIO</span>
-                    <input 
-                      type="number" 
-                      onKeyDown={bloquearLetras} 
-                      value={bloqueio === 0 ? '' : bloqueio} 
-                      placeholder="0"
-                      onChange={(e) => setBloqueio(Math.max(0, Number(e.target.value)))} 
-                      style={{ width: '50px', backgroundColor: 'transparent', color: '#fff', border: 'none', borderBottom: '1px solid #fff', textAlign: 'center', fontSize: '1.3rem', fontWeight: 'bold', outline: 'none', marginTop: '5px' } as React.CSSProperties} 
-                    />
-                  </div>
-
-                  {/* ESQUIVA */}
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#aaa', letterSpacing: '1px' }}>ESQUIVA</span>
-                    <input 
-                      type="number" 
-                      onKeyDown={bloquearLetras} 
-                      value={esquiva === 0 ? '' : esquiva} 
-                      placeholder="0"
-                      onChange={(e) => setEsquiva(Math.max(0, Number(e.target.value)))} 
-                      style={{ width: '50px', backgroundColor: 'transparent', color: '#fff', border: 'none', borderBottom: '1px solid #fff', textAlign: 'center', fontSize: '1.3rem', fontWeight: 'bold', outline: 'none', marginTop: '5px' } as React.CSSProperties} 
-                    />
-                  </div>
-
                 </div>
 
-            </div>
+                {/* BLOQUEIO */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#aaa', letterSpacing: '1px' }}>BLOQUEIO</span>
+                  <input 
+                    type="number" 
+                    onKeyDown={bloquearLetras} 
+                    value={bloqueio === 0 ? '' : bloqueio} 
+                    placeholder="0"
+                    onChange={(e) => setBloqueio(Math.max(0, Number(e.target.value)))} 
+                    style={{ width: '50px', backgroundColor: 'transparent', color: '#fff', border: 'none', borderBottom: '1px solid #fff', textAlign: 'center', fontSize: '1.3rem', fontWeight: 'bold', outline: 'none', marginTop: '5px' } as React.CSSProperties} 
+                  />
+                </div>
 
-          {/* COLUNA DIREITA: Perícias */}
-            <div style={{ flex: '1 1 45%', minWidth: '400px', backgroundColor: '#181818', padding: '30px', borderRadius: '8px', border: '1px solid #333' }}>
+                {/* ESQUIVA */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#aaa', letterSpacing: '1px' }}>ESQUIVA</span>
+                  <input 
+                    type="number" 
+                    onKeyDown={bloquearLetras} 
+                    value={esquiva === 0 ? '' : esquiva} 
+                    placeholder="0"
+                    onChange={(e) => setEsquiva(Math.max(0, Number(e.target.value)))} 
+                    style={{ width: '50px', backgroundColor: 'transparent', color: '#fff', border: 'none', borderBottom: '1px solid #fff', textAlign: 'center', fontSize: '1.3rem', fontWeight: 'bold', outline: 'none', marginTop: '5px' } as React.CSSProperties} 
+                  />
+                </div>
+
+              </div>
+
+              {/* SEÇÃO: PROTEÇÃO, RESISTÊNCIAS E PROFICIÊNCIAS */}
+              <div style={{ marginTop: '25px', display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
+                
+                {/* BLOCK 1: PROTEÇÃO */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontWeight: 'bold', color: '#aaa', minWidth: '110px', fontSize: '0.9rem', textTransform: 'uppercase' }}>Proteção</span>
+                    <input
+                      type="text"
+                      value={inputProtecao}
+                      placeholder="Digite e aperte Enter..."
+                      onChange={(e) => setInputProtecao(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && inputProtecao.trim() !== '') {
+                          setProtecoes([...protecoes, inputProtecao.trim()]);
+                          setInputProtecao('');
+                        }
+                      }}
+                      style={{ flex: 1, backgroundColor: 'transparent', color: '#fff', border: 'none', borderBottom: '1px solid #444', padding: '5px 0', fontSize: '1rem', outline: 'none' }}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', paddingLeft: '120px' }}>
+                    {protecoes.map((item, index) => {
+                      const cor = obterCorBadge(item);
+                      return (
+                        <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#222', border: `1px solid ${cor}`, borderRadius: '4px', padding: '4px 8px', fontSize: '0.85rem', color: '#fff' }}>
+                          <span>{item}</span>
+                          <button 
+  onClick={() => setProtecoes(protecoes.filter((_, i) => i !== index))} 
+  style={{ backgroundColor: 'transparent', color: cor, border: 'none', cursor: 'pointer', padding: '0 2px', fontSize: '0.85rem', display: 'flex', alignItems: 'center' }}
+>
+  x
+</button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* BLOCK 2: RESISTÊNCIAS */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontWeight: 'bold', color: '#aaa', minWidth: '110px', fontSize: '0.9rem', textTransform: 'uppercase' }}>Resistências</span>
+                    <input
+                      type="text"
+                      value={inputResistencia}
+                      placeholder="Digite e aperte Enter..."
+                      onChange={(e) => setInputResistencia(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && inputResistencia.trim() !== '') {
+                          setResistencias([...resistencias, inputResistencia.trim()]);
+                          setInputResistencia('');
+                        }
+                      }}
+                      style={{ flex: 1, backgroundColor: 'transparent', color: '#fff', border: 'none', borderBottom: '1px solid #444', padding: '5px 0', fontSize: '1rem', outline: 'none' }}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', paddingLeft: '120px' }}>
+                    {resistencias.map((item, index) => {
+                      const cor = obterCorBadge(item);
+                      return (
+                        <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#222', border: `1px solid ${cor}`, borderRadius: '4px', padding: '4px 8px', fontSize: '0.85rem', color: '#fff' }}>
+                          <span>{item}</span>
+                          <button 
+  onClick={() => setResistencias(resistencias.filter((_, i) => i !== index))} 
+  style={{ backgroundColor: 'transparent', color: cor, border: 'none', cursor: 'pointer', padding: '0 2px', fontSize: '0.85rem', display: 'flex', alignItems: 'center' }}
+>
+  x
+</button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* BLOCK 3: PROFICIÊNCIAS */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontWeight: 'bold', color: '#aaa', minWidth: '110px', fontSize: '0.9rem', textTransform: 'uppercase' }}>Proficiências</span>
+                    <input
+                      type="text"
+                      value={inputProficiencia}
+                      placeholder="Digite e aperte Enter..."
+                      onChange={(e) => setInputProficiencia(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && inputProficiencia.trim() !== '') {
+                          setProficiencias([...proficiencias, inputProficiencia.trim()]);
+                          setInputProficiencia('');
+                        }
+                      }}
+                      style={{ flex: 1, backgroundColor: 'transparent', color: '#fff', border: 'none', borderBottom: '1px solid #444', padding: '5px 0', fontSize: '1rem', outline: 'none' }}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', paddingLeft: '120px' }}>
+                    {proficiencias.map((item, index) => {
+                      const cor = obterCorBadge(item);
+                      return (
+                        <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#222', border: `1px solid ${cor}`, borderRadius: '4px', padding: '4px 8px', fontSize: '0.85rem', color: '#fff' }}>
+                          <span>{item}</span>
+                          <button 
+  onClick={() => setProficiencias(proficiencias.filter((_, i) => i !== index))} 
+  style={{ backgroundColor: 'transparent', color: cor, border: 'none', cursor: 'pointer', padding: '0 2px', fontSize: '0.85rem', display: 'flex', alignItems: 'center' }}
+>
+  x
+</button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+              </div>
+            </div>           
+            
+            {/* COLUNA DIREITA: Perícias */}
+            <div style={{ flex: '1 1 32%', minWidth: '400px', backgroundColor: '#181818', padding: '30px', borderRadius: '8px', border: '1px solid #333' }}>
               <h3 style={{ textTransform: 'uppercase', letterSpacing: '2px', color: '#ccc', borderBottom: '1px solid #333', paddingBottom: '10px', marginBottom: '25px', textAlign: 'center' }}>Perícias</h3>
-{/* PAINEL COMPACTO DE REGRAS DE PERÍCIA (NOVO E MINIMALISTA) */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#050505', padding: '6px 12px', borderRadius: '4px', border: '1px solid #222', marginBottom: '15px', fontSize: '0.8rem' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: '#aaa' }}>
-                <input 
-                  type="checkbox" 
-                  checked={limitarPericias} 
-                  onChange={(e) => setLimitarPericias(e.target.checked)} 
-                  style={{ cursor: 'pointer' }}
-                />
-                Liberar Perícias
-              </label>
+              
+              {/* PAINEL COMPACTO DE REGRAS DE PERÍCIA (NOVO E MINIMALISTA) */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#050505', padding: '6px 12px', borderRadius: '4px', border: '1px solid #222', marginBottom: '15px', fontSize: '0.8rem' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: '#aaa' }}>
+                  <input 
+                    type="checkbox" 
+                    checked={limitarPericias} 
+                    onChange={(e) => setLimitarPericias(e.target.checked)} 
+                    style={{ cursor: 'pointer' }}
+                  />
+                  Liberar Perícias
+                </label>
 
-              {/* Só exibe os pontos se o botão de liberar estiver DESLIGADO (!limitarPericias) */}
-              {!limitarPericias && (
-                <div style={{ display: 'flex', gap: '15px', fontWeight: 'bold' }}>
-                  <span style={{ color: maxTreinadas - totalTreinadasUsadas < 0 ? '#ff4d4d' : '#8fa0f0' }}>
-                    Treinar: {maxTreinadas - totalTreinadasUsadas}
-                  </span>
-                  <span style={{ color: maxUpgrades - totalUpgradesGastos < 0 ? '#ff4d4d' : '#68bd82' }}>
-                    Aumentar Grau: {maxUpgrades - totalUpgradesGastos}
-                  </span>
-                </div>
-              )}
-            </div>
+                {/* Só exibe os pontos se o botão de liberar estiver DESLIGADO (!limitarPericias) */}
+                {!limitarPericias && (
+                  <div style={{ display: 'flex', gap: '15px', fontWeight: 'bold' }}>
+                    <span style={{ color: maxTreinadas - totalTreinadasUsadas < 0 ? '#ff4d4d' : '#8fa0f0' }}>
+                      Treinar: {maxTreinadas - totalTreinadasUsadas}
+                    </span>
+                    <span style={{ color: maxUpgrades - totalUpgradesGastos < 0 ? '#ff4d4d' : '#68bd82' }}>
+                      Aumentar Grau: {maxUpgrades - totalUpgradesGastos}
+                    </span>
+                  </div>
+                )}
+              </div>
+              
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '1rem', color: '#fff' }}>
                   <thead>
@@ -876,7 +1093,48 @@ const handleMudarPericia = (nome: string, campo: keyof Pericia, valor: any) => {
               </div>
             </div>
 
-          </div>
+            {/* COLUNA DIREITA (NOVA): SISTEMA DE ABAS */}
+            <div style={{ flex: '1 1 34%', minWidth: '350px', backgroundColor: '#141414', padding: '20px', borderRadius: '8px', border: '1px solid #252525', display: 'flex', flexDirection: 'column' }}>
+              
+              {/* BOTÕES DAS ABAS */}
+              <div style={{ display: 'flex', gap: '4px', borderBottom: '2px solid #252525', paddingBottom: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
+                {(['combate', 'habilidades', 'rituais', 'inventario', 'descricao'] as const).map((aba) => (
+                  <button
+                    key={aba}
+                    onClick={() => setAbaDireita(aba)}
+                    style={{
+                      flex: 1,
+                      minWidth: '70px',
+                      padding: '8px 4px',
+                      backgroundColor: abaDireita === aba ? '#2a2a2a' : 'transparent',
+                      color: abaDireita === aba ? '#fff' : '#777',
+                      border: abaDireita === aba ? '1px solid #444' : '1px solid transparent',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontSize: '0.75rem',
+                      fontWeight: 'bold',
+                      textTransform: 'uppercase',
+                      letterSpacing: '1px',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    {aba === 'inventario' ? 'Inventário' : aba === 'descricao' ? 'Descrição' : aba}
+                  </button>
+                ))}
+              </div>
+
+              {/* CONTEÚDO DA ABA SELECIONADA */}
+              <div style={{ flex: 1, color: '#aaa', fontStyle: 'italic', textAlign: 'center', marginTop: '20px' }}>
+                {abaDireita === 'combate' && <div>Conteúdo de Combate</div>}
+                {abaDireita === 'habilidades' && <div>Conteúdo de Habilidades</div>}
+                {abaDireita === 'rituais' && <div>Conteúdo de Rituais</div>}
+                {abaDireita === 'inventario' && <div>Conteúdo de Inventário</div>}
+                {abaDireita === 'descricao' && <div>Conteúdo de Descrição</div>}
+              </div>
+
+            </div>
+
+          </div> {/* FIM DO CONTAINER DE DUAS COLUNAS */}
 
           <button onClick={() => { 
             setPvAtual(-1); setSanAtual(-1); setPeAtual(-1); 
@@ -887,14 +1145,13 @@ const handleMudarPericia = (nome: string, campo: keyof Pericia, valor: any) => {
             setSkillCombatente1(''); setSkillCombatente2('');
             prevCalc.current = { pv: 0, san: 0, pe: 0, init: false };
             setTelaAtual('atributos'); 
-          }} style={{ marginTop: '50px', padding: '15px', backgroundColor: '#333', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer', width: '100%', fontSize: '1.1rem', fontWeight: 'bold' }}>
-            Reiniciar Ficha
+          }} style={{ marginTop: '50px', padding: '15px', backgroundColor: '#333', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer', width: '100%', fontSize: '1rem', fontWeight: 'bold' }}>
+            Refazer Personagem
           </button>
         </div>
       )}
-
     </div>
   )
 }
 
-export default App
+export default App;

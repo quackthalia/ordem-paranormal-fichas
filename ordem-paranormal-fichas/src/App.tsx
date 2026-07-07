@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react'
-
 import { supabase } from './supabase'
 
 type Tela = 'atributos' | 'origens' | 'classe' | 'ficha'
@@ -12,162 +11,263 @@ interface Pericia {
   outros: number
 }
 
+// -------------------------------------------------------------
+// COMPONENTE PARA ACABAR COM O LAG AO DIGITAR (DEBOUNCE)
+// -------------------------------------------------------------
+const InputOtimizado = ({ value, onChange, placeholder, style }: any) => {
+  const [localValue, setLocalValue] = useState(value);
+
+  // Sincroniza se o valor mudar de fora
+  React.useEffect(() => {
+    setLocalValue(value);
+  }, [value]);
+
+  // Aguarda 300ms após a última tecla para recarregar a ficha
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      if (localValue !== value) onChange(localValue);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [localValue, value, onChange]);
+
+  return (
+    <input
+      type="text"
+      value={localValue}
+      onChange={(e) => setLocalValue(e.target.value)}
+      placeholder={placeholder}
+      style={style}
+    />
+  );
+};
+
 function App() {
   // --- 1. ESTADOS DA APLICAÇÃO ---
   const [telaAtual, setTelaAtual] = useState<Tela>('atributos')
   const [classe, setClasse] = useState<ClasseRPG>(null)
   const [nex, setNex] = useState<number>(5)
+  const [abaDireita, setAbaDireita] = useState<'combate' | 'habilidades' | 'rituais' | 'inventario' | 'descricao'>('combate')
   
-  const [abaDireita, setAbaDireita] = useState<'combate' | 'habilidades' | 'rituais' | 'inventario' | 'descricao'>('combate');
+  const [nexModalAberto, setNexModalAberto] = useState<number | null>(null)
+  const [abaModalPoderes, setAbaModalPoderes] = useState<'classe' | 'gerais'>('classe')
+  const [poderesEscolhidosPorNex, setPoderesEscolhidosPorNex] = useState<Record<number, any>>({})
+  const [poderesClasse, setPoderesClasse] = useState<any[]>([])
 
-  const [origens, setOrigens] = useState<any[]>([]);
-  const [origemSelecionada, setOrigemSelecionada] = useState<any>(null);
-  const [origensExpandidas, setOrigensExpandidas] = useState<number[]>([]); 
-  const [nomesPericias, setNomesPericias] = useState<Record<number, string>>({});
+  // --- ESTADOS PARA EDIÇÃO LOCAL DE PODERES ---
+  const [nexPoderEditando, setNexPoderEditando] = useState<number | null>(null);
+  const [nomeEditando, setNomeEditando] = useState('');
+  const [descricaoEditando, setDescricaoEditando] = useState('');
+  const editorRef = useRef<any>(null);
 
-  const [deslocM, setDeslocM] = useState<number>(9);
-  const [deslocQ, setDeslocQ] = useState<number>(6);
+  // --- OTIMIZAÇÕES DE PERFORMANCE PARA OS PODERES ---
+  const listaPoderesModalMemoizada = React.useMemo(() => {
+    return listaPoderesUtilidadeBanco
+      .filter((p) => {
+        const classePoder = p.Classe?.toLowerCase() || '';
+        const tipoPoder = p.Tipo?.toLowerCase() || '';
+        if (abaModalPoderes === 'classe') {
+          return classePoder === classe?.toLowerCase() && classePoder !== 'geral' && classePoder !== 'gerais' && tipoPoder === 'utilidade';
+        } else {
+          return classePoder.includes('geral') || tipoPoder.includes('geral') || classePoder === 'todos';
+        }
+      })
+      .sort((a, b) => a.Nome.localeCompare(b.Nome));
+  }, [listaPoderesUtilidadeBanco, abaModalPoderes, classe]);
+
+
+  // Passo 1: Busca TODOS os poderes disponíveis para a classe para listar no Bloco Suspenso (Dropdown)
+  useEffect(() => {
+    async function carregarPoderesClasse() {
+      if (!classe) {
+        setPoderesClasse([])
+        return
+      }
+      // Busca todos os poderes onde a coluna 'classe' bate com a classe do personagem
+      const { data, error } = await supabase
+        .from('Poderes')
+        .select('*')
+        .eq('Classe', classe)
+      
+      if (error) {
+        console.error("Erro na busca dos poderes no Supabase:", error)
+      }
+      if (data) {
+        const listaNormalizada = data.map((item: any) => ({
+          codigo_poder: item.codigo_poder || item.Codigo_Poder,
+          Nome: item.nome || item.Nome,
+          Descricao: item.descricao || item.Descricao,
+          Requisito: item.requisito || item.pre_requisito || item.Requisito || 'Nenhum'
+        }))
+        setPoderesClasse(listaNormalizada)
+      }
+    }
+    carregarPoderesClasse()
+  }, [classe])
+
+  const [origens, setOrigens] = useState<any[]>([])
+  const [origemSelecionada, setOrigemSelecionada] = useState<any>(null)
+  const [origensExpandidas, setOrigensExpandidas] = useState<number[]>([])
+  const [nomesPericias, setNomesPericias] = useState<Record<number, string>>({})
   
+  const [deslocM, setDeslocM] = useState<number>(9)
+  const [deslocQ, setDeslocQ] = useState<number>(6)
+  
+  // CORRIGIDO: Parênteses e chaves que estavam faltando
   const [atributos, setAtributos] = useState({ FOR: 1, AGI: 1, INT: 1, PRE: 1, VIG: 1 })
   const [bonusAtributos, setBonusAtributos] = useState({ FOR: 0, AGI: 0, INT: 0, PRE: 0, VIG: 0 })
-
+  
   const [pvAtual, setPvAtual] = useState<number>(-1)
   const [sanAtual, setSanAtual] = useState<number>(-1)
   const [peAtual, setPeAtual] = useState<number>(-1)
-
   const [pvMax, setPvMax] = useState<number>(0)
   const [sanMax, setSanMax] = useState<number>(0)
   const [peMax, setPeMax] = useState<number>(0)
-
+  
   const [hasPvTemp, setHasPvTemp] = useState<boolean>(false)
   const [pvTempAtual, setPvTempAtual] = useState<number>(0)
   const [pvTempMax, setPvTempMax] = useState<number>(0)
-
   const [hasPeTemp, setHasPeTemp] = useState<boolean>(false)
   const [peTempAtual, setPeTempAtual] = useState<number>(0)
   const [peTempMax, setPeTempMax] = useState<number>(0)
 
   // CONTROLES DO COMBATENTE
-  const [skillCombatente1, setSkillCombatente1] = useState<string>('')
-  const [skillCombatente2, setSkillCombatente2] = useState<string>('')
-
+  const [skillCombatente1, setSkillCombatente1] = useState<string>("")
+  const [skillCombatente2, setSkillCombatente2] = useState<string>("")
+  
   // Estados para Proteções, Resistências e Proficiências
-  const [protecoes, setProtecoes] = useState<string[]>([]);
-  const [inputProtecao, setInputProtecao] = useState('');
+  const [protecoes, setProtecoes] = useState<string[]>([])
+  const [inputProtecao, setInputProtecao] = useState("")
+  const [resistencias, setResistencias] = useState<string[]>([])
+  const [inputResistencia, setInputResistencia] = useState("")
+  const [proficiencias, setProficiencias] = useState<string[]>([])
+  const [inputProficiencia, setInputProficiencia] = useState("")
 
-  const [resistencias, setResistencias] = useState<string[]>([]);
-  const [inputResistencia, setInputResistencia] = useState('');
-
-  const [proficiencias, setProficiencias] = useState<string[]>([]);
-  const [inputProficiencia, setInputProficiencia] = useState('');
-
-  // --- Estados para a aba Habilidades ---
-  const [filtroHabilidades, setFiltroHabilidades] = useState('');
-  const [modalHabilidadesAberto, setModalHabilidadesAberto] = useState(false);
-  const [habilidadesExpandidas, setHabilidadesExpandidas] = useState<string[]>([]);
-  const [habilidades, setHabilidades] = useState<any[]>([]); // Para as futuras que você adicionar no botão
+  // --- Estados para a aba Habilidades
+  const [filtroHabilidades, setFiltroHabilidades] = useState("")
+  const [modalHabilidadesAberto, setModalHabilidadesAberto] = useState(false)
+  const [habilidadesExpandidas, setHabilidadesExpandidas] = useState<string[]>([])
+  const [habilidades, setHabilidades] = useState<any[]>([]) 
+  const [listaPoderesUtilidadeBanco, setListaPoderesUtilidadeBanco] = useState<any[]>([])
+  const [poderesModalExpandidos, setPoderesModalExpandidos] = useState<number[]>([])
 
   // Carrega as proficiências iniciais baseadas na classe escolhida
   useEffect(() => {
     if (classe === 'Combatente') {
-      setProficiencias(['Armas Simples', 'Armas Táticas', 'Proteções Leves']);
+      setProficiencias(['Armas Simples', 'Armas Táticas', 'Proteções Leves'])
     } else if (classe === 'Especialista') {
-      setProficiencias(['Armas Simples', 'Proteções Leves']);
+      setProficiencias(['Armas Simples', 'Proteções Leves'])
     } else if (classe === 'Ocultista') {
-      setProficiencias(['Armas Simples']);
+      setProficiencias(['Armas Simples'])
     }
-  }, [classe]);
+  }, [classe])
 
-  const [pericias, setPericias] = useState<Record<string, any>>({});
-
+  const [pericias, setPericias] = useState<Record<string, any>>({})
   const prevCalc = useRef({ pv: 0, san: 0, pe: 0, init: false })
 
-  // BUSCAR PERÍCIAS DO SUPABASE
+  // BUSCAR PERÍCIAS DO SUPABASE (CORRIGIDO OS CIFRÕES BIZARROS)
   useEffect(() => {
     const puxarPericiasDoBanco = async () => {
       const { data, error } = await supabase
         .from('Perícias') // Nome exato da sua tabela no Supabase
-        .select('Codigo_Pericia, Nome_Pericia, Atributo_Pericia');
-
-      if (error) {
-        console.error("Erro ao buscar perícias no Supabase:", error);
-        return;
-      }
-
-      if (data) {
-        const objetoPericias: Record<string, any> = {};
+        .select('Codigo_Pericia, Nome_Pericia, Atributo_Pericia')
         
+      if (error) {
+        console.error("Erro ao buscar perícias no Supabase:", error)
+        return
+      }
+      if (data) {
+        const objetoPericias: Record<string, any> = {}
         data.forEach((pericia) => {
           objetoPericias[pericia.Nome_Pericia] = {
             id: pericia.Codigo_Pericia,
             atributo: pericia.Atributo_Pericia,
             treino: 0,
             outros: 0
-          };
-        });
-
-        setPericias(objetoPericias);
+          }
+        })
+        setPericias(objetoPericias)
       }
-    };
-
-    puxarPericiasDoBanco();
-  }, []);
+    }
+    puxarPericiasDoBanco()
+  }, [])
 
   // BUSCAR ORIGENS DO SUPABASE
   useEffect(() => {
     const puxarDados = async () => {
-      // Puxa as Origens
       const { data: dataOrigens } = await supabase
         .from('Origens')
-        .select('Codigo_Origem, Nome, Descricao, Pericia_Treinada_1, Pericia_Treinada_2, Pericia_Treinada_Especial, Nome_Poder, Descricao_Poder, Fonte');
+        .select('Codigo_Origem, Nome, Descricao, Pericia_Treinada_1, Pericia_Treinada_2, Pericia_Treinada_Especial, Nome_Poder, Descricao_Poder, Fonte')
+        
+      if (dataOrigens) {
+          // Organiza de A a Z pelo Nome
+          const origensOrdenadas = dataOrigens.sort((a, b) => a.Nome.localeCompare(b.Nome));
+          setOrigens(origensOrdenadas);
+        }
       
-      if (dataOrigens) setOrigens(dataOrigens);
-
-      // Puxa as Perícias para traduzir o ID para Nome (AGORA COM ACENTO NA TABELA)
       const { data: dataPericias } = await supabase
-        .from('Perícias') 
-        .select('Codigo_Pericia, Nome_Pericia');
+        .from('Perícias')
+        .select('Codigo_Pericia, Nome_Pericia')
         
       if (dataPericias) {
-        const mapa: Record<number, string> = {};
+        const mapa: Record<number, string> = {}
         dataPericias.forEach((p: any) => {
-          mapa[p.Codigo_Pericia] = p.Nome_Pericia;
-        });
-        setNomesPericias(mapa);
+          mapa[p.Codigo_Pericia] = p.Nome_Pericia
+        })
+        setNomesPericias(mapa)
       }
-    };
-    puxarDados();
-  }, []);
+    }
+    puxarDados()
+  }, [])
 
-  // CONTROLES DE DEFESA, BLOQUEIO E ESQUIVA (Movido para cá para ler 'pericias' corretamente)
+  // CONTROLES DE DEFESA, BLOQUEIO E ESQUIVA
   const [defEquip, setDefEquip] = useState<number>(0)
   const [defOutros, setDefOutros] = useState<number>(0)
   const [bloqueio, setBloqueio] = useState<number>(0)
   const [esquiva, setEsquiva] = useState<number>(0)
-
-  // Controle para ativar/desativar as limitações automáticas de perícia
   const [limitarPericias, setLimitarPericias] = useState<boolean>(true)
+  
+  const defesaTotal = 10 + atributos.AGI + bonusAtributos.AGI + defEquip + defOutros
 
-const defesaTotal = 10 + atributos.AGI + bonusAtributos.AGI + defEquip + defOutros
-
-useEffect(() => {
+  useEffect(() => {
     if (pericias.Fortitude) {
-      const bonusFortitude = pericias.Fortitude.treino + pericias.Fortitude.outros;
-      setBloqueio(bonusFortitude);
+      const bonusFortitude = pericias.Fortitude.treino + pericias.Fortitude.outros
+      setBloqueio(bonusFortitude)
     }
-  }, [pericias]);
+  }, [pericias])
 
   useEffect(() => {
     if (pericias.Reflexos) {
-      const bonusReflexos = pericias.Reflexos.treino + pericias.Reflexos.outros;
-      setEsquiva(defesaTotal + bonusReflexos);
+      const bonusReflexos = pericias.Reflexos.treino + pericias.Reflexos.outros
+      setEsquiva(defesaTotal + bonusReflexos)
     }
-  }, [defesaTotal, pericias]);
+  }, [defesaTotal, pericias])
 
-  // Estado para guardar o poder inicial da classe vindo do banco
-  const [poderClasse, setPoderClasse] = useState<any>(null);
+  // Busca TODOS os poderes para o pop-up e nós filtramos nas abas
+  useEffect(() => {
+    async function carregarPoderesUtilidade() {
+      const { data, error } = await supabase
+        .from('Poderes')
+        .select('*');
+        
+      if (error) {
+        console.error("Erro ao buscar poderes:", error);
+      } else if (data) {
+        const dadosNormalizados = data.map((p: any) => ({
+          codigo_poder: p.Codigo_Poder ?? p.codigo_poder,
+          Nome: p.Nome ?? p.nome ?? "",
+          Descricao: p.Descrição ?? p.descrição ?? p.Descricao ?? p.descricao ?? "",
+          Classe: p.Classe ?? p.classe ?? "",
+          Tipo: p.Tipo ?? p.tipo ?? "", // Puxando o Tipo!
+          PreRequisitos: p['Pre-Requisitos'] ?? p['pre-requisitos'] ?? p.Pre_Requisitos ?? p.pre_requisitos ?? p.Requisitos ?? p.requisitos ?? ""
+        }));
+        setListaPoderesUtilidadeBanco(dadosNormalizados);
+      }
+    }
+    carregarPoderesUtilidade();
+  }, []);
 
-  // Busca o poder padrão na tabela 'Poderes' quando a classe muda
+  const [poderClasse, setPoderClasse] = useState<any>(null)
+
   useEffect(() => {
     async function carregarPoderClasse() {
       if (classe === 'Combatente') {
@@ -175,26 +275,63 @@ useEffect(() => {
           .from('Poderes')
           .select('*')
           .eq('Codigo_Poder', 179)
-          .single();
-        
+          .single()
+          
         if (!error && data) {
-          setPoderClasse(data);
+          setPoderClasse(data)
         }
       } else {
-        setPoderClasse(null);
+        setPoderClasse(null)
       }
     }
-    carregarPoderClasse();
-  }, [classe]);
+    carregarPoderClasse()
+  }, [classe])
 
-  // Função extra apenas para calcular o bônus de NEX do Ataque Especial
+  // BÔNUS DAS CLASSES CORRIGIDOS (SEM CIFRÕES)
   const calcularBonusAtaqueEspecial = () => {
-    if (nex >= 85) return '5 PE , +20';
-    if (nex >= 55) return '4 PE , +15';
-    if (nex >= 25) return '3 PE , +10';
-    return '2 PE , +5';
-  };
+    if (nex >= 85) return '5 PE, +20'
+    if (nex >= 55) return '4 PE, +15'
+    if (nex >= 25) return '3 PE, +10'
+    return '2 PE, +5'
+  }
 
+  const calcularBonusPerito = () => {
+    if (nex >= 85) return '5 PE, +1d12'
+    if (nex >= 55) return '4 PE, +1d10'
+    if (nex >= 25) return '3 PE, +1d8'
+    return '2 PE, +1d6'
+  }
+
+  const calcularBonusEngenhosidade = () => {
+    if (nex >= 75) return '4 PE, Veterano'
+    return '2 PE, Expert'
+  }
+
+  const calcularTotalRituaisOcultista = () => {
+    if (nex >= 99) return '22 Rituais'
+    if (nex >= 95) return '21 Rituais'
+    if (nex >= 90) return '20 Rituais'
+    if (nex >= 85) return '19 Rituais'
+    if (nex >= 60) return '14 Rituais'
+    if (nex >= 55) return '13 Rituais'
+    if (nex >= 30) return '8 Rituais'
+    if (nex >= 25) return '7 Rituais'
+    if (nex >= 10) return '4 Rituais'
+    return '3 Rituais'
+  }
+
+  const obterLimiteCirculosOcultista = () => {
+    if (nex >= 99) return { c1: 6, c2: 6, c3: 6, c4: 4 }
+    if (nex >= 95) return { c1: 6, c2: 6, c3: 6, c4: 3 }
+    if (nex >= 90) return { c1: 6, c2: 6, c3: 6, c4: 2 }
+    if (nex >= 85) return { c1: 6, c2: 6, c3: 6, c4: 1 }
+    if (nex >= 60) return { c1: 6, c2: 6, c3: 2, c4: 0 }
+    if (nex >= 55) return { c1: 6, c2: 6, c3: 1, c4: 0 }
+    if (nex >= 30) return { c1: 6, c2: 2, c3: 0, c4: 0 }
+    if (nex >= 25) return { c1: 6, c2: 1, c3: 0, c4: 0 }
+    if (nex >= 10) return { c1: 4, c2: 0, c3: 0, c4: 0 }
+    return { c1: 3, c2: 0, c3: 0, c4: 0 }
+  }
 
   // --- 2. LÓGICA DE PONTOS (TELA 1) ---
   const capMaximo = nex === 5 ? 3 : 5
@@ -1160,39 +1297,128 @@ const obterCorBadge = (texto: string) => {
                 ))}
               </div>
 
-{/* CONTEÚDO DAS ABAS */}
+                {/* CONTEÚDO DAS ABAS */}
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', marginTop: '10px' }}>
                 
                 {/* ABA 1: COMBATE */}
                 {abaDireita === 'combate' && <div style={{ color: '#666', fontStyle: 'italic', textAlign: 'center', marginTop: '20px' }}>Conteúdo de Combate</div>}
 
                 {/* ABA 2: HABILIDADES */}
-                {/* ABA 2: HABILIDADES */}
                 {abaDireita === 'habilidades' && (
                   (() => {
                     const listaHabilidades = [];
                     
-                    // 1. Puxa o poder da Origem (como já fazia)
+                    // 1. Puxa o poder da Origem
                     if (origemSelecionada && origemSelecionada.Nome_Poder) {
                       listaHabilidades.push({
                         id: 'origem_poder',
                         nome: origemSelecionada.Nome_Poder,
                         descricao: origemSelecionada.Descricao_Poder,
                         tipo: 'Origem',
-                        extra: null // Origem não tem o extra de NEX
+                        extra: null,
+                        subPoder: null
                       });
                     }
                     
-                    // 2. Puxa o poder da Classe direto da sua tabela 'Poderes'
-                    if (classe === 'Combatente' && poderClasse) {
-                      listaHabilidades.push({
-                        id: 'classe_poder',
-                        nome: poderClasse.Nome,         // Coluna Nome da sua tabela
-                        descricao: poderClasse.Descricao, // Coluna Descricao da sua tabela
-                        tipo: 'Classe',
-                        extra: calcularBonusAtaqueEspecial() // O extra do NEX separado aqui
-                      });
+                    // 2. Monta os poderes se for COMBATENTE
+                    if (classe === 'Combatente') {
+                      const atkEspecial = poderesClasse.find(p => p.codigo_poder === 179);
+                      if (atkEspecial) {
+                        listaHabilidades.push({
+                          id: 'classe_poder_179',
+                          nome: atkEspecial.Nome,
+                          descricao: atkEspecial.Descricao,
+                          tipo: 'Classe',
+                          extra: calcularBonusAtaqueEspecial(),
+                          subPoder: null
+                        });
+                      }
                     }
+
+                    // 3. Monta os poderes se for ESPECIALISTA
+                    if (classe === 'Especialista') {
+                      const ecletico = poderesClasse.find(p => p.codigo_poder === 180);
+                      const perito = poderesClasse.find(p => p.codigo_poder === 181);
+                      const engenhosidade = poderesClasse.find(p => p.codigo_poder === 182);
+
+                      // Eclético (Id 180) - Só ganha o anexo da Engenhosidade se NEX >= 40
+                      if (ecletico) {
+                        listaHabilidades.push({
+                          id: 'classe_poder_180',
+                          nome: ecletico.Nome,
+                          descricao: ecletico.Descricao,
+                          tipo: 'Classe',
+                          extra: null,
+                          // Se NEX for 40 ou mais, a Engenhosidade entra conectada ao Eclético
+                          subPoder: (engenhosidade && nex >= 40) ? {
+                            nome: engenhosidade.Nome,
+                            descricao: engenhosidade.Descricao,
+                            extra: calcularBonusEngenhosidade()
+                          } : null
+                        });
+                      }
+
+                      // Perito (Id 181) - Evolui os dados com o NEX
+                      if (perito) {
+                        listaHabilidades.push({
+                          id: 'classe_poder_181',
+                          nome: perito.Nome,
+                          descricao: perito.Descricao,
+                          tipo: 'Classe',
+                          extra: calcularBonusPerito(),
+                          subPoder: null
+                        });
+                      }
+                    }
+
+                    // 4. Monta os poderes se for OCULTISTA
+                    if (classe === 'Ocultista') {
+                      const escolhidoOutroLado = poderesClasse.find(p => p.codigo_poder === 183);
+                      
+                      if (escolhidoOutroLado) {
+                        listaHabilidades.push({
+                          id: 'classe_poder_183',
+                          nome: escolhidoOutroLado.Nome,
+                          descricao: escolhidoOutroLado.Descricao,
+                          tipo: 'Classe',
+                          extra: calcularTotalRituaisOcultista(), // Mostra o total na badge
+                          // Passamos a estrutura de círculos para ser desenhada dentro do card
+                          limiteCirculos: obterLimiteCirculosOcultista() 
+                        });
+                      }
+                    }
+
+                    // 5. Adiciona os Slots de Escolha de Poder por NEX (10%, 20%, 30%...)
+                    // Criamos uma lista com todos os NEX pares possíveis no sistema
+                    const patamaresNexPares = [10, 20, 30, 40, 50, 60, 70, 80, 90, 99];
+                    
+                    patamaresNexPares.forEach((nivelFixado) => {
+                      // Só mostra o slot se o personagem tiver nível/NEX suficiente
+                      if (nex >= nivelFixado) {
+                        const poderJaEscolhido = poderesEscolhidosPorNex[nivelFixado];
+
+                        if (poderJaEscolhido) {
+                          // Se já escolheu, monta o card com as informações do poder selecionado
+                          listaHabilidades.push({
+                            id: `escolha_nex_${nivelFixado}`,
+                            nome: poderJaEscolhido.Nome,
+                            descricao: poderJaEscolhido.Descricao,
+                            tipo: `NEX ${nivelFixado}%`,
+                            preRequisitos: poderJaEscolhido.PreRequisitos // Passamos para renderizar na expansão
+                          });
+                        } else {
+                          // Se não escolheu, monta a linha indicando que há um poder pendente
+                          listaHabilidades.push({
+                            id: `escolha_nex_${nivelFixado}`,
+                            nome: `Escolher Poder de Utilidade`,
+                            descricao: `Clique no botão "+" à direita para abrir a lista e selecionar seu poder.`,
+                            tipo: `NEX ${nivelFixado}%`,
+                            isSlotVazio: true,
+                            nexDoSlot: nivelFixado
+                          });
+                        }
+                      }
+                    });
 
                     // Aplica o filtro da barra de pesquisa
                     const habilidadesFiltradas = listaHabilidades.filter(hab => hab.nome.toLowerCase().includes(filtroHabilidades.toLowerCase()));
@@ -1202,15 +1428,14 @@ const obterCorBadge = (texto: string) => {
                         
                         {/* TOPO: Filtro e Botão Adicionar */}
                         <div style={{ display: 'flex', gap: '15px', alignItems: 'center', marginBottom: '20px' }}>
-                          <input 
-                            type="text" 
+                          <InputOtimizado 
                             value={filtroHabilidades}
-                            onChange={(e) => setFiltroHabilidades(e.target.value)}
+                            onChange={(novoValor: string) => setFiltroHabilidades(novoValor)}
                             placeholder="Filtrar Habilidades..."
                             style={{ flex: 1, backgroundColor: 'transparent', color: '#fff', border: 'none', borderBottom: '1px solid #444', padding: '8px 0', fontSize: '1rem', outline: 'none' }}
                           />
                           <button 
-                            onClick={() => setModalHabilidadesAberto(true)}
+                            onClick={() => console.log('Abrir modal de habilidade')}
                             style={{ backgroundColor: '#2a2a2a', color: '#fff', border: '1px solid #444', borderRadius: '4px', padding: '8px 12px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}
                           >
                             + Adicionar Habilidade
@@ -1225,20 +1450,25 @@ const obterCorBadge = (texto: string) => {
                             return (
                               <div key={hab.id} style={{ backgroundColor: '#111', borderLeft: '4px solid #4facfe', borderRadius: '0 4px 4px 0', overflow: 'hidden', borderTop: '1px solid #222', borderRight: '1px solid #222', borderBottom: '1px solid #222' }}>
                                 
-                                {/* CABEÇALHO DA HABILIDADE (PARTE NÃO SUSPENSA) */}
+                                {/* CABEÇALHO DA HABILIDADE */}
                                 <div 
                                   onClick={() => {
-                                    setHabilidadesExpandidas(prev => 
-                                      prev.includes(hab.id) ? prev.filter(id => id !== hab.id) : [...prev, hab.id]
-                                    );
+                                    if (hab.isSlotVazio) {
+                                      setNexModalAberto(hab.nexDoSlot);
+                                    } else {
+                                      setHabilidadesExpandidas(prev => 
+                                        prev.includes(hab.id) ? prev.filter(id => id !== hab.id) : [...prev, hab.id]
+                                      );
+                                    }
                                   }}
                                   style={{ padding: '12px 15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', backgroundColor: '#1a1a1a' }}
                                 >
-                                  {/* Lado Esquerdo: Nome + O Extra do NEX separado */}
+                                  {/* Lado Esquerdo: Nome + O Extra do NEX */}
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                    <span style={{ fontWeight: 'bold', color: '#fff', fontSize: '0.95rem' }}>{hab.nome}</span>
+                                    <span style={{ fontWeight: 'bold', color: hab.isSlotVazio ? '#4facfe' : '#fff', fontSize: '0.95rem' }}>
+                                      {hab.nome}
+                                    </span>
                                     
-                                    {/* Exibe o bônus de NEX separado, caso exista */}
                                     {hab.extra && (
                                       <span style={{ color: '#ffcc00', fontSize: '0.8rem', fontWeight: 'bold', backgroundColor: '#222', padding: '2px 6px', borderRadius: '4px', border: '1px solid #333' }}>
                                         {hab.extra}
@@ -1246,21 +1476,100 @@ const obterCorBadge = (texto: string) => {
                                     )}
                                   </div>
                                   
-                                  {/* Lado Direito: Tag da Classe/Origem e a Seta */}
+                                  {/* Lado Direito: Tag "CLASSE" ou "ORIGEM" */}
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                     {hab.tipo && (
                                       <span style={{ backgroundColor: '#050505', border: '1px solid #333', padding: '2px 8px', borderRadius: '4px', fontSize: '0.65rem', color: '#aaa', textTransform: 'uppercase', letterSpacing: '1px' }}>
                                         {hab.tipo}
                                       </span>
                                     )}
-                                    <span style={{ color: '#666', fontSize: '0.8rem' }}>{estaExpandida ? '▲' : '▼'}</span>
+                                    <span style={{ color: '#666', fontSize: '0.8rem' }}>
+                                      {hab.isSlotVazio ? (
+                                        <strong style={{ color: '#ff1111', fontSize: '1.2rem', paddingRight: '2px' }}>+</strong>
+                                      ) : (
+                                        estaExpandida ? '▲' : '▼'
+                                      )}
+                                    </span>
                                   </div>
                                 </div>
 
                                 {/* DESCRIÇÃO EXPANDIDA */}
                                 {estaExpandida && (
                                   <div style={{ padding: '15px', color: '#ccc', fontSize: '0.85rem', lineHeight: '1.5', backgroundColor: '#111', fontStyle: 'normal', textAlign: 'left' }}>
-                                    {hab.descricao}
+                                    
+                                    {/* DESCRIÇÃO COM SUPORTE A NEGRITO/ITÁLICO */}
+                                    <div dangerouslySetInnerHTML={{ __html: hab.descricao }} />
+                                    
+                                    {/* CONEXÃO: ENGENHOSIDADE */}
+                                    {hab.subPoder && (
+                                      <div style={{ marginTop: '15px', padding: '12px', backgroundColor: '#161616', borderLeft: '3px solid #ffcc00', borderRadius: '4px' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                                          <span style={{ fontWeight: 'bold', color: '#fff', fontSize: '0.9rem' }}>
+                                            {hab.subPoder.nome}
+                                          </span>
+                                          <span style={{ fontSize: '0.75rem', fontWeight: 'bold', backgroundColor: '#222', padding: '2px 6px', borderRadius: '4px', color: '#ffcc00', border: '1px solid #333' }}>
+                                            {hab.subPoder.extra}
+                                          </span>
+                                        </div>
+                                        <div style={{ color: '#ccc', fontSize: '0.8rem' }}>
+                                          {hab.subPoder.descricao}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* DETALHAMENTO DE CÍRCULOS (Ocultista) */}
+                                    {hab.limiteCirculos && (
+                                      <div style={{ marginTop: '15px', padding: '12px', backgroundColor: '#161616', borderLeft: '3px solid #9933ff', borderRadius: '4px' }}>
+                                        <div style={{ fontWeight: 'bold', color: '#fff', marginBottom: '8px', fontSize: '0.9rem' }}>Rituais:</div>
+                                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                          <span style={{ backgroundColor: '#222', padding: '4px 8px', borderRadius: '4px', border: '1px solid #333', color: hab.limiteCirculos.c1 > 0 ? '#fff' : '#555' }}>1° Círculo: <strong>{hab.limiteCirculos.c1}</strong></span>
+                                          <span style={{ backgroundColor: '#222', padding: '4px 8px', borderRadius: '4px', border: '1px solid #333', color: hab.limiteCirculos.c2 > 0 ? '#fff' : '#555' }}>2° Círculo: <strong>{hab.limiteCirculos.c2}</strong></span>
+                                          <span style={{ backgroundColor: '#222', padding: '4px 8px', borderRadius: '4px', border: '1px solid #333', color: hab.limiteCirculos.c3 > 0 ? '#fff' : '#555' }}>3° Círculo: <strong>{hab.limiteCirculos.c3}</strong></span>
+                                          <span style={{ backgroundColor: '#222', padding: '4px 8px', borderRadius: '4px', border: '1px solid #333', color: hab.limiteCirculos.c4 > 0 ? '#fff' : '#555' }}>4° Círculo: <strong>{hab.limiteCirculos.c4}</strong></span>
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* EXIBIÇÃO DE PRÉ-REQUISITO */}
+                                    {hab.preRequisitos && (
+                                      <div style={{ marginTop: '12px', padding: '6px 10px', fontSize: '0.75rem', color: '#ffcc00', fontStyle: 'italic', backgroundColor: 'rgba(255,204,0,0.03)', borderRadius: '4px', display: 'inline-block' }}>
+                                        <strong>Pré-requisitos:</strong> {hab.preRequisitos}
+                                      </div>
+                                    )}
+
+                                    {/* BOTÕES LADO A LADO: EDITAR E REMOVER */}
+                                    {hab.id.startsWith('escolha_nex_') && !hab.isSlotVazio && (
+                                      <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
+                                        <button 
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            const nivelSlot = parseInt(hab.id.replace('escolha_nex_', ''));
+                                            setNexPoderEditando(nivelSlot);
+                                            setNomeEditando(hab.nome);
+                                            setDescricaoEditando(hab.descricao);
+                                          }}
+                                          style={{ flex: 1, backgroundColor: '#2a2a2a', color: '#fff', border: '1px solid #444', padding: '8px', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.8rem' }}
+                                        >
+                                          Editar
+                                        </button>
+
+                                        <button 
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            const nivelSlot = parseInt(hab.id.replace('escolha_nex_', ''));
+                                            setPoderesEscolhidosPorNex(prev => {
+                                              const novo = { ...prev };
+                                              delete novo[nivelSlot];
+                                              return novo;
+                                            });
+                                          }}
+                                          style={{ flex: 1, backgroundColor: 'transparent', color: '#ff1111', border: '1px solid #ff1111', padding: '8px', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.8rem' }}
+                                        >
+                                          Remover Poder
+                                        </button>
+                                      </div>
+                                    )}
+
                                   </div>
                                 )}
                               </div>
@@ -1269,7 +1578,6 @@ const obterCorBadge = (texto: string) => {
                             <div style={{ textAlign: 'center', color: '#555', fontStyle: 'italic', marginTop: '20px' }}>Nenhuma habilidade encontrada.</div>
                           )}
                         </div>
-
                       </div>
                     );
                   })()
@@ -1304,6 +1612,245 @@ const obterCorBadge = (texto: string) => {
           </button>
         </div>
       )}
+
+      {/* POP-UP (MODAL) DE ESCOLHA DE PODERES POR NEX */}
+      {nexModalAberto !== null && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999, padding: '20px' }}>
+          <div style={{ backgroundColor: '#1a1a1a', border: '1px solid #333', borderRadius: '8px', width: '100%', maxWidth: '850px', maxHeight: '85vh', display: 'flex', flexDirection: 'column', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+            
+            {/* CABEÇALHO DO MODAL */}
+            <div style={{ padding: '20px', borderBottom: '1px solid #333', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, color: '#fff', fontSize: '1.2rem' }}>Escolher Poder — NEX {nexModalAberto}%</h3>
+              <button onClick={() => setNexModalAberto(null)} style={{ background: 'none', border: 'none', color: '#888', fontSize: '1.5rem', cursor: 'pointer' }}>&times;</button>
+            </div>
+
+            {/* ABAS SEPARADORAS DE FILTRO */}
+            <div style={{ display: 'flex', backgroundColor: '#121212', borderBottom: '1px solid #333' }}>
+              <button 
+                onClick={() => {
+                  setAbaModalPoderes('classe');
+                  // Reseta o scroll para o topo ao trocar de aba
+                  const divScroll = document.getElementById('caixa-scroll-poderes');
+                  if (divScroll) divScroll.scrollTop = 0;
+                }}
+                style={{ flex: 1, padding: '12px', background: 'none', border: 'none', borderBottom: abaModalPoderes === 'classe' ? '3px solid #ff0000' : 'none', color: abaModalPoderes === 'classe' ? '#fff' : '#666', fontWeight: 'bold', cursor: 'pointer', transition: '0.2s' }}
+              >
+                Poderes de {classe || 'Classe'}
+              </button>
+              <button 
+                onClick={() => {
+                  setAbaModalPoderes('gerais');
+                  // Reseta o scroll para o topo ao trocar de aba
+                  const divScroll = document.getElementById('caixa-scroll-poderes');
+                  if (divScroll) divScroll.scrollTop = 0;
+                }}
+                style={{ flex: 1, padding: '12px', background: 'none', border: 'none', borderBottom: abaModalPoderes === 'gerais' ? '3px solid #ff0000' : 'none', color: abaModalPoderes === 'gerais' ? '#fff' : '#666', fontWeight: 'bold', cursor: 'pointer', transition: '0.2s' }}
+              >
+                Poderes Gerais
+              </button>
+            </div>
+
+            {/* LISTAGEM DOS PODERES (BLOCO SUSPENSO / SANFONA) */}
+            <div id="caixa-scroll-poderes" style={{ padding: '20px', overflowY: 'auto', flex: 1, display: 'block' }}>
+              {listaPoderesModalMemoizada.map((poder) => {
+                  const estaExpandido = poderesModalExpandidos.includes(poder.codigo_poder);
+
+                  return (
+                    <div 
+                      key={poder.codigo_poder} 
+                      style={{ 
+                        backgroundColor: '#111', 
+                        borderLeft: '4px solid #ff0000', 
+                        borderRadius: '4px', 
+                        overflow: 'hidden', 
+                        borderTop: '1px solid #333', 
+                        borderRight: '1px solid #333', 
+                        borderBottom: '1px solid #333',
+                        marginBottom: '12px',
+                        display: 'block'
+                      }}
+                    >
+                      
+                      {/* TÍTULO CLICÁVEL COM O BOTÃO DE ESCOLHER EMBUTIDO */}
+                      <div 
+                        onClick={() => {
+                          setPoderesModalExpandidos(prev => 
+                            prev.includes(poder.codigo_poder) ? prev.filter(id => id !== poder.codigo_poder) : [...prev, poder.codigo_poder]
+                          );
+                        }}
+                        style={{ padding: '12px 15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', backgroundColor: '#1a1a1a' }}
+                      >
+                        {/* Nome do Poder */}
+                        <span style={{ fontWeight: 'bold', color: '#fff', fontSize: '1rem', flex: 1 }}>
+                          {poder.Nome}
+                        </span>
+                        
+                        {/* Lado Direito: Botão Escolher + Seta */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation(); // Impede de abrir/fechar a sanfona ao clicar no botão
+                              setPoderesEscolhidosPorNex(prev => ({
+                                ...prev,
+                                [nexModalAberto as number]: poder
+                              }));
+                              setNexModalAberto(null); // Fecha o Pop-up
+                            }}
+                            style={{ backgroundColor: '#ff0000', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold', cursor: 'pointer', textTransform: 'uppercase', transition: '0.2s' }}
+                          >
+                            Escolher
+                          </button>
+                          
+                          <span style={{ color: '#666', fontSize: '1rem', width: '20px', textAlign: 'center' }}>
+                            {estaExpandido ? '▲' : '▼'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* CORPO EXPANDIDO (APENAS DESCRIÇÃO E REQUISITOS AGORA) */}
+                      {estaExpandido && (
+                        <div style={{ padding: '15px 20px', backgroundColor: '#161616', borderTop: '1px solid #222', textAlign: 'left' }}>
+                          <div style={{ color: '#bbb', fontSize: '0.9rem', lineHeight: '1.5' }}>
+                            {poder.Descricao}
+                          </div>
+                          
+                          {/* PRÉ-REQUISITOS */}
+                          {poder.PreRequisitos && (
+                            <div style={{ fontSize: '0.8rem', color: '#ffcc00', fontStyle: 'italic', backgroundColor: 'rgba(255,204,0,0.05)', padding: '8px 12px', borderRadius: '4px', marginTop: '15px', display: 'inline-block' }}>
+                              <strong>Pré-requisitos:</strong> {poder.PreRequisitos}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                    </div>
+                  );
+                })}
+
+              {/* MENSAGEM SE A ABA ESTIVER VAZIA (Aplicando as mesmas regras do filtro) */}
+              {listaPoderesUtilidadeBanco.filter(p => {
+                const classePoder = p.Classe?.toLowerCase() || '';
+                const tipoPoder = p.Tipo?.toLowerCase() || '';
+                if (abaModalPoderes === 'classe') {
+                  return classePoder === classe?.toLowerCase() && classePoder !== 'geral' && classePoder !== 'gerais' && tipoPoder === 'utilidade';
+                } else {
+                  return classePoder.includes('geral') || tipoPoder.includes('geral') || classePoder === 'todos';
+                }
+              }).length === 0 && (
+                <div style={{ color: '#555', fontStyle: 'italic', textAlign: 'center', marginTop: '20px' }}>Nenhum poder encontrado nesta categoria.</div>
+              )}
+            </div>
+
+          </div>
+        </div>
+      )}
+
+    {/* ======================================================= */}
+      {/* POP-UP (MODAL) PARA EDITAR O PODER SELECIONADO (LOCAL)  */}
+      {/* ======================================================= */}
+      {nexPoderEditando !== null && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999, padding: '20px' }}>
+          <div style={{ backgroundColor: '#1a1a1a', border: '1px solid #333', borderRadius: '8px', width: '100%', maxWidth: '800px', padding: '25px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', display: 'flex', flexDirection: 'column', gap: '15px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+            
+            <h3 style={{ margin: 0, color: '#fff', fontSize: '1.2rem', borderBottom: '1px solid #333', paddingBottom: '10px', textAlign: 'left', fontFamily: 'inherit' }}>
+              Editar Poder (NEX {nexPoderEditando}%)
+            </h3>
+            
+            {/* CAMPO NOME */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', textAlign: 'left' }}>
+              <label style={{ color: '#aaa', fontSize: '0.85rem', fontWeight: 'bold', fontFamily: 'inherit' }}>Nome do Poder</label>
+              <InputOtimizado 
+                value={nomeEditando} 
+                onChange={(novoValor: string) => setNomeEditando(novoValor)}
+                style={{ backgroundColor: '#111', border: '1px solid #333', borderRadius: '4px', padding: '10px', color: '#fff', fontSize: '0.95rem', outline: 'none', fontFamily: 'inherit' }}
+              />
+            </div>
+
+            {/* CAMPO DESCRIÇÃO COM EDITOR VISUAL AUTOMÁTICO */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', textAlign: 'left' }}>
+              <label style={{ color: '#aaa', fontSize: '0.85rem', fontWeight: 'bold', fontFamily: 'inherit' }}>Descrição</label>
+              
+              {/* BARRA DE FERRAMENTAS VISUAIS */}
+              <div style={{ display: 'flex', gap: '6px', backgroundColor: '#121212', padding: '6px', border: '1px solid #333', borderBottom: 'none', borderTopLeftRadius: '4px', borderTopRightRadius: '4px' }}>
+                <button 
+                  type="button"
+                  onClick={() => document.execCommand('bold', false)}
+                  style={{ backgroundColor: '#222', color: '#fff', border: '1px solid #444', width: '32px', height: '32px', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.9rem', fontFamily: 'inherit' }}
+                  title="Negrito"
+                >
+                  B
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => document.execCommand('italic', false)}
+                  style={{ backgroundColor: '#222', color: '#fff', border: '1px solid #444', width: '32px', height: '32px', borderRadius: '4px', fontStyle: 'italic', cursor: 'pointer', fontSize: '0.9rem', fontFamily: 'inherit' }}
+                  title="Itálico"
+                >
+                  I
+                </button>
+              </div>
+
+              {/* ÁREA DE TEXTO EDITÁVEL DE VERDADE */}
+              <div 
+                ref={(el) => {
+                  if (el) {
+                    editorRef.current = el;
+                    if (!el.dataset.initialized) {
+                      el.innerHTML = descricaoEditando;
+                      el.dataset.initialized = 'true';
+                    }
+                  }
+                }}
+                contentEditable
+                style={{ 
+                  backgroundColor: '#111', 
+                  border: '1px solid #333', 
+                  borderBottomLeftRadius: '4px', 
+                  borderBottomRightRadius: '4px', 
+                  padding: '12px', 
+                  color: '#fff', 
+                  fontSize: '0.9rem', 
+                  lineHeight: '1.5', 
+                  outline: 'none', 
+                  minHeight: '140px', 
+                  overflowY: 'auto',
+                  fontFamily: 'inherit',
+                  textAlign: 'left'
+                }}
+              />
+            </div>
+
+            {/* BOTÕES CANCELAR E APLICAR */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }}>
+              <button 
+                onClick={() => setNexPoderEditando(null)}
+                style={{ backgroundColor: '#222', color: '#aaa', border: '1px solid #444', padding: '8px 16px', borderRadius: '4px', fontSize: '0.85rem', fontWeight: 'bold', cursor: 'pointer', fontFamily: 'inherit' }}
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={() => {
+                  const textoFormatadoSalvar = editorRef.current ? editorRef.current.innerHTML : '';
+                  setPoderesEscolhidosPorNex(prev => ({
+                    ...prev,
+                    [nexPoderEditando as number]: {
+                      ...prev[nexPoderEditando as number],
+                      Nome: nomeEditando,
+                      Descricao: textoFormatadoSalvar
+                    }
+                  }));
+                  setNexPoderEditando(null);
+                }}
+                style={{ backgroundColor: '#ff0000', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '4px', fontSize: '0.85rem', fontWeight: 'bold', cursor: 'pointer', fontFamily: 'inherit' }}
+              >
+                Aplicar
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }

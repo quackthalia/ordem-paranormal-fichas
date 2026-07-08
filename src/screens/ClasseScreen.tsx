@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRPG } from '../context/RPGContext';
+import { proficienciasIniciais } from '../utils/rpgRules';
 import type { ClasseRPG } from '../types';
 
 export const ClasseScreen: React.FC = () => {
@@ -18,21 +19,8 @@ export const ClasseScreen: React.FC = () => {
   const escolherClasse = (novaClasse: ClasseRPG) => {
     if (!novaClasse) return;
 
-    // Aplica perícias automáticas no hook (via contexto não dá, mas o
-    // handleMudarPericia já valida. As perícias gratis são calculadas
-    // automaticamente pelo usePericias via periciasGratis)
-
     setClasse(novaClasse);
-
-    // Define proficiências iniciais
-    if (novaClasse === 'Combatente') {
-      setProficiencias(['Armas Simples', 'Armas Táticas', 'Proteções Leves']);
-    } else if (novaClasse === 'Especialista') {
-      setProficiencias(['Armas Simples', 'Proteções Leves']);
-    } else if (novaClasse === 'Ocultista') {
-      setProficiencias(['Armas Simples']);
-    }
-
+    setProficiencias(proficienciasIniciais(novaClasse));
     setTelaAtual('ficha');
   };
 

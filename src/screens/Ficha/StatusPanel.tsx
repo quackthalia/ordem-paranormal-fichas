@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRPG } from '../../context/RPGContext';
+import { NEX_OPTIONS } from '../../utils/rpgRules';
 
 export const StatusPanel: React.FC = () => {
   const {
@@ -35,7 +36,7 @@ export const StatusPanel: React.FC = () => {
             onChange={(e) => setNex(Number(e.target.value))}
             style={styles.nexSelect}
           >
-            {[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 99].map(n => (
+            {NEX_OPTIONS.map(n => (
               <option key={n} value={n}>{n}%</option>
             ))}
           </select>

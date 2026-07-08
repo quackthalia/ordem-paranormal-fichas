@@ -16,21 +16,24 @@ interface UsePoderesReturn {
 }
 
 /** Normaliza colunas do Supabase (resolve o problema das variações de nome) */
-function normalizarPoder(item: Record<string, any>): Poder {
+function normalizarPoder(item: Record<string, unknown>): Poder {
+  const primeiro = (...chaves: string[]) => {
+    for (const chave of chaves) {
+      const valor = item[chave];
+      if (valor !== undefined && valor !== null) return valor;
+    }
+    return undefined;
+  };
+
   return {
-    codigo_poder: item.Codigo_Poder ?? item.codigo_poder ?? 0,
-    Nome: item.Nome ?? item.nome ?? '',
-    Descricao: item.Descrição ?? item.descrição ?? item.Descricao ?? item.descricao ?? '',
-    Classe: item.Classe ?? item.classe ?? '',
-    Tipo: item.Tipo ?? item.tipo ?? '',
-    PreRequisitos:
-      item['Pre-Requisitos'] ??
-      item['pre-requisitos'] ??
-      item.Pre_Requisitos ??
-      item.pre_requisitos ??
-      item.Requisitos ??
-      item.requisitos ??
-      '',
+    codigo_poder: Number(primeiro('Codigo_Poder', 'codigo_poder') ?? 0),
+    Nome: String(primeiro('Nome', 'nome') ?? ''),
+    Descricao: String(primeiro('Descrição', 'descrição', 'Descricao', 'descricao') ?? ''),
+    Classe: String(primeiro('Classe', 'classe') ?? ''),
+    Tipo: String(primeiro('Tipo', 'tipo') ?? ''),
+    PreRequisitos: String(
+      primeiro('Pre-Requisitos', 'pre-requisitos', 'Pre_Requisitos', 'pre_requisitos', 'Requisitos', 'requisitos') ?? ''
+    ),
   };
 }
 
@@ -44,14 +47,14 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
 
   // 1. Busca poderes da classe selecionada
   useEffect(() => {
-    if (!classe) {
-      setPoderesClasse([]);
-      return;
-    }
-
     let cancelled = false;
 
     async function carregar() {
+      if (!classe) {
+        setPoderesClasse([]);
+        return;
+      }
+
       setLoading(true);
       setError(null);
 
@@ -101,14 +104,14 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
 
   // 3. Busca o poder específico do Combatente (Codigo_Poder = 179)
   useEffect(() => {
-    if (classe !== 'Combatente') {
-      setPoderClasse(null);
-      return;
-    }
-
     let cancelled = false;
 
     async function carregar() {
+      if (classe !== 'Combatente') {
+        setPoderClasse(null);
+        return;
+      }
+
       const { data, error: err } = await supabase
         .from('Poderes')
         .select('*')

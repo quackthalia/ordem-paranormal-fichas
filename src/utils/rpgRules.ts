@@ -1,5 +1,8 @@
 import type { Atributos, ClasseRPG, LimiteCirculos } from '../types';
 
+/** Valores de NEX disponíveis nos seletores */
+export const NEX_OPTIONS = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 99];
+
 /** Calcula o nível a partir do NEX (99% → 20) */
 export function calcularNivel(nex: number): number {
   return nex === 99 ? 20 : Math.floor(nex / 5);

@@ -16,10 +16,13 @@ export const InputOtimizado: React.FC<InputOtimizadoProps> = ({
   debounce = 300,
 }) => {
   const [localValue, setLocalValue] = useState(value);
+  const [prevValue, setPrevValue] = useState(value);
 
-  useEffect(() => {
+  // Sincroniza quando o valor externo muda (padrão "adjust state during render")
+  if (value !== prevValue) {
+    setPrevValue(value);
     setLocalValue(value);
-  }, [value]);
+  }
 
   const timerRef = React.useRef<ReturnType<typeof setTimeout>>(null);
 

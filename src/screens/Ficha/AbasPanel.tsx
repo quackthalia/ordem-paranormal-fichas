@@ -1,6 +1,7 @@
 import React from 'react';
 import { useRPG } from '../../context/RPGContext';
 import { InputOtimizado } from '../../components/InputOtimizado';
+import type { HabilidadeItem } from '../../types';
 import {
   calcularBonusAtaqueEspecial,
   calcularBonusPerito,
@@ -21,12 +22,12 @@ export const AbasPanel: React.FC = () => {
     setNexPoderEditando, setNomeEditando, setDescricaoEditando,
   } = useRPG();
 
-  const { poderClasse, poderesClasse, poderesEscolhidos, setPoderesEscolhidos } = poderesHook;
+  const { poderClasse, poderesClasse, poderesEscolhidos, removerPoder } = poderesHook;
   const { origemSelecionada } = origensHook;
 
   // Monta a lista de habilidades
   const listaHabilidades = React.useMemo(() => {
-    const lista: any[] = [];
+    const lista: HabilidadeItem[] = [];
 
     // 1. Poder da Origem
     if (origemSelecionada?.Nome_Poder) {
@@ -186,7 +187,7 @@ export const AbasPanel: React.FC = () => {
                       <div
                         onClick={() => {
                           if (hab.isSlotVazio) {
-                            setNexModalAberto(hab.nexDoSlot);
+                            setNexModalAberto(hab.nexDoSlot ?? null);
                           } else {
                             setHabilidadesExpandidas(prev =>
                               prev.includes(hab.id)
@@ -298,12 +299,7 @@ export const AbasPanel: React.FC = () => {
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  const nivel = parseInt(hab.id.replace('escolha_nex_', ''));
-                                  setPoderesEscolhidos((prev: any) => {
-                                    const novo = { ...prev };
-                                    delete novo[nivel];
-                                    return novo;
-                                  });
+                                  removerPoder(parseInt(hab.id.replace('escolha_nex_', '')));
                                 }}
                                 style={styles.removerBtn}
                               >

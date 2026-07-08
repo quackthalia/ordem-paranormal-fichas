@@ -10,6 +10,7 @@ export const OrigensScreen: React.FC = () => {
     loading,
     error,
     selecionarOrigem,
+    nomePericia,
   } = origensHook;
 
   if (loading) return <div style={styles.container}>Carregando origens...</div>;
@@ -51,8 +52,8 @@ export const OrigensScreen: React.FC = () => {
                   <p style={styles.descricao}>{origem.Descricao}</p>
                   <p style={styles.pericias}>
                     <strong>Perícias treinadas. </strong>
-                    {origem.Pericia_Treinada_1} e {origem.Pericia_Treinada_2}
-                    {origem.Pericia_Treinada_Especial ? ` e ${origem.Pericia_Treinada_Especial}` : ''}.
+                    {nomePericia(origem.Pericia_Treinada_1)} e {nomePericia(origem.Pericia_Treinada_2)}
+                    {origem.Pericia_Treinada_Especial ? ` e ${nomePericia(origem.Pericia_Treinada_Especial)}` : ''}.
                   </p>
                   <p style={styles.poder}>
                     <strong>{origem.Nome_Poder}. </strong>

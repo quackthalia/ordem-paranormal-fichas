@@ -63,6 +63,7 @@ export const ModalPoderes: React.FC = () => {
             {/* Editor contentEditable */}
             <div
               ref={(el) => {
+                editorRef.current = el;
                 if (el && !el.dataset.initialized) {
                   el.innerHTML = descricaoEditando;
                   el.dataset.initialized = 'true';

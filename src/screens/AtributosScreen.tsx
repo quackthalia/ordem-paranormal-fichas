@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRPG } from '../context/RPGContext';
+import { capMaximoAtributo, NEX_OPTIONS } from '../utils/rpgRules';
 import type { AtributoKey } from '../types';
 
 const ATRIBUTOS_ORDER: AtributoKey[] = ['FOR', 'AGI', 'INT', 'PRE', 'VIG'];
@@ -32,7 +33,7 @@ export const AtributosScreen: React.FC = () => {
           onChange={handleNexChange}
           style={styles.select}
         >
-          {[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 99].map(n => (
+          {NEX_OPTIONS.map(n => (
             <option key={n} value={n}>{n}%</option>
           ))}
         </select>
@@ -48,39 +49,34 @@ export const AtributosScreen: React.FC = () => {
 
       {/* LISTA DE ATRIBUTOS */}
       <div style={styles.lista}>
-        {ATRIBUTOS_ORDER.map(nome => (
-          <div key={nome} style={styles.row}>
-            <span style={styles.nome}>{nome}</span>
-            <div style={styles.controls}>
-              <button
-                onClick={() => alterarAtributo(nome, 'diminuir')}
-                disabled={
-                  atributos[nome] === 0 ||
-                  (atributos[nome] === 1 && Object.values(atributos).filter(v => v === 0).length >= 1)
-                }
-                style={{
-                  ...styles.btn,
-                  backgroundColor: (atributos[nome] === 0 || (atributos[nome] === 1 && Object.values(atributos).filter(v => v === 0).length >= 1))
-                    ? '#555' : '#cc3333',
-                }}
-              >
-                -
-              </button>
-              <span style={styles.valor}>{atributos[nome]}</span>
-              <button
-                onClick={() => alterarAtributo(nome, 'aumentar')}
-                disabled={pontosRestantes <= 0 || atributos[nome] >= (nex === 5 ? 3 : 5)}
-                style={{
-                  ...styles.btn,
-                  backgroundColor: (pontosRestantes <= 0 || atributos[nome] >= (nex === 5 ? 3 : 5))
-                    ? '#555' : '#33cc33',
-                }}
-              >
-                +
-              </button>
+        {ATRIBUTOS_ORDER.map(nome => {
+          const temAtributoZerado = Object.values(atributos).some(v => v === 0);
+          const naoPodeDiminuir = atributos[nome] === 0 || (atributos[nome] === 1 && temAtributoZerado);
+          const naoPodeAumentar = pontosRestantes <= 0 || atributos[nome] >= capMaximoAtributo(nex);
+
+          return (
+            <div key={nome} style={styles.row}>
+              <span style={styles.nome}>{nome}</span>
+              <div style={styles.controls}>
+                <button
+                  onClick={() => alterarAtributo(nome, 'diminuir')}
+                  disabled={naoPodeDiminuir}
+                  style={{ ...styles.btn, backgroundColor: naoPodeDiminuir ? '#555' : '#cc3333' }}
+                >
+                  -
+                </button>
+                <span style={styles.valor}>{atributos[nome]}</span>
+                <button
+                  onClick={() => alterarAtributo(nome, 'aumentar')}
+                  disabled={naoPodeAumentar}
+                  style={{ ...styles.btn, backgroundColor: naoPodeAumentar ? '#555' : '#33cc33' }}
+                >
+                  +
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <button onClick={() => setTelaAtual('origens')} style={styles.avancar}>

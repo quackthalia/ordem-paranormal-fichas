@@ -4,6 +4,7 @@ import { StatusPanel } from './StatusPanel';
 import { PericiasTable } from './PericiasTable';
 import { AbasPanel } from './AbasPanel';
 import { ModalPoderes } from '../../components/ModalPoderes';
+import { obterCorBadge } from '../../utils/rpgRules';
 
 export const FichaScreen: React.FC = () => {
   const {
@@ -14,6 +15,7 @@ export const FichaScreen: React.FC = () => {
     setSkillCombatente1,
     setSkillCombatente2,
     nexModalAberto,
+    nexPoderEditando,
   } = useRPG();
 
   const handleRefazer = () => {
@@ -52,7 +54,7 @@ export const FichaScreen: React.FC = () => {
         Refazer Personagem
       </button>
 
-      {nexModalAberto !== null && <ModalPoderes />}
+      {(nexModalAberto !== null || nexPoderEditando !== null) && <ModalPoderes />}
     </div>
   );
 };
@@ -96,10 +98,10 @@ function AtributosFicha() {
 // COMPONENTE INTERNO: DEFESA
 // ============================================================
 function DefesaPanel() {
-  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras, status } = useRPG();
+  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras } = useRPG();
 
-  const bloqueio = (status as any).bloqueio ?? 0;
-  const esquiva = (status as any).esquiva ?? 0;
+  const [bloqueio, setBloqueio] = React.useState(0);
+  const [esquiva, setEsquiva] = React.useState(0);
 
   return (
     <div style={styles.defesaBox}>
@@ -124,11 +126,25 @@ function DefesaPanel() {
 
       <div style={styles.defesaStat}>
         <span style={styles.defesaLabel}>BLOQUEIO</span>
-        <span style={styles.defesaValorPqn}>{bloqueio}</span>
+        <input
+          type="number"
+          onKeyDown={bloquearLetras}
+          value={bloqueio || ''}
+          placeholder="0"
+          onChange={e => setBloqueio(Math.max(0, Number(e.target.value)))}
+          style={styles.defesaValorPqn}
+        />
       </div>
       <div style={styles.defesaStat}>
         <span style={styles.defesaLabel}>ESQUIVA</span>
-        <span style={styles.defesaValorPqn}>{esquiva}</span>
+        <input
+          type="number"
+          onKeyDown={bloquearLetras}
+          value={esquiva || ''}
+          placeholder="0"
+          onChange={e => setEsquiva(Math.max(0, Number(e.target.value)))}
+          style={styles.defesaValorPqn}
+        />
       </div>
     </div>
   );
@@ -207,30 +223,6 @@ function BadgeBlock({
       </div>
     </div>
   );
-}
-
-// ============================================================
-// FUNÇÃO AUXILIAR: COR DA BADGE
-// ============================================================
-function obterCorBadge(texto: string): string {
-  const txt = texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  if (txt.includes('sangue')) return '#CD0000';
-  if (txt.includes('morte')) return '#363636';
-  if (txt.includes('conhecimento')) return '#FFC125';
-  if (txt.includes('energia')) return '#BF3EFF';
-  if (txt.includes('medo')) return '#E8E8E8';
-  if (txt.includes('balistico') || txt.includes('corte') || txt.includes('impacto') || txt.includes('perfuracao')) return '#B5B5B5';
-  if (txt.includes('calor')) return '#FF4500';
-  if (txt.includes('frio')) return '#98F5FF';
-  if (txt.includes('eletricidade')) return '#FFFF00';
-  if (txt.includes('quimico')) return '#00EE00';
-  if (txt.includes('mental') || txt.includes('mentais')) return '#436EEE';
-  if (txt.includes('arma') && txt.includes('simples')) return '#BCD2EE';
-  if (txt.includes('arma') && txt.includes('tatica')) return '#A2B5CD';
-  if (txt.includes('arma') && txt.includes('pesada')) return '#6E7B8B';
-  if (txt.includes('leve')) return '#9BCD9B';
-  if (txt.includes('pesada')) return '#698B69';
-  return '#4da6ff';
 }
 
 // ============================================================

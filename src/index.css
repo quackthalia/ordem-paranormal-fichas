@@ -1,35 +1,22 @@
+@import 'tailwindcss';
+
 /* ============================================================
-   TEMA GLOBAL — Ordem Paranormal Fichas
+   TEMA — Ordem Paranormal Fichas
+   Preto/zinco + vermelho sangue. Fonte de máquina de escrever
+   nos títulos, no clima de "Enigma do Medo".
    ============================================================ */
+@theme {
+  --font-display: 'Special Elite', 'Courier New', monospace;
+}
+
 :root {
-  --bg: #121212;
-  --bg-card: #181818;
-  --border: #333;
-  --text: #fff;
-  --text-muted: #aaa;
-  --accent: #4da6ff;
-
-  font-family: 'Segoe UI', system-ui, Roboto, sans-serif;
   color-scheme: dark;
-  color: var(--text);
-  background-color: var(--bg);
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
-html,
-body,
-#root {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-* {
-  box-sizing: border-box;
+body {
+  @apply bg-zinc-950 text-zinc-100 antialiased;
+  background-image: radial-gradient(ellipse at top, rgb(39 39 42 / 0.35), transparent 60%);
+  background-attachment: fixed;
 }
 
 /* Esconde as setinhas dos inputs numéricos */
@@ -44,61 +31,39 @@ input[type='number'] {
 }
 
 select option {
-  background-color: #1a1a1a;
-  color: var(--text);
+  background-color: #18181b;
+  color: #f4f4f5;
 }
 
-/* ============================================================
-   POLIMENTO GLOBAL (funciona junto com os estilos inline)
-   ============================================================ */
 button {
-  font-family: inherit;
-  transition: filter 0.15s ease, transform 0.1s ease;
+  cursor: pointer;
 }
 
-button:hover:not(:disabled) {
-  filter: brightness(1.2);
-}
-
-button:active:not(:disabled) {
-  transform: scale(0.97);
-}
-
-button:disabled {
-  cursor: not-allowed;
-}
-
-input,
-select,
-textarea {
-  font-family: inherit;
+::selection {
+  background: rgb(185 28 28 / 0.45);
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid #b91c1c;
   outline-offset: 2px;
   border-radius: 2px;
 }
 
-::selection {
-  background: rgba(77, 166, 255, 0.35);
-}
-
-/* Scrollbar discreta, combinando com o tema */
+/* Scrollbar discreta */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #444 transparent;
+  scrollbar-color: #3f3f46 transparent;
 }
 *::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 *::-webkit-scrollbar-thumb {
-  background: #444;
+  background: #3f3f46;
   border-radius: 4px;
 }
 *::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #52525b;
 }
 *::-webkit-scrollbar-track {
   background: transparent;

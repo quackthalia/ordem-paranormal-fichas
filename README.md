@@ -1,6 +1,6 @@
 # Ordem Paranormal — Fichas
 
-Criador de fichas de personagem para o RPG **Ordem Paranormal**, feito com React + TypeScript + Vite, usando Supabase como banco de dados (perícias, origens e poderes).
+Criador de fichas de personagem para o RPG **Ordem Paranormal**, feito com React + TypeScript + Vite + Tailwind CSS, usando Supabase como banco de dados (perícias, origens e poderes).
 
 ## Como rodar
 

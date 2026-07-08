@@ -23,7 +23,7 @@ function Rotas() {
 function App() {
   return (
     <RPGProvider>
-      <div style={{ padding: '30px 40px', minHeight: '100vh' }}>
+      <div className="min-h-screen px-6 py-8 md:px-10">
         <Rotas />
       </div>
     </RPGProvider>

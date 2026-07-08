@@ -4,7 +4,7 @@ interface InputOtimizadoProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
-  style?: React.CSSProperties;
+  className?: string;
   debounce?: number;
 }
 
@@ -12,7 +12,7 @@ export const InputOtimizado: React.FC<InputOtimizadoProps> = ({
   value,
   onChange,
   placeholder,
-  style,
+  className,
   debounce = 300,
 }) => {
   const [localValue, setLocalValue] = useState(value);
@@ -52,7 +52,7 @@ export const InputOtimizado: React.FC<InputOtimizadoProps> = ({
       value={localValue}
       onChange={handleChange}
       placeholder={placeholder}
-      style={style}
+      className={className}
     />
   );
 };

@@ -2,6 +2,21 @@ import React from 'react';
 import { useRPG } from '../../context/RPGContext';
 import type { AtributoKey } from '../../types';
 
+// Cores por grau de treino: destreinado → treinado → veterano → expert
+const COR_TREINO: Record<number, string> = {
+  0: 'text-zinc-400',
+  5: 'text-emerald-400',
+  10: 'text-amber-400',
+  15: 'text-red-400',
+};
+
+const BORDA_TREINO: Record<number, string> = {
+  0: 'border-zinc-600',
+  5: 'border-emerald-400',
+  10: 'border-amber-400',
+  15: 'border-red-400',
+};
+
 export const PericiasTable: React.FC = () => {
   const { periciasHook, regrasAtivas, setRegrasAtivas } = useRPG();
   const { pericias, handleMudarPericia, limites, totais } = periciasHook;
@@ -10,33 +25,29 @@ export const PericiasTable: React.FC = () => {
   const { totalTreinadasUsadas, totalUpgradesGastos } = totais;
 
   return (
-    <div style={styles.container}>
-      <h3 style={styles.titulo}>Perícias</h3>
+    <div className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-6">
+      <h3 className="font-display mb-5 border-b border-zinc-800 pb-3 text-center text-lg uppercase tracking-[0.2em] text-zinc-300">
+        Perícias
+      </h3>
 
       {/* PAINEL DE REGRAS */}
-      <div style={styles.painelRegras}>
-        <label style={styles.checkboxLabel}>
+      <div className="mb-4 flex items-center justify-between rounded border border-zinc-800 bg-zinc-950/80 px-3 py-1.5 text-xs">
+        <label className="flex cursor-pointer items-center gap-2 text-zinc-400">
           <input
             type="checkbox"
+            className="cursor-pointer accent-red-600"
             checked={regrasAtivas}
             onChange={(e) => setRegrasAtivas(e.target.checked)}
-            style={{ cursor: 'pointer' }}
           />
           {regrasAtivas ? 'Regras Ativas' : 'Modo Livre'}
         </label>
 
         {regrasAtivas && (
-          <div style={styles.pontosRow}>
-            <span style={{
-              ...styles.ponto,
-              color: maxTreinadas - totalTreinadasUsadas < 0 ? '#ff4d4d' : '#8fa0f0',
-            }}>
+          <div className="flex gap-4 font-bold">
+            <span className={maxTreinadas - totalTreinadasUsadas < 0 ? 'text-red-500' : 'text-emerald-400'}>
               Treinar: {maxTreinadas - totalTreinadasUsadas}
             </span>
-            <span style={{
-              ...styles.ponto,
-              color: maxUpgrades - totalUpgradesGastos < 0 ? '#ff4d4d' : '#68bd82',
-            }}>
+            <span className={maxUpgrades - totalUpgradesGastos < 0 ? 'text-red-500' : 'text-amber-400'}>
               Aumentar Grau: {maxUpgrades - totalUpgradesGastos}
             </span>
           </div>
@@ -44,43 +55,35 @@ export const PericiasTable: React.FC = () => {
       </div>
 
       {/* TABELA */}
-      <div style={styles.tableWrapper}>
-        <table style={styles.table}>
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse text-zinc-100">
           <thead>
-            <tr style={styles.theadTr}>
-              <th style={styles.th}>Perícia</th>
-              <th style={styles.th}>Dados</th>
-              <th style={styles.th}>Bônus</th>
-              <th style={styles.th}>Treino</th>
-              <th style={styles.th}>Outros</th>
+            <tr className="border-b border-zinc-700 text-xs uppercase tracking-wider text-zinc-500">
+              <th className="px-2 py-2.5 text-left">Perícia</th>
+              <th className="px-2 py-2.5">Dados</th>
+              <th className="px-2 py-2.5">Bônus</th>
+              <th className="px-2 py-2.5">Treino</th>
+              <th className="px-2 py-2.5">Outros</th>
             </tr>
           </thead>
           <tbody>
             {Object.entries(pericias).map(([nome, dadosPericia]) => {
               const totalBonus = dadosPericia.treino + dadosPericia.outros;
-
-              let corTexto = '#ccc';
-              if (dadosPericia.treino === 5) corTexto = '#43a047';
-              else if (dadosPericia.treino === 10) corTexto = '#1e88e5';
-              else if (dadosPericia.treino === 15) corTexto = '#f57c00';
+              const corTexto = COR_TREINO[dadosPericia.treino] ?? 'text-zinc-400';
+              const corBorda = BORDA_TREINO[dadosPericia.treino] ?? 'border-zinc-600';
 
               return (
-                <tr key={nome} style={styles.tr}>
-                  <td style={{ ...styles.td, fontWeight: 'bold', color: corTexto }}>
-                    {nome}
-                  </td>
+                <tr key={nome} className="border-b border-zinc-800/70 transition hover:bg-zinc-800/30">
+                  <td className={`px-2 py-2 font-bold ${corTexto}`}>{nome}</td>
 
-                  <td style={{ ...styles.td, textAlign: 'center', color: corTexto }}>
+                  <td className={`px-2 py-2 text-center ${corTexto}`}>
                     <span>(</span>
                     <select
                       value={dadosPericia.atributo}
                       onChange={(e) =>
                         handleMudarPericia(nome, 'atributo', e.target.value as AtributoKey)
                       }
-                      style={{
-                        ...estiloSelectDropdown,
-                        color: corTexto,
-                      }}
+                      className={`cursor-pointer appearance-none border-none bg-transparent text-center font-bold outline-none ${corTexto}`}
                     >
                       <option value="FOR">FOR</option>
                       <option value="AGI">AGI</option>
@@ -91,28 +94,17 @@ export const PericiasTable: React.FC = () => {
                     <span>)</span>
                   </td>
 
-                  <td style={{
-                    ...styles.td,
-                    textAlign: 'center',
-                    fontWeight: 'bold',
-                    color: corTexto,
-                    fontSize: '1.05rem',
-                  }}>
+                  <td className={`px-2 py-2 text-center text-[1.05rem] font-bold ${corTexto}`}>
                     ( {totalBonus} )
                   </td>
 
-                  <td style={{ ...styles.td, textAlign: 'center' }}>
+                  <td className="px-2 py-2 text-center">
                     <select
                       value={dadosPericia.treino}
                       onChange={(e) =>
                         handleMudarPericia(nome, 'treino', Number(e.target.value))
                       }
-                      style={{
-                        ...estiloSelectDropdown,
-                        borderBottom: `1px solid ${corTexto}`,
-                        width: '50px',
-                        color: corTexto,
-                      }}
+                      className={`w-12 cursor-pointer appearance-none border-b bg-transparent text-center font-bold outline-none ${corTexto} ${corBorda}`}
                     >
                       <option value={0}>0</option>
                       <option value={5}>5</option>
@@ -121,7 +113,7 @@ export const PericiasTable: React.FC = () => {
                     </select>
                   </td>
 
-                  <td style={{ ...styles.td, textAlign: 'center' }}>
+                  <td className="px-2 py-2 text-center">
                     <input
                       type="number"
                       onKeyDown={(e) => {
@@ -132,11 +124,7 @@ export const PericiasTable: React.FC = () => {
                       onChange={(e) =>
                         handleMudarPericia(nome, 'outros', Math.max(0, Number(e.target.value)))
                       }
-                      style={{
-                        ...estiloInputOutros,
-                        color: corTexto,
-                        borderBottom: `1px solid ${corTexto}`,
-                      }}
+                      className={`w-11 border-b bg-transparent text-center font-bold outline-none ${corTexto} ${corBorda}`}
                     />
                   </td>
                 </tr>
@@ -147,99 +135,4 @@ export const PericiasTable: React.FC = () => {
       </div>
     </div>
   );
-};
-
-// ============================================================
-// ESTILOS
-// ============================================================
-const estiloSelectDropdown: React.CSSProperties = {
-  backgroundColor: 'transparent',
-  color: '#fff',
-  border: 'none',
-  fontSize: '1rem',
-  fontWeight: 'bold',
-  cursor: 'pointer',
-  outline: 'none',
-  textAlign: 'center',
-  appearance: 'none',
-};
-
-const estiloInputOutros: React.CSSProperties = {
-  width: '45px',
-  backgroundColor: 'transparent',
-  border: 'none',
-  textAlign: 'center',
-  fontSize: '1rem',
-  fontWeight: 'bold',
-  outline: 'none',
-};
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    backgroundColor: '#181818',
-    padding: '30px',
-    borderRadius: '8px',
-    border: '1px solid #333',
-  },
-  titulo: {
-    textTransform: 'uppercase',
-    letterSpacing: '2px',
-    color: '#ccc',
-    borderBottom: '1px solid #333',
-    paddingBottom: '10px',
-    marginBottom: '25px',
-    textAlign: 'center',
-  },
-  painelRegras: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#050505',
-    padding: '6px 12px',
-    borderRadius: '4px',
-    border: '1px solid #222',
-    marginBottom: '15px',
-    fontSize: '0.8rem',
-  },
-  checkboxLabel: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    cursor: 'pointer',
-    color: '#aaa',
-  },
-  pontosRow: {
-    display: 'flex',
-    gap: '15px',
-    fontWeight: 'bold',
-  },
-  ponto: {
-    fontSize: '0.8rem',
-  },
-  tableWrapper: {
-    overflowX: 'auto',
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    fontSize: '1rem',
-    color: '#fff',
-  },
-  theadTr: {
-    color: '#888',
-    textTransform: 'uppercase',
-    fontSize: '0.85rem',
-    letterSpacing: '1px',
-    borderBottom: '1px solid #444',
-  },
-  th: {
-    padding: '10px 8px',
-  },
-  tr: {
-    borderBottom: '1px solid #222',
-    backgroundColor: 'transparent',
-  },
-  td: {
-    padding: '10px 8px',
-  },
 };

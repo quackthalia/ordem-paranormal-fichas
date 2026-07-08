@@ -153,5 +153,5 @@ export function obterCorBadge(texto: string): string {
   if (txt.includes('arma') && txt.includes('pesada')) return '#6E7B8B';
   if (txt.includes('leve')) return '#9BCD9B';
   if (txt.includes('pesada')) return '#698B69';
-  return '#4da6ff';
+  return '#a1a1aa';
 }

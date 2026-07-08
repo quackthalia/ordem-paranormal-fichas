@@ -137,19 +137,18 @@ export const AbasPanel: React.FC = () => {
   );
 
   return (
-    <div style={styles.container}>
+    <div className="flex flex-col rounded-lg border border-zinc-800 bg-zinc-900/60 p-5">
       {/* BOTÕES DAS ABAS */}
-      <div style={styles.abasRow}>
+      <div className="mb-5 flex flex-wrap gap-1 border-b-2 border-zinc-800 pb-2.5">
         {(['combate', 'habilidades', 'rituais', 'inventario', 'descricao'] as const).map(aba => (
           <button
             key={aba}
             onClick={() => setAbaDireita(aba)}
-            style={{
-              ...styles.abaBtn,
-              backgroundColor: abaDireita === aba ? '#2a2a2a' : 'transparent',
-              color: abaDireita === aba ? '#fff' : '#777',
-              border: abaDireita === aba ? '1px solid #444' : '1px solid transparent',
-            }}
+            className={`min-w-[70px] flex-1 rounded px-1 py-2 text-xs font-bold uppercase tracking-wider transition ${
+              abaDireita === aba
+                ? 'border border-red-900 bg-red-950/40 text-zinc-100'
+                : 'border border-transparent text-zinc-500 hover:text-zinc-300'
+            }`}
           >
             {aba === 'inventario' ? 'Inventário' : aba === 'descricao' ? 'Descrição' : aba}
           </button>
@@ -157,32 +156,39 @@ export const AbasPanel: React.FC = () => {
       </div>
 
       {/* CONTEÚDO DAS ABAS */}
-      <div style={styles.conteudo}>
+      <div className="mt-2 flex flex-1 flex-col">
         {abaDireita === 'combate' && (
-          <div style={styles.placeholder}>Conteúdo de Combate</div>
+          <div className="mt-5 text-center italic text-zinc-600">Conteúdo de Combate</div>
         )}
 
         {abaDireita === 'habilidades' && (
-          <div style={styles.habilidadesContainer}>
+          <div className="flex h-full flex-col">
             {/* TOPO: Filtro + Botão Adicionar */}
-            <div style={styles.filtroRow}>
+            <div className="mb-5 flex items-center gap-4">
               <InputOtimizado
                 value={filtroHabilidades}
                 onChange={setFiltroHabilidades}
-                placeholder="Filtrar Habilidades..."
-                style={styles.filtroInput}
+                placeholder="Filtrar habilidades..."
+                className="flex-1 border-b border-zinc-700 bg-transparent py-2 text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700"
               />
-              <button style={styles.addBtn}>+ Adicionar Habilidade</button>
+              <button className="whitespace-nowrap rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-xs font-bold text-zinc-200 transition hover:border-red-800 hover:bg-red-950/40">
+                + Adicionar
+              </button>
             </div>
 
             {/* LISTA DE HABILIDADES */}
-            <div style={styles.listaHabilidades}>
+            <div className="flex flex-1 flex-col gap-2.5 overflow-y-auto pr-1">
               {habilidadesFiltradas.length > 0 ? (
                 habilidadesFiltradas.map(hab => {
                   const estaExpandida = habilidadesExpandidas.includes(hab.id);
 
                   return (
-                    <div key={hab.id} style={styles.habilidadeCard}>
+                    <div
+                      key={hab.id}
+                      className={`overflow-hidden rounded-r border-l-4 bg-zinc-950/60 ${
+                        hab.isSlotVazio ? 'border-zinc-600 border-dashed' : 'border-red-800'
+                      }`}
+                    >
                       {/* CABEÇALHO */}
                       <div
                         onClick={() => {
@@ -196,25 +202,26 @@ export const AbasPanel: React.FC = () => {
                             );
                           }
                         }}
-                        style={styles.habHeader}
+                        className="flex cursor-pointer items-center justify-between gap-2 bg-zinc-900/80 px-4 py-3 transition hover:bg-zinc-800/80"
                       >
-                        <div style={styles.habNomeRow}>
-                          <span style={{
-                            ...styles.habNome,
-                            color: hab.isSlotVazio ? '#4facfe' : '#fff',
-                          }}>
+                        <div className="flex items-center gap-3">
+                          <span className={`text-sm font-bold ${hab.isSlotVazio ? 'text-zinc-400' : 'text-zinc-100'}`}>
                             {hab.nome}
                           </span>
                           {hab.extra && (
-                            <span style={styles.habExtra}>{hab.extra}</span>
+                            <span className="rounded border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 text-xs font-bold text-amber-400">
+                              {hab.extra}
+                            </span>
                           )}
                         </div>
 
-                        <div style={styles.habTagRow}>
-                          <span style={styles.habTag}>{hab.tipo}</span>
-                          <span style={styles.habSeta}>
+                        <div className="flex items-center gap-2.5">
+                          <span className="rounded border border-zinc-800 bg-zinc-950 px-2 py-0.5 text-[0.65rem] uppercase tracking-wider text-zinc-500">
+                            {hab.tipo}
+                          </span>
+                          <span className="text-xs text-zinc-600">
                             {hab.isSlotVazio ? (
-                              <strong style={{ color: '#ff1111', fontSize: '1.2rem' }}>+</strong>
+                              <strong className="text-lg text-red-600">+</strong>
                             ) : (
                               estaExpandida ? '▲' : '▼'
                             )}
@@ -224,66 +231,54 @@ export const AbasPanel: React.FC = () => {
 
                       {/* CONTEÚDO EXPANDIDO */}
                       {estaExpandida && !hab.isSlotVazio && (
-                        <div style={styles.habConteudo}>
-                          <div
-                            dangerouslySetInnerHTML={{ __html: hab.descricao }}
-                            style={styles.habDescricao}
-                          />
+                        <div className="px-4 py-4 text-left text-sm leading-relaxed text-zinc-400">
+                          <div dangerouslySetInnerHTML={{ __html: hab.descricao }} />
 
                           {hab.subPoder && (
-                            <div style={styles.subPoderBox}>
-                              <div style={styles.subPoderHeader}>
-                                <span style={styles.subPoderNome}>{hab.subPoder.nome}</span>
+                            <div className="mt-4 rounded-r border-l-2 border-amber-500 bg-zinc-900/80 p-3">
+                              <div className="mb-1.5 flex items-center justify-between">
+                                <span className="text-sm font-bold text-zinc-100">{hab.subPoder.nome}</span>
                                 {hab.subPoder.extra && (
-                                  <span style={styles.subPoderExtra}>{hab.subPoder.extra}</span>
+                                  <span className="rounded border border-zinc-700 bg-zinc-950 px-1.5 py-0.5 text-xs font-bold text-amber-400">
+                                    {hab.subPoder.extra}
+                                  </span>
                                 )}
                               </div>
-                              <div style={styles.subPoderDesc}>{hab.subPoder.descricao}</div>
+                              <div className="text-xs text-zinc-400">{hab.subPoder.descricao}</div>
                             </div>
                           )}
 
                           {hab.limiteCirculos && (
-                            <div style={styles.circulosBox}>
-                              <div style={{ fontWeight: 'bold', color: '#fff', marginBottom: '8px', fontSize: '0.9rem' }}>
-                                Rituais:
-                              </div>
-                              <div style={styles.circulosRow}>
-                                <span style={{
-                                  ...styles.circulo,
-                                  color: hab.limiteCirculos.c1 > 0 ? '#fff' : '#555',
-                                }}>
-                                  1° Círculo: <strong>{hab.limiteCirculos.c1}</strong>
-                                </span>
-                                <span style={{
-                                  ...styles.circulo,
-                                  color: hab.limiteCirculos.c2 > 0 ? '#fff' : '#555',
-                                }}>
-                                  2° Círculo: <strong>{hab.limiteCirculos.c2}</strong>
-                                </span>
-                                <span style={{
-                                  ...styles.circulo,
-                                  color: hab.limiteCirculos.c3 > 0 ? '#fff' : '#555',
-                                }}>
-                                  3° Círculo: <strong>{hab.limiteCirculos.c3}</strong>
-                                </span>
-                                <span style={{
-                                  ...styles.circulo,
-                                  color: hab.limiteCirculos.c4 > 0 ? '#fff' : '#555',
-                                }}>
-                                  4° Círculo: <strong>{hab.limiteCirculos.c4}</strong>
-                                </span>
+                            <div className="mt-4 rounded-r border-l-2 border-zinc-400 bg-zinc-900/80 p-3">
+                              <div className="mb-2 text-sm font-bold text-zinc-100">Rituais:</div>
+                              <div className="flex flex-wrap gap-2">
+                                {([
+                                  ['1° Círculo', hab.limiteCirculos.c1],
+                                  ['2° Círculo', hab.limiteCirculos.c2],
+                                  ['3° Círculo', hab.limiteCirculos.c3],
+                                  ['4° Círculo', hab.limiteCirculos.c4],
+                                ] as const).map(([rotulo, qtd]) => (
+                                  <span
+                                    key={rotulo}
+                                    className={`rounded border border-zinc-800 bg-zinc-950 px-2 py-1 text-xs ${
+                                      qtd > 0 ? 'text-zinc-100' : 'text-zinc-600'
+                                    }`}
+                                  >
+                                    {rotulo}: <strong>{qtd}</strong>
+                                  </span>
+                                ))}
                               </div>
                             </div>
                           )}
 
                           {hab.preRequisitos && (
-                            <div style={styles.preReq}>
+                            <div className="mt-3 inline-block rounded bg-amber-400/5 px-2.5 py-1.5 text-xs italic text-amber-400">
                               <strong>Pré-requisitos:</strong> {hab.preRequisitos}
                             </div>
                           )}
 
                           {hab.id.startsWith('escolha_nex_') && (
-                            <div style={styles.acoesRow}>
+                            <div className="mt-4 flex gap-2.5">
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -292,7 +287,7 @@ export const AbasPanel: React.FC = () => {
                                   setNomeEditando(hab.nome);
                                   setDescricaoEditando(hab.descricao);
                                 }}
-                                style={styles.editarBtn}
+                                className="flex-1 rounded border border-zinc-700 bg-zinc-800 p-2 text-xs font-bold text-zinc-200 transition hover:bg-zinc-700"
                               >
                                 Editar
                               </button>
@@ -301,7 +296,7 @@ export const AbasPanel: React.FC = () => {
                                   e.stopPropagation();
                                   removerPoder(parseInt(hab.id.replace('escolha_nex_', '')));
                                 }}
-                                style={styles.removerBtn}
+                                className="flex-1 rounded border border-red-900 bg-transparent p-2 text-xs font-bold text-red-500 transition hover:bg-red-950/40"
                               >
                                 Remover Poder
                               </button>
@@ -313,269 +308,22 @@ export const AbasPanel: React.FC = () => {
                   );
                 })
               ) : (
-                <div style={styles.semResultados}>Nenhuma habilidade encontrada.</div>
+                <div className="mt-5 text-center italic text-zinc-600">Nenhuma habilidade encontrada.</div>
               )}
             </div>
           </div>
         )}
 
         {abaDireita === 'rituais' && (
-          <div style={styles.placeholder}>Conteúdo de Rituais</div>
+          <div className="mt-5 text-center italic text-zinc-600">Conteúdo de Rituais</div>
         )}
         {abaDireita === 'inventario' && (
-          <div style={styles.placeholder}>Conteúdo de Inventário</div>
+          <div className="mt-5 text-center italic text-zinc-600">Conteúdo de Inventário</div>
         )}
         {abaDireita === 'descricao' && (
-          <div style={styles.placeholder}>Conteúdo de Descrição</div>
+          <div className="mt-5 text-center italic text-zinc-600">Conteúdo de Descrição</div>
         )}
       </div>
     </div>
   );
-};
-
-// ============================================================
-// ESTILOS
-// ============================================================
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    backgroundColor: '#141414',
-    padding: '20px',
-    borderRadius: '8px',
-    border: '1px solid #252525',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  abasRow: {
-    display: 'flex',
-    gap: '4px',
-    borderBottom: '2px solid #252525',
-    paddingBottom: '10px',
-    marginBottom: '20px',
-    flexWrap: 'wrap',
-  },
-  abaBtn: {
-    flex: 1,
-    minWidth: '70px',
-    padding: '8px 4px',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '0.75rem',
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
-    letterSpacing: '1px',
-    transition: 'all 0.2s',
-  },
-  conteudo: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    marginTop: '10px',
-  },
-  placeholder: {
-    color: '#666',
-    fontStyle: 'italic',
-    textAlign: 'center',
-    marginTop: '20px',
-  },
-  habilidadesContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-  },
-  filtroRow: {
-    display: 'flex',
-    gap: '15px',
-    alignItems: 'center',
-    marginBottom: '20px',
-  },
-  filtroInput: {
-    flex: 1,
-    backgroundColor: 'transparent',
-    color: '#fff',
-    border: 'none',
-    borderBottom: '1px solid #444',
-    padding: '8px 0',
-    fontSize: '1rem',
-    outline: 'none',
-  },
-  addBtn: {
-    backgroundColor: '#2a2a2a',
-    color: '#fff',
-    border: '1px solid #444',
-    borderRadius: '4px',
-    padding: '8px 12px',
-    cursor: 'pointer',
-    fontSize: '0.8rem',
-    fontWeight: 'bold',
-    whiteSpace: 'nowrap',
-  },
-  listaHabilidades: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '10px',
-    overflowY: 'auto',
-    flex: 1,
-    paddingRight: '5px',
-  },
-  habilidadeCard: {
-    backgroundColor: '#111',
-    borderLeft: '4px solid #4facfe',
-    borderRadius: '0 4px 4px 0',
-    overflow: 'hidden',
-    borderTop: '1px solid #222',
-    borderRight: '1px solid #222',
-    borderBottom: '1px solid #222',
-  },
-  habHeader: {
-    padding: '12px 15px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    cursor: 'pointer',
-    backgroundColor: '#1a1a1a',
-  },
-  habNomeRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-  },
-  habNome: {
-    fontWeight: 'bold',
-    fontSize: '0.95rem',
-  },
-  habExtra: {
-    color: '#ffcc00',
-    fontSize: '0.8rem',
-    fontWeight: 'bold',
-    backgroundColor: '#222',
-    padding: '2px 6px',
-    borderRadius: '4px',
-    border: '1px solid #333',
-  },
-  habTagRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-  },
-  habTag: {
-    backgroundColor: '#050505',
-    border: '1px solid #333',
-    padding: '2px 8px',
-    borderRadius: '4px',
-    fontSize: '0.65rem',
-    color: '#aaa',
-    textTransform: 'uppercase',
-    letterSpacing: '1px',
-  },
-  habSeta: {
-    color: '#666',
-    fontSize: '0.8rem',
-  },
-  habConteudo: {
-    padding: '15px',
-    color: '#ccc',
-    fontSize: '0.85rem',
-    lineHeight: '1.5',
-    backgroundColor: '#111',
-    fontStyle: 'normal',
-    textAlign: 'left',
-  },
-  habDescricao: {
-    color: '#ccc',
-    fontSize: '0.85rem',
-    lineHeight: '1.5',
-  },
-  subPoderBox: {
-    marginTop: '15px',
-    padding: '12px',
-    backgroundColor: '#161616',
-    borderLeft: '3px solid #ffcc00',
-    borderRadius: '4px',
-  },
-  subPoderHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '6px',
-  },
-  subPoderNome: {
-    fontWeight: 'bold',
-    color: '#fff',
-    fontSize: '0.9rem',
-  },
-  subPoderExtra: {
-    fontSize: '0.75rem',
-    fontWeight: 'bold',
-    backgroundColor: '#222',
-    padding: '2px 6px',
-    borderRadius: '4px',
-    color: '#ffcc00',
-    border: '1px solid #333',
-  },
-  subPoderDesc: {
-    color: '#ccc',
-    fontSize: '0.8rem',
-  },
-  circulosBox: {
-    marginTop: '15px',
-    padding: '12px',
-    backgroundColor: '#161616',
-    borderLeft: '3px solid #9933ff',
-    borderRadius: '4px',
-  },
-  circulosRow: {
-    display: 'flex',
-    gap: '10px',
-    flexWrap: 'wrap',
-  },
-  circulo: {
-    backgroundColor: '#222',
-    padding: '4px 8px',
-    borderRadius: '4px',
-    border: '1px solid #333',
-    fontSize: '0.8rem',
-  },
-  preReq: {
-    marginTop: '12px',
-    padding: '6px 10px',
-    fontSize: '0.75rem',
-    color: '#ffcc00',
-    fontStyle: 'italic',
-    backgroundColor: 'rgba(255,204,0,0.03)',
-    borderRadius: '4px',
-    display: 'inline-block',
-  },
-  acoesRow: {
-    display: 'flex',
-    gap: '10px',
-    marginTop: '15px',
-  },
-  editarBtn: {
-    flex: 1,
-    backgroundColor: '#2a2a2a',
-    color: '#fff',
-    border: '1px solid #444',
-    padding: '8px',
-    borderRadius: '4px',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-    fontSize: '0.8rem',
-  },
-  removerBtn: {
-    flex: 1,
-    backgroundColor: 'transparent',
-    color: '#ff1111',
-    border: '1px solid #ff1111',
-    padding: '8px',
-    borderRadius: '4px',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-    fontSize: '0.8rem',
-  },
-  semResultados: {
-    textAlign: 'center',
-    color: '#555',
-    fontStyle: 'italic',
-    marginTop: '20px',
-  },
 };

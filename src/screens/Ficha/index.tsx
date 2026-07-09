@@ -4,6 +4,7 @@ import { StatusPanel } from './StatusPanel';
 import { PericiasTable } from './PericiasTable';
 import { AbasPanel } from './AbasPanel';
 import { ModalPoderes } from '../../components/ModalPoderes';
+import { obterCorBadge } from '../../utils/rpgRules';
 
 export const FichaScreen: React.FC = () => {
   const {
@@ -14,6 +15,7 @@ export const FichaScreen: React.FC = () => {
     setSkillCombatente1,
     setSkillCombatente2,
     nexModalAberto,
+    nexPoderEditando,
   } = useRPG();
 
   const handleRefazer = () => {
@@ -25,12 +27,14 @@ export const FichaScreen: React.FC = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.titulo}>Ficha de {classe}</h2>
+    <div className="w-full px-2 md:px-5">
+      <h2 className="font-display mb-10 text-center text-2xl uppercase tracking-[0.2em] text-zinc-100">
+        Ficha de <span className="text-red-500">{classe}</span>
+      </h2>
 
-      <div style={styles.grid2colunas}>
+      <div className="flex w-full flex-wrap justify-between gap-5">
         {/* COLUNA ESQUERDA: Atributos + Status + Defesa + Proteções */}
-        <div style={styles.colEsquerda}>
+        <div className="min-w-[340px] flex-[1_1_30%]">
           <AtributosFicha />
           <StatusPanel />
           <DefesaPanel />
@@ -38,21 +42,24 @@ export const FichaScreen: React.FC = () => {
         </div>
 
         {/* COLUNA MEIO: Perícias */}
-        <div style={styles.colMeio}>
+        <div className="min-w-[340px] flex-[1_1_32%]">
           <PericiasTable />
         </div>
 
         {/* COLUNA DIREITA: Abas (Combate, Habilidades, Rituais...) */}
-        <div style={styles.colDireita}>
+        <div className="min-w-[340px] flex-[1_1_34%]">
           <AbasPanel />
         </div>
       </div>
 
-      <button onClick={handleRefazer} style={styles.refazerBtn}>
+      <button
+        onClick={handleRefazer}
+        className="mt-12 w-full rounded-md border border-zinc-800 bg-zinc-900 p-3.5 font-bold uppercase tracking-wider text-zinc-400 transition hover:border-red-900 hover:text-red-500"
+      >
         Refazer Personagem
       </button>
 
-      {nexModalAberto !== null && <ModalPoderes />}
+      {(nexModalAberto !== null || nexPoderEditando !== null) && <ModalPoderes />}
     </div>
   );
 };
@@ -64,10 +71,13 @@ function AtributosFicha() {
   const { atributos, setAtributos, bonusAtributos, setBonusAtributos, bloquearLetras } = useRPG();
 
   return (
-    <div style={styles.atributosRow}>
+    <div className="mb-8 flex flex-wrap justify-center gap-5">
       {(Object.keys(atributos) as Array<keyof typeof atributos>).map(nome => (
-        <div key={nome} style={styles.atributoCircle}>
-          <div style={styles.bonusBadge}>
+        <div
+          key={nome}
+          className="relative flex h-[72px] w-[72px] flex-col items-center justify-center rounded-full border-2 border-zinc-700 bg-zinc-900/60"
+        >
+          <div className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-amber-500 bg-zinc-950" title="Bônus temporário">
             <input
               type="number"
               onKeyDown={bloquearLetras}
@@ -75,16 +85,16 @@ function AtributosFicha() {
               onChange={(e) =>
                 setBonusAtributos({ ...bonusAtributos, [nome]: Math.max(0, Number(e.target.value)) })
               }
-              style={styles.bonusInput}
+              className="w-full bg-transparent text-center text-xs font-bold text-amber-400 outline-none"
             />
           </div>
-          <span style={styles.atributoLabel}>{nome}</span>
+          <span className="mt-2.5 text-xs font-bold text-zinc-500">{nome}</span>
           <input
             type="number"
             onKeyDown={bloquearLetras}
             value={atributos[nome]}
             onChange={(e) => setAtributos({ ...atributos, [nome]: Number(e.target.value) })}
-            style={styles.atributoInput}
+            className="-mt-0.5 w-full bg-transparent text-center text-2xl font-bold text-zinc-100 outline-none"
           />
         </div>
       ))}
@@ -96,39 +106,65 @@ function AtributosFicha() {
 // COMPONENTE INTERNO: DEFESA
 // ============================================================
 function DefesaPanel() {
-  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras, status } = useRPG();
+  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras } = useRPG();
 
-  const bloqueio = (status as any).bloqueio ?? 0;
-  const esquiva = (status as any).esquiva ?? 0;
+  const [bloqueio, setBloqueio] = React.useState(0);
+  const [esquiva, setEsquiva] = React.useState(0);
 
   return (
-    <div style={styles.defesaBox}>
-      <div style={styles.defesaItem}>
-        <div style={styles.defesaValor}>{defesaTotal}</div>
+    <div className="mt-8 flex flex-wrap items-center justify-between gap-5 rounded-lg border border-zinc-800 bg-zinc-900/60 p-5">
+      <div className="flex items-center gap-4">
+        <div className="flex h-14 w-14 items-center justify-center rounded-lg border-2 border-zinc-200 text-2xl font-bold">
+          {defesaTotal}
+        </div>
         <div>
-          <div style={styles.defesaLabel}>DEFESA</div>
-          <div style={styles.defesaFormula}>
+          <div className="text-xs font-bold uppercase tracking-wider text-zinc-500">Defesa</div>
+          <div className="mt-0.5 flex items-center gap-1.5 text-sm text-zinc-300">
             = 10 + AGI +
-            <input type="number" onKeyDown={bloquearLetras}
-              value={defEquip || ''} placeholder="0"
+            <input
+              type="number"
+              onKeyDown={bloquearLetras}
+              value={defEquip || ''}
+              placeholder="0"
+              title="Defesa de equipamento"
               onChange={e => setDefEquip(Math.max(0, Number(e.target.value)))}
-              style={styles.defesaInput} />
+              className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-red-600"
+            />
             +
-            <input type="number" onKeyDown={bloquearLetras}
-              value={defOutros || ''} placeholder="0"
+            <input
+              type="number"
+              onKeyDown={bloquearLetras}
+              value={defOutros || ''}
+              placeholder="0"
+              title="Outros bônus de defesa"
               onChange={e => setDefOutros(Math.max(0, Number(e.target.value)))}
-              style={styles.defesaInput} />
+              className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-red-600"
+            />
           </div>
         </div>
       </div>
 
-      <div style={styles.defesaStat}>
-        <span style={styles.defesaLabel}>BLOQUEIO</span>
-        <span style={styles.defesaValorPqn}>{bloqueio}</span>
+      <div className="flex flex-col items-center">
+        <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Bloqueio</span>
+        <input
+          type="number"
+          onKeyDown={bloquearLetras}
+          value={bloqueio || ''}
+          placeholder="0"
+          onChange={e => setBloqueio(Math.max(0, Number(e.target.value)))}
+          className="mt-1 w-12 border-b border-zinc-600 bg-transparent text-center text-lg font-bold text-zinc-100 outline-none focus:border-red-600"
+        />
       </div>
-      <div style={styles.defesaStat}>
-        <span style={styles.defesaLabel}>ESQUIVA</span>
-        <span style={styles.defesaValorPqn}>{esquiva}</span>
+      <div className="flex flex-col items-center">
+        <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Esquiva</span>
+        <input
+          type="number"
+          onKeyDown={bloquearLetras}
+          value={esquiva || ''}
+          placeholder="0"
+          onChange={e => setEsquiva(Math.max(0, Number(e.target.value)))}
+          className="mt-1 w-12 border-b border-zinc-600 bg-transparent text-center text-lg font-bold text-zinc-100 outline-none focus:border-red-600"
+        />
       </div>
     </div>
   );
@@ -145,22 +181,10 @@ function ProtecoesPanel() {
   } = useRPG();
 
   return (
-    <div style={styles.protecoesContainer}>
-      <BadgeBlock
-        titulo="Proteção"
-        itens={protecoes}
-        setItens={setProtecoes}
-      />
-      <BadgeBlock
-        titulo="Resistências"
-        itens={resistencias}
-        setItens={setResistencias}
-      />
-      <BadgeBlock
-        titulo="Proficiências"
-        itens={proficiencias}
-        setItens={setProficiencias}
-      />
+    <div className="mt-6 flex w-full flex-col gap-5">
+      <BadgeBlock titulo="Proteção" itens={protecoes} setItens={setProtecoes} />
+      <BadgeBlock titulo="Resistências" itens={resistencias} setItens={setResistencias} />
+      <BadgeBlock titulo="Proficiências" itens={proficiencias} setItens={setProficiencias} />
     </div>
   );
 }
@@ -180,13 +204,13 @@ function BadgeBlock({
   const [inputValue, setInputValue] = React.useState('');
 
   return (
-    <div style={styles.badgeBlock}>
-      <div style={styles.badgeHeader}>
-        <span style={styles.badgeTitulo}>{titulo}</span>
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-2.5">
+        <span className="min-w-28 text-xs font-bold uppercase tracking-wider text-zinc-500">{titulo}</span>
         <input
           type="text"
           value={inputValue}
-          placeholder="Digite e Enter..."
+          placeholder="Digite e aperte Enter..."
           onChange={e => setInputValue(e.target.value)}
           onKeyDown={e => {
             if (e.key === 'Enter' && inputValue.trim()) {
@@ -194,142 +218,29 @@ function BadgeBlock({
               setInputValue('');
             }
           }}
-          style={styles.badgeInput}
+          className="flex-1 border-b border-zinc-800 bg-transparent py-1 text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700"
         />
       </div>
-      <div style={styles.badgeList}>
-        {itens.map((item, i) => (
-          <div key={i} style={{ ...styles.badge, borderColor: obterCorBadge(item) }}>
-            <span>{item}</span>
-            <button onClick={() => setItens(itens.filter((_, j) => j !== i))} style={styles.badgeX}>x</button>
-          </div>
-        ))}
-      </div>
+      {itens.length > 0 && (
+        <div className="flex flex-wrap gap-2 pl-[124px]">
+          {itens.map((item, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-1.5 rounded border bg-zinc-900 px-2 py-1 text-sm text-zinc-100"
+              style={{ borderColor: obterCorBadge(item) }}
+            >
+              <span>{item}</span>
+              <button
+                onClick={() => setItens(itens.filter((_, j) => j !== i))}
+                className="px-0.5 text-zinc-500 transition hover:text-red-500"
+                title="Remover"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
-
-// ============================================================
-// FUNÇÃO AUXILIAR: COR DA BADGE
-// ============================================================
-function obterCorBadge(texto: string): string {
-  const txt = texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  if (txt.includes('sangue')) return '#CD0000';
-  if (txt.includes('morte')) return '#363636';
-  if (txt.includes('conhecimento')) return '#FFC125';
-  if (txt.includes('energia')) return '#BF3EFF';
-  if (txt.includes('medo')) return '#E8E8E8';
-  if (txt.includes('balistico') || txt.includes('corte') || txt.includes('impacto') || txt.includes('perfuracao')) return '#B5B5B5';
-  if (txt.includes('calor')) return '#FF4500';
-  if (txt.includes('frio')) return '#98F5FF';
-  if (txt.includes('eletricidade')) return '#FFFF00';
-  if (txt.includes('quimico')) return '#00EE00';
-  if (txt.includes('mental') || txt.includes('mentais')) return '#436EEE';
-  if (txt.includes('arma') && txt.includes('simples')) return '#BCD2EE';
-  if (txt.includes('arma') && txt.includes('tatica')) return '#A2B5CD';
-  if (txt.includes('arma') && txt.includes('pesada')) return '#6E7B8B';
-  if (txt.includes('leve')) return '#9BCD9B';
-  if (txt.includes('pesada')) return '#698B69';
-  return '#4da6ff';
-}
-
-// ============================================================
-// ESTILOS
-// ============================================================
-const styles: Record<string, React.CSSProperties> = {
-  container: { width: '100%', padding: '0 20px', fontFamily: 'sans-serif' },
-  titulo: {
-    textAlign: 'center', textTransform: 'uppercase',
-    letterSpacing: '2px', marginBottom: '40px',
-  },
-  grid2colunas: {
-    display: 'flex', flexWrap: 'wrap', gap: '20px',
-    width: '100%', justifyContent: 'space-between',
-  },
-  colEsquerda: { flex: '1 1 30%', minWidth: '400px' },
-  colMeio: { flex: '1 1 32%', minWidth: '400px' },
-  colDireita: { flex: '1 1 34%', minWidth: '350px' },
-  atributosRow: {
-    display: 'flex', justifyContent: 'center', gap: '20px',
-    marginBottom: '30px', flexWrap: 'wrap',
-  },
-  atributoCircle: {
-    position: 'relative', display: 'flex', flexDirection: 'column',
-    justifyContent: 'center', alignItems: 'center',
-    backgroundColor: 'transparent', borderRadius: '50%',
-    width: '70px', height: '70px', border: '2px solid #444',
-  },
-  bonusBadge: {
-    position: 'absolute', top: '-5px', right: '-5px',
-    width: '24px', height: '24px', backgroundColor: '#181818',
-    border: '2px solid #ffcc00', borderRadius: '50%',
-    display: 'flex', justifyContent: 'center', alignItems: 'center',
-  },
-  bonusInput: {
-    width: '100%', backgroundColor: 'transparent', color: '#ffcc00',
-    border: 'none', textAlign: 'center', fontSize: '0.8rem',
-    fontWeight: 'bold', outline: 'none',
-  },
-  atributoLabel: { fontSize: '0.8rem', color: '#aaa', fontWeight: 'bold', marginTop: '10px' },
-  atributoInput: {
-    width: '100%', backgroundColor: 'transparent', color: '#fff',
-    border: 'none', textAlign: 'center', fontSize: '1.6rem',
-    fontWeight: 'bold', outline: 'none', marginTop: '-2px',
-  },
-  defesaBox: {
-    marginTop: '30px', padding: '20px', border: '1px solid #333',
-    borderRadius: '8px', backgroundColor: '#161616',
-    display: 'flex', alignItems: 'center',
-    justifyContent: 'space-between', gap: '20px', flexWrap: 'wrap',
-  },
-  defesaItem: { display: 'flex', alignItems: 'center', gap: '15px' },
-  defesaValor: {
-    border: '2px solid #fff', borderRadius: '8px',
-    width: '55px', height: '55px',
-    display: 'flex', justifyContent: 'center',
-    alignItems: 'center', fontSize: '1.6rem', fontWeight: 'bold',
-  },
-  defesaLabel: { fontSize: '0.85rem', fontWeight: 'bold', color: '#aaa', letterSpacing: '1px' },
-  defesaFormula: {
-    display: 'flex', alignItems: 'center', gap: '5px',
-    fontSize: '0.95rem', marginTop: '2px',
-  },
-  defesaInput: {
-    width: '40px', backgroundColor: 'transparent', color: '#fff',
-    border: 'none', borderBottom: '1px solid #fff',
-    textAlign: 'center', fontSize: '1.1rem', fontWeight: 'bold', outline: 'none',
-  },
-  defesaStat: { display: 'flex', flexDirection: 'column', alignItems: 'center' },
-  defesaValorPqn: {
-    width: '50px', backgroundColor: 'transparent', color: '#fff',
-    border: 'none', borderBottom: '1px solid #fff',
-    textAlign: 'center', fontSize: '1.3rem', fontWeight: 'bold',
-    outline: 'none', marginTop: '5px',
-  },
-  protecoesContainer: { marginTop: '25px', display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' },
-  badgeBlock: { display: 'flex', flexDirection: 'column', gap: '8px' },
-  badgeHeader: { display: 'flex', alignItems: 'center', gap: '10px' },
-  badgeTitulo: { fontWeight: 'bold', color: '#aaa', minWidth: '110px', fontSize: '0.9rem', textTransform: 'uppercase' },
-  badgeInput: {
-    flex: 1, backgroundColor: 'transparent', color: '#fff',
-    border: 'none', borderBottom: '1px solid #444',
-    padding: '5px 0', fontSize: '1rem', outline: 'none',
-  },
-  badgeList: { display: 'flex', flexWrap: 'wrap', gap: '8px', paddingLeft: '120px' },
-  badge: {
-    display: 'flex', alignItems: 'center', gap: '6px',
-    backgroundColor: '#222', border: `1px solid #4da6ff`,
-    borderRadius: '4px', padding: '4px 8px',
-    fontSize: '0.85rem', color: '#fff',
-  },
-  badgeX: {
-    backgroundColor: 'transparent', color: '#4da6ff',
-    border: 'none', cursor: 'pointer', padding: '0 2px',
-    fontSize: '0.85rem', display: 'flex', alignItems: 'center',
-  },
-  refazerBtn: {
-    marginTop: '50px', padding: '15px', backgroundColor: '#333',
-    color: '#fff', border: 'none', borderRadius: '5px',
-    cursor: 'pointer', width: '100%', fontSize: '1rem', fontWeight: 'bold',
-  },
-};

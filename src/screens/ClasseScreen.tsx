@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRPG } from '../context/RPGContext';
+import { proficienciasIniciais } from '../utils/rpgRules';
 import type { ClasseRPG } from '../types';
 
 export const ClasseScreen: React.FC = () => {
@@ -18,93 +19,94 @@ export const ClasseScreen: React.FC = () => {
   const escolherClasse = (novaClasse: ClasseRPG) => {
     if (!novaClasse) return;
 
-    // Aplica perícias automáticas no hook (via contexto não dá, mas o
-    // handleMudarPericia já valida. As perícias gratis são calculadas
-    // automaticamente pelo usePericias via periciasGratis)
-
     setClasse(novaClasse);
-
-    // Define proficiências iniciais
-    if (novaClasse === 'Combatente') {
-      setProficiencias(['Armas Simples', 'Armas Táticas', 'Proteções Leves']);
-    } else if (novaClasse === 'Especialista') {
-      setProficiencias(['Armas Simples', 'Proteções Leves']);
-    } else if (novaClasse === 'Ocultista') {
-      setProficiencias(['Armas Simples']);
-    }
-
+    setProficiencias(proficienciasIniciais(novaClasse));
     setTelaAtual('ficha');
   };
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.titulo}>Escolha sua Classe</h1>
+    <div className="mx-auto w-full max-w-6xl">
+      <h1 className="font-display mb-2 text-center text-3xl uppercase tracking-wide text-zinc-100">
+        Escolha sua Classe
+      </h1>
+      <p className="mb-10 text-center text-sm uppercase tracking-widest text-red-600">
+        Passo 3 — Seu papel na Ordem
+      </p>
 
-      <div style={styles.grid}>
-        {/* COMBATENTE */}
-        <div style={styles.cardCombate}>
-          <h2 style={styles.tituloCombate}>Combatente</h2>
-          <p style={styles.desc}>
+      <div className="flex flex-col items-stretch gap-5 lg:flex-row">
+        {/* COMBATENTE — Sangue */}
+        <div className="flex flex-1 flex-col rounded-xl border border-red-900/60 bg-zinc-900/60 p-6 transition hover:border-red-700">
+          <h2 className="font-display mb-3 text-center text-xl uppercase tracking-wide text-red-500">
+            Combatente
+          </h2>
+          <p className="flex-grow text-sm leading-relaxed text-zinc-400">
             Treinado para lutar com todo tipo de armas, e com a força e a coragem
             para encarar os perigos de frente.
           </p>
 
-          <div style={styles.skillsBox}>
-            <div style={styles.radioGroup}>
-              <label><input type="radio" name="c1" onChange={() => setSkillCombatente1('Luta')} /> Luta</label>
-              <span style={{ color: '#555' }}>//</span>
-              <label><input type="radio" name="c1" onChange={() => setSkillCombatente1('Pontaria')} /> Pontaria</label>
+          <div className="my-5 flex min-h-[102px] flex-col justify-center gap-3 rounded-lg border border-zinc-800 bg-zinc-950/80 p-4 text-sm">
+            <div className="flex items-center justify-center gap-3">
+              <label className="flex cursor-pointer items-center gap-1.5">
+                <input type="radio" name="c1" className="accent-red-600" checked={skillCombatente1 === 'Luta'} onChange={() => setSkillCombatente1('Luta')} /> Luta
+              </label>
+              <span className="text-zinc-600">ou</span>
+              <label className="flex cursor-pointer items-center gap-1.5">
+                <input type="radio" name="c1" className="accent-red-600" checked={skillCombatente1 === 'Pontaria'} onChange={() => setSkillCombatente1('Pontaria')} /> Pontaria
+              </label>
             </div>
-            <div style={styles.radioGroup}>
-              <label><input type="radio" name="c2" onChange={() => setSkillCombatente2('Fortitude')} /> Fortitude</label>
-              <span style={{ color: '#555' }}>//</span>
-              <label><input type="radio" name="c2" onChange={() => setSkillCombatente2('Reflexos')} /> Reflexos</label>
+            <div className="flex items-center justify-center gap-3">
+              <label className="flex cursor-pointer items-center gap-1.5">
+                <input type="radio" name="c2" className="accent-red-600" checked={skillCombatente2 === 'Fortitude'} onChange={() => setSkillCombatente2('Fortitude')} /> Fortitude
+              </label>
+              <span className="text-zinc-600">ou</span>
+              <label className="flex cursor-pointer items-center gap-1.5">
+                <input type="radio" name="c2" className="accent-red-600" checked={skillCombatente2 === 'Reflexos'} onChange={() => setSkillCombatente2('Reflexos')} /> Reflexos
+              </label>
             </div>
           </div>
 
           <button
             onClick={() => escolherClasse('Combatente')}
             disabled={!combatentePronto}
-            style={{
-              ...styles.btn,
-              backgroundColor: combatentePronto ? '#552222' : '#2a2a2a',
-              color: combatentePronto ? '#fff' : '#666',
-              cursor: combatentePronto ? 'pointer' : 'not-allowed',
-            }}
+            className="w-full rounded-lg bg-red-800 p-3.5 font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-600"
           >
-            Selecionar Combatente
+            {combatentePronto ? 'Selecionar Combatente' : 'Escolha as perícias'}
           </button>
         </div>
 
-        {/* ESPECIALISTA */}
-        <div style={styles.cardEspec}>
-          <h2 style={styles.tituloEspec}>Especialista</h2>
-          <p style={styles.desc}>
+        {/* ESPECIALISTA — Conhecimento */}
+        <div className="flex flex-1 flex-col rounded-xl border border-amber-900/60 bg-zinc-900/60 p-6 transition hover:border-amber-600">
+          <h2 className="font-display mb-3 text-center text-xl uppercase tracking-wide text-amber-400">
+            Especialista
+          </h2>
+          <p className="flex-grow text-sm leading-relaxed text-zinc-400">
             Um agente que confia mais em esperteza do que em força bruta.
           </p>
-          <div style={{ margin: '20px 0', padding: '15px', minHeight: '102px' }} />
+          <div className="my-5 flex min-h-[102px] items-center justify-center rounded-lg border border-zinc-800 bg-zinc-950/80 p-4">
+            <p className="text-sm font-bold text-amber-300/90">Perícias em dobro</p>
+          </div>
           <button
             onClick={() => escolherClasse('Especialista')}
-            style={{ ...styles.btn, backgroundColor: '#222255' }}
+            className="w-full rounded-lg bg-amber-700 p-3.5 font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-amber-600"
           >
             Selecionar Especialista
           </button>
         </div>
 
-        {/* OCULTISTA */}
-        <div style={styles.cardOcult}>
-          <h2 style={styles.tituloOcult}>Ocultista</h2>
-          <p style={styles.desc}>
+        {/* OCULTISTA — Medo */}
+        <div className="flex flex-1 flex-col rounded-xl border border-zinc-600/60 bg-zinc-900/60 p-6 transition hover:border-zinc-300">
+          <h2 className="font-display mb-3 text-center text-xl uppercase tracking-wide text-zinc-200">
+            Ocultista
+          </h2>
+          <p className="flex-grow text-sm leading-relaxed text-zinc-400">
             Muitos estudiosos das entidades se perdem em busca de poder...
           </p>
-          <div style={styles.rituaisBox}>
-            <p style={{ fontSize: '0.95rem', color: '#d4aaff', margin: 0, fontWeight: 'bold' }}>
-              Vontade & Ocultismo
-            </p>
+          <div className="my-5 flex min-h-[102px] items-center justify-center rounded-lg border border-zinc-800 bg-zinc-950/80 p-4">
+            <p className="text-sm font-bold text-zinc-300">Vontade & Ocultismo</p>
           </div>
           <button
             onClick={() => escolherClasse('Ocultista')}
-            style={{ ...styles.btn, backgroundColor: '#331144' }}
+            className="w-full rounded-lg bg-zinc-200 p-3.5 font-bold uppercase tracking-wider text-zinc-900 transition hover:bg-white"
           >
             Selecionar Ocultista
           </button>
@@ -112,47 +114,4 @@ export const ClasseScreen: React.FC = () => {
       </div>
     </div>
   );
-};
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    width: '100%', maxWidth: '1200px', margin: '0 auto',
-    padding: '30px 40px', fontFamily: 'sans-serif',
-  },
-  titulo: { textAlign: 'center', marginBottom: '40px' },
-  grid: { display: 'flex', gap: '20px', alignItems: 'stretch' },
-  cardCombate: {
-    flex: 1, backgroundColor: '#1a0505', border: '1px solid #ff4444',
-    padding: '25px', borderRadius: '12px', display: 'flex', flexDirection: 'column',
-  },
-  cardEspec: {
-    flex: 1, backgroundColor: '#05051a', border: '1px solid #4444ff',
-    padding: '25px', borderRadius: '12px', display: 'flex', flexDirection: 'column',
-  },
-  cardOcult: {
-    flex: 1, backgroundColor: '#12051a', border: '1px solid #9933ff',
-    padding: '25px', borderRadius: '12px', display: 'flex', flexDirection: 'column',
-  },
-  tituloCombate: { color: '#ff4444', marginBottom: '15px', textAlign: 'center' },
-  tituloEspec: { color: '#4444ff', marginBottom: '15px', textAlign: 'center' },
-  tituloOcult: { color: '#9933ff', marginBottom: '15px', textAlign: 'center' },
-  desc: { fontSize: '0.9rem', color: '#ccc', flexGrow: 1, lineHeight: '1.5' },
-  skillsBox: {
-    margin: '20px 0', padding: '15px', backgroundColor: '#000',
-    borderRadius: '8px', border: '1px solid #331111',
-    minHeight: '102px', display: 'flex', flexDirection: 'column', justifyContent: 'center',
-  },
-  radioGroup: {
-    marginBottom: '15px', display: 'flex',
-    justifyContent: 'center', alignItems: 'center', gap: '10px',
-  },
-  rituaisBox: {
-    margin: '20px 0', padding: '15px', backgroundColor: '#000',
-    borderRadius: '8px', border: '1px solid #331111',
-    display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '102px',
-  },
-  btn: {
-    padding: '15px', border: 'none', borderRadius: '8px',
-    fontWeight: 'bold', width: '100%', color: '#fff', cursor: 'pointer',
-  },
 };

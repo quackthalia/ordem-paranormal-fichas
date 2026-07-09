@@ -299,6 +299,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
 // ============================================================
 // HOOK PARA CONSUMIR O CONTEXTO
 // ============================================================
+// eslint-disable-next-line react-refresh/only-export-components
 export function useRPG(): RPGContextType {
   const ctx = useContext(RPGContext);
   if (!ctx) throw new Error('useRPG deve ser usado dentro de RPGProvider');

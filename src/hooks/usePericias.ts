@@ -24,6 +24,7 @@ export function usePericias(
   const [nomesPericias, setNomesPericias] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [gratisAplicadas, setGratisAplicadas] = useState<string[]>([]);
 
   // Busca as perícias do banco
   useEffect(() => {
@@ -50,7 +51,7 @@ export function usePericias(
         const objetoPericias: PericiasMap = {};
         const mapaNomes: Record<number, string> = {};
 
-        data.forEach((p: any) => {
+        data.forEach((p: { Codigo_Pericia: number; Nome_Pericia: string; Atributo_Pericia: string }) => {
           objetoPericias[p.Nome_Pericia] = {
             id: p.Codigo_Pericia,
             atributo: (p.Atributo_Pericia as AtributoKey) || 'FOR',
@@ -62,6 +63,8 @@ export function usePericias(
 
         setPericias(objetoPericias);
         setNomesPericias(mapaNomes);
+        // Força a re-aplicação das perícias grátis após o carregamento
+        setGratisAplicadas([]);
       }
 
       setLoading(false);
@@ -70,6 +73,23 @@ export function usePericias(
     carregar();
     return () => { cancelled = true; };
   }, []);
+
+  // Aplica treino 5 automaticamente nas perícias grátis (classe/origem)
+  // quando a lista muda — padrão "adjust state during render"
+  if (gratisAplicadas !== periciasGratis) {
+    setGratisAplicadas(periciasGratis);
+    setPericias(prev => {
+      let mudou = false;
+      const novo = { ...prev };
+      periciasGratis.forEach(nome => {
+        if (novo[nome] && novo[nome].treino < 5) {
+          novo[nome] = { ...novo[nome], treino: 5 };
+          mudou = true;
+        }
+      });
+      return mudou ? novo : prev;
+    });
+  }
 
   const limites = useMemo(
     () => calcularLimitesPericias(classe, nex, atributos),

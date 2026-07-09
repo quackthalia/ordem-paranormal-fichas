@@ -165,10 +165,9 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
   };
 }
 
-/** Hook separado para filtrar e memoizar a lista do modal */
 export function usePoderesFiltrados(
   listaPoderesUtilidade: Poder[],
-  abaModal: 'classe' | 'gerais',
+  abaModal: 'classe' | 'gerais' | 'combate',
   classe: ClasseRPG
 ) {
   return useMemo(() => {
@@ -177,16 +176,22 @@ export function usePoderesFiltrados(
         const classePoder = p.Classe?.toLowerCase() || '';
         const tipoPoder = p.Tipo?.toLowerCase() || '';
 
+        // Aba Utilidade: SÓ Utilidade da classe
         if (abaModal === 'classe') {
-          return (
-            classePoder === classe?.toLowerCase() &&
-            classePoder !== 'geral' &&
-            classePoder !== 'gerais' &&
-            tipoPoder === 'utilidade'
-          );
+          return classePoder === classe?.toLowerCase() && tipoPoder === 'utilidade';
         }
 
-        return classePoder.includes('geral') || tipoPoder.includes('geral') || classePoder === 'todos';
+        // Aba Combate: SÓ Combate da classe
+        if (abaModal === 'combate') {
+          return classePoder === classe?.toLowerCase() && tipoPoder === 'combate';
+        }
+
+        // Aba Gerais: SÓ Gerais (de qualquer classe)
+        if (abaModal === 'gerais') {
+          return classePoder.includes('geral') || tipoPoder.includes('geral') || classePoder === 'todos';
+        }
+
+        return false;
       })
       .sort((a, b) => a.Nome.localeCompare(b.Nome));
   }, [listaPoderesUtilidade, abaModal, classe]);

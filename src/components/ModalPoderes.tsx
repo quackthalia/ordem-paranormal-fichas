@@ -1,7 +1,11 @@
-import React, { useRef } from 'react';
+import React, { useRef, useMemo } from 'react';
 import { useRPG } from '../context/RPGContext';
 import { usePoderesFiltrados } from '../hooks/usePoderes';
 import { InputOtimizado } from './InputOtimizado';
+import type { AbaModalPoderes } from '../types';
+
+/** Patamares de Combate (NEX ímpar a partir de 15) */
+const PATAMARES_COMBATE = [15, 25, 35, 45, 55, 65, 75, 85, 95];
 
 export const ModalPoderes: React.FC = () => {
   const {
@@ -16,12 +20,27 @@ export const ModalPoderes: React.FC = () => {
   } = useRPG();
 
   const editorRef = useRef<HTMLDivElement>(null);
-
   const { listaPoderesUtilidade, escolherPoder, editarPoder } = poderesHook;
-
   const listaFiltrada = usePoderesFiltrados(listaPoderesUtilidade, abaModalPoderes, classe);
 
-  // Se tiver um editor aberto, mostra o modal de edição
+  // 🔥 DESCOBRE se o modal atual é de Combate ou Utilidade pelo NEX
+  const ehCombate = nexModalAberto !== null && PATAMARES_COMBATE.includes(nexModalAberto);
+
+  // 🔥 ABAS FIXAS: depende de ehCombate (que NUNCA muda enquanto modal estiver aberto)
+  const abasDisponiveis = useMemo((): [AbaModalPoderes, string][] => {
+    if (ehCombate) {
+      return [
+        ['combate', 'Poderes de Combate'],
+        ['gerais', 'Poderes Gerais'],
+      ];
+    }
+    return [
+      ['classe', 'Poderes de Utilidade'],
+      ['gerais', 'Poderes Gerais'],
+    ];
+  }, [ehCombate]);
+
+  // ====== EDITOR ======
   if (nexPoderEditando !== null) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-5">
@@ -41,7 +60,6 @@ export const ModalPoderes: React.FC = () => {
 
           <div className="flex flex-col gap-1.5 text-left">
             <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Descrição</label>
-            {/* Barra de ferramentas */}
             <div className="flex gap-1.5 rounded-t border border-b-0 border-zinc-700 bg-zinc-950 p-1.5">
               <button
                 type="button"
@@ -60,7 +78,6 @@ export const ModalPoderes: React.FC = () => {
                 <em>I</em>
               </button>
             </div>
-            {/* Editor contentEditable */}
             <div
               ref={(el) => {
                 editorRef.current = el;
@@ -97,7 +114,7 @@ export const ModalPoderes: React.FC = () => {
     );
   }
 
-  // Modal de escolha de poderes
+  // ====== MODAL DE ESCOLHA ======
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-5">
       <div className="flex max-h-[85vh] w-full max-w-3xl flex-col rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50">
@@ -115,23 +132,16 @@ export const ModalPoderes: React.FC = () => {
           </button>
         </div>
 
-        {/* ABAS */}
+        {/* 🔥 ABAS — totalmente estáveis */}
         <div className="flex border-b border-zinc-800 bg-zinc-950">
-          {([
-            ['classe', 'Poderes de Utilidade'],
-            ['gerais', 'Poderes Gerais'],
-          ] as const).map(([aba, rotulo]) => (
+          {abasDisponiveis.map(([aba, rotulo]) => (
             <button
               key={aba}
-              onClick={() => {
-                setAbaModalPoderes(aba);
-                const div = document.getElementById('caixa-scroll-poderes');
-                if (div) div.scrollTop = 0;
-              }}
-              className={`flex-1 border-none bg-transparent p-3 font-bold transition ${
+              onClick={() => setAbaModalPoderes(aba)}
+              className={`min-w-[70px] flex-1 rounded-t px-1 py-2.5 text-xs font-bold uppercase tracking-wider transition ${
                 abaModalPoderes === aba
-                  ? 'border-b-2 border-red-600 text-zinc-100 shadow-[inset_0_-3px_0_#dc2626]'
-                  : 'text-zinc-500 hover:text-zinc-300'
+                  ? 'border border-b-0 border-red-900 bg-zinc-900 text-zinc-100'
+                  : 'border border-transparent text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300'
               }`}
             >
               {rotulo}
@@ -160,7 +170,6 @@ export const ModalPoderes: React.FC = () => {
                   className="flex cursor-pointer items-center justify-between gap-3 bg-zinc-900/80 px-4 py-3 transition hover:bg-zinc-800/80"
                 >
                   <span className="flex-1 font-bold text-zinc-100">{poder.Nome}</span>
-
                   <div className="flex items-center gap-4">
                     <button
                       onClick={(e) => {

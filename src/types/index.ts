@@ -10,7 +10,7 @@ export type AtributoKey = 'FOR' | 'AGI' | 'INT' | 'PRE' | 'VIG';
 
 export type AbaDireita = 'combate' | 'habilidades' | 'rituais' | 'inventario' | 'descricao';
 
-export type AbaModalPoderes = 'classe' | 'gerais';
+export type AbaModalPoderes = 'classe' | 'gerais' | 'combate';
 
 export interface Atributos {
   FOR: number;

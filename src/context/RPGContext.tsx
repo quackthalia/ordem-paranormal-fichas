@@ -52,6 +52,10 @@ interface RPGContextType {
   abaModalPoderes: AbaModalPoderes;
   setAbaModalPoderes: React.Dispatch<React.SetStateAction<AbaModalPoderes>>;
 
+  // NOVO: tipo fixo do modal (nunca muda enquanto aberto)
+  tipoModalPoderes: 'utilidade' | 'combate';
+  setTipoModalPoderes: React.Dispatch<React.SetStateAction<'utilidade' | 'combate'>>;
+
   // Origens
   origensHook: ReturnType<typeof useOrigem>;
 
@@ -70,7 +74,7 @@ interface RPGContextType {
   proficiencias: string[];
   setProficiencias: React.Dispatch<React.SetStateAction<string[]>>;
 
-  // Regras de perícia (invertido semanticamente: true = regras ativas)
+  // Regras de perícia
   regrasAtivas: boolean;
   setRegrasAtivas: React.Dispatch<React.SetStateAction<boolean>>;
 
@@ -127,6 +131,9 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   // --- Abas ---
   const [abaDireita, setAbaDireita] = useState<AbaDireita>('combate');
   const [abaModalPoderes, setAbaModalPoderes] = useState<AbaModalPoderes>('classe');
+
+  // --- NOVO: tipo fixo do modal ---
+  const [tipoModalPoderes, setTipoModalPoderes] = useState<'utilidade' | 'combate'>('utilidade');
 
   // --- Atributos ---
   const [atributos, setAtributos] = useState<Atributos>({ FOR: 1, AGI: 1, INT: 1, PRE: 1, VIG: 1 });
@@ -228,7 +235,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   );
 
   // ============================================================
-  // DEFESA (valor derivado — podia ser só useMemo)
+  // DEFESA
   // ============================================================
   const defesaTotal = 10 + atributos.AGI + bonusAtributos.AGI + defEquip + defOutros;
 
@@ -271,6 +278,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     poderesHook,
     abaDireita, setAbaDireita,
     abaModalPoderes, setAbaModalPoderes,
+    tipoModalPoderes, setTipoModalPoderes,
     origensHook,
     defEquip, setDefEquip,
     defOutros, setDefOutros,

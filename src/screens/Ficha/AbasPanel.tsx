@@ -20,10 +20,18 @@ export const AbasPanel: React.FC = () => {
     habilidadesExpandidas, setHabilidadesExpandidas,
     setNexModalAberto,
     setNexPoderEditando, setNomeEditando, setDescricaoEditando,
+    setAbaModalPoderes,
+    setTipoModalPoderes, // ← NOVO
   } = useRPG();
 
   const { poderClasse, poderesClasse, poderesEscolhidos, removerPoder } = poderesHook;
   const { origemSelecionada } = origensHook;
+
+  // Função auxiliar para extrair o NEX do ID do slot
+  const extrairNexDoId = (id: string): number | null => {
+    const match = id.match(/(\d+)$/);
+    return match ? parseInt(match[1], 10) : null;
+  };
 
   // Monta a lista de habilidades
   const listaHabilidades = React.useMemo(() => {
@@ -102,7 +110,7 @@ export const AbasPanel: React.FC = () => {
       }
     }
 
-    // 3. Slots de poder por NEX
+    // 3. Slots de poder por NEX (Utilidade)
     const patamares = [10, 20, 30, 40, 50, 60, 70, 80, 90, 99];
     patamares.forEach(nivel => {
       if (nex >= nivel) {
@@ -120,6 +128,32 @@ export const AbasPanel: React.FC = () => {
             id: `escolha_nex_${nivel}`,
             nome: 'Escolher Poder de Utilidade',
             descricao: 'Clique no "+" para abrir a lista e selecionar seu poder.',
+            tipo: `NEX ${nivel}%`,
+            isSlotVazio: true,
+            nexDoSlot: nivel,
+          });
+        }
+      }
+    });
+
+    // 4. Slots de poder de Combate (NEX 15+)
+    const patamaresCombate = [15, 25, 35, 45, 55, 65, 75, 85, 95];
+    patamaresCombate.forEach(nivel => {
+      if (nex >= nivel) {
+        const escolhido = poderesEscolhidos[nivel];
+        if (escolhido) {
+          lista.push({
+            id: `escolha_nex_combate_${nivel}`,
+            nome: escolhido.nome,
+            descricao: escolhido.descricao,
+            tipo: `NEX ${nivel}%`,
+            preRequisitos: escolhido.preRequisitos,
+          });
+        } else {
+          lista.push({
+            id: `escolha_nex_combate_${nivel}`,
+            nome: 'Escolher Poder de Combate',
+            descricao: 'Clique no "+" para abrir a lista e selecionar seu poder de combate.',
             tipo: `NEX ${nivel}%`,
             isSlotVazio: true,
             nexDoSlot: nivel,
@@ -193,7 +227,11 @@ export const AbasPanel: React.FC = () => {
                       <div
                         onClick={() => {
                           if (hab.isSlotVazio) {
-                            setNexModalAberto(hab.nexDoSlot ?? null);
+                            // Define o tipo fixo do modal
+                            const tipo = hab.id.includes('combate') ? 'combate' : 'utilidade';
+                            setTipoModalPoderes(tipo);
+                            setAbaModalPoderes(tipo === 'combate' ? 'combate' : 'classe');
+                            setNexModalAberto(hab.nexDoSlot ?? extrairNexDoId(hab.id));
                           } else {
                             setHabilidadesExpandidas(prev =>
                               prev.includes(hab.id)
@@ -229,9 +267,8 @@ export const AbasPanel: React.FC = () => {
                         </div>
                       </div>
 
-                                           {/* CONTEÚDO EXPANDIDO / DESCRIÇÃO DO SLOT VAZIO */}
+                      {/* CONTEÚDO EXPANDIDO / DESCRIÇÃO DO SLOT VAZIO */}
                       {hab.isSlotVazio ? (
-                        /* --- Descrição sempre visível do slot vazio --- */
                         <div className="border-t border-zinc-800 px-4 py-3 text-left text-sm leading-relaxed text-zinc-500">
                           {hab.descricao}
                         </div>
@@ -288,10 +325,12 @@ export const AbasPanel: React.FC = () => {
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    const nivel = parseInt(hab.id.replace('escolha_nex_', ''));
-                                    setNexPoderEditando(nivel);
-                                    setNomeEditando(hab.nome);
-                                    setDescricaoEditando(hab.descricao);
+                                    const nivel = extrairNexDoId(hab.id);
+                                    if (nivel !== null) {
+                                      setNexPoderEditando(nivel);
+                                      setNomeEditando(hab.nome);
+                                      setDescricaoEditando(hab.descricao);
+                                    }
                                   }}
                                   className="flex-1 rounded border border-zinc-700 bg-zinc-800 p-2 text-xs font-bold text-zinc-200 transition hover:bg-zinc-700"
                                 >
@@ -300,7 +339,8 @@ export const AbasPanel: React.FC = () => {
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    removerPoder(parseInt(hab.id.replace('escolha_nex_', '')));
+                                    const nivel = extrairNexDoId(hab.id);
+                                    if (nivel !== null) removerPoder(nivel);
                                   }}
                                   className="flex-1 rounded border border-red-900 bg-transparent p-2 text-xs font-bold text-red-500 transition hover:bg-red-950/40"
                                 >

@@ -1,8 +1,17 @@
 import React from 'react';
 import { useRPG } from '../context/RPGContext';
+import { capMaximoAtributo, NEX_OPTIONS } from '../utils/rpgRules';
 import type { AtributoKey } from '../types';
 
 const ATRIBUTOS_ORDER: AtributoKey[] = ['FOR', 'AGI', 'INT', 'PRE', 'VIG'];
+
+const NOMES_ATRIBUTOS: Record<AtributoKey, string> = {
+  FOR: 'Força',
+  AGI: 'Agilidade',
+  INT: 'Intelecto',
+  PRE: 'Presença',
+  VIG: 'Vigor',
+};
 
 export const AtributosScreen: React.FC = () => {
   const {
@@ -20,117 +29,81 @@ export const AtributosScreen: React.FC = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>Criação de Personagem: Atributos</h1>
+    <div className="mx-auto w-full max-w-2xl">
+      <h1 className="font-display mb-2 text-3xl uppercase tracking-wide text-zinc-100">
+        Criação de Personagem
+      </h1>
+      <p className="mb-8 border-b border-zinc-800 pb-4 text-sm uppercase tracking-widest text-red-600">
+        Passo 1 — Atributos
+      </p>
 
       {/* SELETOR DE NEX */}
-      <div style={styles.nexBox}>
-        <label htmlFor="nex-select" style={styles.label}>Escolha o NEX Inicial:</label>
+      <div className="mb-6 flex items-center gap-4 rounded-lg border border-zinc-800 bg-zinc-900/60 p-4">
+        <label htmlFor="nex-select" className="text-sm font-bold uppercase tracking-wider text-zinc-400">
+          NEX Inicial
+        </label>
         <select
           id="nex-select"
           value={nex}
           onChange={handleNexChange}
-          style={styles.select}
+          className="rounded border border-zinc-700 bg-zinc-900 px-3 py-1.5 font-bold text-zinc-100"
         >
-          {[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 99].map(n => (
+          {NEX_OPTIONS.map(n => (
             <option key={n} value={n}>{n}%</option>
           ))}
         </select>
       </div>
 
       {/* PONTOS RESTANTES */}
-      <div style={{
-        ...styles.pontos,
-        color: pontosRestantes < 0 ? '#ff4d4d' : '#4dff4d',
-      }}>
-        <strong>Pontos Restantes: {pontosRestantes}</strong>
+      <div className={`mb-6 text-lg font-bold ${pontosRestantes < 0 ? 'text-red-500' : 'text-zinc-100'}`}>
+        Pontos restantes:{' '}
+        <span className={pontosRestantes > 0 ? 'text-red-500' : 'text-zinc-500'}>{pontosRestantes}</span>
       </div>
 
       {/* LISTA DE ATRIBUTOS */}
-      <div style={styles.lista}>
-        {ATRIBUTOS_ORDER.map(nome => (
-          <div key={nome} style={styles.row}>
-            <span style={styles.nome}>{nome}</span>
-            <div style={styles.controls}>
-              <button
-                onClick={() => alterarAtributo(nome, 'diminuir')}
-                disabled={
-                  atributos[nome] === 0 ||
-                  (atributos[nome] === 1 && Object.values(atributos).filter(v => v === 0).length >= 1)
-                }
-                style={{
-                  ...styles.btn,
-                  backgroundColor: (atributos[nome] === 0 || (atributos[nome] === 1 && Object.values(atributos).filter(v => v === 0).length >= 1))
-                    ? '#555' : '#cc3333',
-                }}
-              >
-                -
-              </button>
-              <span style={styles.valor}>{atributos[nome]}</span>
-              <button
-                onClick={() => alterarAtributo(nome, 'aumentar')}
-                disabled={pontosRestantes <= 0 || atributos[nome] >= (nex === 5 ? 3 : 5)}
-                style={{
-                  ...styles.btn,
-                  backgroundColor: (pontosRestantes <= 0 || atributos[nome] >= (nex === 5 ? 3 : 5))
-                    ? '#555' : '#33cc33',
-                }}
-              >
-                +
-              </button>
+      <div className="mb-8 flex max-w-md flex-col gap-3">
+        {ATRIBUTOS_ORDER.map(nome => {
+          const temAtributoZerado = Object.values(atributos).some(v => v === 0);
+          const naoPodeDiminuir = atributos[nome] === 0 || (atributos[nome] === 1 && temAtributoZerado);
+          const naoPodeAumentar = pontosRestantes <= 0 || atributos[nome] >= capMaximoAtributo(nex);
+
+          return (
+            <div
+              key={nome}
+              className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900/60 px-4 py-3"
+            >
+              <div>
+                <span className="font-bold text-zinc-100">{nome}</span>
+                <span className="ml-2 hidden text-sm text-zinc-500 sm:inline">{NOMES_ATRIBUTOS[nome]}</span>
+              </div>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => alterarAtributo(nome, 'diminuir')}
+                  disabled={naoPodeDiminuir}
+                  className="h-9 w-9 rounded-md border border-zinc-700 bg-zinc-800 text-lg font-bold text-zinc-100 transition hover:border-red-700 hover:bg-red-900/40 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-zinc-700 disabled:hover:bg-zinc-800"
+                >
+                  −
+                </button>
+                <span className="min-w-6 text-center text-2xl font-bold">{atributos[nome]}</span>
+                <button
+                  onClick={() => alterarAtributo(nome, 'aumentar')}
+                  disabled={naoPodeAumentar}
+                  className="h-9 w-9 rounded-md border border-zinc-700 bg-zinc-800 text-lg font-bold text-zinc-100 transition hover:border-red-700 hover:bg-red-900/40 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-zinc-700 disabled:hover:bg-zinc-800"
+                >
+                  +
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      <button onClick={() => setTelaAtual('origens')} style={styles.avancar}>
+      <button
+        onClick={() => setTelaAtual('origens')}
+        className="rounded-md bg-red-700 px-8 py-3 text-lg font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-red-600"
+      >
         Avançar para Origens ➔
       </button>
     </div>
   );
-};
-
-// ============================================================
-// ESTILOS
-// ============================================================
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    width: '100%', maxWidth: '800px', margin: '0 auto',
-    padding: '30px 40px', fontFamily: 'sans-serif',
-  },
-  title: { marginBottom: '30px' },
-  nexBox: {
-    marginBottom: '20px', padding: '15px',
-    border: '1px solid #333', borderRadius: '5px',
-  },
-  label: { marginRight: '10px', fontWeight: 'bold' },
-  select: {
-    padding: '5px', backgroundColor: '#222',
-    color: '#fff', border: '1px solid #555',
-  },
-  pontos: { fontSize: '1.2rem', marginBottom: '25px' },
-  lista: {
-    display: 'flex', flexDirection: 'column', gap: '15px',
-    maxWidth: '400px', marginBottom: '30px',
-  },
-  row: {
-    display: 'flex', justifyContent: 'space-between',
-    alignItems: 'center', padding: '10px',
-    backgroundColor: '#1e1e1e', borderRadius: '5px',
-  },
-  nome: { fontWeight: 'bold', width: '50px' },
-  controls: { display: 'flex', alignItems: 'center', gap: '15px' },
-  btn: {
-    width: '35px', height: '35px',
-    color: '#fff', border: 'none',
-    borderRadius: '5px', cursor: 'pointer',
-    fontSize: '1.2rem',
-  },
-  valor: { fontSize: '1.5rem', minWidth: '20px', textAlign: 'center' },
-  avancar: {
-    padding: '15px 30px', fontSize: '1.2rem',
-    backgroundColor: '#fff', color: '#000',
-    border: 'none', borderRadius: '5px',
-    cursor: 'pointer', fontWeight: 'bold',
-  },
 };

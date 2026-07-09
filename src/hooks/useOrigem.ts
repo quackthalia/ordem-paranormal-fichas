@@ -11,6 +11,7 @@ interface UseOrigemReturn {
   loading: boolean;
   error: string | null;
   selecionarOrigem: (origem: Origem) => void;
+  nomePericia: (codigo: number | null) => string | null;
 }
 
 export function useOrigem(): UseOrigemReturn {
@@ -57,7 +58,7 @@ export function useOrigem(): UseOrigemReturn {
 
       if (dataPericias) {
         const mapa: Record<number, string> = {};
-        dataPericias.forEach((p: any) => {
+        dataPericias.forEach((p: { Codigo_Pericia: number; Nome_Pericia: string }) => {
           mapa[p.Codigo_Pericia] = p.Nome_Pericia;
         });
         setNomesPericias(mapa);
@@ -75,6 +76,14 @@ export function useOrigem(): UseOrigemReturn {
       prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
     );
   }, []);
+
+  const nomePericia = useCallback(
+    (codigo: number | null): string | null => {
+      if (codigo === null || codigo === undefined) return null;
+      return nomesPericias[codigo] || String(codigo);
+    },
+    [nomesPericias]
+  );
 
   const selecionarOrigem = useCallback(
     (origem: Origem) => {
@@ -103,5 +112,6 @@ export function useOrigem(): UseOrigemReturn {
     loading,
     error,
     selecionarOrigem,
+    nomePericia,
   };
 }

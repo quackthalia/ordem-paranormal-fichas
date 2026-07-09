@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRPG } from '../../context/RPGContext';
+import { NEX_OPTIONS } from '../../utils/rpgRules';
 
 export const StatusPanel: React.FC = () => {
   const {
@@ -26,30 +27,32 @@ export const StatusPanel: React.FC = () => {
   return (
     <div>
       {/* LINHA: NEX + PE/TURNO + DESLOCAMENTO */}
-      <div style={styles.infoRow}>
+      <div className="mb-8 flex items-start justify-between border-b border-zinc-800 pb-5">
         {/* NEX */}
-        <div style={styles.infoBloco}>
-          <span style={styles.infoLabel}>NEX</span>
+        <div className="flex flex-col items-center gap-1.5">
           <select
             value={nex}
             onChange={(e) => setNex(Number(e.target.value))}
-            style={styles.nexSelect}
+            className="cursor-pointer appearance-none rounded border border-zinc-600 bg-zinc-900 px-3 py-2 text-center text-lg font-bold text-zinc-100 transition hover:border-red-700"
           >
-            {[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 99].map(n => (
+            {NEX_OPTIONS.map(n => (
               <option key={n} value={n}>{n}%</option>
             ))}
           </select>
+          <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">NEX</span>
         </div>
 
         {/* PE/TURNO */}
-        <div style={styles.infoBloco}>
-          <div style={styles.peTurnoBox}>{peTurno}</div>
-          <span style={styles.infoLabel}>PE/TURNO</span>
+        <div className="flex flex-col items-center gap-1.5">
+          <div className="min-w-14 rounded border border-zinc-600 px-4 py-2 text-center text-lg font-bold">
+            {peTurno}
+          </div>
+          <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">PE/Turno</span>
         </div>
 
         {/* DESLOCAMENTO */}
-        <div style={styles.infoBloco}>
-          <div style={styles.deslocBox}>
+        <div className="flex flex-col items-center gap-1.5">
+          <div className="flex items-center rounded border border-zinc-600 px-2.5 py-2 text-lg font-bold">
             <input
               type="number"
               value={deslocM}
@@ -58,9 +61,9 @@ export const StatusPanel: React.FC = () => {
                 setDeslocM(m);
                 setDeslocQ(Math.floor(m / 1.5));
               }}
-              style={styles.deslocInput}
+              className="w-9 bg-transparent text-center font-bold text-zinc-100 outline-none"
             />
-            <span>m /</span>
+            <span className="text-sm text-zinc-400">m /</span>
             <input
               type="number"
               value={deslocQ}
@@ -69,21 +72,21 @@ export const StatusPanel: React.FC = () => {
                 setDeslocQ(q);
                 setDeslocM(q * 1.5);
               }}
-              style={styles.deslocInput}
+              className="w-9 bg-transparent text-center font-bold text-zinc-100 outline-none"
             />
-            <span>q</span>
+            <span className="text-sm text-zinc-400">q</span>
           </div>
-          <span style={styles.infoLabel}>Deslocamento</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Deslocamento</span>
         </div>
       </div>
 
       {/* BARRAS DE STATUS */}
-      <div style={styles.barrasContainer}>
+      <div className="mb-8 flex flex-col gap-6">
         {/* VIDA */}
         <BarraStatus
-          titulo="VIDA"
-          cor="#ff4d4d"
-          corFundo="#220000"
+          titulo="Vida"
+          corBarra="border-red-700 bg-red-950/40"
+          corTempClasses="border-red-500 bg-red-950/20"
           valorAtual={pvAtual}
           valorMax={pvMax}
           setValorMax={setPvMax}
@@ -95,15 +98,12 @@ export const StatusPanel: React.FC = () => {
           setTempAtual={setPvTempAtual}
           tempMax={pvTempMax}
           setTempMax={setPvTempMax}
-          corTemp="#ff6666"
-          corTempFundo="#331111"
         />
 
         {/* SANIDADE */}
         <BarraStatus
-          titulo="SANIDADE"
-          cor="#9933ff"
-          corFundo="#1a0033"
+          titulo="Sanidade"
+          corBarra="border-zinc-300 bg-zinc-800/60"
           valorAtual={sanAtual}
           valorMax={sanMax}
           setValorMax={setSanMax}
@@ -113,9 +113,9 @@ export const StatusPanel: React.FC = () => {
 
         {/* ESFORÇO */}
         <BarraStatus
-          titulo="ESFORÇO"
-          cor="#ff9900"
-          corFundo="#331a00"
+          titulo="Esforço"
+          corBarra="border-amber-600 bg-amber-950/40"
+          corTempClasses="border-amber-400 bg-amber-950/20"
           valorAtual={peAtual}
           valorMax={peMax}
           setValorMax={setPeMax}
@@ -127,8 +127,6 @@ export const StatusPanel: React.FC = () => {
           setTempAtual={setPeTempAtual}
           tempMax={peTempMax}
           setTempMax={setPeTempMax}
-          corTemp="#ffcc00"
-          corTempFundo="#332200"
         />
       </div>
     </div>
@@ -140,8 +138,8 @@ export const StatusPanel: React.FC = () => {
 // ============================================================
 interface BarraStatusProps {
   titulo: string;
-  cor: string;
-  corFundo: string;
+  corBarra: string;
+  corTempClasses?: string;
   valorAtual: number;
   valorMax: number;
   setValorMax: React.Dispatch<React.SetStateAction<number>>;
@@ -153,14 +151,15 @@ interface BarraStatusProps {
   setTempAtual?: React.Dispatch<React.SetStateAction<number>>;
   tempMax?: number;
   setTempMax?: React.Dispatch<React.SetStateAction<number>>;
-  corTemp?: string;
-  corTempFundo?: string;
 }
+
+const btnSeta =
+  'px-2 text-lg font-bold text-zinc-300 transition select-none hover:text-white bg-transparent border-none';
 
 function BarraStatus({
   titulo,
-  cor,
-  corFundo,
+  corBarra,
+  corTempClasses,
   valorAtual,
   valorMax,
   setValorMax,
@@ -172,18 +171,19 @@ function BarraStatus({
   setTempAtual,
   tempMax,
   setTempMax,
-  corTemp,
-  corTempFundo,
 }: BarraStatusProps) {
+  const percentual = valorMax > 0 ? Math.min(100, (valorAtual / valorMax) * 100) : 0;
+
   return (
     <div>
       {/* CABEÇALHO */}
-      <div style={styles.barraHeader}>
-        <span style={styles.barraTitulo}>{titulo}</span>
+      <div className="mb-1.5 flex items-center justify-between">
+        <span className="ml-1 text-sm font-bold uppercase tracking-wider text-zinc-400">{titulo}</span>
         {setHasTemp && (
-          <label style={styles.tempLabel}>
+          <label className="flex cursor-pointer items-center gap-1.5 text-xs text-zinc-500 transition hover:text-zinc-300">
             <input
               type="checkbox"
+              className="accent-red-600"
               checked={hasTemp}
               onChange={(e) => {
                 setHasTemp(e.target.checked);
@@ -199,69 +199,54 @@ function BarraStatus({
       </div>
 
       {/* CORPO */}
-      <div style={{ display: 'flex', gap: '10px' }}>
+      <div className="flex gap-2.5">
         <div
-          style={{
-            flex: hasTemp ? '2.5' : '1',
-            backgroundColor: corFundo,
-            border: `1px solid ${cor}`,
-            padding: '10px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            transition: 'all 0.3s',
-          }}
+          className={`relative flex items-center justify-between overflow-hidden rounded border p-2.5 transition-all ${corBarra} ${hasTemp ? 'flex-[2.5]' : 'flex-1'}`}
         >
-          <div>
-            <button onClick={() => alterarStatus(-5)} style={estiloBotaoSeta}>«</button>
-            <button onClick={() => alterarStatus(-1)} style={estiloBotaoSeta}>‹</button>
+          {/* Preenchimento proporcional */}
+          <div
+            className="absolute inset-y-0 left-0 bg-white/5 transition-all"
+            style={{ width: `${percentual}%` }}
+          />
+          <div className="relative">
+            <button onClick={() => alterarStatus(-5)} className={btnSeta} title="-5">«</button>
+            <button onClick={() => alterarStatus(-1)} className={btnSeta} title="-1">‹</button>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{valorAtual}</span>
-            <span style={{ fontSize: '1.2rem', color: '#aaa' }}>/</span>
+          <div className="relative flex items-center gap-1">
+            <span className="text-lg font-bold">{valorAtual}</span>
+            <span className="text-lg text-zinc-500">/</span>
             <input
               type="number"
               onKeyDown={bloquearLetras}
               value={valorMax}
               onChange={(e) => setValorMax(Math.max(1, Number(e.target.value)))}
-              style={estiloInputMaximo}
+              className="w-11 bg-transparent text-center text-lg font-bold text-zinc-100 outline-none"
               title={`Editar ${titulo} Máxima`}
             />
           </div>
-          <div>
-            <button onClick={() => alterarStatus(1)} style={estiloBotaoSeta}>›</button>
-            <button onClick={() => alterarStatus(5)} style={estiloBotaoSeta}>»</button>
+          <div className="relative">
+            <button onClick={() => alterarStatus(1)} className={btnSeta} title="+1">›</button>
+            <button onClick={() => alterarStatus(5)} className={btnSeta} title="+5">»</button>
           </div>
         </div>
 
         {/* TEMPORÁRIO */}
         {hasTemp && setTempAtual && setTempMax && (
-          <div
-            style={{
-              flex: '1',
-              backgroundColor: corTempFundo,
-              border: `1px dashed ${corTemp}`,
-              padding: '10px',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              gap: '5px',
-            }}
-          >
+          <div className={`flex flex-1 items-center justify-center gap-1 rounded border border-dashed p-2.5 ${corTempClasses}`}>
             <input
               type="number"
               onKeyDown={bloquearLetras}
               value={tempAtual}
               onChange={(e) => setTempAtual(Math.max(0, Number(e.target.value)))}
-              style={estiloInputTemp}
+              className="w-9 bg-transparent text-center font-bold text-zinc-100 outline-none"
             />
-            <span style={{ color: '#aaa' }}>/</span>
+            <span className="text-zinc-500">/</span>
             <input
               type="number"
               onKeyDown={bloquearLetras}
               value={tempMax}
               onChange={(e) => setTempMax(Math.max(0, Number(e.target.value)))}
-              style={estiloInputTemp}
+              className="w-9 bg-transparent text-center font-bold text-zinc-100 outline-none"
             />
           </div>
         )}
@@ -269,125 +254,3 @@ function BarraStatus({
     </div>
   );
 }
-
-// ============================================================
-// ESTILOS COMPARTILHADOS
-// ============================================================
-const estiloBotaoSeta: React.CSSProperties = {
-  background: 'transparent',
-  border: 'none',
-  color: '#fff',
-  fontSize: '1.2rem',
-  cursor: 'pointer',
-  padding: '0 8px',
-  fontWeight: 'bold',
-  userSelect: 'none',
-};
-
-const estiloInputMaximo: React.CSSProperties = {
-  width: '45px',
-  backgroundColor: 'transparent',
-  color: '#fff',
-  border: 'none',
-  textAlign: 'center',
-  fontSize: '1.2rem',
-  fontWeight: 'bold',
-  outline: 'none',
-};
-
-const estiloInputTemp: React.CSSProperties = {
-  width: '35px',
-  backgroundColor: 'transparent',
-  color: '#fff',
-  border: 'none',
-  textAlign: 'center',
-  fontSize: '1rem',
-  fontWeight: 'bold',
-  outline: 'none',
-};
-
-const styles: Record<string, React.CSSProperties> = {
-  infoRow: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: '40px',
-    borderBottom: '1px solid #333',
-    paddingBottom: '20px',
-  },
-  infoBloco: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '5px',
-  },
-  infoLabel: {
-    fontSize: '0.8rem',
-    fontWeight: 'bold',
-    color: '#aaa',
-    marginTop: '5px',
-  },
-  nexSelect: {
-    padding: '8px 10px',
-    backgroundColor: '#121212',
-    color: '#fff',
-    border: '1px solid #fff',
-    fontSize: '1.2rem',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-    appearance: 'none',
-    textAlign: 'center',
-  },
-  peTurnoBox: {
-    padding: '8px 15px',
-    border: '1px solid #fff',
-    fontSize: '1.2rem',
-    fontWeight: 'bold',
-    minWidth: '60px',
-    textAlign: 'center',
-  },
-  deslocBox: {
-    display: 'flex',
-    alignItems: 'center',
-    border: '1px solid #fff',
-    padding: '5px 10px',
-    fontSize: '1.2rem',
-    fontWeight: 'bold',
-  },
-  deslocInput: {
-    width: '40px',
-    backgroundColor: 'transparent',
-    color: '#fff',
-    border: 'none',
-    textAlign: 'center',
-    fontSize: '1.2rem',
-    fontWeight: 'bold',
-    outline: 'none',
-  },
-  barrasContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '25px',
-    marginBottom: '30px',
-  },
-  barraHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '5px',
-  },
-  barraTitulo: {
-    fontWeight: 'bold',
-    color: '#ccc',
-    fontSize: '0.9rem',
-    marginLeft: '5px',
-  },
-  tempLabel: {
-    fontSize: '0.8rem',
-    color: '#aaa',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '5px',
-  },
-};

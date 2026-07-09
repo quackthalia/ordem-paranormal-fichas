@@ -1,5 +1,8 @@
 import type { Atributos, ClasseRPG, LimiteCirculos } from '../types';
 
+/** Valores de NEX disponíveis nos seletores */
+export const NEX_OPTIONS = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 99];
+
 /** Calcula o nível a partir do NEX (99% → 20) */
 export function calcularNivel(nex: number): number {
   return nex === 99 ? 20 : Math.floor(nex / 5);
@@ -150,5 +153,5 @@ export function obterCorBadge(texto: string): string {
   if (txt.includes('arma') && txt.includes('pesada')) return '#6E7B8B';
   if (txt.includes('leve')) return '#9BCD9B';
   if (txt.includes('pesada')) return '#698B69';
-  return '#4da6ff';
+  return '#a1a1aa';
 }

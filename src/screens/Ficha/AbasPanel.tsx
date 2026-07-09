@@ -229,80 +229,87 @@ export const AbasPanel: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* CONTEÚDO EXPANDIDO */}
-                      {estaExpandida && !hab.isSlotVazio && (
-                        <div className="px-4 py-4 text-left text-sm leading-relaxed text-zinc-400">
-                          <div dangerouslySetInnerHTML={{ __html: hab.descricao }} />
-
-                          {hab.subPoder && (
-                            <div className="mt-4 rounded-r border-l-2 border-amber-500 bg-zinc-900/80 p-3">
-                              <div className="mb-1.5 flex items-center justify-between">
-                                <span className="text-sm font-bold text-zinc-100">{hab.subPoder.nome}</span>
-                                {hab.subPoder.extra && (
-                                  <span className="rounded border border-zinc-700 bg-zinc-950 px-1.5 py-0.5 text-xs font-bold text-amber-400">
-                                    {hab.subPoder.extra}
-                                  </span>
-                                )}
-                              </div>
-                              <div className="text-xs text-zinc-400">{hab.subPoder.descricao}</div>
-                            </div>
-                          )}
-
-                          {hab.limiteCirculos && (
-                            <div className="mt-4 rounded-r border-l-2 border-zinc-400 bg-zinc-900/80 p-3">
-                              <div className="mb-2 text-sm font-bold text-zinc-100">Rituais:</div>
-                              <div className="flex flex-wrap gap-2">
-                                {([
-                                  ['1° Círculo', hab.limiteCirculos.c1],
-                                  ['2° Círculo', hab.limiteCirculos.c2],
-                                  ['3° Círculo', hab.limiteCirculos.c3],
-                                  ['4° Círculo', hab.limiteCirculos.c4],
-                                ] as const).map(([rotulo, qtd]) => (
-                                  <span
-                                    key={rotulo}
-                                    className={`rounded border border-zinc-800 bg-zinc-950 px-2 py-1 text-xs ${
-                                      qtd > 0 ? 'text-zinc-100' : 'text-zinc-600'
-                                    }`}
-                                  >
-                                    {rotulo}: <strong>{qtd}</strong>
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {hab.preRequisitos && (
-                            <div className="mt-3 inline-block rounded bg-amber-400/5 px-2.5 py-1.5 text-xs italic text-amber-400">
-                              <strong>Pré-requisitos:</strong> {hab.preRequisitos}
-                            </div>
-                          )}
-
-                          {hab.id.startsWith('escolha_nex_') && (
-                            <div className="mt-4 flex gap-2.5">
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  const nivel = parseInt(hab.id.replace('escolha_nex_', ''));
-                                  setNexPoderEditando(nivel);
-                                  setNomeEditando(hab.nome);
-                                  setDescricaoEditando(hab.descricao);
-                                }}
-                                className="flex-1 rounded border border-zinc-700 bg-zinc-800 p-2 text-xs font-bold text-zinc-200 transition hover:bg-zinc-700"
-                              >
-                                Editar
-                              </button>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  removerPoder(parseInt(hab.id.replace('escolha_nex_', '')));
-                                }}
-                                className="flex-1 rounded border border-red-900 bg-transparent p-2 text-xs font-bold text-red-500 transition hover:bg-red-950/40"
-                              >
-                                Remover Poder
-                              </button>
-                            </div>
-                          )}
+                                           {/* CONTEÚDO EXPANDIDO / DESCRIÇÃO DO SLOT VAZIO */}
+                      {hab.isSlotVazio ? (
+                        /* --- Descrição sempre visível do slot vazio --- */
+                        <div className="border-t border-zinc-800 px-4 py-3 text-left text-sm leading-relaxed text-zinc-500">
+                          {hab.descricao}
                         </div>
+                      ) : (
+                        estaExpandida && (
+                          <div className="px-4 py-4 text-left text-sm leading-relaxed text-zinc-400">
+                            <div dangerouslySetInnerHTML={{ __html: hab.descricao }} />
+
+                            {hab.subPoder && (
+                              <div className="mt-4 rounded-r border-l-2 border-amber-500 bg-zinc-900/80 p-3">
+                                <div className="mb-1.5 flex items-center justify-between">
+                                  <span className="text-sm font-bold text-zinc-100">{hab.subPoder.nome}</span>
+                                  {hab.subPoder.extra && (
+                                    <span className="rounded border border-zinc-700 bg-zinc-950 px-1.5 py-0.5 text-xs font-bold text-amber-400">
+                                      {hab.subPoder.extra}
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="text-xs text-zinc-400">{hab.subPoder.descricao}</div>
+                              </div>
+                            )}
+
+                            {hab.limiteCirculos && (
+                              <div className="mt-4 rounded-r border-l-2 border-zinc-400 bg-zinc-900/80 p-3">
+                                <div className="mb-2 text-sm font-bold text-zinc-100">Rituais:</div>
+                                <div className="flex flex-wrap gap-2">
+                                  {([
+                                    ['1° Círculo', hab.limiteCirculos.c1],
+                                    ['2° Círculo', hab.limiteCirculos.c2],
+                                    ['3° Círculo', hab.limiteCirculos.c3],
+                                    ['4° Círculo', hab.limiteCirculos.c4],
+                                  ] as const).map(([rotulo, qtd]) => (
+                                    <span
+                                      key={rotulo}
+                                      className={`rounded border border-zinc-800 bg-zinc-950 px-2 py-1 text-xs ${
+                                        qtd > 0 ? 'text-zinc-100' : 'text-zinc-600'
+                                      }`}
+                                    >
+                                      {rotulo}: <strong>{qtd}</strong>
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {hab.preRequisitos && (
+                              <div className="mt-3 inline-block rounded bg-amber-400/5 px-2.5 py-1.5 text-xs italic text-amber-400">
+                                <strong>Pré-requisitos:</strong> {hab.preRequisitos}
+                              </div>
+                            )}
+
+                            {hab.id.startsWith('escolha_nex_') && (
+                              <div className="mt-4 flex gap-2.5">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    const nivel = parseInt(hab.id.replace('escolha_nex_', ''));
+                                    setNexPoderEditando(nivel);
+                                    setNomeEditando(hab.nome);
+                                    setDescricaoEditando(hab.descricao);
+                                  }}
+                                  className="flex-1 rounded border border-zinc-700 bg-zinc-800 p-2 text-xs font-bold text-zinc-200 transition hover:bg-zinc-700"
+                                >
+                                  Editar
+                                </button>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    removerPoder(parseInt(hab.id.replace('escolha_nex_', '')));
+                                  }}
+                                  className="flex-1 rounded border border-red-900 bg-transparent p-2 text-xs font-bold text-red-500 transition hover:bg-red-950/40"
+                                >
+                                  Remover Poder
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        )
                       )}
                     </div>
                   );

@@ -49,6 +49,7 @@ export interface PoderParanormal {
   Afinidade: string;
   Elemento: string;   // Sangue | Morte | Energia | Conhecimento | Medo
   Fonte: string;
+  PreRequisitosAfinidade?: string; // 🔥 ADICIONAR AQUI (coluna Pre_Requisitos_Afinidade)
 }
 
 export interface Origem {
@@ -74,6 +75,7 @@ export interface PoderSlot {
   descricao: string;
   preRequisitos?: string;
   fonte?: string;
+  afinidade?: string;
 }
 
 export interface PoderesEscolhidos {

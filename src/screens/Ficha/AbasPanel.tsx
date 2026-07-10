@@ -10,7 +10,9 @@ import {
   obterLimiteCirculos,
 } from '../../utils/rpgRules';
 
-/** 🔥 CORES ATUALIZADAS */
+// ═══════════════════════════════════════════════════════════════
+// CORES DOS ELEMENTOS
+// ═══════════════════════════════════════════════════════════════
 const CORES_ELEMENTOS: Record<string, string> = {
   sangue: '#b31717',
   conhecimento: '#b07902',
@@ -26,8 +28,8 @@ function obterCorBadge(elemento: string): string {
 
 function obterCorTexto(elemento: string): string {
   const e = elemento.toLowerCase();
-  if (e === 'medo' || e === 'conhecimento') return '#000';
-  return '#fff';
+  if (e === 'medo' || e === 'conhecimento') return '#000000';
+  return '#ffffff';
 }
 
 function formatarDescricao(texto: string): string {
@@ -93,18 +95,8 @@ export const AbasPanel: React.FC = () => {
 
     // 2. Classe
     if (classe === 'Combatente' && poderClasse) {
-      lista.push({
-        id: 'classe_poder_179',
-        nome: poderClasse.Nome,
-        descricao: poderClasse.Descricao,
-        tipo: 'Classe',
-        extra: calcularBonusAtaqueEspecial(nex),
-        subPoder: null,
-        fonte: poderClasse.Fonte || undefined,
-        categoria: 'classe',
-      });
+      lista.push({ id: 'classe_poder_179', nome: poderClasse.Nome, descricao: poderClasse.Descricao, tipo: 'Classe', extra: calcularBonusAtaqueEspecial(nex), subPoder: null, fonte: poderClasse.Fonte || undefined, categoria: 'classe' });
     }
-
     if (classe === 'Especialista') {
       const ecletico = poderesClasse.find(p => p.codigo_poder === 180);
       const perito = poderesClasse.find(p => p.codigo_poder === 181);
@@ -112,54 +104,33 @@ export const AbasPanel: React.FC = () => {
       if (ecletico) lista.push({ id: 'classe_poder_180', nome: ecletico.Nome, descricao: ecletico.Descricao, tipo: 'Classe', extra: null, subPoder: (engenhosidade && nex >= 40) ? { nome: engenhosidade.Nome, descricao: engenhosidade.Descricao, extra: calcularBonusEngenhosidade(nex) } : null, fonte: ecletico.Fonte || undefined, categoria: 'classe' });
       if (perito) lista.push({ id: 'classe_poder_181', nome: perito.Nome, descricao: perito.Descricao, tipo: 'Classe', extra: calcularBonusPerito(nex), subPoder: null, fonte: perito.Fonte || undefined, categoria: 'classe' });
     }
-
     if (classe === 'Ocultista') {
       const escolhido = poderesClasse.find(p => p.codigo_poder === 183);
       if (escolhido) lista.push({ id: 'classe_poder_183', nome: escolhido.Nome, descricao: escolhido.Descricao, tipo: 'Classe', extra: calcularTotalRituais(nex), limiteCirculos: obterLimiteCirculos(nex), fonte: escolhido.Fonte || undefined, categoria: 'classe' });
     }
 
-    // 3. Utilidade (NEX 10,20,30...)
+    // 3. Utilidade
     const patamares = [10, 20, 30, 40, 50, 60, 70, 80, 90, 99];
     patamares.forEach(nivel => {
       if (nex >= nivel) {
         const escolhido = poderesEscolhidos[nivel];
         if (escolhido) {
           const pp = poderesParanormaisMap.get(escolhido.nome.toLowerCase());
-          lista.push({
-            id: `escolha_nex_${nivel}`,
-            nome: escolhido.nome,
-            descricao: escolhido.descricao,
-            tipo: `NEX ${nivel}%`,
-            preRequisitos: escolhido.preRequisitos,
-            fonte: escolhido.fonte,
-            elemento: pp?.Elemento,
-            afinidade: pp?.Afinidade,
-            categoria: pp ? 'paranormais' : 'utilidade',
-          });
+          lista.push({ id: `escolha_nex_${nivel}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: `NEX ${nivel}%`, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte, elemento: pp?.Elemento, afinidade: pp?.Afinidade, categoria: pp ? 'paranormais' : 'utilidade' });
         } else {
           lista.push({ id: `escolha_nex_${nivel}`, nome: 'Escolher Poder de Utilidade', descricao: 'Clique no "+" para abrir a lista e selecionar seu poder.', tipo: `NEX ${nivel}%`, isSlotVazio: true, nexDoSlot: nivel, categoria: 'utilidade' });
         }
       }
     });
 
-    // 4. Combate (NEX 15,25,35...)
+    // 4. Combate
     const patamaresCombate = [15, 25, 35, 45, 55, 65, 75, 85, 95];
     patamaresCombate.forEach(nivel => {
       if (nex >= nivel) {
         const escolhido = poderesEscolhidos[nivel];
         if (escolhido) {
           const pp = poderesParanormaisMap.get(escolhido.nome.toLowerCase());
-          lista.push({
-            id: `escolha_nex_combate_${nivel}`,
-            nome: escolhido.nome,
-            descricao: escolhido.descricao,
-            tipo: `NEX ${nivel}%`,
-            preRequisitos: escolhido.preRequisitos,
-            fonte: escolhido.fonte,
-            elemento: pp?.Elemento,
-            afinidade: pp?.Afinidade,
-            categoria: pp ? 'paranormais' : 'combate',
-          });
+          lista.push({ id: `escolha_nex_combate_${nivel}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: `NEX ${nivel}%`, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte, elemento: pp?.Elemento, afinidade: pp?.Afinidade, categoria: pp ? 'paranormais' : 'combate' });
         } else {
           lista.push({ id: `escolha_nex_combate_${nivel}`, nome: 'Escolher Poder de Combate', descricao: 'Clique no "+" para abrir a lista e selecionar seu poder de combate.', tipo: `NEX ${nivel}%`, isSlotVazio: true, nexDoSlot: nivel, categoria: 'combate' });
         }
@@ -185,14 +156,12 @@ export const AbasPanel: React.FC = () => {
   return (
     <div className="flex flex-col rounded-lg border border-zinc-800 bg-zinc-900/60 p-5">
       <div className="mb-5 flex flex-wrap gap-1 border-b-2 border-zinc-800 pb-2.5">
-        {(['combate', 'habilidades', 'rituais', 'inventario', 'descricao'] as const).map(aba => (
+        {(['combate','habilidades','rituais','inventario','descricao'] as const).map(aba => (
           <button key={aba} onClick={() => setAbaDireita(aba)}
             className={`min-w-[70px] flex-1 rounded px-1 py-2 text-xs font-bold uppercase tracking-wider transition ${
               abaDireita === aba ? 'border border-red-900 bg-red-950/40 text-zinc-100' : 'border border-transparent text-zinc-500 hover:text-zinc-300'
             }`}
-          >
-            {aba === 'inventario' ? 'Inventário' : aba === 'descricao' ? 'Descrição' : aba}
-          </button>
+          >{aba === 'inventario' ? 'Inventário' : aba === 'descricao' ? 'Descrição' : aba}</button>
         ))}
       </div>
 
@@ -206,9 +175,7 @@ export const AbasPanel: React.FC = () => {
                 placeholder="Filtrar habilidades..."
                 className="flex-1 border-b border-zinc-700 bg-transparent py-2 text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700"
               />
-              <button className="whitespace-nowrap rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-xs font-bold text-zinc-200 transition hover:border-red-800 hover:bg-red-950/40">
-                + Adicionar
-              </button>
+              <button className="whitespace-nowrap rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-xs font-bold text-zinc-200 transition hover:border-red-800 hover:bg-red-950/40">+ Adicionar</button>
             </div>
 
             <div className="flex flex-1 flex-col gap-0 overflow-y-auto pr-1">
@@ -265,20 +232,18 @@ export const AbasPanel: React.FC = () => {
                               <div className="border-t border-zinc-800 px-4 py-3 text-left text-sm leading-relaxed text-zinc-500">{hab.descricao}</div>
                             ) : (estaExpandida && (
                               <div className="px-4 py-4 text-left text-sm leading-relaxed text-zinc-400">
-                                {/* 🔥 Badge do elemento ACIMA da descrição */}
+                                {/* 🔥 Badge do elemento ACIMA da descrição — text-[9px] ~ pequeno */}
                                 {hab.elemento && (
                                   <div className="mb-3">
-                                    <span className="inline-block rounded px-2 py-0.5 text-[0.55rem] font-bold uppercase tracking-wider leading-none"
+                                    <span className="inline-block rounded px-2 py-px text-[9px] font-bold uppercase tracking-wider leading-tight"
                                       style={{ backgroundColor: obterCorBadge(hab.elemento), color: obterCorTexto(hab.elemento) }}
-                                    >
-                                      {hab.elemento}
-                                    </span>
+                                    >{hab.elemento}</span>
                                   </div>
                                 )}
 
                                 <div dangerouslySetInnerHTML={{ __html: formatarDescricao(hab.descricao) }} />
 
-                                {/* 🔥 Afinidade: texto simples */}
+                                {/* 🔥 Afinidade: texto puro */}
                                 {hab.afinidade && (
                                   <p className="mt-3 text-sm leading-relaxed text-zinc-300">
                                     <strong className="text-zinc-100">Afinidade:</strong> {hab.afinidade}
@@ -301,8 +266,8 @@ export const AbasPanel: React.FC = () => {
                                   <div className="mt-4 rounded-r border-l-2 border-zinc-400 bg-zinc-900/80 p-3">
                                     <div className="mb-2 text-sm font-bold text-zinc-100">Rituais:</div>
                                     <div className="flex flex-wrap gap-2">
-                                      {([['1° Círculo', hab.limiteCirculos.c1], ['2° Círculo', hab.limiteCirculos.c2], ['3° Círculo', hab.limiteCirculos.c3], ['4° Círculo', hab.limiteCirculos.c4]] as const).map(([rotulo, qtd]) => (
-                                        <span key={rotulo} className={`rounded border border-zinc-800 bg-zinc-950 px-2 py-1 text-xs ${qtd > 0 ? 'text-zinc-100' : 'text-zinc-600'}`}>{rotulo}: <strong>{qtd}</strong></span>
+                                      {([['1° Círculo', hab.limiteCirculos.c1], ['2° Círculo', hab.limiteCirculos.c2], ['3° Círculo', hab.limiteCirculos.c3], ['4° Círculo', hab.limiteCirculos.c4]] as const).map(([r,q]) => (
+                                        <span key={r} className={`rounded border border-zinc-800 bg-zinc-950 px-2 py-1 text-xs ${q > 0 ? 'text-zinc-100' : 'text-zinc-600'}`}>{r}: <strong>{q}</strong></span>
                                       ))}
                                     </div>
                                   </div>

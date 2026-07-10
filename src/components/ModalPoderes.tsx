@@ -6,7 +6,9 @@ import type { AbaModalPoderes } from '../types';
 
 const PATAMARES_COMBATE = [15, 25, 35, 45, 55, 65, 75, 85, 95];
 
-// 🔥 CORES ATUALIZADAS - confirme no console
+// ═══════════════════════════════════════
+// CORES DOS ELEMENTOS
+// ═══════════════════════════════════════
 const CORES_ELEMENTOS: Record<string, string> = {
   sangue: '#b31717',
   conhecimento: '#b07902',
@@ -16,20 +18,16 @@ const CORES_ELEMENTOS: Record<string, string> = {
   varia: '#888888',
 };
 
-const ELEMENTOS = ['Sangue', 'Conhecimento', 'Energia', 'Morte', 'Medo', 'Varia'];
-
-console.log('🔥 CORES_ELEMENTOS carregado:', CORES_ELEMENTOS);
+const ELEMENTOS = ['Sangue', 'Conhecimento', 'Energia', 'Morte','Varia'];
 
 function obterCorBadge(elemento: string): string {
-  const cor = CORES_ELEMENTOS[elemento.toLowerCase()];
-  if (!cor) console.warn('⚠️ Elemento sem cor definida:', elemento);
-  return cor || '#666';
+  return CORES_ELEMENTOS[elemento.toLowerCase()] || '#666';
 }
 
 function obterCorTexto(elemento: string): string {
   const e = elemento.toLowerCase();
-  if (e === 'medo' || e === 'conhecimento') return '#000';
-  return '#fff';
+  if (e === 'medo' || e === 'conhecimento') return '#000000';
+  return '#ffffff';
 }
 
 function formatarDescricao(texto: string): string {
@@ -47,7 +45,7 @@ function formatarDescricao(texto: string): string {
   return resultado;
 }
 
-/** Card de poder paranormal */
+/** Card de poder (reutilizado) */
 function PoderCard({
   poder,
   ehParanormal,
@@ -58,24 +56,15 @@ function PoderCard({
 }: {
   poder: { codigo_poder: number; Nome: string; Descricao: string; PreRequisitos: string; Fonte: string };
   ehParanormal: boolean;
-  paranormalData?: { Elemento?: string; Afinidade?: string; PreRequisitosAfinidade?: string };
+  paranormalData?: {
+    Elemento?: string;
+    Afinidade?: string;
+    PreRequisitosAfinidade?: string;
+  };
   estaExpandido: boolean;
   onToggle: () => void;
   onEscolher: () => void;
 }) {
-  const corBadge = ehParanormal && paranormalData?.Elemento
-    ? obterCorBadge(paranormalData.Elemento)
-    : '#666';
-  const corTexto = ehParanormal && paranormalData?.Elemento
-    ? obterCorTexto(paranormalData.Elemento)
-    : '#fff';
-
-  console.log('🏷️ Renderizando badge:', {
-    nome: poder.Nome,
-    elemento: paranormalData?.Elemento,
-    cor: corBadge,
-  });
-
   return (
     <div className="mb-3 overflow-hidden rounded-r border-l-4 border-red-800 bg-zinc-950/60">
       <div
@@ -84,10 +73,9 @@ function PoderCard({
       >
         <div className="flex items-center gap-2">
           <span className="font-bold text-zinc-100">{poder.Nome}</span>
-          {/* 🔥 Badge PEQUENO - text-[0.5rem] = 8px */}
           {ehParanormal && paranormalData?.Elemento && (
             <span
-              className="rounded px-1.5 py-0.5 text-[0.5rem] font-bold uppercase tracking-wider leading-none"
+              className="inline-block rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight"
               style={{
                 backgroundColor: obterCorBadge(paranormalData.Elemento),
                 color: obterCorTexto(paranormalData.Elemento),
@@ -99,10 +87,7 @@ function PoderCard({
         </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onEscolher();
-            }}
+            onClick={(e) => { e.stopPropagation(); onEscolher(); }}
             className="rounded bg-red-700 px-3.5 py-1.5 text-xs font-bold uppercase text-zinc-100 transition hover:bg-red-600"
           >
             Escolher
@@ -120,7 +105,6 @@ function PoderCard({
             dangerouslySetInnerHTML={{ __html: formatarDescricao(poder.Descricao) }}
           />
 
-          {/* 🔥 Afinidade: só texto, sem borda */}
           {ehParanormal && paranormalData?.Afinidade && (
             <p className="mt-3 text-sm leading-relaxed text-zinc-300">
               <strong className="text-zinc-100">Afinidade:</strong> {paranormalData.Afinidade}
@@ -133,6 +117,7 @@ function PoderCard({
             </div>
           )}
 
+          {/* 🔥 AGORA USA PreRequisitosAfinidade - só mostra se existir */}
           {ehParanormal && paranormalData?.PreRequisitosAfinidade && (
             <div className="mt-2 inline-block rounded bg-purple-400/5 px-3 py-2 text-xs italic text-purple-400">
               <strong>Pré-requisitos da Afinidade:</strong> {paranormalData.PreRequisitosAfinidade}
@@ -165,17 +150,18 @@ export const ModalPoderes: React.FC = () => {
   const editorRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [subAbaElemento, setSubAbaElemento] = useState<string | null>(null);
+  const [afinidadeEditando, setAfinidadeEditando] = useState('');
 
   const scrollPositions = useRef<Record<string, number>>({
-    classe: 0,
-    combate: 0,
-    gerais: 0,
-    paranormais: 0,
+    classe: 0, combate: 0, gerais: 0, paranormais: 0,
   });
 
-  const { listaPoderesUtilidade, poderesParanormais, escolherPoder, editarPoder } = poderesHook;
-
-  console.log('📦 poderesParanormais no modal:', poderesParanormais?.length, poderesParanormais);
+  const {
+    listaPoderesUtilidade,
+    poderesParanormais,
+    escolherPoder,
+    editarPoder,
+  } = poderesHook;
 
   const listaFiltradaBase = usePoderesFiltrados(
     listaPoderesUtilidade,
@@ -184,23 +170,16 @@ export const ModalPoderes: React.FC = () => {
     classe
   );
 
-  console.log('📋 listaFiltradaBase:', abaModalPoderes, listaFiltradaBase?.length);
-
-  // 🔥 Filtro por elemento
+  // Filtro por elemento
   const listaFiltrada = useMemo(() => {
     if (abaModalPoderes !== 'paranormais' || !subAbaElemento) return listaFiltradaBase;
-    const filtrados = listaFiltradaBase.filter((p: any) => {
-      const elemento = (p.Elemento || '').toLowerCase();
-      return elemento === subAbaElemento.toLowerCase();
+    return listaFiltradaBase.filter((p: any) => {
+      const el = (p.Elemento || '').toLowerCase();
+      return el === subAbaElemento.toLowerCase();
     });
-    console.log(`🔍 Filtrando por ${subAbaElemento}: ${filtrados.length} resultados`);
-    return filtrados;
   }, [listaFiltradaBase, abaModalPoderes, subAbaElemento]);
 
-  useEffect(() => {
-    setSubAbaElemento(null);
-    console.log('🔄 Resetando sub-aba (mudou aba principal para:', abaModalPoderes, ')');
-  }, [abaModalPoderes]);
+  useEffect(() => { setSubAbaElemento(null); }, [abaModalPoderes]);
 
   useEffect(() => {
     if (scrollContainerRef.current) {
@@ -215,9 +194,7 @@ export const ModalPoderes: React.FC = () => {
       ['paranormais', 'Poderes Paranormais'],
       ['gerais', 'Poderes Gerais'],
     ];
-    if (ehCombate) {
-      return [['combate', 'Poderes de Combate'], ...base];
-    }
+    if (ehCombate) return [['combate', 'Poderes de Combate'], ...base];
     return [['classe', 'Poderes de Utilidade'], ...base];
   }, [ehCombate]);
 
@@ -228,7 +205,9 @@ export const ModalPoderes: React.FC = () => {
     setAbaModalPoderes(aba);
   }, [abaModalPoderes, setAbaModalPoderes]);
 
-  // ====== EDITOR INLINE ======
+  // ================================================================
+  // EDITOR INLINE
+  // ================================================================
   if (nexPoderEditando !== null) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-5">
@@ -242,6 +221,15 @@ export const ModalPoderes: React.FC = () => {
             <InputOtimizado
               value={nomeEditando}
               onChange={setNomeEditando}
+              className="rounded border border-zinc-700 bg-zinc-950 p-2.5 text-zinc-100 outline-none focus:border-red-700"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5 text-left">
+            <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Afinidade</label>
+            <InputOtimizado
+              value={afinidadeEditando}
+              onChange={setAfinidadeEditando}
               className="rounded border border-zinc-700 bg-zinc-950 p-2.5 text-zinc-100 outline-none focus:border-red-700"
             />
           </div>
@@ -271,7 +259,7 @@ export const ModalPoderes: React.FC = () => {
             <button
               onClick={() => {
                 const texto = editorRef.current?.innerHTML || '';
-                editarPoder(nexPoderEditando, nomeEditando, texto);
+                editarPoder(nexPoderEditando, nomeEditando, texto, afinidadeEditando);
                 setNexPoderEditando(null);
               }}
               className="rounded bg-red-700 px-4 py-2 text-sm font-bold text-zinc-100 transition hover:bg-red-600"
@@ -284,10 +272,13 @@ export const ModalPoderes: React.FC = () => {
     );
   }
 
-  // ====== MODAL PRINCIPAL ======
+  // ================================================================
+  // MODAL PRINCIPAL
+  // ================================================================
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-5">
-      <div className="flex max-h-[85vh] w-full max-w-3xl flex-col rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50">
+      <div className="flex h-[75vh] w-full max-w-3xl flex-col rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50">
+        {/* CABEÇALHO */}
         <div className="flex items-center justify-between border-b border-zinc-800 p-5">
           <h3 className="font-display m-0 text-lg uppercase tracking-wide text-zinc-100">
             Escolher Poder — <span className="text-red-500">NEX {nexModalAberto}%</span>
@@ -317,11 +308,11 @@ export const ModalPoderes: React.FC = () => {
           ))}
         </div>
 
-        {/* 🔥 SUB-ABAS DE ELEMENTO */}
+        {/* SUB-ABAS DE ELEMENTO */}
         {abaModalPoderes === 'paranormais' && (
           <div className="flex flex-wrap gap-1 border-b border-zinc-800 bg-zinc-950/80 px-3 py-2">
             <button
-              onClick={() => { setSubAbaElemento(null); console.log('🎯 Sub-aba: Todos'); }}
+              onClick={() => setSubAbaElemento(null)}
               className={`rounded px-2.5 py-1 text-[0.55rem] font-bold uppercase tracking-wider transition ${
                 subAbaElemento === null
                   ? 'bg-red-900/40 text-red-300 border border-red-800'
@@ -335,10 +326,7 @@ export const ModalPoderes: React.FC = () => {
               return (
                 <button
                   key={elem}
-                  onClick={() => {
-                    setSubAbaElemento(elem);
-                    console.log(`🎯 Sub-aba: ${elem}`);
-                  }}
+                  onClick={() => setSubAbaElemento(elem)}
                   className={`rounded px-2.5 py-1 text-[0.55rem] font-bold uppercase tracking-wider transition border ${
                     ativo
                       ? 'border-zinc-600 text-zinc-100'
@@ -356,13 +344,15 @@ export const ModalPoderes: React.FC = () => {
           </div>
         )}
 
-        {/* LISTA */}
+        {/* LISTA DE PODERES */}
         <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-5">
           {listaFiltrada.map((poder: any) => {
             const estaExpandido = poderesModalExpandidos.includes(poder.codigo_poder);
             const pp = (poderesParanormais || []).find(
               (p: { Nome: string }) => p.Nome === poder.Nome
             );
+
+            console.log('🔍 Renderizando poder:', poder.Nome, 'PreRequisitosAfinidade:', pp?.PreRequisitosAfinidade);
 
             return (
               <PoderCard
@@ -378,7 +368,7 @@ export const ModalPoderes: React.FC = () => {
                 paranormalData={pp ? {
                   Elemento: pp.Elemento,
                   Afinidade: pp.Afinidade,
-                  PreRequisitosAfinidade: pp.Fonte,
+                  PreRequisitosAfinidade: pp.PreRequisitosAfinidade || undefined,
                 } : undefined}
                 estaExpandido={estaExpandido}
                 onToggle={() => {

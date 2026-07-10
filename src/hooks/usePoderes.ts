@@ -13,10 +13,9 @@ interface UsePoderesReturn {
   error: string | null;
   escolherPoder: (nex: number, poder: Poder | PoderParanormal) => void;
   removerPoder: (nex: number) => void;
-  editarPoder: (nex: number, nome: string, descricao: string) => void;
+  editarPoder: (nex: number, nome: string, descricao: string, afinidade?: string) => void;
 }
 
-/** Normaliza colunas da tabela Poderes */
 function normalizarPoder(item: Record<string, unknown>): Poder {
   const primeiro = (...chaves: string[]) => {
     for (const chave of chaves) {
@@ -39,7 +38,6 @@ function normalizarPoder(item: Record<string, unknown>): Poder {
   };
 }
 
-/** 🔥 Normaliza colunas da tabela PoderesParanormais */
 function normalizarPoderParanormal(item: Record<string, unknown>): PoderParanormal {
   const primeiro = (...chaves: string[]) => {
     for (const chave of chaves) {
@@ -59,6 +57,14 @@ function normalizarPoderParanormal(item: Record<string, unknown>): PoderParanorm
     Afinidade: String(primeiro('Afinidade', 'afinidade') ?? ''),
     Elemento: String(primeiro('Elemento_Poder_Paranormal', 'elemento_poder_paranormal') ?? ''),
     Fonte: String(primeiro('Fonte_Poder_Paranormal', 'fonte_poder_paranormal') ?? ''),
+    // 🔥 MAPEAMENTO DIRETO do Pre_Requisitos_Afinidade (sem usar primeiro)
+    PreRequisitosAfinidade: (() => {
+      const raw = item['Pre_Requisitos_Afinidade'];
+      if (raw !== null && raw !== undefined && String(raw).trim() !== '') {
+        return String(raw);
+      }
+      return undefined;
+    })(),
   };
 }
 
@@ -71,135 +77,80 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // 1. Poderes da classe selecionada
   useEffect(() => {
     let cancelled = false;
-
     async function carregar() {
-      if (!classe) {
-        setPoderesClasse([]);
-        return;
-      }
-
-      setLoading(true);
-      setError(null);
-
-      const { data, error: err } = await supabase
-        .from('Poderes')
-        .select('*')
-        .eq('Classe', classe);
-
+      if (!classe) { setPoderesClasse([]); return; }
+      setLoading(true); setError(null);
+      const { data, error: err } = await supabase.from('Poderes').select('*').eq('Classe', classe);
       if (cancelled) return;
-
-      if (err) {
-        console.error('Erro ao buscar poderes da classe:', err);
-        setError(err.message);
-      }
-
-      if (data) {
-        const normalizados = data.map(normalizarPoder);
-        console.log('📚 Poderes de classe carregados:', normalizados.length);
-        setPoderesClasse(normalizados);
-      }
-
+      if (err) { console.error(err); setError(err.message); }
+      if (data) setPoderesClasse(data.map(normalizarPoder));
       setLoading(false);
     }
-
     carregar();
     return () => { cancelled = true; };
   }, [classe]);
 
-  // 2. TODOS os poderes (para o modal de escolha)
   useEffect(() => {
     let cancelled = false;
-
     async function carregar() {
       const { data, error: err } = await supabase.from('Poderes').select('*');
-
       if (cancelled) return;
-
-      if (err) {
-        console.error('Erro ao buscar poderes:', err);
-        setError(err.message);
-      } else if (data) {
-        const normalizados = data.map(normalizarPoder);
-        console.log('📚 Todos os poderes carregados:', normalizados.length);
-        setListaPoderesUtilidade(normalizados);
-      }
+      if (err) { console.error(err); setError(err.message); }
+      else if (data) setListaPoderesUtilidade(data.map(normalizarPoder));
     }
-
     carregar();
     return () => { cancelled = true; };
   }, []);
 
-  // 🔥 3. PODERES PARANORMAIS
   useEffect(() => {
     let cancelled = false;
-
     async function carregar() {
       console.log('🔍 Buscando PoderesParanormais...');
       const { data, error: err } = await supabase.from('PoderesParanormais').select('*');
-
       if (cancelled) return;
-
-      if (err) {
-        console.error('Erro ao buscar poderes paranormais:', err);
-      } else if (data) {
+      if (err) console.error(err);
+      else if (data) {
         const normalizados = data.map(normalizarPoderParanormal);
-        console.log('🔥 Poderes Paranormais carregados:', normalizados.length, normalizados.map(p => p.Nome));
+        console.log('🔥 Poderes Paranormais carregados:', normalizados.length);
+        // 🔥 Log para verificar o PreRequisitosAfinidade
+        normalizados.forEach(p => {
+          if (p.PreRequisitosAfinidade) {
+            console.log(`⚡ Poder "${p.Nome}" tem PreRequisitosAfinidade: "${p.PreRequisitosAfinidade}"`);
+          }
+        });
         setPoderesParanormais(normalizados);
-      } else {
-        console.warn('⚠️ Nenhum dado retornado de PoderesParanormais');
       }
     }
-
     carregar();
     return () => { cancelled = true; };
   }, []);
 
-  // 4. Poder específico do Combatente (Codigo_Poder = 179)
   useEffect(() => {
     let cancelled = false;
-
     async function carregar() {
-      if (classe !== 'Combatente') {
-        setPoderClasse(null);
-        return;
-      }
-
-      const { data, error: err } = await supabase
-        .from('Poderes')
-        .select('*')
-        .eq('Codigo_Poder', 179)
-        .single();
-
+      if (classe !== 'Combatente') { setPoderClasse(null); return; }
+      const { data, error: err } = await supabase.from('Poderes').select('*').eq('Codigo_Poder', 179).single();
       if (cancelled) return;
-
-      if (!err && data) {
-        const normalizado = normalizarPoder(data);
-        console.log('🎯 Poder classe Combatente:', normalizado.Nome);
-        setPoderClasse(normalizado);
-      }
+      if (!err && data) setPoderClasse(normalizarPoder(data));
     }
-
     carregar();
     return () => { cancelled = true; };
   }, [classe]);
 
   const escolherPoder = useCallback((nex: number, poder: Poder | PoderParanormal) => {
     console.log('🎯 escolherPoder chamado:', { nex, nome: poder.Nome });
-    setPoderesEscolhidos(prev => {
-      const novo = {
-        ...prev,
-        [nex]: {
-          nome: poder.Nome,
-          descricao: poder.Descricao,
-          preRequisitos: poder.PreRequisitos,
-          fonte: (poder as Poder).Fonte || (poder as PoderParanormal).Fonte || '',
-        },
-      };
-      return novo;
-    });
+    setPoderesEscolhidos(prev => ({
+      ...prev,
+      [nex]: {
+        nome: poder.Nome,
+        descricao: poder.Descricao,
+        preRequisitos: poder.PreRequisitos,
+        fonte: (poder as Poder).Fonte || (poder as PoderParanormal).Fonte || '',
+        afinidade: (poder as PoderParanormal).Afinidade || '',
+      },
+    }));
   }, []);
 
   const removerPoder = useCallback((nex: number) => {
@@ -210,10 +161,15 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
     });
   }, []);
 
-  const editarPoder = useCallback((nex: number, nome: string, descricao: string) => {
+  const editarPoder = useCallback((nex: number, nome: string, descricao: string, afinidade?: string) => {
     setPoderesEscolhidos(prev => ({
       ...prev,
-      [nex]: { ...prev[nex], nome, descricao },
+      [nex]: {
+        ...prev[nex],
+        nome,
+        descricao,
+        afinidade: afinidade !== undefined ? afinidade : (prev[nex]?.afinidade || ''),
+      },
     }));
   }, []);
 
@@ -232,7 +188,6 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
   };
 }
 
-// 🔥 VERSÃO ATUALIZADA: aceita 4 parâmetros
 export function usePoderesFiltrados(
   listaPoderesUtilidade: Poder[],
   poderesParanormais: PoderParanormal[],
@@ -240,28 +195,19 @@ export function usePoderesFiltrados(
   classe: ClasseRPG
 ) {
   return useMemo(() => {
-    // 🔥 Aba paranormais: retorna a lista completa de poderes paranormais
     if (abaModal === 'paranormais') {
-      const ordenados = [...poderesParanormais].sort((a, b) => a.Nome.localeCompare(b.Nome));
-      console.log('👻 Filtrando paranormais:', ordenados.length);
-      return ordenados;
+      return [...poderesParanormais].sort((a, b) => a.Nome.localeCompare(b.Nome));
     }
 
-    // Outras abas: filtro normal na tabela Poderes
     return listaPoderesUtilidade
       .filter(p => {
         const classePoder = (p.Classe || '').toLowerCase();
         const tipoPoder = (p.Tipo || '').toLowerCase();
 
-        if (abaModal === 'classe') {
-          return classePoder === classe?.toLowerCase() && tipoPoder === 'utilidade';
-        }
-        if (abaModal === 'combate') {
-          return tipoPoder === 'combate';
-        }
-        if (abaModal === 'gerais') {
-          return tipoPoder === 'geral' || classePoder === 'geral' || classePoder === 'todos';
-        }
+        if (abaModal === 'classe') return classePoder === classe?.toLowerCase() && tipoPoder === 'utilidade';
+        if (abaModal === 'combate') return tipoPoder === 'combate';
+        if (abaModal === 'gerais') return tipoPoder === 'geral' || classePoder === 'geral' || classePoder === 'todos';
+
         return false;
       })
       .sort((a, b) => a.Nome.localeCompare(b.Nome));

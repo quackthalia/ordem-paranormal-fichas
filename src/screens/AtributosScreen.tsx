@@ -1,3 +1,4 @@
+// AtributosScreen.tsx — CORRIGIDO
 import React from 'react';
 import { useRPG } from '../context/RPGContext';
 import { capMaximoAtributo, NEX_OPTIONS } from '../utils/rpgRules';
@@ -16,7 +17,7 @@ const NOMES_ATRIBUTOS: Record<AtributoKey, string> = {
 export const AtributosScreen: React.FC = () => {
   const {
     nex, setNex,
-    atributos, setAtributos,
+    atributos,
     pontosRestantes,
     alterarAtributo,
     setTelaAtual,
@@ -25,7 +26,8 @@ export const AtributosScreen: React.FC = () => {
   const handleNexChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const novoNex = Number(e.target.value);
     setNex(novoNex);
-    setAtributos({ FOR: 1, AGI: 1, INT: 1, PRE: 1, VIG: 1 });
+    // ❌ REMOVIDO: setAtributos({ FOR: 1, AGI: 1, INT: 1, PRE: 1, VIG: 1 });
+    // ✅ Agora só muda o NEX, os atributos distribuídos permanecem intactos
   };
 
   return (
@@ -54,7 +56,7 @@ export const AtributosScreen: React.FC = () => {
         </select>
       </div>
 
-      {/* PONTOS RESTANTES */}
+      {/* PONTOS RESTANTES — recalcula automaticamente */}
       <div className={`mb-6 text-lg font-bold ${pontosRestantes < 0 ? 'text-red-500' : 'text-zinc-100'}`}>
         Pontos restantes:{' '}
         <span className={pontosRestantes > 0 ? 'text-red-500' : 'text-zinc-500'}>{pontosRestantes}</span>

@@ -17,98 +17,61 @@ import { capMaximoAtributo, pontosIniciaisPorNex } from '../utils/rpgRules';
 // TUDO QUE O CONTEXTO EXPÕE
 // ============================================================
 interface RPGContextType {
-  // Navegação
   telaAtual: Tela;
   setTelaAtual: React.Dispatch<React.SetStateAction<Tela>>;
-
-  // Classe
   classe: ClasseRPG;
   setClasse: React.Dispatch<React.SetStateAction<ClasseRPG>>;
-
-  // NEX
   nex: number;
   setNex: React.Dispatch<React.SetStateAction<number>>;
-
-  // Atributos
   atributos: Atributos;
   setAtributos: React.Dispatch<React.SetStateAction<Atributos>>;
   bonusAtributos: Atributos;
   setBonusAtributos: React.Dispatch<React.SetStateAction<Atributos>>;
   pontosRestantes: number;
   alterarAtributo: (nome: AtributoKey, operacao: 'aumentar' | 'diminuir') => void;
-
-  // Status (PV, SAN, PE)
   status: ReturnType<typeof useStatus>;
-
-  // Perícias
   periciasHook: ReturnType<typeof usePericias>;
-
-  // Poderes
   poderesHook: ReturnType<typeof usePoderes>;
-
-  // Abas da ficha
   abaDireita: AbaDireita;
   setAbaDireita: React.Dispatch<React.SetStateAction<AbaDireita>>;
   abaModalPoderes: AbaModalPoderes;
   setAbaModalPoderes: React.Dispatch<React.SetStateAction<AbaModalPoderes>>;
-
-  // NOVO: tipo fixo do modal (nunca muda enquanto aberto)
   tipoModalPoderes: 'utilidade' | 'combate';
   setTipoModalPoderes: React.Dispatch<React.SetStateAction<'utilidade' | 'combate'>>;
-
-  // Origens
   origensHook: ReturnType<typeof useOrigem>;
-
-  // Defesa
   defEquip: number;
   setDefEquip: React.Dispatch<React.SetStateAction<number>>;
   defOutros: number;
   setDefOutros: React.Dispatch<React.SetStateAction<number>>;
   defesaTotal: number;
-
-  // Proteções, Resistências, Proficiências
   protecoes: string[];
   setProtecoes: React.Dispatch<React.SetStateAction<string[]>>;
   resistencias: string[];
   setResistencias: React.Dispatch<React.SetStateAction<string[]>>;
   proficiencias: string[];
   setProficiencias: React.Dispatch<React.SetStateAction<string[]>>;
-
-  // Regras de perícia
   regrasAtivas: boolean;
   setRegrasAtivas: React.Dispatch<React.SetStateAction<boolean>>;
-
-  // Utilitários
   bloquearLetras: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   refazerPersonagem: () => void;
-
-  // Habilidades
   filtroHabilidades: string;
   setFiltroHabilidades: React.Dispatch<React.SetStateAction<string>>;
   habilidadesExpandidas: string[];
   setHabilidadesExpandidas: React.Dispatch<React.SetStateAction<string[]>>;
-
-  // Modal de poderes
   nexModalAberto: number | null;
   setNexModalAberto: React.Dispatch<React.SetStateAction<number | null>>;
   poderesModalExpandidos: number[];
   setPoderesModalExpandidos: React.Dispatch<React.SetStateAction<number[]>>;
-
-  // Editor inline de poderes
   nexPoderEditando: number | null;
   setNexPoderEditando: React.Dispatch<React.SetStateAction<number | null>>;
   nomeEditando: string;
   setNomeEditando: React.Dispatch<React.SetStateAction<string>>;
   descricaoEditando: string;
   setDescricaoEditando: React.Dispatch<React.SetStateAction<string>>;
-
-  // Skills do Combatente
   skillCombatente1: string;
   setSkillCombatente1: React.Dispatch<React.SetStateAction<string>>;
   skillCombatente2: string;
   setSkillCombatente2: React.Dispatch<React.SetStateAction<string>>;
-
-  // Deslocamento
   deslocM: number;
   setDeslocM: React.Dispatch<React.SetStateAction<number>>;
   deslocQ: number;
@@ -118,69 +81,42 @@ interface RPGContextType {
 const RPGContext = createContext<RPGContextType | null>(null);
 
 // ============================================================
-// PROVIDER — envolve a aplicação inteira
+// PROVIDER
 // ============================================================
 export function RPGProvider({ children }: { children: React.ReactNode }) {
-  // --- Navegação ---
   const [telaAtual, setTelaAtual] = useState<Tela>('atributos');
-
-  // --- Classe e NEX ---
   const [classe, setClasse] = useState<ClasseRPG>(null);
   const [nex, setNex] = useState(5);
-
-  // --- Abas ---
   const [abaDireita, setAbaDireita] = useState<AbaDireita>('combate');
   const [abaModalPoderes, setAbaModalPoderes] = useState<AbaModalPoderes>('classe');
-
-  // --- NOVO: tipo fixo do modal ---
   const [tipoModalPoderes, setTipoModalPoderes] = useState<'utilidade' | 'combate'>('utilidade');
-
-  // --- Atributos ---
   const [atributos, setAtributos] = useState<Atributos>({ FOR: 1, AGI: 1, INT: 1, PRE: 1, VIG: 1 });
   const [bonusAtributos, setBonusAtributos] = useState<Atributos>({ FOR: 0, AGI: 0, INT: 0, PRE: 0, VIG: 0 });
-
-  // --- Defesa ---
   const [defEquip, setDefEquip] = useState(0);
   const [defOutros, setDefOutros] = useState(0);
-
-  // --- Proteções, Resistências, Proficiências ---
   const [protecoes, setProtecoes] = useState<string[]>([]);
   const [resistencias, setResistencias] = useState<string[]>([]);
   const [proficiencias, setProficiencias] = useState<string[]>([]);
-
-  // --- Perícias / Regras ---
   const [regrasAtivas, setRegrasAtivas] = useState(true);
-
-  // --- Habilidades ---
   const [filtroHabilidades, setFiltroHabilidades] = useState('');
   const [habilidadesExpandidas, setHabilidadesExpandidas] = useState<string[]>([]);
-
-  // --- Modal de poderes ---
   const [nexModalAberto, setNexModalAberto] = useState<number | null>(null);
   const [poderesModalExpandidos, setPoderesModalExpandidos] = useState<number[]>([]);
-
-  // --- Editor inline de poderes ---
   const [nexPoderEditando, setNexPoderEditando] = useState<number | null>(null);
   const [nomeEditando, setNomeEditando] = useState('');
   const [descricaoEditando, setDescricaoEditando] = useState('');
-
-  // --- Combatente skills ---
   const [skillCombatente1, setSkillCombatente1] = useState('');
   const [skillCombatente2, setSkillCombatente2] = useState('');
-
-  // --- Deslocamento ---
   const [deslocM, setDeslocM] = useState(9);
   const [deslocQ, setDeslocQ] = useState(6);
 
   // ============================================================
   // HOOKS
   // ============================================================
-
   const poderesHook = usePoderes(classe);
   const origensHook = useOrigem();
   const status = useStatus(classe, nex, atributos);
 
-  // Perícias grátis (vem da classe + origem)
   const periciasGratis = useMemo(() => {
     const gratis: string[] = [];
     if (classe === 'Ocultista') {
@@ -202,7 +138,6 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   // ============================================================
   // LÓGICA DE ATRIBUTOS
   // ============================================================
-
   const capMaximo = capMaximoAtributo(nex);
   const pontosIniciais = pontosIniciaisPorNex(nex);
 
@@ -242,7 +177,6 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   // ============================================================
   // UTILITÁRIOS
   // ============================================================
-
   const bloquearLetras = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (['e', 'E', '+', '-', '.', ','].includes(e.key)) {
       e.preventDefault();
@@ -265,7 +199,6 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   // ============================================================
   // VALUE DO CONTEXTO
   // ============================================================
-
   const value: RPGContextType = {
     telaAtual, setTelaAtual,
     classe, setClasse,
@@ -304,9 +237,6 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   return <RPGContext.Provider value={value}>{children}</RPGContext.Provider>;
 }
 
-// ============================================================
-// HOOK PARA CONSUMIR O CONTEXTO
-// ============================================================
 // eslint-disable-next-line react-refresh/only-export-components
 export function useRPG(): RPGContextType {
   const ctx = useContext(RPGContext);

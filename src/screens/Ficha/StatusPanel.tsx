@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useRPG } from '../../context/RPGContext';
 import { NEX_OPTIONS } from '../../utils/rpgRules';
 
@@ -13,9 +13,9 @@ export const StatusPanel: React.FC = () => {
   } = useRPG();
 
   const {
-    pvAtual, pvMax, setPvMax,
-    sanAtual, sanMax, setSanMax,
-    peAtual, peMax, setPeMax,
+    pvAtual, pvMax, setPvMax, setPvAtual,
+    sanAtual, sanMax, setSanMax, setSanAtual,
+    peAtual, peMax, setPeMax, setPeAtual,
     peTurno,
     hasPvTemp, setHasPvTemp,
     pvTempAtual, setPvTempAtual, pvTempMax, setPvTempMax,
@@ -23,6 +23,48 @@ export const StatusPanel: React.FC = () => {
     peTempAtual, setPeTempAtual, peTempMax, setPeTempMax,
     alterarStatus,
   } = status;
+
+  // 🔥 NOVA FUNÇÃO: altera valor atual considerando temporário
+  const alterarPvComTemp = useCallback((qtd: number) => {
+    if (qtd >= 0) {
+      // Cura: vai direto pro PV atual (não afeta temporário)
+      setPvAtual(prev => Math.max(0, Math.min(pvMax, (prev ?? 0) + qtd)));
+    } else {
+      // Dano: primeiro absorve pelo temporário
+      let danoRestante = Math.abs(qtd);
+
+      if (hasPvTemp && pvTempAtual > 0) {
+        const absorvido = Math.min(pvTempAtual, danoRestante);
+        setPvTempAtual(prev => Math.max(0, prev - absorvido));
+        danoRestante -= absorvido;
+      }
+
+      if (danoRestante > 0) {
+        setPvAtual(prev => Math.max(0, Math.min(pvMax, (prev ?? 0) - danoRestante)));
+      }
+    }
+  }, [pvMax, hasPvTemp, pvTempAtual, setPvAtual, setPvTempAtual]);
+
+  // 🔥 NOVA FUNÇÃO: altera PE considerando temporário
+  const alterarPeComTemp = useCallback((qtd: number) => {
+    if (qtd >= 0) {
+      // Recuperação: vai direto pro PE atual
+      setPeAtual(prev => Math.max(0, Math.min(peMax, (prev ?? 0) + qtd)));
+    } else {
+      // Gasto: primeiro absorve pelo temporário
+      let danoRestante = Math.abs(qtd);
+
+      if (hasPeTemp && peTempAtual > 0) {
+        const absorvido = Math.min(peTempAtual, danoRestante);
+        setPeTempAtual(prev => Math.max(0, prev - absorvido));
+        danoRestante -= absorvido;
+      }
+
+      if (danoRestante > 0) {
+        setPeAtual(prev => Math.max(0, Math.min(peMax, (prev ?? 0) - danoRestante)));
+      }
+    }
+  }, [peMax, hasPeTemp, peTempAtual, setPeAtual, setPeTempAtual]);
 
   return (
     <div>
@@ -82,15 +124,16 @@ export const StatusPanel: React.FC = () => {
 
       {/* BARRAS DE STATUS */}
       <div className="mb-8 flex flex-col gap-6">
-        {/* VIDA */}
+        {/* VIDA — usa a função com temporário */}
         <BarraStatus
           titulo="Vida"
           corBarra="border-red-700 bg-red-950/40"
           corTempClasses="border-red-500 bg-red-950/20"
           valorAtual={pvAtual}
+          setValorAtual={setPvAtual as React.Dispatch<React.SetStateAction<number>>}
           valorMax={pvMax}
           setValorMax={setPvMax}
-          alterarStatus={(qtd) => alterarStatus('pv', qtd)}
+          alterarStatus={alterarPvComTemp} // ← TROCADO
           bloquearLetras={bloquearLetras}
           hasTemp={hasPvTemp}
           setHasTemp={setHasPvTemp}
@@ -100,26 +143,28 @@ export const StatusPanel: React.FC = () => {
           setTempMax={setPvTempMax}
         />
 
-        {/* SANIDADE */}
+        {/* SANIDADE — não tem temporário */}
         <BarraStatus
           titulo="Sanidade"
           corBarra="border-zinc-300 bg-zinc-800/60"
           valorAtual={sanAtual}
+          setValorAtual={setSanAtual as React.Dispatch<React.SetStateAction<number>>}
           valorMax={sanMax}
           setValorMax={setSanMax}
           alterarStatus={(qtd) => alterarStatus('san', qtd)}
           bloquearLetras={bloquearLetras}
         />
 
-        {/* ESFORÇO */}
+        {/* ESFORÇO — usa a função com temporário */}
         <BarraStatus
           titulo="Esforço"
           corBarra="border-amber-600 bg-amber-950/40"
           corTempClasses="border-amber-400 bg-amber-950/20"
           valorAtual={peAtual}
+          setValorAtual={setPeAtual as React.Dispatch<React.SetStateAction<number>>}
           valorMax={peMax}
           setValorMax={setPeMax}
-          alterarStatus={(qtd) => alterarStatus('pe', qtd)}
+          alterarStatus={alterarPeComTemp} // ← TROCADO
           bloquearLetras={bloquearLetras}
           hasTemp={hasPeTemp}
           setHasTemp={setHasPeTemp}
@@ -141,6 +186,7 @@ interface BarraStatusProps {
   corBarra: string;
   corTempClasses?: string;
   valorAtual: number;
+  setValorAtual: React.Dispatch<React.SetStateAction<number>>;
   valorMax: number;
   setValorMax: React.Dispatch<React.SetStateAction<number>>;
   alterarStatus: (qtd: number) => void;
@@ -161,6 +207,7 @@ function BarraStatus({
   corBarra,
   corTempClasses,
   valorAtual,
+  setValorAtual,
   valorMax,
   setValorMax,
   alterarStatus,
@@ -213,7 +260,14 @@ function BarraStatus({
             <button onClick={() => alterarStatus(-1)} className={btnSeta} title="-1">‹</button>
           </div>
           <div className="relative flex items-center gap-1">
-            <span className="text-lg font-bold">{valorAtual}</span>
+            <input
+              type="number"
+              onKeyDown={bloquearLetras}
+              value={valorAtual}
+              onChange={(e) => setValorAtual(Math.max(0, Math.min(valorMax, Number(e.target.value))))}
+              className="w-9 bg-transparent text-center text-lg font-bold text-zinc-100 outline-none"
+              title={`Editar ${titulo} Atual`}
+            />
             <span className="text-lg text-zinc-500">/</span>
             <input
               type="number"

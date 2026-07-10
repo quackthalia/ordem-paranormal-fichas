@@ -10,7 +10,8 @@ export type AtributoKey = 'FOR' | 'AGI' | 'INT' | 'PRE' | 'VIG';
 
 export type AbaDireita = 'combate' | 'habilidades' | 'rituais' | 'inventario' | 'descricao';
 
-export type AbaModalPoderes = 'classe' | 'gerais' | 'combate';
+// 🔥 ADICIONADO: 'paranormais'
+export type AbaModalPoderes = 'classe' | 'gerais' | 'combate' | 'paranormais';
 
 export interface Atributos {
   FOR: number;
@@ -36,6 +37,18 @@ export interface Poder {
   Classe: string;
   Tipo: string;
   PreRequisitos: string;
+  Fonte: string;
+}
+
+// 🔥 NOVO TIPO: Poder Paranormal
+export interface PoderParanormal {
+  codigo_poder: number;
+  Nome: string;
+  Descricao: string;
+  PreRequisitos: string;
+  Afinidade: string;
+  Elemento: string;   // Sangue | Morte | Energia | Conhecimento | Medo
+  Fonte: string;
 }
 
 export interface Origem {
@@ -60,11 +73,15 @@ export interface PoderSlot {
   nome: string;
   descricao: string;
   preRequisitos?: string;
+  fonte?: string;
 }
 
 export interface PoderesEscolhidos {
   [nex: number]: PoderSlot;
 }
+
+// 🔥 ADICIONADO: 'paranormais'
+export type CategoriaHabilidade = 'origem' | 'classe' | 'utilidade' | 'combate' | 'paranormais';
 
 export interface HabilidadeItem {
   id: string;
@@ -77,6 +94,11 @@ export interface HabilidadeItem {
   isSlotVazio?: boolean;
   nexDoSlot?: number;
   limiteCirculos?: LimiteCirculos;
+  fonte?: string;
+  // 🔥 CAMPOS NOVOS para poderes paranormais
+  elemento?: string;
+  afinidade?: string;
+  categoria: CategoriaHabilidade;
 }
 
 export interface LimiteCirculos {

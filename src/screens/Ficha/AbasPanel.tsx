@@ -10,6 +10,35 @@ import {
   obterLimiteCirculos,
 } from '../../utils/rpgRules';
 
+// ============================================================
+// 🔥 FUNÇÃO DE FORMATAÇÃO — quebras de linha + markdown
+// ============================================================
+function formatarDescricao(texto: string): string {
+  if (!texto) return '';
+
+  let resultado = texto;
+
+  // Se NÃO parece já ser HTML (não tem tags), aplicar regras
+  if (!resultado.includes('<') && !resultado.includes('&')) {
+    // Escapar HTML básico
+    resultado = resultado
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    // 🔥 Negrito: *palavra*
+    resultado = resultado.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+
+    // 🔥 Itálico: _palavra_
+    resultado = resultado.replace(/_(.*?)_/g, '<em>$1</em>');
+  }
+
+  // 🔥 Quebras de linha
+  resultado = resultado.replace(/\n/g, '<br />');
+
+  return resultado;
+}
+
 export const AbasPanel: React.FC = () => {
   const {
     abaDireita, setAbaDireita,
@@ -21,7 +50,7 @@ export const AbasPanel: React.FC = () => {
     setNexModalAberto,
     setNexPoderEditando, setNomeEditando, setDescricaoEditando,
     setAbaModalPoderes,
-    setTipoModalPoderes, // ← NOVO
+    setTipoModalPoderes,
   } = useRPG();
 
   const { poderClasse, poderesClasse, poderesEscolhidos, removerPoder } = poderesHook;
@@ -275,7 +304,8 @@ export const AbasPanel: React.FC = () => {
                       ) : (
                         estaExpandida && (
                           <div className="px-4 py-4 text-left text-sm leading-relaxed text-zinc-400">
-                            <div dangerouslySetInnerHTML={{ __html: hab.descricao }} />
+                            {/* 🔥 DESCRIÇÃO FORMATADA — quebras de linha + negrito/itálico */}
+                            <div dangerouslySetInnerHTML={{ __html: formatarDescricao(hab.descricao) }} />
 
                             {hab.subPoder && (
                               <div className="mt-4 rounded-r border-l-2 border-amber-500 bg-zinc-900/80 p-3">

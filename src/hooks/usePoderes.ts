@@ -165,6 +165,9 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
   };
 }
 
+// ============================================================
+// 🔥 FUNÇÃO CORRIGIDA — FILTRA AS ABAS DO MODAL CORRETAMENTE
+// ============================================================
 export function usePoderesFiltrados(
   listaPoderesUtilidade: Poder[],
   abaModal: 'classe' | 'gerais' | 'combate',
@@ -173,22 +176,22 @@ export function usePoderesFiltrados(
   return useMemo(() => {
     return listaPoderesUtilidade
       .filter(p => {
-        const classePoder = p.Classe?.toLowerCase() || '';
-        const tipoPoder = p.Tipo?.toLowerCase() || '';
+        const classePoder = (p.Classe || '').toLowerCase();
+        const tipoPoder = (p.Tipo || '').toLowerCase();
 
-        // Aba Utilidade: SÓ Utilidade da classe
+        // Aba Utilidade: Só poderes da classe com Tipo = 'utilidade'
         if (abaModal === 'classe') {
           return classePoder === classe?.toLowerCase() && tipoPoder === 'utilidade';
         }
 
-        // Aba Combate: SÓ Combate da classe
+        // Aba Combate: Só poderes com Tipo = 'combate' (independente da classe)
         if (abaModal === 'combate') {
-          return classePoder === classe?.toLowerCase() && tipoPoder === 'combate';
+          return tipoPoder === 'combate';
         }
 
-        // Aba Gerais: SÓ Gerais (de qualquer classe)
+        // Aba Gerais: Só poderes com Tipo = 'geral' OU classe = 'geral'/'todos'
         if (abaModal === 'gerais') {
-          return classePoder.includes('geral') || tipoPoder.includes('geral') || classePoder === 'todos';
+          return tipoPoder === 'geral' || classePoder === 'geral' || classePoder === 'todos';
         }
 
         return false;

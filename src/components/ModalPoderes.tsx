@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useEffect } from 'react';
 import { useRPG } from '../context/RPGContext';
 import { usePoderesFiltrados } from '../hooks/usePoderes';
 import { InputOtimizado } from './InputOtimizado';
@@ -6,6 +6,35 @@ import type { AbaModalPoderes } from '../types';
 
 /** Patamares de Combate (NEX ímpar a partir de 15) */
 const PATAMARES_COMBATE = [15, 25, 35, 45, 55, 65, 75, 85, 95];
+
+// ============================================================
+// 🔥 FUNÇÃO DE FORMATAÇÃO — quebras de linha + markdown
+// ============================================================
+function formatarDescricao(texto: string): string {
+  if (!texto) return '';
+
+  let resultado = texto;
+
+  // Se NÃO parece já ser HTML (não tem tags), aplicar regras
+  if (!resultado.includes('<') && !resultado.includes('&')) {
+    // Escapar HTML básico
+    resultado = resultado
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    // 🔥 Negrito: *palavra*
+    resultado = resultado.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+
+    // 🔥 Itálico: _palavra_
+    resultado = resultado.replace(/_(.*?)_/g, '<em>$1</em>');
+  }
+
+  // 🔥 Quebras de linha
+  resultado = resultado.replace(/\n/g, '<br />');
+
+  return resultado;
+}
 
 export const ModalPoderes: React.FC = () => {
   const {
@@ -20,13 +49,29 @@ export const ModalPoderes: React.FC = () => {
   } = useRPG();
 
   const editorRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // 🔥 Scroll position salvo por aba
+  const scrollPositions = useRef<Record<string, number>>({
+    classe: 0,
+    combate: 0,
+    gerais: 0,
+  });
+
   const { listaPoderesUtilidade, escolherPoder, editarPoder } = poderesHook;
   const listaFiltrada = usePoderesFiltrados(listaPoderesUtilidade, abaModalPoderes, classe);
 
-  // 🔥 DESCOBRE se o modal atual é de Combate ou Utilidade pelo NEX
+  // 🔥 Restaura scroll da aba atual depois que renderiza
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = scrollPositions.current[abaModalPoderes] || 0;
+    }
+  }, [abaModalPoderes]);
+
+  // DESCOBRE se o modal atual é de Combate ou Utilidade pelo NEX
   const ehCombate = nexModalAberto !== null && PATAMARES_COMBATE.includes(nexModalAberto);
 
-  // 🔥 ABAS FIXAS: depende de ehCombate (que NUNCA muda enquanto modal estiver aberto)
+  // ABAS FIXAS
   const abasDisponiveis = useMemo((): [AbaModalPoderes, string][] => {
     if (ehCombate) {
       return [
@@ -39,6 +84,14 @@ export const ModalPoderes: React.FC = () => {
       ['gerais', 'Poderes Gerais'],
     ];
   }, [ehCombate]);
+
+  // 🔥 Handler de troca de aba com salvamento de scroll
+  const handleTabChange = (aba: AbaModalPoderes) => {
+    if (scrollContainerRef.current) {
+      scrollPositions.current[abaModalPoderes] = scrollContainerRef.current.scrollTop;
+    }
+    setAbaModalPoderes(aba);
+  };
 
   // ====== EDITOR ======
   if (nexPoderEditando !== null) {
@@ -132,12 +185,12 @@ export const ModalPoderes: React.FC = () => {
           </button>
         </div>
 
-        {/* 🔥 ABAS — totalmente estáveis */}
+        {/* ABAS — totalmente estáveis */}
         <div className="flex border-b border-zinc-800 bg-zinc-950">
           {abasDisponiveis.map(([aba, rotulo]) => (
             <button
               key={aba}
-              onClick={() => setAbaModalPoderes(aba)}
+              onClick={() => handleTabChange(aba)}
               className={`min-w-[70px] flex-1 rounded-t px-1 py-2.5 text-xs font-bold uppercase tracking-wider transition ${
                 abaModalPoderes === aba
                   ? 'border border-b-0 border-red-900 bg-zinc-900 text-zinc-100'
@@ -149,8 +202,12 @@ export const ModalPoderes: React.FC = () => {
           ))}
         </div>
 
-        {/* LISTA DE PODERES */}
-        <div id="caixa-scroll-poderes" className="flex-1 overflow-y-auto p-5">
+        {/* 🔥 LISTA DE PODERES — ref pra scroll + scroll independente por aba */}
+        <div
+          ref={scrollContainerRef}
+          id="caixa-scroll-poderes"
+          className="flex-1 overflow-y-auto p-5"
+        >
           {listaFiltrada.map(poder => {
             const estaExpandido = poderesModalExpandidos.includes(poder.codigo_poder);
 
@@ -189,7 +246,11 @@ export const ModalPoderes: React.FC = () => {
 
                 {estaExpandido && (
                   <div className="border-t border-zinc-800 px-5 py-4 text-left">
-                    <div className="text-sm leading-relaxed text-zinc-400">{poder.Descricao}</div>
+                    {/* 🔥 DESCRIÇÃO FORMATADA — quebras de linha + negrito/itálico */}
+                    <div
+                      className="text-sm leading-relaxed text-zinc-400"
+                      dangerouslySetInnerHTML={{ __html: formatarDescricao(poder.Descricao) }}
+                    />
                     {poder.PreRequisitos && (
                       <div className="mt-3 inline-block rounded bg-amber-400/5 px-3 py-2 text-xs italic text-amber-400">
                         <strong>Pré-requisitos:</strong> {poder.PreRequisitos}

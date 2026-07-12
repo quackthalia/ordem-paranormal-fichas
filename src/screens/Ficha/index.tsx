@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useRPG } from '../../context/RPGContext';
 import { StatusPanel } from './StatusPanel';
 import { PericiasTable } from './PericiasTable';
@@ -106,10 +106,31 @@ function AtributosFicha() {
 // COMPONENTE INTERNO: DEFESA
 // ============================================================
 function DefesaPanel() {
-  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras } = useRPG();
+  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras, periciasHook, atributos } = useRPG();
 
   const [bloqueio, setBloqueio] = React.useState(0);
   const [esquiva, setEsquiva] = React.useState(0);
+  const bloqueioOverride = useRef(false);
+  const esquivaOverride = useRef(false);
+
+  // Auto calcula bloqueio a partir de Fortitude (código 10) e esquiva a partir de Reflexos (código 23)
+  useEffect(() => {
+    const { pericias, nomesPericias } = periciasHook;
+
+    // Fortitude
+    const nomeFortitude = nomesPericias[10];
+    if (nomeFortitude && pericias[nomeFortitude] && !bloqueioOverride.current) {
+      const total = pericias[nomeFortitude].treino + pericias[nomeFortitude].outros;
+      setBloqueio(total);
+    }
+
+    // Reflexos
+    const nomeReflexos = nomesPericias[23];
+    if (nomeReflexos && pericias[nomeReflexos] && !esquivaOverride.current) {
+      const total = 10 + atributos.AGI + pericias[nomeReflexos].treino + pericias[nomeReflexos].outros;
+      setEsquiva(total);
+    }
+  }, [periciasHook, atributos]);
 
   return (
     <div className="mt-8 flex flex-wrap items-center justify-between gap-5 rounded-lg border border-zinc-800 bg-zinc-900/60 p-5">
@@ -151,7 +172,7 @@ function DefesaPanel() {
           onKeyDown={bloquearLetras}
           value={bloqueio || ''}
           placeholder="0"
-          onChange={e => setBloqueio(Math.max(0, Number(e.target.value)))}
+          onChange={e => { bloqueioOverride.current = true; setBloqueio(Math.max(0, Number(e.target.value))); }}
           className="mt-1 w-12 border-b border-zinc-600 bg-transparent text-center text-lg font-bold text-zinc-100 outline-none focus:border-red-600"
         />
       </div>
@@ -162,7 +183,7 @@ function DefesaPanel() {
           onKeyDown={bloquearLetras}
           value={esquiva || ''}
           placeholder="0"
-          onChange={e => setEsquiva(Math.max(0, Number(e.target.value)))}
+          onChange={e => { esquivaOverride.current = true; setEsquiva(Math.max(0, Number(e.target.value))); }}
           className="mt-1 w-12 border-b border-zinc-600 bg-transparent text-center text-lg font-bold text-zinc-100 outline-none focus:border-red-600"
         />
       </div>

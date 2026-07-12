@@ -116,7 +116,15 @@ export const AbasPanel: React.FC = () => {
         const escolhido = poderesEscolhidos[nivel];
         if (escolhido) {
           const pp = poderesParanormaisMap.get(escolhido.nome.toLowerCase());
-          lista.push({ id: `escolha_nex_${nivel}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: `NEX ${nivel}%`, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte, elemento: pp?.Elemento, afinidade: pp?.Afinidade, categoria: pp ? 'paranormais' : 'utilidade' });
+          let categoria: CategoriaHabilidade;
+          if (pp) {
+            categoria = 'paranormais';
+          } else if (escolhido.tipo?.toLowerCase() === 'geral') {
+            categoria = 'gerais';
+          } else {
+            categoria = 'utilidade';
+          }
+          lista.push({ id: `escolha_nex_${nivel}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: `NEX ${nivel}%`, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte, elemento: pp?.Elemento, afinidade: pp?.Afinidade, categoria });
         } else {
           lista.push({ id: `escolha_nex_${nivel}`, nome: 'Escolher Poder de Utilidade', descricao: 'Clique no "+" para abrir a lista e selecionar seu poder.', tipo: `NEX ${nivel}%`, isSlotVazio: true, nexDoSlot: nivel, categoria: 'utilidade' });
         }
@@ -130,7 +138,15 @@ export const AbasPanel: React.FC = () => {
         const escolhido = poderesEscolhidos[nivel];
         if (escolhido) {
           const pp = poderesParanormaisMap.get(escolhido.nome.toLowerCase());
-          lista.push({ id: `escolha_nex_combate_${nivel}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: `NEX ${nivel}%`, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte, elemento: pp?.Elemento, afinidade: pp?.Afinidade, categoria: pp ? 'paranormais' : 'combate' });
+          let categoria: CategoriaHabilidade;
+          if (pp) {
+            categoria = 'paranormais';
+          } else if (escolhido.tipo?.toLowerCase() === 'geral') {
+            categoria = 'gerais';
+          } else {
+            categoria = 'combate';
+          }
+          lista.push({ id: `escolha_nex_combate_${nivel}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: `NEX ${nivel}%`, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte, elemento: pp?.Elemento, afinidade: pp?.Afinidade, categoria });
         } else {
           lista.push({ id: `escolha_nex_combate_${nivel}`, nome: 'Escolher Poder de Combate', descricao: 'Clique no "+" para abrir a lista e selecionar seu poder de combate.', tipo: `NEX ${nivel}%`, isSlotVazio: true, nexDoSlot: nivel, categoria: 'combate' });
         }
@@ -144,13 +160,14 @@ export const AbasPanel: React.FC = () => {
     hab.nome.toLowerCase().includes(filtroHabilidades.toLowerCase())
   );
 
-  const ordemCategorias: CategoriaHabilidade[] = ['origem', 'classe', 'utilidade', 'combate', 'paranormais'];
+  const ordemCategorias: CategoriaHabilidade[] = ['origem', 'classe', 'utilidade', 'combate', 'paranormais', 'gerais'];
   const rotuloCategoria: Record<CategoriaHabilidade, string> = {
     origem: 'Poder de Origem',
     classe: 'Poderes de Classe',
     utilidade: 'Poderes de Utilidade',
     combate: 'Poderes de Combate',
     paranormais: 'Poderes Paranormais',
+    gerais: 'Poderes Gerais',
   };
 
   return (

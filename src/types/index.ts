@@ -76,6 +76,7 @@ export interface PoderSlot {
   preRequisitos?: string;
   fonte?: string;
   afinidade?: string;
+  tipo?: string;
 }
 
 export interface PoderesEscolhidos {
@@ -83,7 +84,7 @@ export interface PoderesEscolhidos {
 }
 
 // 🔥 ADICIONADO: 'paranormais'
-export type CategoriaHabilidade = 'origem' | 'classe' | 'utilidade' | 'combate' | 'paranormais';
+export type CategoriaHabilidade = 'origem' | 'classe' | 'utilidade' | 'combate' | 'paranormais' | 'gerais';
 
 export interface HabilidadeItem {
   id: string;

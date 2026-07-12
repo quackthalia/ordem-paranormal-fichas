@@ -149,6 +149,7 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
         preRequisitos: poder.PreRequisitos,
         fonte: (poder as Poder).Fonte || (poder as PoderParanormal).Fonte || '',
         afinidade: (poder as PoderParanormal).Afinidade || '',
+        tipo: (poder as Poder).Tipo || '',
       },
     }));
   }, []);

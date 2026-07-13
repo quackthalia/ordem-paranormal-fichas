@@ -8,6 +8,7 @@ import {
   calcularBonusEngenhosidade,
   calcularTotalRituais,
   obterLimiteCirculos,
+  calcularNivel,
 } from '../../utils/rpgRules';
 
 // ═══════════════════════════════════════════════════════════════
@@ -59,6 +60,7 @@ export const AbasPanel: React.FC = () => {
     setNexPoderEditando, setNomeEditando, setDescricaoEditando,
     setAbaModalPoderes,
     setTipoModalPoderes,
+    regras,
   } = useRPG();
 
   const { poderClasse, poderesClasse, poderesEscolhidos, poderesParanormais, removerPoder } = poderesHook;
@@ -124,9 +126,12 @@ export const AbasPanel: React.FC = () => {
           } else {
             categoria = 'utilidade';
           }
-          lista.push({ id: `escolha_nex_${nivel}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: `NEX ${nivel}%`, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte, elemento: pp?.Elemento, afinidade: pp?.Afinidade, categoria });
+          const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivel)}` : `NEX ${nivel}%`;
+          const tipoLabel = categoria === 'paranormais' ? `Transcender, ${nivelLabel}` : nivelLabel;
+          lista.push({ id: `escolha_nex_${nivel}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: tipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte, elemento: pp?.Elemento, afinidade: pp?.Afinidade, categoria });
         } else {
-          lista.push({ id: `escolha_nex_${nivel}`, nome: 'Escolher Poder de Utilidade', descricao: 'Clique no "+" para abrir a lista e selecionar seu poder.', tipo: `NEX ${nivel}%`, isSlotVazio: true, nexDoSlot: nivel, categoria: 'utilidade' });
+          const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivel)}` : `NEX ${nivel}%`;
+          lista.push({ id: `escolha_nex_${nivel}`, nome: 'Escolher Poder de Utilidade', descricao: 'Clique no "+" para abrir a lista e selecionar seu poder.', tipo: nivelLabel, isSlotVazio: true, nexDoSlot: nivel, categoria: 'utilidade' });
         }
       }
     });
@@ -146,9 +151,12 @@ export const AbasPanel: React.FC = () => {
           } else {
             categoria = 'combate';
           }
-          lista.push({ id: `escolha_nex_combate_${nivel}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: `NEX ${nivel}%`, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte, elemento: pp?.Elemento, afinidade: pp?.Afinidade, categoria });
+          const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivel)}` : `NEX ${nivel}%`;
+          const tipoLabel = categoria === 'paranormais' ? `Transcender, ${nivelLabel}` : nivelLabel;
+          lista.push({ id: `escolha_nex_combate_${nivel}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: tipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte, elemento: pp?.Elemento, afinidade: pp?.Afinidade, categoria });
         } else {
-          lista.push({ id: `escolha_nex_combate_${nivel}`, nome: 'Escolher Poder de Combate', descricao: 'Clique no "+" para abrir a lista e selecionar seu poder de combate.', tipo: `NEX ${nivel}%`, isSlotVazio: true, nexDoSlot: nivel, categoria: 'combate' });
+          const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivel)}` : `NEX ${nivel}%`;
+          lista.push({ id: `escolha_nex_combate_${nivel}`, nome: 'Escolher Poder de Combate', descricao: 'Clique no "+" para abrir a lista e selecionar seu poder de combate.', tipo: nivelLabel, isSlotVazio: true, nexDoSlot: nivel, categoria: 'combate' });
         }
       }
     });
@@ -173,12 +181,12 @@ export const AbasPanel: React.FC = () => {
   return (
     <div className="flex flex-col rounded-lg border border-zinc-800 bg-zinc-900/60 p-5">
       <div className="mb-5 flex flex-wrap gap-1 border-b-2 border-zinc-800 pb-2.5">
-        {(['combate','habilidades','rituais','inventario','descricao'] as const).map(aba => (
+        {(['combate','habilidades','rituais','inventario','descricao','regras'] as const).map(aba => (
           <button key={aba} onClick={() => setAbaDireita(aba)}
             className={`min-w-[70px] flex-1 rounded px-1 py-2 text-xs font-bold uppercase tracking-wider transition ${
               abaDireita === aba ? 'border border-red-900 bg-red-950/40 text-zinc-100' : 'border border-transparent text-zinc-500 hover:text-zinc-300'
             }`}
-          >{aba === 'inventario' ? 'Inventário' : aba === 'descricao' ? 'Descrição' : aba}</button>
+          >{aba === 'inventario' ? 'Inventário' : aba === 'descricao' ? 'Descrição' : aba === 'regras' ? 'Regras' : aba}</button>
         ))}
       </div>
 
@@ -326,7 +334,53 @@ export const AbasPanel: React.FC = () => {
         {abaDireita === 'rituais' && <div className="mt-5 text-center italic text-zinc-600">Conteúdo de Rituais</div>}
         {abaDireita === 'inventario' && <div className="mt-5 text-center italic text-zinc-600">Conteúdo de Inventário</div>}
         {abaDireita === 'descricao' && <div className="mt-5 text-center italic text-zinc-600">Conteúdo de Descrição</div>}
+
+        {abaDireita === 'regras' && (
+          <div className="flex flex-col gap-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-500">Regras Opcionais</h4>
+            <RegraCheckbox
+              nome="nex_experiencia"
+              titulo="NEX & Experiência"
+              descricao="O nível de experiência substitui o NEX em Benefícios por NEX, como pré-requisitos de habilidades de classe (exceto poderes paranormais) e em efeitos de origens e habilidades baseados em NEX. 1 nível equivale a 5% de NEX."
+            />
+            <RegraCheckbox
+              nome="sem_sanidade"
+              titulo="Jogando sem Sanidade"
+              descricao="Personagens não recebem mais PE ou SAN. Em vez disso, recebem Pontos de Determinação (PD) de acordo com sua classe."
+            />
+            <RegraCheckbox
+              nome="reter_ritual"
+              titulo="Reter Ritual"
+              descricao="Retida. Quando conjura um ritual com duração cena, pode mudar a duração para retida como ação livre ou reação. Você retém os PE, reduzindo eles do seu valor atual e máximo. Enquanto você mantiver os PE retidos, o ritual permanecerá funcionando. Você está usando suas energias naturais e sobrenaturais para abrir sua comunicação com o Outro Lado e manter o fluxo a partir dela aberto. Entretanto, sempre que reter um ritual, você perde 1 SAN — manter seu pedido para o Outro Lado cobra seu preço."
+            />
+          </div>
+        )}
       </div>
     </div>
   );
 };
+
+// ============================================================
+// COMPONENTE INTERNO: CHECKBOX DE REGRA OPCIONAL
+// ============================================================
+function RegraCheckbox({ nome, titulo, descricao }: { nome: string; titulo: string; descricao: string }) {
+  const { regras, toggleRegra } = useRPG();
+  const ativa = !!regras[nome];
+
+  return (
+    <div className="rounded-r border-l-4 border-zinc-700 bg-zinc-950/60 transition hover:bg-zinc-900/80">
+      <div className="flex items-start gap-4 px-4 py-3.5">
+        <input
+          type="checkbox"
+          checked={ativa}
+          onChange={() => toggleRegra(nome)}
+          className="mt-0.5 accent-red-600"
+        />
+        <div className="flex flex-col gap-1.5">
+          <span className="text-sm font-bold text-zinc-100">{titulo}</span>
+          <p className="text-xs leading-relaxed text-zinc-500">{descricao}</p>
+        </div>
+      </div>
+    </div>
+  );
+}

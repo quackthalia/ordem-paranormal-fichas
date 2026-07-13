@@ -8,7 +8,7 @@ export type ClasseRPG = 'Combatente' | 'Especialista' | 'Ocultista' | null;
 
 export type AtributoKey = 'FOR' | 'AGI' | 'INT' | 'PRE' | 'VIG';
 
-export type AbaDireita = 'combate' | 'habilidades' | 'rituais' | 'inventario' | 'descricao';
+export type AbaDireita = 'combate' | 'habilidades' | 'rituais' | 'inventario' | 'descricao' | 'regras';
 
 // 🔥 ADICIONADO: 'paranormais'
 export type AbaModalPoderes = 'classe' | 'gerais' | 'combate' | 'paranormais';

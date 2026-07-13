@@ -76,6 +76,12 @@ interface RPGContextType {
   setDeslocM: React.Dispatch<React.SetStateAction<number>>;
   deslocQ: number;
   setDeslocQ: React.Dispatch<React.SetStateAction<number>>;
+  regras: Record<string, boolean>;
+  toggleRegra: (nome: string) => void;
+  nivel: number;
+  setNivel: React.Dispatch<React.SetStateAction<number>>;
+  nexManual: number;
+  setNexManual: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const RPGContext = createContext<RPGContextType | null>(null);
@@ -109,6 +115,33 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const [skillCombatente2, setSkillCombatente2] = useState('');
   const [deslocM, setDeslocM] = useState(9);
   const [deslocQ, setDeslocQ] = useState(6);
+  const [regras, setRegras] = useState<Record<string, boolean>>({});
+  const [nivel, setNivel] = useState(1);
+  const [nexManual, setNexManual] = useState(0);
+
+  const toggleRegra = useCallback((nome: string) => {
+    setRegras(prev => {
+      const novo = { ...prev, [nome]: !prev[nome] };
+      // Quando ativa a regra NEX & EXPERIÊNCIA, zera o NEX manual e calcula nivel a partir do nex atual
+      if (nome === 'nex_experiencia' && novo[nome]) {
+        setNexManual(0);
+        setNivel(Math.min(20, Math.max(1, Math.ceil(nex / 5))));
+        setNex(nex <= 5 ? 5 : nex); // mantém nex atual
+      }
+      // Quando desativa, restaura o nex baseado no nivel
+      if (nome === 'nex_experiencia' && !novo[nome]) {
+        setNex(nivel === 20 ? 99 : nivel * 5);
+      }
+      return novo;
+    });
+  }, [nex, nivel, setNex]);
+
+  // Sincroniza nex com nivel quando a regra NEX & EXPERIÊNCIA está ativa
+  React.useEffect(() => {
+    if (regras['nex_experiencia']) {
+      setNex(nivel === 20 ? 99 : nivel * 5);
+    }
+  }, [nivel, regras['nex_experiencia']]);
 
   // ============================================================
   // HOOKS
@@ -232,6 +265,9 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     skillCombatente2, setSkillCombatente2,
     deslocM, setDeslocM,
     deslocQ, setDeslocQ,
+    regras, toggleRegra,
+    nivel, setNivel,
+    nexManual, setNexManual,
   };
 
   return <RPGContext.Provider value={value}>{children}</RPGContext.Provider>;

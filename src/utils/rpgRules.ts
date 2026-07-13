@@ -100,6 +100,25 @@ export function obterLimiteCirculos(nex: number): LimiteCirculos {
   return { c1: 3, c2: 0, c3: 0, c4: 0 };
 }
 
+/** Calcula PD (Pontos de Determinação) — regra Jogando sem Sanidade */
+export function calcularPD(
+  classe: ClasseRPG,
+  atributos: Atributos,
+  nex: number
+): number {
+  const nivel = calcularNivel(nex);
+  const pre = atributos.PRE;
+
+  if (classe === 'Combatente') {
+    return (6 + pre) + ((nivel - 1) * (3 + pre));
+  } else if (classe === 'Especialista') {
+    return (8 + pre) + ((nivel - 1) * (4 + pre));
+  } else if (classe === 'Ocultista') {
+    return (10 + pre) + ((nivel - 1) * (5 + pre));
+  }
+  return 0;
+}
+
 /** Limites de perícias por classe/nex */
 export function calcularLimitesPericias(
   classe: ClasseRPG,

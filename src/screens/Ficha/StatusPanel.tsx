@@ -2,6 +2,8 @@ import React, { useCallback } from 'react';
 import { useRPG } from '../../context/RPGContext';
 import { NEX_OPTIONS } from '../../utils/rpgRules';
 
+const NIVEL_OPTIONS = Array.from({ length: 20 }, (_, i) => i + 1);
+
 export const StatusPanel: React.FC = () => {
   const {
     status,
@@ -10,12 +12,21 @@ export const StatusPanel: React.FC = () => {
     bloquearLetras,
     deslocM, setDeslocM,
     deslocQ, setDeslocQ,
+    regras,
+    nivel, setNivel,
+    nexManual, setNexManual,
   } = useRPG();
+
+  const regraNexExperiencia = regras['nex_experiencia'];
+  const regraSemSanidade = regras['sem_sanidade'];
 
   const {
     pvAtual, pvMax, setPvMax, setPvAtual,
     sanAtual, sanMax, setSanMax, setSanAtual,
     peAtual, peMax, setPeMax, setPeAtual,
+    pdAtual, pdMax, setPdMax, setPdAtual,
+    hasPdTemp, setHasPdTemp,
+    pdTempAtual, setPdTempAtual, pdTempMax, setPdTempMax,
     peTurno,
     hasPvTemp, setHasPvTemp,
     pvTempAtual, setPvTempAtual, pvTempMax, setPvTempMax,
@@ -70,19 +81,52 @@ export const StatusPanel: React.FC = () => {
     <div>
       {/* LINHA: NEX + PE/TURNO + DESLOCAMENTO */}
       <div className="mb-8 flex items-start justify-between border-b border-zinc-800 pb-5">
-        {/* NEX */}
-        <div className="flex flex-col items-center gap-1.5">
-          <select
-            value={nex}
-            onChange={(e) => setNex(Number(e.target.value))}
-            className="cursor-pointer appearance-none rounded border border-zinc-600 bg-zinc-900 px-3 py-2 text-center text-lg font-bold text-zinc-100 transition hover:border-red-700"
-          >
-            {NEX_OPTIONS.map(n => (
-              <option key={n} value={n}>{n}%</option>
-            ))}
-          </select>
-          <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">NEX</span>
-        </div>
+        {/* NEX / NÍVEL (regra NEX & EXPERIÊNCIA) */}
+        {regraNexExperiencia ? (
+          <>
+            {/* NEX MANUAL */}
+            <div className="flex flex-col items-center gap-1.5">
+              <div className="flex items-center rounded border border-zinc-600 bg-zinc-900 transition hover:border-red-700 focus-within:border-red-700">
+                <input
+                  type="number"
+                  onKeyDown={bloquearLetras}
+                  value={nexManual}
+                  onChange={(e) => setNexManual(Math.max(0, Number(e.target.value)))}
+                  className="w-14 bg-transparent px-3 py-2 text-center text-lg font-bold text-zinc-100 outline-none"
+                />
+                <span className="pr-2 text-lg font-bold text-zinc-500">%</span>
+              </div>
+              <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">NEX</span>
+            </div>
+
+            {/* NÍVEL */}
+            <div className="flex flex-col items-center gap-1.5">
+              <select
+                value={nivel}
+                onChange={(e) => setNivel(Number(e.target.value))}
+                className="cursor-pointer appearance-none rounded border border-zinc-600 bg-zinc-900 px-3 py-2 text-center text-lg font-bold text-zinc-100 transition hover:border-red-700"
+              >
+                {NIVEL_OPTIONS.map(n => (
+                  <option key={n} value={n}>{n}</option>
+                ))}
+              </select>
+              <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Nível</span>
+            </div>
+          </>
+        ) : (
+          <div className="flex flex-col items-center gap-1.5">
+            <select
+              value={nex}
+              onChange={(e) => setNex(Number(e.target.value))}
+              className="cursor-pointer appearance-none rounded border border-zinc-600 bg-zinc-900 px-3 py-2 text-center text-lg font-bold text-zinc-100 transition hover:border-red-700"
+            >
+              {NEX_OPTIONS.map(n => (
+                <option key={n} value={n}>{n}%</option>
+              ))}
+            </select>
+            <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">NEX</span>
+          </div>
+        )}
 
         {/* PE/TURNO */}
         <div className="flex flex-col items-center gap-1.5">
@@ -144,35 +188,60 @@ export const StatusPanel: React.FC = () => {
         />
 
         {/* SANIDADE — não tem temporário */}
-        <BarraStatus
-          titulo="Sanidade"
-          corBarra="border-zinc-300 bg-zinc-800/60"
-          valorAtual={sanAtual}
-          setValorAtual={setSanAtual as React.Dispatch<React.SetStateAction<number>>}
-          valorMax={sanMax}
-          setValorMax={setSanMax}
-          alterarStatus={(qtd) => alterarStatus('san', qtd)}
-          bloquearLetras={bloquearLetras}
-        />
+        {!regraSemSanidade && (
+          <BarraStatus
+            titulo="Sanidade"
+            corBarra="border-zinc-300 bg-zinc-800/60"
+            valorAtual={sanAtual}
+            setValorAtual={setSanAtual as React.Dispatch<React.SetStateAction<number>>}
+            valorMax={sanMax}
+            setValorMax={setSanMax}
+            alterarStatus={(qtd) => alterarStatus('san', qtd)}
+            bloquearLetras={bloquearLetras}
+          />
+        )}
 
         {/* ESFORÇO — usa a função com temporário */}
-        <BarraStatus
-          titulo="Esforço"
-          corBarra="border-amber-600 bg-amber-950/40"
-          corTempClasses="border-amber-400 bg-amber-950/20"
-          valorAtual={peAtual}
-          setValorAtual={setPeAtual as React.Dispatch<React.SetStateAction<number>>}
-          valorMax={peMax}
-          setValorMax={setPeMax}
-          alterarStatus={alterarPeComTemp} // ← TROCADO
-          bloquearLetras={bloquearLetras}
-          hasTemp={hasPeTemp}
-          setHasTemp={setHasPeTemp}
-          tempAtual={peTempAtual}
-          setTempAtual={setPeTempAtual}
-          tempMax={peTempMax}
-          setTempMax={setPeTempMax}
-        />
+        {!regraSemSanidade && (
+          <BarraStatus
+            titulo="Esforço"
+            corBarra="border-amber-600 bg-amber-950/40"
+            corTempClasses="border-amber-400 bg-amber-950/20"
+            valorAtual={peAtual}
+            setValorAtual={setPeAtual as React.Dispatch<React.SetStateAction<number>>}
+            valorMax={peMax}
+            setValorMax={setPeMax}
+            alterarStatus={alterarPeComTemp}
+            bloquearLetras={bloquearLetras}
+            hasTemp={hasPeTemp}
+            setHasTemp={setHasPeTemp}
+            tempAtual={peTempAtual}
+            setTempAtual={setPeTempAtual}
+            tempMax={peTempMax}
+            setTempMax={setPeTempMax}
+          />
+        )}
+
+        {/* PD (Pontos de Determinação) — regra Jogando sem Sanidade */}
+        {regraSemSanidade && (
+          <BarraStatus
+            titulo="Determinação"
+            corBarra="border-purple-500 bg-purple-950/40"
+            corTempClasses="border-purple-400 bg-purple-950/20"
+            valorAtual={pdAtual}
+            setValorAtual={setPdAtual as React.Dispatch<React.SetStateAction<number>>}
+            valorMax={pdMax}
+            setValorMax={setPdMax}
+            alterarStatus={(qtd) => alterarStatus('pd', qtd)}
+            bloquearLetras={bloquearLetras}
+            hasTemp={hasPdTemp}
+            setHasTemp={setHasPdTemp}
+            tempAtual={pdTempAtual}
+            setTempAtual={setPdTempAtual}
+            tempMax={pdTempMax}
+            setTempMax={setPdTempMax}
+          />
+        )}
       </div>
     </div>
   );

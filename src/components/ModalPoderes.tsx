@@ -135,6 +135,14 @@ function PoderCard({
   );
 }
 
+// Sanidade perdida ao transcender, por classe
+function sanidadePorNivel(classe: string | null): number {
+  if (classe === 'Combatente') return 3;
+  if (classe === 'Especialista') return 4;
+  if (classe === 'Ocultista') return 5;
+  return 0;
+}
+
 export const ModalPoderes: React.FC = () => {
   const {
     nexModalAberto, setNexModalAberto,
@@ -145,6 +153,8 @@ export const ModalPoderes: React.FC = () => {
     nexPoderEditando, setNexPoderEditando,
     nomeEditando, setNomeEditando,
     descricaoEditando,
+    status,
+    regras,
   } = useRPG();
 
   const editorRef = useRef<HTMLDivElement>(null);
@@ -380,6 +390,23 @@ export const ModalPoderes: React.FC = () => {
                 }}
                 onEscolher={() => {
                   escolherPoder(nexModalAberto!, poder);
+                  // Se for paranormal, reduz sanidade (ou PD com regra sem_sanidade)
+                  if (pp) {
+                    const perda = sanidadePorNivel(classe);
+                    if (regras['sem_sanidade']) {
+                      status.setPdMax(prev => Math.max(0, prev - perda));
+                      status.setPdAtual(prev => {
+                        const atual = prev ?? status.pdMax;
+                        return Math.max(0, atual - perda);
+                      });
+                    } else {
+                      status.setSanMax(prev => Math.max(0, prev - perda));
+                      status.setSanAtual(prev => {
+                        const atual = prev ?? status.sanMax;
+                        return Math.max(0, atual - perda);
+                      });
+                    }
+                  }
                   setNexModalAberto(null);
                 }}
               />

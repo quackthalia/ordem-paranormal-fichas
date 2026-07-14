@@ -6,6 +6,7 @@ interface ModalRituaisProps {
   onClose: () => void;
   onSelect: (ritual: Ritual, elemento?: string) => void;
   limiteCirculo: number;
+  rituaisAprendidosIds?: number[];
 }
 
 const ELEMENTOS = ['Sangue', 'Conhecimento', 'Energia', 'Morte', 'Medo', 'Varia'];
@@ -61,6 +62,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
   onClose,
   onSelect,
   limiteCirculo,
+  rituaisAprendidosIds = [],
 }) => {
   const [abaElemento, setAbaElemento] = useState<string | null>(null);
   const [abaCirculo, setAbaCirculo] = useState<number | null>(null);
@@ -72,8 +74,9 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
   // Filtragem
   const listaFiltrada = useMemo(() => {
     return rituais.filter(r => {
-      // Regra 1: Banidos
+      // Regra 1: Banidos ou já aprendidos
       if (BANNED_RITUAIS.includes(r.Codigo_Ritual)) return false;
+      if (rituaisAprendidosIds.includes(r.Codigo_Ritual)) return false;
       
       // Regra 2: Limite de Círculo (ou inferior)
       if (r.Circulo_Ritual > limiteCirculo) return false;
@@ -96,7 +99,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
       
       return true;
     });
-  }, [rituais, abaElemento, abaCirculo, limiteCirculo]);
+  }, [rituais, abaElemento, abaCirculo, limiteCirculo, rituaisAprendidosIds]);
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 p-5">

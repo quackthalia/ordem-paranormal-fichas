@@ -201,11 +201,39 @@ export function usePoderesFiltrados(
   listaPoderesUtilidade: Poder[],
   poderesParanormais: PoderParanormal[],
   abaModal: 'classe' | 'gerais' | 'combate' | 'paranormais',
-  classe: ClasseRPG
+  classe: ClasseRPG,
+  poderesEscolhidos: PoderesEscolhidos,
+  intelecto: number
 ) {
   return useMemo(() => {
+    // Conta quantas vezes cada poder base foi escolhido
+    const contagemEscolhidos: Record<string, number> = {};
+    Object.values(poderesEscolhidos).forEach(poder => {
+      let nomeBase = poder.nome.trim();
+      if (nomeBase.toLowerCase().startsWith('aprender ritual')) {
+        nomeBase = 'Aprender Ritual';
+      }
+      contagemEscolhidos[nomeBase] = (contagemEscolhidos[nomeBase] || 0) + 1;
+    });
+
+    const filterFn = (p: Poder | PoderParanormal) => {
+      const nomeBase = p.Nome.trim();
+      const count = contagemEscolhidos[nomeBase] || 0;
+
+      if (nomeBase === 'Guardião da Tropa') return count < 2;
+      if (nomeBase === 'Recuperação Flagelante') return count < 3;
+      if (['Transcender', 'Foco em Perícia', '<Habilidade> Aprimorada'].includes(nomeBase)) return true;
+      if (nomeBase === 'Aprender Ritual') {
+        const limit = Math.max(0, intelecto);
+        return count < limit;
+      }
+      return count < 1;
+    };
+
     if (abaModal === 'paranormais') {
-      return [...poderesParanormais].sort((a, b) => a.Nome.localeCompare(b.Nome));
+      return [...poderesParanormais]
+        .filter(filterFn)
+        .sort((a, b) => a.Nome.localeCompare(b.Nome));
     }
 
     return listaPoderesUtilidade
@@ -213,12 +241,14 @@ export function usePoderesFiltrados(
         const classePoder = (p.Classe || '').toLowerCase();
         const tipoPoder = (p.Tipo || '').toLowerCase();
 
-        if (abaModal === 'classe') return classePoder === classe?.toLowerCase() && tipoPoder === 'utilidade';
-        if (abaModal === 'combate') return tipoPoder === 'combate';
-        if (abaModal === 'gerais') return tipoPoder === 'geral' || classePoder === 'geral' || classePoder === 'todos';
+        let show = false;
+        if (abaModal === 'classe') show = classePoder === classe?.toLowerCase() && tipoPoder === 'utilidade';
+        else if (abaModal === 'combate') show = tipoPoder === 'combate';
+        else if (abaModal === 'gerais') show = tipoPoder === 'geral' || classePoder === 'geral' || classePoder === 'todos';
 
-        return false;
+        if (!show) return false;
+        return filterFn(p);
       })
       .sort((a, b) => a.Nome.localeCompare(b.Nome));
-  }, [listaPoderesUtilidade, poderesParanormais, abaModal, classe]);
+  }, [listaPoderesUtilidade, poderesParanormais, abaModal, classe, poderesEscolhidos, intelecto]);
 }

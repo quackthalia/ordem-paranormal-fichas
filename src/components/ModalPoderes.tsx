@@ -144,6 +144,8 @@ export const ModalPoderes: React.FC = () => {
     nexPoderEditando, setNexPoderEditando,
     nomeEditando, setNomeEditando,
     descricaoEditando,
+    atributos,
+    bonusAtributos,
   } = useRPG();
 
   const editorRef = useRef<HTMLDivElement>(null);
@@ -166,7 +168,9 @@ export const ModalPoderes: React.FC = () => {
     listaPoderesUtilidade,
     poderesParanormais || [],
     abaModalPoderes,
-    classe
+    classe,
+    poderesHook.poderesEscolhidos,
+    atributos.INT + bonusAtributos.INT
   );
 
   // Filtro por elemento

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useRPG } from '../../context/RPGContext';
 import { InputOtimizado } from '../../components/InputOtimizado';
+import { ModalRituais } from '../../components/ModalRituais';
 import type { HabilidadeItem, CategoriaHabilidade, VersaoRitual } from '../../types';
 import {
   calcularBonusAtaqueEspecial,
@@ -21,14 +22,44 @@ const CORES_ELEMENTOS: Record<string, string> = {
   morte: '#000000',
   medo: '#ffffff',
   varia: '#888888',
+  lista: '#888888',
 };
 
+function sanidadePorNivel(classe: string | null): number {
+  switch (classe) {
+    case 'Especialista': return 3;
+    case 'Combatente': return 2;
+    case 'Ocultista': return 4;
+    default: return 0;
+  }
+}
+
 function obterCorBadge(elemento: string): string {
-  return CORES_ELEMENTOS[elemento.toLowerCase()] || '#666';
+  if (!elemento) return '#666';
+  const elementoStr = elemento.toLowerCase();
+  if (elementoStr.includes(' e ')) {
+    const partes = elementoStr.split(' e ');
+    const cor1 = CORES_ELEMENTOS[partes[0].trim()] || '#666';
+    const cor2 = CORES_ELEMENTOS[partes[1].trim()] || '#666';
+    return `linear-gradient(135deg, ${cor1} 50%, ${cor2} 50%)`;
+  }
+  return CORES_ELEMENTOS[elementoStr] || '#666';
+}
+
+function obterCorElementoPrimario(elemento: string): string {
+  if (!elemento) return '#666';
+  const elementoStr = elemento.toLowerCase();
+  if (elementoStr.includes(' e ')) {
+    const partes = elementoStr.split(' e ');
+    return CORES_ELEMENTOS[partes[0].trim()] || '#666';
+  }
+  return CORES_ELEMENTOS[elementoStr] || '#666';
 }
 
 function obterCorTexto(elemento: string): string {
+  if (!elemento) return '#ffffff';
   const e = elemento.toLowerCase();
+  if (e.includes(' e ')) return '#ffffff';
   if (e === 'medo' || e === 'conhecimento') return '#000000';
   return '#ffffff';
 }
@@ -67,24 +98,27 @@ function obterValorVersao(
   }
 
   const partes = campo.split('/').map(p => p.trim());
+  const normal = partes[0]; // Valor base (Normal)
 
-  if (partes.length === 1) return partes[0]; // Sem /, valor único
+  if (partes.length === 1) return normal; // Sem /, valor único
 
   if (versao === 'discente') {
     // Discente é sempre o segundo valor (índice 1)
-    return partes[1] || partes[0];
+    // Se vazio (convenção // = sem alteração), cai pro Normal
+    return partes[1] || normal;
   }
 
   if (versao === 'verdadeiro') {
     if (temDiscente && temVerdadeiro) {
       // Formato: Normal/Discente/Verdadeiro → índice 2
-      return partes[2] || partes[partes.length - 1];
+      // Se vazio, cai pro Normal
+      return partes[2] || normal;
     }
     // Formato: Normal/Verdadeiro → índice 1
-    return partes[1] || partes[0];
+    return partes[1] || normal;
   }
 
-  return partes[0];
+  return normal;
 }
 
 export const AbasPanel: React.FC = () => {
@@ -104,7 +138,15 @@ export const AbasPanel: React.FC = () => {
     rituaisExpandidos, setRituaisExpandidos,
     versaoRitual, setVersaoRitual,
     elementoRitual, setElementoRitual,
+    status,
   } = useRPG();
+
+  const [escolhendoRitualPlaceholder, setEscolhendoRitualPlaceholder] = React.useState<{ origem: string, nex?: number } | null>(null);
+  const [ritualEditandoOrigem, setRitualEditandoOrigem] = React.useState<string | null>(null);
+  const [ritualNomeEditando, setRitualNomeEditando] = React.useState('');
+  const [ritualDescricaoEditando, setRitualDescricaoEditando] = React.useState('');
+  const [ritualPropsEditando, setRitualPropsEditando] = React.useState<import('../../types').RitualAprendido['customProps']>({});
+  const [ritualVersaoEditando, setRitualVersaoEditando] = React.useState<'normal' | 'discente' | 'verdadeiro'>('normal');
 
   const { poderClasse, poderesClasse, poderesEscolhidos, poderesParanormais, removerPoder } = poderesHook;
   const { origemSelecionada } = origensHook;
@@ -160,7 +202,20 @@ export const AbasPanel: React.FC = () => {
       if (nex >= nivel) {
         const escolhido = poderesEscolhidos[nivel];
         if (escolhido) {
-          const pp = poderesParanormaisMap.get(escolhido.nome.toLowerCase());
+          const isAprenderRitual = escolhido.nome.toLowerCase().startsWith('aprender ritual (');
+          const nomePoderBase = isAprenderRitual ? 'aprender ritual' : escolhido.nome.toLowerCase();
+          const pp = poderesParanormaisMap.get(nomePoderBase);
+          
+          let elementoDoPoder = pp?.Elemento;
+          if (isAprenderRitual) {
+            const ra = rituaisHook.rituaisAprendidos?.find(r => r.origem === `poder_57_${nivel}`);
+            if (ra) {
+              const rBase = rituaisHook.rituais.find(r => r.Codigo_Ritual === ra.codigo_ritual);
+              const isLista = rBase?.Elemento_Ritual.toLowerCase() === 'lista' || rBase?.Elemento_Ritual.toLowerCase() === 'varia';
+              elementoDoPoder = isLista ? ra.elemento_escolhido : rBase?.Elemento_Ritual;
+            }
+          }
+
           let categoria: CategoriaHabilidade;
           if (pp) {
             categoria = 'paranormais';
@@ -171,7 +226,7 @@ export const AbasPanel: React.FC = () => {
           }
           const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivel)}` : `NEX ${nivel}%`;
           const tipoLabel = categoria === 'paranormais' ? `Transcender, ${nivelLabel}` : nivelLabel;
-          lista.push({ id: `escolha_nex_${nivel}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: tipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte, elemento: pp?.Elemento, afinidade: pp?.Afinidade, categoria });
+          lista.push({ id: `escolha_nex_${nivel}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: tipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte, elemento: elementoDoPoder, afinidade: pp?.Afinidade, categoria });
         } else {
           const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivel)}` : `NEX ${nivel}%`;
           lista.push({ id: `escolha_nex_${nivel}`, nome: 'Escolher Poder de Utilidade', descricao: 'Clique no "+" para abrir a lista e selecionar seu poder.', tipo: nivelLabel, isSlotVazio: true, nexDoSlot: nivel, categoria: 'utilidade' });
@@ -185,7 +240,20 @@ export const AbasPanel: React.FC = () => {
       if (nex >= nivel) {
         const escolhido = poderesEscolhidos[nivel];
         if (escolhido) {
-          const pp = poderesParanormaisMap.get(escolhido.nome.toLowerCase());
+          const isAprenderRitual = escolhido.nome.toLowerCase().startsWith('aprender ritual (');
+          const nomePoderBase = isAprenderRitual ? 'aprender ritual' : escolhido.nome.toLowerCase();
+          const pp = poderesParanormaisMap.get(nomePoderBase);
+          
+          let elementoDoPoder = pp?.Elemento;
+          if (isAprenderRitual) {
+            const ra = rituaisHook.rituaisAprendidos?.find(r => r.origem === `poder_57_combate_${nivel}`); // Wait, Aprender Ritual pode ser pego em combate? Não, mas se for forçado...
+            if (ra) {
+              const rBase = rituaisHook.rituais.find(r => r.Codigo_Ritual === ra.codigo_ritual);
+              const isLista = rBase?.Elemento_Ritual.toLowerCase() === 'lista' || rBase?.Elemento_Ritual.toLowerCase() === 'varia';
+              elementoDoPoder = isLista ? ra.elemento_escolhido : rBase?.Elemento_Ritual;
+            }
+          }
+
           let categoria: CategoriaHabilidade;
           if (pp) {
             categoria = 'paranormais';
@@ -196,7 +264,7 @@ export const AbasPanel: React.FC = () => {
           }
           const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivel)}` : `NEX ${nivel}%`;
           const tipoLabel = categoria === 'paranormais' ? `Transcender, ${nivelLabel}` : nivelLabel;
-          lista.push({ id: `escolha_nex_combate_${nivel}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: tipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte, elemento: pp?.Elemento, afinidade: pp?.Afinidade, categoria });
+          lista.push({ id: `escolha_nex_combate_${nivel}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: tipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte, elemento: elementoDoPoder, afinidade: pp?.Afinidade, categoria });
         } else {
           const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivel)}` : `NEX ${nivel}%`;
           lista.push({ id: `escolha_nex_combate_${nivel}`, nome: 'Escolher Poder de Combate', descricao: 'Clique no "+" para abrir a lista e selecionar seu poder de combate.', tipo: nivelLabel, isSlotVazio: true, nexDoSlot: nivel, categoria: 'combate' });
@@ -205,7 +273,7 @@ export const AbasPanel: React.FC = () => {
     });
 
     return lista;
-  }, [classe, nex, origemSelecionada, poderClasse, poderesClasse, poderesEscolhidos, poderesParanormaisMap]);
+  }, [classe, nex, origemSelecionada, poderClasse, poderesClasse, poderesEscolhidos, poderesParanormaisMap, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras]);
 
   const habilidadesFiltradas = listaHabilidades.filter(hab =>
     hab.nome.toLowerCase().includes(filtroHabilidades.toLowerCase())
@@ -262,49 +330,65 @@ export const AbasPanel: React.FC = () => {
                       {itensDaCategoria.map(hab => {
                         const estaExpandida = habilidadesExpandidas.includes(hab.id);
 
-                        return (
-                          <div key={hab.id}
-                            className={`overflow-hidden rounded-r border-l-4 bg-zinc-950/60 ${
-                              hab.isSlotVazio ? 'border-zinc-600 border-dashed' : hab.categoria === 'paranormais' ? 'border-l-0' : 'border-red-800'
-                            }`}
-                          >
-                            {hab.elemento && (
-                              <div className="h-0.5 w-full" style={{ backgroundColor: obterCorBadge(hab.elemento) }} />
-                            )}
-
-                            <div onClick={() => {
-                              if (hab.isSlotVazio) {
+                        if (hab.isSlotVazio) {
+                          return (
+                            <div
+                              key={hab.id}
+                              onClick={() => {
                                 const tipo = hab.id.includes('combate') ? 'combate' : 'utilidade';
                                 setTipoModalPoderes(tipo);
                                 setAbaModalPoderes(tipo === 'combate' ? 'combate' : 'classe');
                                 setNexModalAberto(hab.nexDoSlot ?? extrairNexDoId(hab.id));
-                              } else {
-                                setHabilidadesExpandidas(prev =>
-                                  prev.includes(hab.id) ? prev.filter(id => id !== hab.id) : [...prev, hab.id]
-                                );
-                              }
+                              }}
+                              className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-red-800 hover:bg-zinc-900/80"
+                              style={{ borderLeftStyle: 'solid' }}
+                            >
+                              <div className="flex items-center justify-between gap-3 bg-zinc-800/40 px-4 py-3 transition group-hover:bg-zinc-800/60">
+                                <div className="flex flex-col items-start gap-0.5 text-left">
+                                  <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">{hab.nome}</span>
+                                  <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-500 group-hover:text-zinc-400">{hab.tipo}</span>
+                                </div>
+                                <span className="whitespace-nowrap rounded bg-red-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-400 transition group-hover:bg-red-900/60 group-hover:text-red-300">+ Adicionar</span>
+                              </div>
+                              <div className="border-t border-zinc-800/50 px-4 py-3 text-left text-xs leading-relaxed text-zinc-500 transition group-hover:text-zinc-400">
+                                {hab.descricao}
+                              </div>
+                            </div>
+                          );
+                        }
+
+                        return (
+                          <div key={hab.id}
+                            className={`overflow-hidden rounded-r border-l-4 bg-zinc-900/70 ${hab.categoria === 'paranormais' ? 'border-l-0' : 'border-red-800'}`}
+                          >
+                            {hab.elemento && (
+                              <div className="h-0.5 w-full" style={{ background: obterCorBadge(hab.elemento) }} />
+                            )}
+
+                            <div onClick={() => {
+                              setHabilidadesExpandidas(prev =>
+                                prev.includes(hab.id) ? prev.filter(id => id !== hab.id) : [...prev, hab.id]
+                              );
                             }}
-                              className="flex cursor-pointer items-center justify-between gap-2 bg-zinc-900/80 px-4 py-3 transition hover:bg-zinc-800/80"
+                              className="flex cursor-pointer items-center justify-between gap-2 bg-zinc-800/60 px-4 py-3 transition hover:bg-zinc-700/50"
                             >
                               <div className="flex items-center gap-3">
-                                <span className={`text-sm font-bold ${hab.isSlotVazio ? 'text-zinc-400' : 'text-zinc-100'}`}>{hab.nome}</span>
+                                <span className="text-sm font-bold text-zinc-100">{hab.nome}</span>
                                 {hab.extra && <span className="rounded border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 text-xs font-bold text-amber-400">{hab.extra}</span>}
                               </div>
                               <div className="flex items-center gap-2.5">
                                 <span className="rounded border border-zinc-800 bg-zinc-950 px-2 py-0.5 text-[0.65rem] uppercase tracking-wider text-zinc-500">{hab.tipo}</span>
-                                <span className="text-xs text-zinc-600">{hab.isSlotVazio ? <strong className="text-lg text-red-600">+</strong> : (estaExpandida ? '▲' : '▼')}</span>
+                                <span className="text-xs text-zinc-600">{estaExpandida ? '▲' : '▼'}</span>
                               </div>
                             </div>
 
-                            {hab.isSlotVazio ? (
-                              <div className="border-t border-zinc-800 px-4 py-3 text-left text-sm leading-relaxed text-zinc-500">{hab.descricao}</div>
-                            ) : (estaExpandida && (
+                            {estaExpandida && (
                               <div className="px-4 py-4 text-left text-sm leading-relaxed text-zinc-400">
                                 {/* 🔥 Badge do elemento ACIMA da descrição — text-[9px] ~ pequeno */}
                                 {hab.elemento && (
                                   <div className="mb-3">
                                     <span className="inline-block rounded px-2 py-px text-[9px] font-bold uppercase tracking-wider leading-tight"
-                                      style={{ backgroundColor: obterCorBadge(hab.elemento), color: obterCorTexto(hab.elemento) }}
+                                      style={{ background: obterCorBadge(hab.elemento), color: obterCorTexto(hab.elemento) }}
                                     >{hab.elemento}</span>
                                   </div>
                                 )}
@@ -352,13 +436,41 @@ export const AbasPanel: React.FC = () => {
                                     <button onClick={(e) => { e.stopPropagation(); const nivel = extrairNexDoId(hab.id); if (nivel !== null) { setNexPoderEditando(nivel); setNomeEditando(hab.nome); setDescricaoEditando(hab.descricao); } }}
                                       className="flex-1 rounded border border-zinc-700 bg-zinc-800 p-2 text-xs font-bold text-zinc-200 transition hover:bg-zinc-700"
                                     >Editar</button>
-                                    <button onClick={(e) => { e.stopPropagation(); const nivel = extrairNexDoId(hab.id); if (nivel !== null) removerPoder(nivel); }}
+                                    <button onClick={(e) => { 
+                                      e.stopPropagation(); 
+                                      const nivel = extrairNexDoId(hab.id); 
+                                      if (nivel !== null) {
+                                        const escolhido = poderesEscolhidos[nivel];
+                                        if (escolhido) {
+                                          const nomePoder = escolhido.nome.toLowerCase();
+                                          const baseName = nomePoder.startsWith('aprender ritual (') ? 'aprender ritual' : nomePoder;
+                                          const isParanormal = poderesParanormaisMap.has(baseName) || baseName === 'aprender ritual';
+                                          
+                                          if (isParanormal) {
+                                            const perda = sanidadePorNivel(classe);
+                                            if (regras['sem_sanidade']) {
+                                              status.setPdMax(prev => prev + perda);
+                                              status.setPdAtual(prev => (prev ?? status.pdMax) + perda);
+                                            } else {
+                                              status.setSanMax(prev => prev + perda);
+                                              status.setSanAtual(prev => (prev ?? status.sanMax) + perda);
+                                            }
+                                          }
+
+                                          if (baseName === 'aprender ritual') {
+                                            const ra = rituaisHook.rituaisAprendidos.find(r => r.origem === `poder_57_${nivel}` || r.origem === `poder_57_combate_${nivel}`);
+                                            if (ra) rituaisHook.esquecerRitual(ra.origem);
+                                          }
+                                        }
+                                        removerPoder(nivel); 
+                                      }
+                                    }}
                                       className="flex-1 rounded border border-red-900 bg-transparent p-2 text-xs font-bold text-red-500 transition hover:bg-red-950/40"
                                     >Remover Poder</button>
                                   </div>
                                 )}
                               </div>
-                            ))}
+                            )}
                           </div>
                         );
                       })}
@@ -374,222 +486,389 @@ export const AbasPanel: React.FC = () => {
           </div>
         )}
 
-        {abaDireita === 'rituais' && (
-          <div className="flex h-full flex-col">
-            <div className="flex flex-1 flex-col gap-2.5 overflow-y-auto pr-1">
-              {rituaisHook.loading && (
-                <div className="mt-5 text-center italic text-zinc-600">Carregando rituais...</div>
-              )}
-              {rituaisHook.error && (
-                <div className="mt-5 text-center italic text-red-500">Erro: {rituaisHook.error}</div>
-              )}
-              {!rituaisHook.loading && rituaisHook.rituais.length === 0 && !rituaisHook.error && (
-                <div className="mt-5 text-center italic text-zinc-600">Nenhum ritual encontrado.</div>
-              )}
+        {abaDireita === 'rituais' && (() => {
+          // 1. Calcular slots vazios de Poder "Aprender Ritual"
+          const slotsPoderPendentes = Object.entries(poderesEscolhidos)
+            .filter(([nexStr, poder]) => poder.nome.trim().toLowerCase() === 'aprender ritual')
+            .map(([nexStr]) => parseInt(nexStr, 10));
 
-              {rituaisHook.rituais.map(ritual => {
-                const codigo = ritual.Codigo_Ritual;
-                const expandido = rituaisExpandidos.includes(codigo);
-                const versao: VersaoRitual = versaoRitual[codigo] || 'normal';
-                
-                const isLista = ritual.Elemento_Ritual.toLowerCase() === 'lista';
-                const elementoEscolhido = isLista ? (elementoRitual[codigo] || 'Sangue') : ritual.Elemento_Ritual;
-                
-                const corElemento = obterCorBadge(elementoEscolhido);
-                const corTextoElemento = obterCorTexto(elementoEscolhido);
+          // 2. Calcular slots vazios de Ocultista
+          let slotsOcultistaPendentes = 0;
+          if (classe === 'Ocultista') {
+            const limiteRituais = calcularTotalRituais(nex);
+            const rituaisOcultistaPegos = (rituaisHook.rituaisAprendidos || []).filter(r => r.origem.startsWith('ocultista_')).length;
+            slotsOcultistaPendentes = Math.max(0, limiteRituais - rituaisOcultistaPegos);
+          }
 
-                // Valores dinâmicos baseados na versão
-                const pe = obterValorVersao(ritual.PE_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
-                const alcance = obterValorVersao(ritual.Alcance_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
-                const area = obterValorVersao(ritual.Area_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
-                const alvo = obterValorVersao(ritual.Alvo_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
-                const duracao = obterValorVersao(ritual.Duracao_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
-                const execucao = obterValorVersao(ritual.Execucao_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
-                const efeito = obterValorVersao(ritual.Efeito_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
-                const resistencia = obterValorVersao(ritual.Resistencia_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
-                const dados = obterValorVersao(ritual.Dados_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+          const hasEmptySlots = slotsPoderPendentes.length > 0 || slotsOcultistaPendentes > 0;
+          const hasAnyRitual = (rituaisHook.rituaisAprendidos && rituaisHook.rituaisAprendidos.length > 0) || hasEmptySlots;
 
-                // Opções de versão disponíveis
-                const versoesDisponiveis: { value: VersaoRitual; label: string }[] = [
-                  { value: 'normal', label: 'Normal' },
-                ];
-                if (ritual.Tem_Discente) versoesDisponiveis.push({ value: 'discente', label: 'Discente' });
-                if (ritual.Tem_Verdadeiro) versoesDisponiveis.push({ value: 'verdadeiro', label: 'Verdadeiro' });
+          return (
+            <div className="flex h-full flex-col">
+              <div className="mb-4 flex items-center justify-between">
+                <span className="text-sm font-bold text-zinc-400">Rituais Aprendidos ({rituaisHook.rituaisAprendidos?.length || 0})</span>
+              </div>
+
+              <div className="flex flex-1 flex-col gap-0 overflow-y-auto pr-1">
+                {rituaisHook.loading && (
+                  <div className="mt-5 text-center italic text-zinc-600">Carregando banco de rituais...</div>
+                )}
+                {rituaisHook.error && (
+                  <div className="mt-5 text-center italic text-red-500">Erro: {rituaisHook.error}</div>
+                )}
+                {!rituaisHook.loading && !hasAnyRitual && (
+                  <div className="mt-10 text-center text-zinc-500">
+                    <p className="text-sm">Você ainda não aprendeu nenhum ritual.</p>
+                    <p className="text-xs italic mt-2">Transceda e adquira o poder Aprender Ritual para adicionar rituais à sua lista.</p>
+                  </div>
+                )}
+
+                {/* SLOTS VAZIOS (no topo) */}
+                {(hasEmptySlots) && (
+                  <div className="mb-4 flex flex-col gap-2">
+                    {slotsPoderPendentes.map(nivel => (
+                      <div
+                        key={`vazio_poder_${nivel}`}
+                        onClick={() => setEscolhendoRitualPlaceholder({ origem: `poder_57_${nivel}`, nex: nivel })}
+                        className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-red-800 hover:bg-zinc-900/80"
+                        style={{ borderLeftStyle: 'solid' }}
+                      >
+                        <div className="flex items-center justify-between gap-3 bg-zinc-800/40 px-4 py-3 transition group-hover:bg-zinc-800/60">
+                          <div className="flex flex-col items-start gap-0.5 text-left">
+                            <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">Escolher Ritual</span>
+                            <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-500 group-hover:text-zinc-400">Poder NEX {nivel}%</span>
+                          </div>
+                          <span className="whitespace-nowrap rounded bg-red-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-400 transition group-hover:bg-red-900/60 group-hover:text-red-300">+ Adicionar</span>
+                        </div>
+                        <div className="border-t border-zinc-800/50 px-4 py-3 text-left text-xs leading-relaxed text-zinc-500 transition group-hover:text-zinc-400">
+                          Clique para selecionar um ritual aprendido através de um poder paranormal.
+                        </div>
+                      </div>
+                    ))}
+                    {Array.from({ length: slotsOcultistaPendentes }).map((_, i) => (
+                      <div
+                        key={`vazio_ocultista_${i}`}
+                        onClick={() => {
+                          const numPegos = rituaisHook.rituaisAprendidos.filter(r => r.origem.startsWith('ocultista_')).length;
+                          setEscolhendoRitualPlaceholder({ origem: `ocultista_${numPegos + 1}` });
+                        }}
+                        className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-red-800 hover:bg-zinc-900/80"
+                        style={{ borderLeftStyle: 'solid' }}
+                      >
+                        <div className="flex items-center justify-between gap-3 bg-zinc-800/40 px-4 py-3 transition group-hover:bg-zinc-800/60">
+                          <div className="flex flex-col items-start gap-0.5 text-left">
+                            <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">Escolher Ritual de Classe</span>
+                            <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-500 group-hover:text-zinc-400">Ocultista</span>
+                          </div>
+                          <span className="whitespace-nowrap rounded bg-red-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-400 transition group-hover:bg-red-900/60 group-hover:text-red-300">+ Adicionar</span>
+                        </div>
+                        <div className="border-t border-zinc-800/50 px-4 py-3 text-left text-xs leading-relaxed text-zinc-500 transition group-hover:text-zinc-400">
+                          Você possui um espaço livre concedido pela sua classe para aprender um novo ritual.
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Agrupamento por Círculo usando Rituais Aprendidos */}
+              {[1, 2, 3, 4].map(circulo => {
+                const rituaisAprendidosNesteCirculo = (rituaisHook.rituaisAprendidos || [])
+                  .map(ra => {
+                    const base = rituaisHook.rituais.find(r => r.Codigo_Ritual === ra.codigo_ritual);
+                    return base ? { ...base, Origem: ra.origem, ElementoEscolhidoPermanente: ra.elemento_escolhido, customNome: ra.customNome, customDesc: ra.customDesc, customProps: ra.customProps } : null;
+                  })
+                  .filter(r => r && r.Circulo_Ritual === circulo);
+
+                if (rituaisAprendidosNesteCirculo.length === 0) return null;
 
                 return (
-                  <div key={codigo} className="overflow-hidden rounded-r border-l-0 bg-zinc-950/60">
-                    {/* Barra colorida do elemento no topo */}
-                    <div className="h-0.5 w-full" style={{ backgroundColor: corElemento }} />
-
-                    {/* ══════ CABEÇALHO (sempre visível) ══════ */}
-                    <div
-                      onClick={() =>
-                        setRituaisExpandidos(prev =>
-                          prev.includes(codigo)
-                            ? prev.filter(id => id !== codigo)
-                            : [...prev, codigo]
-                        )
-                      }
-                      className="flex cursor-pointer items-center justify-between gap-2 bg-zinc-900/80 px-4 py-3 transition hover:bg-zinc-800/80"
-                    >
-                      <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-2.5">
-                          {/* Badge do elemento + círculo unidos */}
-                          <span
-                            className="inline-flex items-center gap-1.5 rounded px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider leading-tight"
-                            style={{ backgroundColor: corElemento, color: corTextoElemento }}
-                          >
-                            {elementoEscolhido}
-                            <span className="text-[10px] opacity-80">•</span>
-                            <span className="text-[10px]">{ritual.Circulo_Ritual}°</span>
-                          </span>
-                          {/* Nome do ritual */}
-                          <span className="text-sm font-bold text-zinc-100">{ritual.Nome_Ritual}</span>
-                        </div>
-                        {/* Dados_Ritual abaixo do título (se existir) — visível mesmo fechado */}
-                        {dados && (
-                          <span className="ml-0.5 text-xs font-semibold text-amber-400">{dados}</span>
-                        )}
-                      </div>
-
-                      <div className="flex items-center gap-3">
-                        {/* PE */}
-                        <span className="rounded border border-zinc-700 bg-zinc-900 px-2 py-0.5 text-xs font-bold text-blue-400">
-                          {pe} PE
-                        </span>
-                        {/* Seta */}
-                        <span className="text-xs text-zinc-600">{expandido ? '▲' : '▼'}</span>
-                      </div>
+                  <div key={circulo} className="mb-4">
+                    {/* Header do grupo — mesma estética dos poderes */}
+                    <div className="mb-2 flex items-center gap-3">
+                      <span className="text-[0.6rem] font-bold uppercase tracking-[0.15em] text-zinc-600">{circulo}° Círculo</span>
+                      <div className="flex-1 border-t border-zinc-800" />
                     </div>
 
-                    {/* ══════ CONTEÚDO EXPANDIDO ══════ */}
-                    {expandido && (
-                      <div className="border-t border-zinc-800 px-4 py-4 text-left text-sm leading-relaxed text-zinc-400">
+                    <div className="flex flex-col gap-2.5">
+                      {rituaisAprendidosNesteCirculo.map(ritual => {
+                        if (!ritual) return null;
+                        
+                        // O código único na interface do usuário agora é uma combinação do código do ritual e a origem (para suportar o mesmo ritual pego mais de uma vez, caso aconteça)
+                        const chaveUnica = `${ritual.Codigo_Ritual}_${ritual.Origem}`;
+                        const expandido = rituaisExpandidos.includes(chaveUnica as any);
+                        const versao: VersaoRitual = versaoRitual[chaveUnica] || 'normal';
 
-                        {/* Dropdowns de configurações (Elemento e Versão) */}
-                        {(isLista || versoesDisponiveis.length > 1) && (
-                          <div className="mb-4 flex flex-wrap items-center gap-5 border-b border-zinc-800/50 pb-3">
-                            
-                            {/* Dropdown de Elemento (se for Lista) */}
-                            {isLista && (
-                              <div className="flex items-center gap-2">
-                                <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-600">Elemento:</span>
-                                <select
-                                  value={elementoEscolhido}
-                                  onChange={e => {
-                                    e.stopPropagation();
-                                    setElementoRitual(prev => ({ ...prev, [codigo]: e.target.value }));
-                                  }}
-                                  className="cursor-pointer rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs font-bold text-zinc-200 outline-none transition hover:bg-zinc-800 focus:border-red-700"
-                                >
-                                  <option value="Sangue">Sangue</option>
-                                  <option value="Conhecimento">Conhecimento</option>
-                                  <option value="Energia">Energia</option>
-                                  <option value="Morte">Morte</option>
-                                </select>
+                        const isLista = ritual.Elemento_Ritual.toLowerCase() === 'lista' || ritual.Elemento_Ritual.toLowerCase() === 'varia';
+                        // Usa a escolha permanente feita na hora de aprender
+                        const elementoEscolhido = isLista ? (ritual.ElementoEscolhidoPermanente || 'Sangue') : ritual.Elemento_Ritual;
+
+                        const corElemento = obterCorBadge(elementoEscolhido);
+                        const corPrimaria = obterCorElementoPrimario(elementoEscolhido);
+                        const corTextoElemento = obterCorTexto(elementoEscolhido);
+
+                        // Valores dinâmicos baseados na versão
+                        const pe = ritual.customProps?.[versao]?.PE_Ritual || obterValorVersao(ritual.PE_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                        const alcance = ritual.customProps?.[versao]?.Alcance_Ritual || obterValorVersao(ritual.Alcance_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                        const area = ritual.customProps?.[versao]?.Area_Ritual || obterValorVersao(ritual.Area_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                        const alvo = ritual.customProps?.[versao]?.Alvo_Ritual || obterValorVersao(ritual.Alvo_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                        const duracao = ritual.customProps?.[versao]?.Duracao_Ritual || obterValorVersao(ritual.Duracao_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                        const execucao = ritual.customProps?.[versao]?.Execucao_Ritual || obterValorVersao(ritual.Execucao_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                        const efeito = ritual.customProps?.[versao]?.Efeito_Ritual || obterValorVersao(ritual.Efeito_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                        const resistencia = ritual.customProps?.[versao]?.Resistencia_Ritual || obterValorVersao(ritual.Resistencia_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                        const dados = ritual.customProps?.[versao]?.Dados_Ritual || obterValorVersao(ritual.Dados_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+
+                        // Opções de versão disponíveis
+                        const versoesDisponiveis: { value: VersaoRitual; label: string }[] = [
+                          { value: 'normal', label: 'Normal' },
+                        ];
+                        if (ritual.Tem_Discente) versoesDisponiveis.push({ value: 'discente', label: 'Discente' });
+                        if (ritual.Tem_Verdadeiro) versoesDisponiveis.push({ value: 'verdadeiro', label: 'Verdadeiro' });
+
+                        return (
+                          <div key={chaveUnica} className="overflow-hidden rounded-r border-l-4 bg-zinc-900/70" style={{ borderLeftColor: corPrimaria }}>
+
+                            {/* ══════ CABEÇALHO (sempre visível) ══════ */}
+                            <div
+                              onClick={() =>
+                                setRituaisExpandidos(prev =>
+                                  prev.includes(chaveUnica as any)
+                                    ? prev.filter(id => id !== chaveUnica)
+                                    : [...prev, chaveUnica as any]
+                                )
+                              }
+                              className="flex cursor-pointer items-center justify-between gap-2 bg-zinc-800/60 px-4 py-3 transition hover:bg-zinc-700/50"
+                            >
+                              <div className="flex flex-col gap-1">
+                                <div className="flex items-center gap-2.5">
+                                  {/* Badge do elemento */}
+                                  <span
+                                    className="inline-flex items-center gap-1.5 rounded px-2 py-0.5 uppercase tracking-wider leading-tight"
+                                    style={{ background: corElemento, color: corTextoElemento }}
+                                  >
+                                    <span className="text-[9px] font-bold">{elementoEscolhido}</span>
+                                    <span className="text-[11px] font-black">{ritual.Circulo_Ritual}</span>
+                                  </span>
+                                  {/* Nome do ritual */}
+                                  <span className="text-sm font-bold text-zinc-100">{ritual.customNome || ritual.Nome_Ritual}</span>
+                                </div>
+                                {/* Dados abaixo do título — todas as versões, ativa acesa */}
+                                {ritual.Dados_Ritual && (() => {
+                                  const partesDados = ritual.Dados_Ritual.split('/').map(p => p.trim());
+                                  const normal = partesDados[0];
+
+                                  // Só 1 valor = mostra direto
+                                  if (partesDados.length === 1 && normal) {
+                                    return <span className="text-sm font-bold text-amber-400">{normal}</span>;
+                                  }
+
+                                  // Preenche vazios com valor normal (convenção //)
+                                  const preenchidas = partesDados.map(p => p || normal);
+
+                                  // Se todos forem vazios, não mostra nada
+                                  if (!preenchidas.some(p => p)) return null;
+
+                                  // Índice ativo baseado na versão
+                                  let ativo = 0;
+                                  if (versao === 'discente') ativo = 1;
+                                  if (versao === 'verdadeiro') {
+                                    ativo = (ritual.Tem_Discente && ritual.Tem_Verdadeiro) ? 2 : 1;
+                                  }
+
+                                  return (
+                                    <div className="flex items-center gap-2">
+                                      {preenchidas.map((parte, idx) => (
+                                        <React.Fragment key={idx}>
+                                          {idx > 0 && <span className="text-xs text-zinc-700">›</span>}
+                                          <span
+                                            className={`text-sm font-bold transition-all duration-200 ${idx === ativo ? 'text-amber-400' : 'text-zinc-600'}`}
+                                          >
+                                            {parte}
+                                          </span>
+                                        </React.Fragment>
+                                      ))}
+                                    </div>
+                                  );
+                                })()}
                               </div>
-                            )}
 
-                            {/* Dropdown de Versão */}
-                            {versoesDisponiveis.length > 1 && (
-                              <div className="flex items-center gap-2">
-                                <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-600">Versão:</span>
-                                <select
-                                  value={versao}
-                                  onChange={e => {
-                                    e.stopPropagation();
-                                    setVersaoRitual(prev => ({
-                                      ...prev,
-                                      [codigo]: e.target.value as VersaoRitual,
-                                    }));
-                                  }}
-                                  className="cursor-pointer rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs font-bold text-zinc-200 outline-none transition hover:bg-zinc-800 focus:border-red-700"
-                                >
-                                  {versoesDisponiveis.map(v => (
-                                    <option key={v.value} value={v.value}>{v.label}</option>
-                                  ))}
-                                </select>
+                              <div className="flex items-center gap-2.5">
+                                {/* PE */}
+                                <span className="rounded border border-zinc-700 bg-zinc-900 px-2 py-0.5 text-xs font-bold text-blue-400">
+                                  {pe} PE
+                                </span>
+                                {/* Seta */}
+                                <span className="text-xs text-zinc-600">{expandido ? '▲' : '▼'}</span>
+                              </div>
+                            </div>
+
+                            {/* ══════ CONTEÚDO EXPANDIDO ══════ */}
+                            {expandido && (
+                              <div className="border-t border-zinc-800 px-4 py-4 text-left text-sm leading-relaxed text-zinc-400">
+
+                                {/* Dropdowns de configurações (Elemento e Versão) */}
+                                {(isLista || versoesDisponiveis.length > 1) && (
+                                  <div className="mb-4 flex flex-wrap items-center justify-between border-b border-zinc-800/50 pb-3">
+                                    <div className="flex items-center gap-5">
+                                      {/* Dropdown de Versão */}
+                                      {versoesDisponiveis.length > 1 && (
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-600">Versão:</span>
+                                          <select
+                                            value={versao}
+                                            onChange={e => {
+                                              e.stopPropagation();
+                                              setVersaoRitual(prev => ({
+                                                ...prev,
+                                                [chaveUnica]: e.target.value as VersaoRitual,
+                                              }));
+                                            }}
+                                            className="cursor-pointer rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs font-bold text-zinc-200 outline-none transition hover:bg-zinc-800 focus:border-red-700"
+                                          >
+                                            {versoesDisponiveis.map(v => (
+                                              <option key={v.value} value={v.value}>{v.label}</option>
+                                            ))}
+                                          </select>
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setRitualEditandoOrigem(ritual.Origem);
+                                          setRitualNomeEditando(ritual.customNome || ritual.Nome_Ritual);
+                                          setRitualDescricaoEditando(ritual.customDesc || ritual.Descricao_Ritual);
+                                          setRitualPropsEditando(ritual.customProps || {});
+                                          setRitualVersaoEditando('normal');
+                                        }}
+                                        className="rounded bg-zinc-800 border border-zinc-700 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-zinc-300 transition hover:bg-zinc-700 hover:text-zinc-100"
+                                      >
+                                        Editar Ritual
+                                      </button>
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          if (ritual.Origem.startsWith('poder_57_')) {
+                                            const nivel = parseInt(ritual.Origem.replace('poder_57_', '').replace('combate_', ''), 10);
+                                            const poderExistente = poderesEscolhidos[nivel];
+                                            if (poderExistente && poderExistente.nome.toLowerCase().startsWith('aprender ritual (')) {
+                                              const ppBase = poderesParanormais.find(p => p.Nome.toLowerCase() === 'aprender ritual');
+                                              if (ppBase) {
+                                                poderesHook.escolherPoder(nivel, {
+                                                  codigo_poder: 57,
+                                                  Nome: 'Aprender Ritual',
+                                                  Descricao: ppBase.Descricao,
+                                                  PreRequisitos: ppBase.PreRequisitos,
+                                                  Afinidade: ppBase.Afinidade,
+                                                  Elemento: ppBase.Elemento,
+                                                  Fonte: ppBase.Fonte,
+                                                  PreRequisitosAfinidade: ppBase.PreRequisitosAfinidade
+                                                } as any);
+                                              }
+                                            }
+                                          }
+                                          rituaisHook.esquecerRitual(ritual.Origem);
+                                        }}
+                                        className="rounded bg-red-900/30 border border-red-800 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-500 transition hover:bg-red-900/50 hover:text-red-400"
+                                      >
+                                        Esquecer Ritual
+                                      </button>
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Campos de metadados — só mostram se têm valor */}
+                                <div className="mb-4 flex flex-col gap-1">
+                                  {execucao && (
+                                    <div className="text-xs">
+                                      <span className="font-bold text-zinc-300">Execução: </span>
+                                      <span className="text-zinc-400">{execucao}</span>
+                                    </div>
+                                  )}
+                                  {alcance && (
+                                    <div className="text-xs">
+                                      <span className="font-bold text-zinc-300">Alcance: </span>
+                                      <span className="text-zinc-400">{alcance}</span>
+                                    </div>
+                                  )}
+                                  {area && (
+                                    <div className="text-xs">
+                                      <span className="font-bold text-zinc-300">Área: </span>
+                                      <span className="text-zinc-400">{area}</span>
+                                    </div>
+                                  )}
+                                  {alvo && (
+                                    <div className="text-xs">
+                                      <span className="font-bold text-zinc-300">Alvo: </span>
+                                      <span className="text-zinc-400">{alvo}</span>
+                                    </div>
+                                  )}
+                                  {duracao && (
+                                    <div className="text-xs">
+                                      <span className="font-bold text-zinc-300">Duração: </span>
+                                      <span className="text-zinc-400">{duracao}</span>
+                                    </div>
+                                  )}
+                                  {efeito && (
+                                    <div className="text-xs">
+                                      <span className="font-bold text-zinc-300">Efeito: </span>
+                                      <span className="text-zinc-400">{efeito}</span>
+                                    </div>
+                                  )}
+                                  {resistencia && (
+                                    <div className="text-xs">
+                                      <span className="font-bold text-zinc-300">Resistência: </span>
+                                      <span className="text-zinc-400">{resistencia}</span>
+                                    </div>
+                                  )}
+                                  {dados && (
+                                    <div className="text-xs">
+                                      <span className="font-bold text-zinc-300">Dados: </span>
+                                      <span className="text-zinc-400">{dados}</span>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* Descrição formatada com versões dimmed */}
+                                <div className="text-sm leading-relaxed text-zinc-400">
+                                  {(() => {
+                                    let currentScope = 'normal';
+                                    return (ritual.customDesc || ritual.Descricao_Ritual).split('\n').map((linha, i) => {
+                                      const linhaLower = linha.trim().toLowerCase();
+                                      const isHeaderDiscente = linhaLower.startsWith('*discente') || linhaLower.startsWith('discente');
+                                      const isHeaderVerdadeiro = linhaLower.startsWith('*verdadeiro') || linhaLower.startsWith('verdadeiro');
+
+                                      if (isHeaderDiscente) currentScope = 'discente';
+                                      if (isHeaderVerdadeiro) currentScope = 'verdadeiro';
+
+                                      let dimmed = false;
+                                      if (currentScope === 'discente' && versao !== 'discente') dimmed = true;
+                                      if (currentScope === 'verdadeiro' && versao !== 'verdadeiro') dimmed = true;
+
+                                      return (
+                                        <span
+                                          key={i}
+                                          className={`block ${dimmed ? 'opacity-20' : ''} ${currentScope !== 'normal' && !dimmed ? 'text-zinc-300' : ''}`}
+                                          style={{ transition: 'opacity 0.2s ease' }}
+                                          dangerouslySetInnerHTML={{ __html: formatarDescricao(linha) }}
+                                        />
+                                      );
+                                    });
+                                  })()}
+                                </div>
                               </div>
                             )}
                           </div>
-                        )}
-
-                        {/* Campos de metadados — só mostram se têm valor */}
-                        <div className="mb-4 flex flex-col gap-1">
-                          {execucao && (
-                            <div className="text-xs">
-                              <span className="font-bold text-zinc-300">Execução: </span>
-                              <span className="text-zinc-400">{execucao}</span>
-                            </div>
-                          )}
-                          {alcance && (
-                            <div className="text-xs">
-                              <span className="font-bold text-zinc-300">Alcance: </span>
-                              <span className="text-zinc-400">{alcance}</span>
-                            </div>
-                          )}
-                          {area && (
-                            <div className="text-xs">
-                              <span className="font-bold text-zinc-300">Área: </span>
-                              <span className="text-zinc-400">{area}</span>
-                            </div>
-                          )}
-                          {alvo && (
-                            <div className="text-xs">
-                              <span className="font-bold text-zinc-300">Alvo: </span>
-                              <span className="text-zinc-400">{alvo}</span>
-                            </div>
-                          )}
-                          {duracao && (
-                            <div className="text-xs">
-                              <span className="font-bold text-zinc-300">Duração: </span>
-                              <span className="text-zinc-400">{duracao}</span>
-                            </div>
-                          )}
-                          {efeito && (
-                            <div className="text-xs">
-                              <span className="font-bold text-zinc-300">Efeito: </span>
-                              <span className="text-zinc-400">{efeito}</span>
-                            </div>
-                          )}
-                          {resistencia && (
-                            <div className="text-xs">
-                              <span className="font-bold text-zinc-300">Resistência: </span>
-                              <span className="text-zinc-400">{resistencia}</span>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Descrição formatada com versões dimmed */}
-                        <div className="text-sm leading-relaxed text-zinc-400">
-                          {ritual.Descricao_Ritual.split('\n').map((linha, i) => {
-                            const linhaLower = linha.trim().toLowerCase();
-                            const isDiscente = linhaLower.startsWith('*discente');
-                            const isVerdadeiro = linhaLower.startsWith('*verdadeiro');
-                            const isVersaoLinha = isDiscente || isVerdadeiro;
-
-                            let dimmed = false;
-                            if (isDiscente && versao !== 'discente') dimmed = true;
-                            if (isVerdadeiro && versao !== 'verdadeiro') dimmed = true;
-
-                            return (
-                              <span
-                                key={i}
-                                className={`block ${isVersaoLinha && dimmed ? 'opacity-30' : ''} ${isVersaoLinha && !dimmed ? 'text-zinc-200' : ''}`}
-                                style={{ transition: 'opacity 0.2s ease' }}
-                                dangerouslySetInnerHTML={{ __html: formatarDescricao(linha) }}
-                              />
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
+                        );
+                      })}
+                    </div>
                   </div>
                 );
               })}
             </div>
-          </div>
-        )}
+            </div>
+          );
+        })()}
         {abaDireita === 'inventario' && <div className="mt-5 text-center italic text-zinc-600">Conteúdo de Inventário</div>}
         {abaDireita === 'descricao' && <div className="mt-5 text-center italic text-zinc-600">Conteúdo de Descrição</div>}
 
@@ -614,6 +893,152 @@ export const AbasPanel: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Modal de seleção de rituais para os slots */}
+      {escolhendoRitualPlaceholder && (
+        <ModalRituais
+          rituais={rituaisHook.rituais || []}
+          limiteCirculo={
+            escolhendoRitualPlaceholder.nex 
+              ? (classe === 'Ocultista' 
+                  ? (escolhendoRitualPlaceholder.nex >= 85 ? 4 : escolhendoRitualPlaceholder.nex >= 55 ? 3 : escolhendoRitualPlaceholder.nex >= 25 ? 2 : 1)
+                  : (escolhendoRitualPlaceholder.nex >= 75 ? 3 : escolhendoRitualPlaceholder.nex >= 45 ? 2 : 1))
+              : (nex >= 85 ? 4 : nex >= 55 ? 3 : nex >= 25 ? 2 : 1)
+          }
+          onClose={() => setEscolhendoRitualPlaceholder(null)}
+          onSelect={(ritual, elementoVaria) => {
+            const origem = escolhendoRitualPlaceholder.origem;
+            
+            rituaisHook.aprenderRitual({
+              codigo_ritual: ritual.Codigo_Ritual,
+              origem: origem,
+              elemento_escolhido: elementoVaria,
+            });
+
+            // Se for de poder, atualiza o poder na lista de poderes escolhidos para mostrar o ritual escolhido!
+            if (origem.startsWith('poder_57_')) {
+              const nivel = parseInt(origem.replace('poder_57_', '').replace('combate_', ''), 10);
+              const poderAtual = poderesEscolhidos[nivel];
+              if (poderAtual) {
+                const baseName = poderAtual.nome.toLowerCase().startsWith('aprender ritual (') ? 'aprender ritual' : poderAtual.nome.toLowerCase();
+                const ppBase = poderesParanormais.find(p => p.Nome.toLowerCase() === baseName);
+                if (ppBase) {
+                  poderesHook.escolherPoder(nivel, {
+                    codigo_poder: 57,
+                    Nome: `Aprender Ritual (${ritual.Nome_Ritual})`,
+                    Descricao: ppBase.Descricao,
+                    PreRequisitos: ppBase.PreRequisitos,
+                    Afinidade: ppBase.Afinidade,
+                    Elemento: elementoVaria || ritual.Elemento_Ritual,
+                    Fonte: ppBase.Fonte,
+                    PreRequisitosAfinidade: ppBase.PreRequisitosAfinidade
+                  } as any);
+                }
+              }
+            }
+            
+            setEscolhendoRitualPlaceholder(null);
+          }}
+        />
+      )}
+
+      {/* Modal para Edição Inline de Ritual */}
+      {(() => {
+        if (!ritualEditandoOrigem) return null;
+        const ritualEditando = rituaisHook.rituaisAprendidos.find(r => r.origem === ritualEditandoOrigem);
+        const ritualBase = ritualEditando ? rituaisHook.rituais.find(r => r.Codigo_Ritual === ritualEditando.codigo_ritual) : null;
+        if (!ritualBase) return null;
+
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+            <div className="w-full max-w-lg rounded-md border border-zinc-700 bg-zinc-900 shadow-xl overflow-hidden flex flex-col max-h-full">
+              <div className="bg-zinc-800 p-3 border-b border-zinc-700 font-bold text-zinc-200 flex justify-between items-center">
+                <span>Personalizar Ritual</span>
+              </div>
+              <div className="p-4 flex flex-col gap-4 overflow-y-auto">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold uppercase tracking-wider text-zinc-400">Nome Personalizado</label>
+                  <InputOtimizado
+                    value={ritualNomeEditando}
+                    onChange={setRitualNomeEditando}
+                    placeholder="Ex: Definhar, mas roxo..."
+                    className="rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 focus:border-red-700 focus:outline-none"
+                  />
+                </div>
+
+                {(ritualBase.Tem_Discente || ritualBase.Tem_Verdadeiro) && (
+                  <div className="flex flex-col gap-1.5 border-t border-zinc-800 pt-3">
+                    <label className="text-xs font-bold uppercase tracking-wider text-zinc-400">Propriedades Específicas por Versão</label>
+                    <select
+                      value={ritualVersaoEditando}
+                      onChange={(e) => setRitualVersaoEditando(e.target.value as any)}
+                      className="rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm font-bold text-zinc-200 focus:border-red-700 focus:outline-none w-fit"
+                    >
+                      <option value="normal">Normal</option>
+                      {ritualBase.Tem_Discente && <option value="discente">Discente</option>}
+                      {ritualBase.Tem_Verdadeiro && <option value="verdadeiro">Verdadeiro</option>}
+                    </select>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                {[
+                  { key: 'Execucao_Ritual', label: 'Execução' },
+                  { key: 'PE_Ritual', label: 'Custo' },
+                  { key: 'Alcance_Ritual', label: 'Alcance' },
+                  { key: 'Area_Ritual', label: 'Área' },
+                  { key: 'Alvo_Ritual', label: 'Alvo' },
+                  { key: 'Duracao_Ritual', label: 'Duração' },
+                  { key: 'Resistencia_Ritual', label: 'Resistência' },
+                  { key: 'Dados_Ritual', label: 'Dados' },
+                ].map(prop => {
+                  const valorBase = (ritualBase as any)[prop.key];
+                  const valorCalculado = obterValorVersao(valorBase, ritualVersaoEditando, ritualBase.Tem_Discente, ritualBase.Tem_Verdadeiro);
+                  return (
+                    <div key={prop.key} className="flex flex-col gap-1.5">
+                      <label className="text-xs font-bold uppercase tracking-wider text-zinc-400">{prop.label}</label>
+                      <InputOtimizado
+                        value={(ritualPropsEditando?.[ritualVersaoEditando] as any)?.[prop.key] || ''}
+                        onChange={(val) => setRitualPropsEditando(prev => ({ ...prev, [ritualVersaoEditando]: { ...(prev?.[ritualVersaoEditando] || {}), [prop.key]: val } }))}
+                        placeholder={valorCalculado ? String(valorCalculado) : 'Padrão'}
+                        className="rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 focus:border-red-700 focus:outline-none"
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="flex flex-col gap-1.5 flex-1 min-h-[150px]">
+                <label className="text-xs font-bold uppercase tracking-wider text-zinc-400">Descrição Personalizada (Markdown/Quebras de linha)</label>
+                <textarea
+                  value={ritualDescricaoEditando}
+                  onChange={(e) => setRitualDescricaoEditando(e.target.value)}
+                  placeholder="Escreva como o ritual funciona..."
+                  className="min-h-[200px] w-full resize-y rounded border border-zinc-700 bg-zinc-950 p-3 text-sm leading-relaxed text-zinc-300 focus:border-red-700 focus:outline-none flex-1"
+                />
+              </div>
+            </div>
+            <div className="bg-zinc-950/50 p-4 border-t border-zinc-800 flex justify-end gap-3 mt-auto">
+              <button
+                onClick={() => setRitualEditandoOrigem(null)}
+                className="rounded border border-zinc-700 px-4 py-2 text-sm font-bold text-zinc-300 transition hover:bg-zinc-800"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  rituaisHook.editarRitual(ritualEditandoOrigem, ritualNomeEditando, ritualDescricaoEditando, ritualPropsEditando);
+                  setRitualEditandoOrigem(null);
+                }}
+                className="rounded bg-red-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-800"
+              >
+                Salvar Alterações
+              </button>
+            </div>
+          </div>
+        </div>
+        );
+      })()}
     </div>
   );
 };

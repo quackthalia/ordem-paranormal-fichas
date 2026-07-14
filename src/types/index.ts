@@ -137,3 +137,16 @@ export interface Ritual {
   Requisito_Discente: string;
   Requisito_Verdadeiro: string;
 }
+
+export interface RitualAprendido {
+  codigo_ritual: number;
+  origem: string;
+  elemento_escolhido?: string; // Para rituais com 'Elemento: Qualquer'
+  customNome?: string;
+  customDesc?: string;
+  customProps?: {
+    normal?: Partial<Ritual>;
+    discente?: Partial<Ritual>;
+    verdadeiro?: Partial<Ritual>;
+  };
+}

@@ -35,10 +35,18 @@ function normalizarRitual(item: Record<string, unknown>): Ritual {
   };
 }
 
-export function useRituais(): UseRituaisReturn {
+export function useRituais(): UseRituaisReturn & {
+  rituaisAprendidos: import('../types').RitualAprendido[];
+  aprenderRitual: (ritual: import('../types').RitualAprendido) => void;
+  esquecerRitual: (origem: string) => void;
+  editarRitual: (origem: string, customNome?: string, customDesc?: string) => void;
+} {
   const [rituais, setRituais] = useState<Ritual[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // 🔥 NOVO ESTADO: Rituais Aprendidos
+  const [rituaisAprendidos, setRituaisAprendidos] = useState<import('../types').RitualAprendido[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -47,11 +55,10 @@ export function useRituais(): UseRituaisReturn {
       setLoading(true);
       setError(null);
 
-      // 🧪 Para teste, puxando os rituais 1, 2, 3 e 4
       const { data, error: err } = await supabase
         .from('Rituais')
         .select('*')
-        .in('Codigo_Ritual', [1, 2, 3, 4]);
+        .order('Codigo_Ritual', { ascending: true });
 
       if (cancelled) return;
 
@@ -73,5 +80,22 @@ export function useRituais(): UseRituaisReturn {
     return () => { cancelled = true; };
   }, []);
 
-  return { rituais, loading, error };
+  const aprenderRitual = (ritual: import('../types').RitualAprendido) => {
+    setRituaisAprendidos(prev => [...prev, ritual]);
+  };
+
+  const esquecerRitual = (origem: string) => {
+    setRituaisAprendidos(prev => prev.filter(r => r.origem !== origem));
+  };
+
+  const editarRitual = (origem: string, customNome?: string, customDesc?: string, customProps?: import('../types').RitualAprendido['customProps']) => {
+    setRituaisAprendidos(prev => prev.map(r => {
+      if (r.origem === origem) {
+        return { ...r, customNome, customDesc, customProps };
+      }
+      return r;
+    }));
+  };
+
+  return { rituais, loading, error, rituaisAprendidos, aprenderRitual, esquecerRitual, editarRitual };
 }

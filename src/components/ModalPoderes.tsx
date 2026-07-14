@@ -2,7 +2,8 @@ import React, { useRef, useMemo, useEffect, useState, useCallback } from 'react'
 import { useRPG } from '../context/RPGContext';
 import { usePoderesFiltrados } from '../hooks/usePoderes';
 import { InputOtimizado } from './InputOtimizado';
-import type { AbaModalPoderes } from '../types';
+import { ModalRituais } from './ModalRituais';
+import type { AbaModalPoderes, Poder, PoderParanormal } from '../types';
 
 const PATAMARES_COMBATE = [15, 25, 35, 45, 55, 65, 75, 85, 95];
 
@@ -155,12 +156,20 @@ export const ModalPoderes: React.FC = () => {
     descricaoEditando,
     status,
     regras,
+    rituaisHook,
   } = useRPG();
 
   const editorRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [subAbaElemento, setSubAbaElemento] = useState<string | null>(null);
   const [afinidadeEditando, setAfinidadeEditando] = useState('');
+  
+  // Estado para Aprender Ritual (57)
+  const [selecionandoRitualParaPoder, setSelecionandoRitualParaPoder] = useState<{
+    poder: Poder | PoderParanormal;
+    nex: number;
+    pp?: PoderParanormal;
+  } | null>(null);
 
   const scrollPositions = useRef<Record<string, number>>({
     classe: 0, combate: 0, gerais: 0, paranormais: 0,
@@ -283,6 +292,70 @@ export const ModalPoderes: React.FC = () => {
   }
 
   // ================================================================
+  // MODAL DE RITUAL (Aprender Ritual)
+  // ================================================================
+  if (selecionandoRitualParaPoder) {
+    let limiteCirculo = 1;
+    const n = selecionandoRitualParaPoder.nex;
+    if (classe === 'Ocultista') {
+      if (n >= 85) limiteCirculo = 4;
+      else if (n >= 55) limiteCirculo = 3;
+      else if (n >= 25) limiteCirculo = 2;
+    } else {
+      if (n >= 75) limiteCirculo = 3;
+      else if (n >= 45) limiteCirculo = 2;
+    }
+
+    return (
+      <ModalRituais
+        rituais={rituaisHook?.rituais || []}
+        limiteCirculo={limiteCirculo}
+        onClose={() => setSelecionandoRitualParaPoder(null)}
+        onSelect={(ritual, elementoVaria) => {
+          const { poder, nex, pp } = selecionandoRitualParaPoder;
+          
+          // Aprender na lista de rituais
+          rituaisHook?.aprenderRitual({
+            codigo_ritual: ritual.Codigo_Ritual,
+            origem: `poder_57_${nex}`,
+            elemento_escolhido: elementoVaria,
+          });
+
+          // Modificar o nome do poder para indicar o ritual escolhido
+          const poderModificado = {
+            ...poder,
+            Nome: `Aprender Ritual (${ritual.Nome_Ritual})`,
+            Fonte: (poder as any).Fonte || pp?.Fonte || 'Ordem Paranormal',
+          };
+
+          // Modificar a afinidade para o elemento do ritual (pra redução de transcender se precisar)
+          if (pp) {
+            (poderModificado as PoderParanormal).Elemento = elementoVaria || ritual.Elemento_Ritual;
+            (poderModificado as PoderParanormal).Afinidade = pp.Afinidade;
+          }
+
+          escolherPoder(nex, poderModificado);
+
+          // Lógica de Sanidade/PD
+          if (pp) {
+            const perda = sanidadePorNivel(classe);
+            if (regras['sem_sanidade']) {
+              status.setPdMax(prev => Math.max(0, prev - perda));
+              status.setPdAtual(prev => Math.max(0, (prev ?? status.pdMax) - perda));
+            } else {
+              status.setSanMax(prev => Math.max(0, prev - perda));
+              status.setSanAtual(prev => Math.max(0, (prev ?? status.sanMax) - perda));
+            }
+          }
+
+          setSelecionandoRitualParaPoder(null);
+          setNexModalAberto(null);
+        }}
+      />
+    );
+  }
+
+  // ================================================================
   // MODAL PRINCIPAL
   // ================================================================
   return (
@@ -389,6 +462,11 @@ export const ModalPoderes: React.FC = () => {
                   );
                 }}
                 onEscolher={() => {
+                  if (poder.codigo_poder === 57) {
+                    setSelecionandoRitualParaPoder({ poder, nex: nexModalAberto!, pp });
+                    return;
+                  }
+
                   escolherPoder(nexModalAberto!, poder);
                   // Se for paranormal, reduz sanidade (ou PD com regra sem_sanidade)
                   if (pp) {

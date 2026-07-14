@@ -554,7 +554,9 @@ export const AbasPanel: React.FC = () => {
                         <div className="flex items-center justify-between gap-3 bg-zinc-800/40 px-4 py-3 transition group-hover:bg-zinc-800/60">
                           <div className="flex flex-col items-start gap-0.5 text-left">
                             <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">Escolher Ritual</span>
-                            <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-500 group-hover:text-zinc-400">Poder NEX {nivel}%</span>
+                            <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-500 group-hover:text-zinc-400">
+                              {regras['nex_experiencia'] ? `Poder Nível ${calcularNivel(nivel)}` : `Poder NEX ${nivel}%`}
+                            </span>
                           </div>
                           <span className="whitespace-nowrap rounded bg-red-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-400 transition group-hover:bg-red-900/60 group-hover:text-red-300">+ Adicionar</span>
                         </div>
@@ -576,7 +578,7 @@ export const AbasPanel: React.FC = () => {
                           <div className="flex flex-col items-start gap-0.5 text-left">
                             <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">Escolher Ritual</span>
                             <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-500 group-hover:text-zinc-400">
-                              Ocultista (NEX {slot.nex}%) — Até {slot.maxCirculo}º Círculo
+                              Ocultista ({regras['nex_experiencia'] ? `Nível ${calcularNivel(slot.nex)}` : `NEX ${slot.nex}%`}) — Até {slot.maxCirculo}º Círculo
                             </span>
                           </div>
                           <span className="whitespace-nowrap rounded bg-red-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-400 transition group-hover:bg-red-900/60 group-hover:text-red-300">+ Adicionar</span>

@@ -926,7 +926,7 @@ export const AbasPanel: React.FC = () => {
                   : (escolhendoRitualPlaceholder.nex >= 75 ? 3 : escolhendoRitualPlaceholder.nex >= 45 ? 2 : 1))
               : (nex >= 85 ? 4 : nex >= 55 ? 3 : nex >= 25 ? 2 : 1)
           }
-          rituaisAprendidosIds={rituaisHook.rituaisAprendidos.map((r: any) => r.codigo_ritual)}
+          rituaisAprendidosIds={(rituaisHook.rituaisAprendidos || []).map((r: any) => r.codigo_ritual)}
           onClose={() => setEscolhendoRitualPlaceholder(null)}
           onSelect={(ritual, elementoVaria) => {
             const origem = escolhendoRitualPlaceholder.origem;

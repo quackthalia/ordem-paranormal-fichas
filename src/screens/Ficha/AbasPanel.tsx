@@ -493,14 +493,32 @@ export const AbasPanel: React.FC = () => {
             .map(([nexStr]) => parseInt(nexStr, 10));
 
           // 2. Calcular slots vazios de Ocultista
-          let slotsOcultistaPendentes = 0;
+          const slotsOcultistaPendentesList: { index: number, nex: number, maxCirculo: number }[] = [];
           if (classe === 'Ocultista') {
-            const limiteRituais = calcularTotalRituais(nex);
-            const rituaisOcultistaPegos = (rituaisHook.rituaisAprendidos || []).filter(r => r.origem.startsWith('ocultista_')).length;
-            slotsOcultistaPendentes = Math.max(0, limiteRituais - rituaisOcultistaPegos);
+            const todosSlots: { index: number, nex: number, maxCirculo: number }[] = [];
+            if (nex >= 5) {
+              todosSlots.push({ index: 1, nex: 5, maxCirculo: 1 });
+              todosSlots.push({ index: 2, nex: 5, maxCirculo: 1 });
+              todosSlots.push({ index: 3, nex: 5, maxCirculo: 1 });
+            }
+            for (let n = 10; n <= nex; n += 5) {
+              let c = 1;
+              if (n >= 85) c = 4;
+              else if (n >= 55) c = 3;
+              else if (n >= 25) c = 2;
+              todosSlots.push({ index: todosSlots.length + 1, nex: n, maxCirculo: c });
+            }
+            
+            // Filtra os que já foram pegos
+            for (const slot of todosSlots) {
+              const pego = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === `ocultista_${slot.index}`);
+              if (!pego) {
+                slotsOcultistaPendentesList.push(slot);
+              }
+            }
           }
 
-          const hasEmptySlots = slotsPoderPendentes.length > 0 || slotsOcultistaPendentes > 0;
+          const hasEmptySlots = slotsPoderPendentes.length > 0 || slotsOcultistaPendentesList.length > 0;
           const hasAnyRitual = (rituaisHook.rituaisAprendidos && rituaisHook.rituaisAprendidos.length > 0) || hasEmptySlots;
 
           return (
@@ -545,20 +563,21 @@ export const AbasPanel: React.FC = () => {
                         </div>
                       </div>
                     ))}
-                    {Array.from({ length: slotsOcultistaPendentes }).map((_, i) => (
+                    {slotsOcultistaPendentesList.map((slot) => (
                       <div
-                        key={`vazio_ocultista_${i}`}
+                        key={`vazio_ocultista_${slot.index}`}
                         onClick={() => {
-                          const numPegos = rituaisHook.rituaisAprendidos.filter(r => r.origem.startsWith('ocultista_')).length;
-                          setEscolhendoRitualPlaceholder({ origem: `ocultista_${numPegos + 1}` });
+                          setEscolhendoRitualPlaceholder({ origem: `ocultista_${slot.index}`, nex: slot.nex });
                         }}
                         className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-red-800 hover:bg-zinc-900/80"
                         style={{ borderLeftStyle: 'solid' }}
                       >
                         <div className="flex items-center justify-between gap-3 bg-zinc-800/40 px-4 py-3 transition group-hover:bg-zinc-800/60">
                           <div className="flex flex-col items-start gap-0.5 text-left">
-                            <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">Escolher Ritual de Classe</span>
-                            <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-500 group-hover:text-zinc-400">Ocultista</span>
+                            <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">Escolher Ritual</span>
+                            <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-500 group-hover:text-zinc-400">
+                              Ocultista (NEX {slot.nex}%) — Até {slot.maxCirculo}º Círculo
+                            </span>
                           </div>
                           <span className="whitespace-nowrap rounded bg-red-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-400 transition group-hover:bg-red-900/60 group-hover:text-red-300">+ Adicionar</span>
                         </div>

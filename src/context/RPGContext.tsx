@@ -6,11 +6,13 @@ import type {
   AtributoKey,
   AbaDireita,
   AbaModalPoderes,
+  VersaoRitual,
 } from '../types';
 import { usePoderes } from '../hooks/usePoderes';
 import { usePericias } from '../hooks/usePericias';
 import { useStatus } from '../hooks/useStatus';
 import { useOrigem } from '../hooks/useOrigem';
+import { useRituais } from '../hooks/useRituais';
 import { capMaximoAtributo, pontosIniciaisPorNex } from '../utils/rpgRules';
 
 // ============================================================
@@ -80,6 +82,11 @@ interface RPGContextType {
   toggleRegra: (nome: string) => void;
   nivel: number;
   setNivel: React.Dispatch<React.SetStateAction<number>>;
+  rituaisHook: ReturnType<typeof useRituais>;
+  rituaisExpandidos: number[];
+  setRituaisExpandidos: React.Dispatch<React.SetStateAction<number[]>>;
+  versaoRitual: Record<number, VersaoRitual>;
+  setVersaoRitual: React.Dispatch<React.SetStateAction<Record<number, VersaoRitual>>>;
   nexManual: number;
   setNexManual: React.Dispatch<React.SetStateAction<number>>;
 }
@@ -118,6 +125,8 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const [regras, setRegras] = useState<Record<string, boolean>>({});
   const [nivel, setNivel] = useState(1);
   const [nexManual, setNexManual] = useState(0);
+  const [rituaisExpandidos, setRituaisExpandidos] = useState<number[]>([]);
+  const [versaoRitual, setVersaoRitual] = useState<Record<number, VersaoRitual>>({});
 
   const toggleRegra = useCallback((nome: string) => {
     setRegras(prev => {
@@ -148,6 +157,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   // ============================================================
   const poderesHook = usePoderes(classe);
   const origensHook = useOrigem();
+  const rituaisHook = useRituais();
   const status = useStatus(classe, nex, atributos);
 
   const periciasGratis = useMemo(() => {
@@ -267,6 +277,9 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     deslocQ, setDeslocQ,
     regras, toggleRegra,
     nivel, setNivel,
+    rituaisHook,
+    rituaisExpandidos, setRituaisExpandidos,
+    versaoRitual, setVersaoRitual,
     nexManual, setNexManual,
   };
 

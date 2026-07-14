@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRPG } from '../../context/RPGContext';
 import { InputOtimizado } from '../../components/InputOtimizado';
-import type { HabilidadeItem, CategoriaHabilidade } from '../../types';
+import type { HabilidadeItem, CategoriaHabilidade, VersaoRitual } from '../../types';
 import {
   calcularBonusAtaqueEspecial,
   calcularBonusPerito,
@@ -48,6 +48,45 @@ function formatarDescricao(texto: string): string {
   return resultado;
 }
 
+/**
+ * Extrai o valor correto de um campo com "/" baseado na versão selecionada.
+ * Formato: "Normal/Discente/Verdadeiro" ou "Normal/Verdadeiro" (quando só tem verdadeiro).
+ */
+function obterValorVersao(
+  campo: string,
+  versao: VersaoRitual,
+  temDiscente: boolean,
+  temVerdadeiro: boolean
+): string {
+  if (!campo || versao === 'normal') {
+    // Na versão normal, pega tudo antes da primeira /
+    if (campo && campo.includes('/')) {
+      return campo.split('/')[0].trim();
+    }
+    return campo || '';
+  }
+
+  const partes = campo.split('/').map(p => p.trim());
+
+  if (partes.length === 1) return partes[0]; // Sem /, valor único
+
+  if (versao === 'discente') {
+    // Discente é sempre o segundo valor (índice 1)
+    return partes[1] || partes[0];
+  }
+
+  if (versao === 'verdadeiro') {
+    if (temDiscente && temVerdadeiro) {
+      // Formato: Normal/Discente/Verdadeiro → índice 2
+      return partes[2] || partes[partes.length - 1];
+    }
+    // Formato: Normal/Verdadeiro → índice 1
+    return partes[1] || partes[0];
+  }
+
+  return partes[0];
+}
+
 export const AbasPanel: React.FC = () => {
   const {
     abaDireita, setAbaDireita,
@@ -61,6 +100,9 @@ export const AbasPanel: React.FC = () => {
     setAbaModalPoderes,
     setTipoModalPoderes,
     regras,
+    rituaisHook,
+    rituaisExpandidos, setRituaisExpandidos,
+    versaoRitual, setVersaoRitual,
   } = useRPG();
 
   const { poderClasse, poderesClasse, poderesEscolhidos, poderesParanormais, removerPoder } = poderesHook;
@@ -331,7 +373,177 @@ export const AbasPanel: React.FC = () => {
           </div>
         )}
 
-        {abaDireita === 'rituais' && <div className="mt-5 text-center italic text-zinc-600">Conteúdo de Rituais</div>}
+        {abaDireita === 'rituais' && (
+          <div className="flex h-full flex-col">
+            <div className="flex flex-1 flex-col gap-2.5 overflow-y-auto pr-1">
+              {rituaisHook.loading && (
+                <div className="mt-5 text-center italic text-zinc-600">Carregando rituais...</div>
+              )}
+              {rituaisHook.error && (
+                <div className="mt-5 text-center italic text-red-500">Erro: {rituaisHook.error}</div>
+              )}
+              {!rituaisHook.loading && rituaisHook.rituais.length === 0 && !rituaisHook.error && (
+                <div className="mt-5 text-center italic text-zinc-600">Nenhum ritual encontrado.</div>
+              )}
+
+              {rituaisHook.rituais.map(ritual => {
+                const codigo = ritual.Codigo_Ritual;
+                const expandido = rituaisExpandidos.includes(codigo);
+                const versao: VersaoRitual = versaoRitual[codigo] || 'normal';
+                const corElemento = obterCorBadge(ritual.Elemento_Ritual);
+                const corTextoElemento = obterCorTexto(ritual.Elemento_Ritual);
+
+                // Valores dinâmicos baseados na versão
+                const pe = obterValorVersao(ritual.PE_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                const alcance = obterValorVersao(ritual.Alcance_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                const area = obterValorVersao(ritual.Area_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                const alvo = obterValorVersao(ritual.Alvo_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                const duracao = obterValorVersao(ritual.Duracao_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                const execucao = obterValorVersao(ritual.Execucao_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                const efeito = obterValorVersao(ritual.Efeito_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                const resistencia = obterValorVersao(ritual.Resistencia_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                const dados = obterValorVersao(ritual.Dados_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+
+                // Opções de versão disponíveis
+                const versoesDisponiveis: { value: VersaoRitual; label: string }[] = [
+                  { value: 'normal', label: 'Normal' },
+                ];
+                if (ritual.Tem_Discente) versoesDisponiveis.push({ value: 'discente', label: 'Discente' });
+                if (ritual.Tem_Verdadeiro) versoesDisponiveis.push({ value: 'verdadeiro', label: 'Verdadeiro' });
+
+                return (
+                  <div key={codigo} className="overflow-hidden rounded-r border-l-0 bg-zinc-950/60">
+                    {/* Barra colorida do elemento no topo */}
+                    <div className="h-0.5 w-full" style={{ backgroundColor: corElemento }} />
+
+                    {/* ══════ CABEÇALHO (sempre visível) ══════ */}
+                    <div
+                      onClick={() =>
+                        setRituaisExpandidos(prev =>
+                          prev.includes(codigo)
+                            ? prev.filter(id => id !== codigo)
+                            : [...prev, codigo]
+                        )
+                      }
+                      className="flex cursor-pointer items-center justify-between gap-2 bg-zinc-900/80 px-4 py-3 transition hover:bg-zinc-800/80"
+                    >
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2.5">
+                          {/* Badge do elemento */}
+                          <span
+                            className="inline-block rounded px-2 py-px text-[9px] font-bold uppercase tracking-wider leading-tight"
+                            style={{ backgroundColor: corElemento, color: corTextoElemento }}
+                          >
+                            {ritual.Elemento_Ritual}
+                          </span>
+                          {/* Círculo */}
+                          <span className="rounded border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 text-[10px] font-bold text-zinc-400">
+                            {ritual.Circulo_Ritual}°
+                          </span>
+                          {/* Nome do ritual */}
+                          <span className="text-sm font-bold text-zinc-100">{ritual.Nome_Ritual}</span>
+                        </div>
+                        {/* Dados_Ritual abaixo do título (se existir) — visível mesmo fechado */}
+                        {dados && (
+                          <span className="ml-0.5 text-xs font-semibold text-amber-400">{dados}</span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        {/* PE */}
+                        <span className="rounded border border-zinc-700 bg-zinc-900 px-2 py-0.5 text-xs font-bold text-blue-400">
+                          {pe} PE
+                        </span>
+                        {/* Seta */}
+                        <span className="text-xs text-zinc-600">{expandido ? '▲' : '▼'}</span>
+                      </div>
+                    </div>
+
+                    {/* ══════ CONTEÚDO EXPANDIDO ══════ */}
+                    {expandido && (
+                      <div className="border-t border-zinc-800 px-4 py-4 text-left text-sm leading-relaxed text-zinc-400">
+
+                        {/* Dropdown de versão (se tiver alternativas) */}
+                        {versoesDisponiveis.length > 1 && (
+                          <div className="mb-4 flex items-center gap-2">
+                            <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-600">Versão:</span>
+                            <select
+                              value={versao}
+                              onChange={e => {
+                                e.stopPropagation();
+                                setVersaoRitual(prev => ({
+                                  ...prev,
+                                  [codigo]: e.target.value as VersaoRitual,
+                                }));
+                              }}
+                              className="rounded border border-zinc-700 bg-zinc-800 px-2 py-1 text-xs font-bold text-zinc-200 outline-none focus:border-red-700"
+                            >
+                              {versoesDisponiveis.map(v => (
+                                <option key={v.value} value={v.value}>{v.label}</option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+
+                        {/* Campos de metadados — só mostram se têm valor */}
+                        <div className="mb-4 flex flex-col gap-1">
+                          {execucao && (
+                            <div className="text-xs">
+                              <span className="font-bold text-zinc-300">Execução: </span>
+                              <span className="text-zinc-400">{execucao}</span>
+                            </div>
+                          )}
+                          {alcance && (
+                            <div className="text-xs">
+                              <span className="font-bold text-zinc-300">Alcance: </span>
+                              <span className="text-zinc-400">{alcance}</span>
+                            </div>
+                          )}
+                          {area && (
+                            <div className="text-xs">
+                              <span className="font-bold text-zinc-300">Área: </span>
+                              <span className="text-zinc-400">{area}</span>
+                            </div>
+                          )}
+                          {alvo && (
+                            <div className="text-xs">
+                              <span className="font-bold text-zinc-300">Alvo: </span>
+                              <span className="text-zinc-400">{alvo}</span>
+                            </div>
+                          )}
+                          {duracao && (
+                            <div className="text-xs">
+                              <span className="font-bold text-zinc-300">Duração: </span>
+                              <span className="text-zinc-400">{duracao}</span>
+                            </div>
+                          )}
+                          {efeito && (
+                            <div className="text-xs">
+                              <span className="font-bold text-zinc-300">Efeito: </span>
+                              <span className="text-zinc-400">{efeito}</span>
+                            </div>
+                          )}
+                          {resistencia && (
+                            <div className="text-xs">
+                              <span className="font-bold text-zinc-300">Resistência: </span>
+                              <span className="text-zinc-400">{resistencia}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Descrição formatada */}
+                        <div
+                          className="text-sm leading-relaxed text-zinc-400"
+                          dangerouslySetInnerHTML={{ __html: formatarDescricao(ritual.Descricao_Ritual) }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
         {abaDireita === 'inventario' && <div className="mt-5 text-center italic text-zinc-600">Conteúdo de Inventário</div>}
         {abaDireita === 'descricao' && <div className="mt-5 text-center italic text-zinc-600">Conteúdo de Descrição</div>}
 

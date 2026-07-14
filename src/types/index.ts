@@ -110,3 +110,30 @@ export interface LimiteCirculos {
   c3: number;
   c4: number;
 }
+
+// ============================================================
+// RITUAL — Tabela "Rituais" do Supabase
+// ============================================================
+export type VersaoRitual = 'normal' | 'discente' | 'verdadeiro';
+
+export interface Ritual {
+  Codigo_Ritual: number;
+  Nome_Ritual: string;
+  Descricao_Ritual: string;
+  Elemento_Ritual: string;
+  Circulo_Ritual: number;
+  PE_Ritual: string;
+  Execucao_Ritual: string;
+  Alcance_Ritual: string;
+  Area_Ritual: string;
+  Alvo_Ritual: string;
+  Duracao_Ritual: string;
+  Efeito_Ritual: string;
+  Resistencia_Ritual: string;
+  Dados_Ritual: string;
+  Tem_Discente: boolean;
+  Tem_Verdadeiro: boolean;
+  Imagem: string;
+  Requisito_Discente: string;
+  Requisito_Verdadeiro: string;
+}

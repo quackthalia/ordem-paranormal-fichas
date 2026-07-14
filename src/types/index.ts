@@ -8,9 +8,8 @@ export type ClasseRPG = 'Combatente' | 'Especialista' | 'Ocultista' | null;
 
 export type AtributoKey = 'FOR' | 'AGI' | 'INT' | 'PRE' | 'VIG';
 
-export type AbaDireita = 'combate' | 'habilidades' | 'rituais' | 'inventario' | 'descricao' | 'regras';
+export type AbaDireita = 'combate' | 'habilidades' | 'rituais' | 'inventario' | 'descricao';
 
-// 🔥 ADICIONADO: 'paranormais'
 export type AbaModalPoderes = 'classe' | 'gerais' | 'combate' | 'paranormais';
 
 export interface Atributos {
@@ -24,7 +23,7 @@ export interface Atributos {
 export interface Pericia {
   id: number;
   atributo: AtributoKey;
-  treino: number;   // 0 | 5 | 10 | 15
+  treino: number;
   outros: number;
 }
 
@@ -40,16 +39,15 @@ export interface Poder {
   Fonte: string;
 }
 
-// 🔥 NOVO TIPO: Poder Paranormal
 export interface PoderParanormal {
   codigo_poder: number;
   Nome: string;
   Descricao: string;
   PreRequisitos: string;
   Afinidade: string;
-  Elemento: string;   // Sangue | Morte | Energia | Conhecimento | Medo
+  Elemento: string;
   Fonte: string;
-  PreRequisitosAfinidade?: string; // 🔥 ADICIONAR AQUI (coluna Pre_Requisitos_Afinidade)
+  PreRequisitosAfinidade?: string;
 }
 
 export interface Origem {
@@ -76,15 +74,14 @@ export interface PoderSlot {
   preRequisitos?: string;
   fonte?: string;
   afinidade?: string;
-  tipo?: string;
+  categoria?: 'utilidade' | 'combate' | 'gerais' | 'paranormais';
 }
 
 export interface PoderesEscolhidos {
   [nex: number]: PoderSlot;
 }
 
-// 🔥 ADICIONADO: 'paranormais'
-export type CategoriaHabilidade = 'origem' | 'classe' | 'utilidade' | 'combate' | 'paranormais' | 'gerais';
+export type CategoriaHabilidade = 'origem' | 'classe' | 'utilidade' | 'gerais' | 'combate' | 'paranormais';
 
 export interface HabilidadeItem {
   id: string;
@@ -98,7 +95,6 @@ export interface HabilidadeItem {
   nexDoSlot?: number;
   limiteCirculos?: LimiteCirculos;
   fonte?: string;
-  // 🔥 CAMPOS NOVOS para poderes paranormais
   elemento?: string;
   afinidade?: string;
   categoria: CategoriaHabilidade;
@@ -109,44 +105,4 @@ export interface LimiteCirculos {
   c2: number;
   c3: number;
   c4: number;
-}
-
-// ============================================================
-// RITUAL — Tabela "Rituais" do Supabase
-// ============================================================
-export type VersaoRitual = 'normal' | 'discente' | 'verdadeiro';
-
-export interface Ritual {
-  Codigo_Ritual: number;
-  Nome_Ritual: string;
-  Descricao_Ritual: string;
-  Elemento_Ritual: string;
-  Circulo_Ritual: number;
-  PE_Ritual: string;
-  Execucao_Ritual: string;
-  Alcance_Ritual: string;
-  Area_Ritual: string;
-  Alvo_Ritual: string;
-  Duracao_Ritual: string;
-  Efeito_Ritual: string;
-  Resistencia_Ritual: string;
-  Dados_Ritual: string;
-  Tem_Discente: boolean;
-  Tem_Verdadeiro: boolean;
-  Imagem: string;
-  Requisito_Discente: string;
-  Requisito_Verdadeiro: string;
-}
-
-export interface RitualAprendido {
-  codigo_ritual: number;
-  origem: string;
-  elemento_escolhido?: string; // Para rituais com 'Elemento: Qualquer'
-  customNome?: string;
-  customDesc?: string;
-  customProps?: {
-    normal?: Partial<Ritual>;
-    discente?: Partial<Ritual>;
-    verdadeiro?: Partial<Ritual>;
-  };
 }

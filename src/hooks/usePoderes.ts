@@ -11,7 +11,7 @@ interface UsePoderesReturn {
   poderClasse: Poder | null;
   loading: boolean;
   error: string | null;
-  escolherPoder: (nex: number, poder: Poder | PoderParanormal) => void;
+  escolherPoder: (nex: number, poder: Poder | PoderParanormal, categoria?: 'utilidade' | 'combate' | 'gerais') => void;
   removerPoder: (nex: number) => void;
   editarPoder: (nex: number, nome: string, descricao: string, afinidade?: string) => void;
 }
@@ -57,7 +57,6 @@ function normalizarPoderParanormal(item: Record<string, unknown>): PoderParanorm
     Afinidade: String(primeiro('Afinidade', 'afinidade') ?? ''),
     Elemento: String(primeiro('Elemento_Poder_Paranormal', 'elemento_poder_paranormal') ?? ''),
     Fonte: String(primeiro('Fonte_Poder_Paranormal', 'fonte_poder_paranormal') ?? ''),
-    // 🔥 MAPEAMENTO DIRETO do Pre_Requisitos_Afinidade (sem usar primeiro)
     PreRequisitosAfinidade: (() => {
       const raw = item['Pre_Requisitos_Afinidade'];
       if (raw !== null && raw !== undefined && String(raw).trim() !== '') {
@@ -114,7 +113,6 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
       else if (data) {
         const normalizados = data.map(normalizarPoderParanormal);
         console.log('🔥 Poderes Paranormais carregados:', normalizados.length);
-        // 🔥 Log para verificar o PreRequisitosAfinidade
         normalizados.forEach(p => {
           if (p.PreRequisitosAfinidade) {
             console.log(`⚡ Poder "${p.Nome}" tem PreRequisitosAfinidade: "${p.PreRequisitosAfinidade}"`);
@@ -139,17 +137,25 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
     return () => { cancelled = true; };
   }, [classe]);
 
-  const escolherPoder = useCallback((nex: number, poder: Poder | PoderParanormal) => {
-    console.log('🎯 escolherPoder chamado:', { nex, nome: poder.Nome });
+  const escolherPoder = useCallback((
+    nex: number,
+    poder: Poder | PoderParanormal,
+    categoria?: 'utilidade' | 'combate' | 'gerais'
+  ) => {
+    const pp = poder as PoderParanormal;
+    const isParanormal = 'Elemento' in pp || 'Afinidade' in pp;
+    const catFinal: 'utilidade' | 'combate' | 'gerais' | 'paranormais' = 
+      isParanormal ? 'paranormais' : (categoria || 'utilidade');
+
     setPoderesEscolhidos(prev => ({
       ...prev,
       [nex]: {
         nome: poder.Nome,
         descricao: poder.Descricao,
         preRequisitos: poder.PreRequisitos,
-        fonte: (poder as Poder).Fonte || (poder as PoderParanormal).Fonte || '',
-        afinidade: (poder as PoderParanormal).Afinidade || '',
-        tipo: (poder as Poder).Tipo || '',
+        fonte: (poder as Poder).Fonte || pp.Fonte || '',
+        afinidade: pp.Afinidade || '',
+        categoria: catFinal,
       },
     }));
   }, []);
@@ -188,6 +194,8 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
     editarPoder,
   };
 }
+
+
 
 export function usePoderesFiltrados(
   listaPoderesUtilidade: Poder[],

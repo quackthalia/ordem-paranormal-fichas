@@ -20,6 +20,7 @@ O arquivo `src/screens/Ficha/AbasPanel.tsx` renderiza quase tudo na aba de Habil
 ## 3. Lógica de Negócios e Hooks
 - **Hooks:** Usamos hooks como `usePoderes` e `useRituais` para gerenciar o estado global da ficha.
 - A função `obterValorVersao` avalia expressões (como `1 PE; +2 PE; +5 PE`) verificando `Tem_Discente` e `Tem_Verdadeiro`, e puxando a string exata para aquela versão usando `.split(';')`.
+- **ModalPoderes.tsx:** A ordem das abas na janela de escolher poderes foi ajustada para exibir: Poderes de Combate/Utilidade (dependendo da origem/patamar) -> Poderes Gerais -> Poderes Paranormais.
 
 ## 4. Regras do Agente (AGENTS.md)
 Existe uma regra em `.agents/AGENTS.md` definindo que toda vez que eu alterar um código com sucesso, devo fazer o `git commit` com mensagem descritiva e o `git push` automaticamente, sem perguntar!

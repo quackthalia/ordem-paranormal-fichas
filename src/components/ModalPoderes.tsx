@@ -190,8 +190,8 @@ export const ModalPoderes: React.FC = () => {
 
   const abasDisponiveis = useMemo((): [AbaModalPoderes, string][] => {
     const base: [AbaModalPoderes, string][] = [
-      ['paranormais', 'Poderes Paranormais'],
       ['gerais', 'Poderes Gerais'],
+      ['paranormais', 'Poderes Paranormais'],
     ];
     if (ehCombate) return [['combate', 'Poderes de Combate'], ...base];
     return [['classe', 'Poderes de Utilidade'], ...base];

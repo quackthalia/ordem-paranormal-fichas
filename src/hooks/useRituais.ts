@@ -47,11 +47,11 @@ export function useRituais(): UseRituaisReturn {
       setLoading(true);
       setError(null);
 
-      // 🧪 Para teste, puxando apenas o ritual de Codigo_Ritual = 1
+      // 🧪 Para teste, puxando os rituais 1, 2, 3 e 4
       const { data, error: err } = await supabase
         .from('Rituais')
         .select('*')
-        .eq('Codigo_Ritual', 1);
+        .in('Codigo_Ritual', [1, 2, 3, 4]);
 
       if (cancelled) return;
 

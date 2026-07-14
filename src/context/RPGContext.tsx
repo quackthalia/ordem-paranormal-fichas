@@ -87,6 +87,8 @@ interface RPGContextType {
   setRituaisExpandidos: React.Dispatch<React.SetStateAction<number[]>>;
   versaoRitual: Record<number, VersaoRitual>;
   setVersaoRitual: React.Dispatch<React.SetStateAction<Record<number, VersaoRitual>>>;
+  elementoRitual: Record<number, string>;
+  setElementoRitual: React.Dispatch<React.SetStateAction<Record<number, string>>>;
   nexManual: number;
   setNexManual: React.Dispatch<React.SetStateAction<number>>;
 }
@@ -127,6 +129,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const [nexManual, setNexManual] = useState(0);
   const [rituaisExpandidos, setRituaisExpandidos] = useState<number[]>([]);
   const [versaoRitual, setVersaoRitual] = useState<Record<number, VersaoRitual>>({});
+  const [elementoRitual, setElementoRitual] = useState<Record<number, string>>({});
 
   const toggleRegra = useCallback((nome: string) => {
     setRegras(prev => {
@@ -280,6 +283,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     rituaisHook,
     rituaisExpandidos, setRituaisExpandidos,
     versaoRitual, setVersaoRitual,
+    elementoRitual, setElementoRitual,
     nexManual, setNexManual,
   };
 

@@ -103,6 +103,7 @@ export const AbasPanel: React.FC = () => {
     rituaisHook,
     rituaisExpandidos, setRituaisExpandidos,
     versaoRitual, setVersaoRitual,
+    elementoRitual, setElementoRitual,
   } = useRPG();
 
   const { poderClasse, poderesClasse, poderesEscolhidos, poderesParanormais, removerPoder } = poderesHook;
@@ -390,8 +391,12 @@ export const AbasPanel: React.FC = () => {
                 const codigo = ritual.Codigo_Ritual;
                 const expandido = rituaisExpandidos.includes(codigo);
                 const versao: VersaoRitual = versaoRitual[codigo] || 'normal';
-                const corElemento = obterCorBadge(ritual.Elemento_Ritual);
-                const corTextoElemento = obterCorTexto(ritual.Elemento_Ritual);
+                
+                const isLista = ritual.Elemento_Ritual.toLowerCase() === 'lista';
+                const elementoEscolhido = isLista ? (elementoRitual[codigo] || 'Sangue') : ritual.Elemento_Ritual;
+                
+                const corElemento = obterCorBadge(elementoEscolhido);
+                const corTextoElemento = obterCorTexto(elementoEscolhido);
 
                 // Valores dinâmicos baseados na versão
                 const pe = obterValorVersao(ritual.PE_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
@@ -429,16 +434,14 @@ export const AbasPanel: React.FC = () => {
                     >
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2.5">
-                          {/* Badge do elemento */}
+                          {/* Badge do elemento + círculo unidos */}
                           <span
-                            className="inline-block rounded px-2 py-px text-[9px] font-bold uppercase tracking-wider leading-tight"
+                            className="inline-flex items-center gap-1.5 rounded px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider leading-tight"
                             style={{ backgroundColor: corElemento, color: corTextoElemento }}
                           >
-                            {ritual.Elemento_Ritual}
-                          </span>
-                          {/* Círculo */}
-                          <span className="rounded border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 text-[10px] font-bold text-zinc-400">
-                            {ritual.Circulo_Ritual}°
+                            {elementoEscolhido}
+                            <span className="text-[10px] opacity-80">•</span>
+                            <span className="text-[10px]">{ritual.Circulo_Ritual}°</span>
                           </span>
                           {/* Nome do ritual */}
                           <span className="text-sm font-bold text-zinc-100">{ritual.Nome_Ritual}</span>
@@ -463,25 +466,51 @@ export const AbasPanel: React.FC = () => {
                     {expandido && (
                       <div className="border-t border-zinc-800 px-4 py-4 text-left text-sm leading-relaxed text-zinc-400">
 
-                        {/* Dropdown de versão (se tiver alternativas) */}
-                        {versoesDisponiveis.length > 1 && (
-                          <div className="mb-4 flex items-center gap-2">
-                            <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-600">Versão:</span>
-                            <select
-                              value={versao}
-                              onChange={e => {
-                                e.stopPropagation();
-                                setVersaoRitual(prev => ({
-                                  ...prev,
-                                  [codigo]: e.target.value as VersaoRitual,
-                                }));
-                              }}
-                              className="rounded border border-zinc-700 bg-zinc-800 px-2 py-1 text-xs font-bold text-zinc-200 outline-none focus:border-red-700"
-                            >
-                              {versoesDisponiveis.map(v => (
-                                <option key={v.value} value={v.value}>{v.label}</option>
-                              ))}
-                            </select>
+                        {/* Dropdowns de configurações (Elemento e Versão) */}
+                        {(isLista || versoesDisponiveis.length > 1) && (
+                          <div className="mb-4 flex flex-wrap items-center gap-5 border-b border-zinc-800/50 pb-3">
+                            
+                            {/* Dropdown de Elemento (se for Lista) */}
+                            {isLista && (
+                              <div className="flex items-center gap-2">
+                                <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-600">Elemento:</span>
+                                <select
+                                  value={elementoEscolhido}
+                                  onChange={e => {
+                                    e.stopPropagation();
+                                    setElementoRitual(prev => ({ ...prev, [codigo]: e.target.value }));
+                                  }}
+                                  className="cursor-pointer rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs font-bold text-zinc-200 outline-none transition hover:bg-zinc-800 focus:border-red-700"
+                                >
+                                  <option value="Sangue">Sangue</option>
+                                  <option value="Conhecimento">Conhecimento</option>
+                                  <option value="Energia">Energia</option>
+                                  <option value="Morte">Morte</option>
+                                </select>
+                              </div>
+                            )}
+
+                            {/* Dropdown de Versão */}
+                            {versoesDisponiveis.length > 1 && (
+                              <div className="flex items-center gap-2">
+                                <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-600">Versão:</span>
+                                <select
+                                  value={versao}
+                                  onChange={e => {
+                                    e.stopPropagation();
+                                    setVersaoRitual(prev => ({
+                                      ...prev,
+                                      [codigo]: e.target.value as VersaoRitual,
+                                    }));
+                                  }}
+                                  className="cursor-pointer rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs font-bold text-zinc-200 outline-none transition hover:bg-zinc-800 focus:border-red-700"
+                                >
+                                  {versoesDisponiveis.map(v => (
+                                    <option key={v.value} value={v.value}>{v.label}</option>
+                                  ))}
+                                </select>
+                              </div>
+                            )}
                           </div>
                         )}
 
@@ -531,11 +560,28 @@ export const AbasPanel: React.FC = () => {
                           )}
                         </div>
 
-                        {/* Descrição formatada */}
-                        <div
-                          className="text-sm leading-relaxed text-zinc-400"
-                          dangerouslySetInnerHTML={{ __html: formatarDescricao(ritual.Descricao_Ritual) }}
-                        />
+                        {/* Descrição formatada com versões dimmed */}
+                        <div className="text-sm leading-relaxed text-zinc-400">
+                          {ritual.Descricao_Ritual.split('\n').map((linha, i) => {
+                            const linhaLower = linha.trim().toLowerCase();
+                            const isDiscente = linhaLower.startsWith('*discente');
+                            const isVerdadeiro = linhaLower.startsWith('*verdadeiro');
+                            const isVersaoLinha = isDiscente || isVerdadeiro;
+
+                            let dimmed = false;
+                            if (isDiscente && versao !== 'discente') dimmed = true;
+                            if (isVerdadeiro && versao !== 'verdadeiro') dimmed = true;
+
+                            return (
+                              <span
+                                key={i}
+                                className={`block ${isVersaoLinha && dimmed ? 'opacity-30' : ''} ${isVersaoLinha && !dimmed ? 'text-zinc-200' : ''}`}
+                                style={{ transition: 'opacity 0.2s ease' }}
+                                dangerouslySetInnerHTML={{ __html: formatarDescricao(linha) }}
+                              />
+                            );
+                          })}
+                        </div>
                       </div>
                     )}
                   </div>

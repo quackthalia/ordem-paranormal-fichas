@@ -307,7 +307,7 @@ export const AbasPanel: React.FC = () => {
           
           let elementoDoPoder = pp?.Elemento;
           if (isAprenderRitual) {
-            const ra = rituaisHook.rituaisAprendidos?.find(r => r.origem === `poder_57_combate_${nivel}`); // Wait, Aprender Ritual pode ser pego em combate? Não, mas se for forçado...
+            const ra = rituaisHook.rituaisAprendidos?.find(r => r.origem === `poder_57_${nivel}`);
             if (ra) {
               const rBase = rituaisHook.rituais.find(r => r.Codigo_Ritual === ra.codigo_ritual);
               const isLista = rBase?.Elemento_Ritual.toLowerCase() === 'lista' || rBase?.Elemento_Ritual.toLowerCase() === 'varia';

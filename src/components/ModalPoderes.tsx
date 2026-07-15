@@ -395,8 +395,15 @@ export const ModalPoderes: React.FC = () => {
                   if (abaModalPoderes === 'combate') categoria = 'combate';
                   else if (abaModalPoderes === 'gerais') categoria = 'gerais';
                   
-                  escolherPoder(nexModalAberto!, poder, categoria);
+                  const nexEscolhido = nexModalAberto!;
+                  escolherPoder(nexEscolhido, poder, categoria);
                   setNexModalAberto(null);
+
+                  if (poder.Nome.toLowerCase() === 'aprender ritual') {
+                    setTimeout(() => {
+                      window.dispatchEvent(new CustomEvent('abrirModalRituais', { detail: { nex: nexEscolhido } }));
+                    }, 50);
+                  }
                 }}
               />
             );

@@ -400,9 +400,7 @@ export const ModalPoderes: React.FC = () => {
                   setNexModalAberto(null);
 
                   if (poder.Nome.toLowerCase() === 'aprender ritual') {
-                    setTimeout(() => {
-                      window.dispatchEvent(new CustomEvent('abrirModalRituais', { detail: { nex: nexEscolhido } }));
-                    }, 50);
+                    window.dispatchEvent(new CustomEvent('abrirModalRituais', { detail: { nex: nexEscolhido } }));
                   }
                 }}
               />

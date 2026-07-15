@@ -55,7 +55,7 @@ export function ModalTrilhas({
   const trilhasFiltradas = useMemo(() => {
     return trilhas.filter((t) => {
       // No modo versatilidade, não pode escolher a própria trilha atual
-      if (modoVersatilidade && trilhaSelecionada && t.Codigo_Trilha === trilhaSelecionada.Codigo_Trilha) {
+      if (modoVersatilidade && trilhaSelecionada && Number(t.Codigo_Trilha) === Number(trilhaSelecionada.Codigo_Trilha)) {
         return false;
       }
       if (abaAtual === 'classe') {

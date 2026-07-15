@@ -20,8 +20,10 @@ function formatarDescricao(texto: string): string {
 
 export function ModalTrilhas({
   onClose,
+  modoVersatilidade,
 }: {
   onClose: () => void;
+  modoVersatilidade?: boolean;
 }) {
   const { classe, trilhasHook, regras } = useRPG();
   const {
@@ -31,7 +33,9 @@ export function ModalTrilhas({
     trilhasExpandidas,
     toggleTrilhaExpandida,
     selecionarTrilha,
+    selecionarVersatilidade,
     nomePericia,
+    trilhaSelecionada,
   } = trilhasHook;
 
   const [abaAtual, setAbaAtual] = useState<'classe' | 'gerais'>('classe');
@@ -50,12 +54,16 @@ export function ModalTrilhas({
 
   const trilhasFiltradas = useMemo(() => {
     return trilhas.filter((t) => {
+      // No modo versatilidade, não pode escolher a própria trilha atual
+      if (modoVersatilidade && trilhaSelecionada && t.Codigo_Trilha === trilhaSelecionada.Codigo_Trilha) {
+        return false;
+      }
       if (abaAtual === 'classe') {
         return t.Classe_Trilha === classe;
       }
       return t.Classe_Trilha === 'Geral';
     });
-  }, [trilhas, abaAtual, classe]);
+  }, [trilhas, abaAtual, classe, modoVersatilidade, trilhaSelecionada]);
 
   const toggleHabilidade = (codigo: number) => {
     setHabilidadesExpandidas((prev) =>
@@ -64,7 +72,11 @@ export function ModalTrilhas({
   };
 
   const handleEscolher = (trilha: Trilha) => {
-    selecionarTrilha(trilha);
+    if (modoVersatilidade) {
+      selecionarVersatilidade(trilha);
+    } else {
+      selecionarTrilha(trilha);
+    }
     onClose();
   };
 
@@ -77,7 +89,7 @@ export function ModalTrilhas({
         {/* Cabeçalho */}
         <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-900/50 px-5 py-4">
           <h2 className="font-display text-lg uppercase tracking-wide text-zinc-100">
-            Selecionar Trilha <span className="text-red-500">(NEX 10%)</span>
+            {modoVersatilidade ? 'Selecionar Versatilidade' : 'Selecionar Trilha'} <span className="text-red-500">({modoVersatilidade ? 'NEX 50%' : 'NEX 10%'})</span>
           </h2>
           <button
             onClick={onClose}
@@ -160,7 +172,8 @@ export function ModalTrilhas({
                       Habilidades da Trilha
                     </h4>
 
-                    {nexLevels.map((nexLvl) => {
+                    {/* Habilidades da Trilha */}
+                    {(modoVersatilidade ? [10] : nexLevels).map((nexLvl) => {
                       const habNameKey = `Nome_Habilidade_${nexLvl}` as keyof Trilha;
                       const habDescKey = `Descricao_Habilidade_${nexLvl}` as keyof Trilha;
                       const nomeHab = trilha[habNameKey] as string;

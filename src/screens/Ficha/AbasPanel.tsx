@@ -150,6 +150,7 @@ export const AbasPanel: React.FC = () => {
   const [ritualPropsEditando, setRitualPropsEditando] = React.useState<import('../../types').RitualAprendido['customProps']>({});
   const [ritualVersaoEditando, setRitualVersaoEditando] = React.useState<'normal' | 'discente' | 'verdadeiro'>('normal');
   const [modalTrilhasAberto, setModalTrilhasAberto] = React.useState(false);
+  const [modalVersatilidadeAberto, setModalVersatilidadeAberto] = React.useState(false);
   const [editandoTrilha, setEditandoTrilha] = React.useState(false);
 
   const { poderClasse, poderesClasse, poderesEscolhidos, poderesParanormais, removerPoder } = poderesHook;
@@ -201,6 +202,29 @@ export const AbasPanel: React.FC = () => {
           nome: 'Escolher Trilha',
           descricao: 'Clique no "+" para abrir a lista e selecionar sua trilha.',
           tipo: regras['nex_experiencia'] ? `Nível 2` : `NEX 10%`,
+          isSlotVazio: true,
+          categoria: 'trilha',
+        });
+      }
+    }
+
+    if (nex >= 50) {
+      if (trilhasHook.versatilidadeSelecionada) {
+        lista.push({
+          id: 'versatilidade_selecionada',
+          nome: trilhasHook.versatilidadeSelecionada.Nome_Trilha,
+          descricao: '',
+          tipo: 'Versatilidade',
+          categoria: 'trilha',
+          extra: null,
+          isVersatilidade: true,
+        });
+      } else {
+        lista.push({
+          id: 'escolha_versatilidade',
+          nome: 'Escolher Versatilidade',
+          descricao: `Em ${regras['nex_experiencia'] ? 'Nível 10' : 'NEX 50%'}, escolha entre receber um poder de ${classe.toLowerCase()} ou o primeiro poder de uma trilha de ${classe.toLowerCase()} que não a sua. Clique no "+" para selecionar.`,
+          tipo: regras['nex_experiencia'] ? `Nível 10` : `NEX 50%`,
           isSlotVazio: true,
           categoria: 'trilha',
         });
@@ -364,7 +388,11 @@ export const AbasPanel: React.FC = () => {
                               key={hab.id}
                               onClick={() => {
                                 if (hab.categoria === 'trilha') {
-                                  setModalTrilhasAberto(true);
+                                  if (hab.id === 'escolha_versatilidade') {
+                                    setModalVersatilidadeAberto(true);
+                                  } else {
+                                    setModalTrilhasAberto(true);
+                                  }
                                 } else {
                                   const tipo = hab.id.includes('combate') ? 'combate' : 'utilidade';
                                   setTipoModalPoderes(tipo);
@@ -389,38 +417,44 @@ export const AbasPanel: React.FC = () => {
                           );
                         }
 
-                        if (hab.categoria === 'trilha' && trilhasHook.trilhaSelecionada) {
-                          const t = trilhasHook.trilhaSelecionada;
-                          const nexLevels = [10, 40, 65, 99];
+                        if (hab.categoria === 'trilha') {
+                          const isVersatilidade = hab.isVersatilidade;
+                          const t = isVersatilidade ? trilhasHook.versatilidadeSelecionada : trilhasHook.trilhaSelecionada;
+                          
+                          if (!t) return null;
+
+                          const nexLevels = isVersatilidade ? [10] : [10, 40, 65, 99];
                           
                           return (
                             <div key={hab.id} className="mb-3 overflow-hidden rounded-r border-l-4 border-red-800 bg-zinc-950/60">
                               <div
-                                onClick={() => trilhasHook.toggleTrilhaExpandida(t.Codigo_Trilha)}
+                                onClick={() => trilhasHook.toggleTrilhaExpandida(isVersatilidade ? t.Codigo_Trilha + 10000 : t.Codigo_Trilha)}
                                 className="flex cursor-pointer items-center justify-between gap-3 bg-zinc-900/80 px-4 py-3 transition hover:bg-zinc-800/80"
                               >
                                 <div className="flex items-center gap-2">
-                                  <span className="font-bold text-zinc-100">{t.Nome_Trilha}</span>
-                                  <span className="text-[10px] uppercase text-zinc-500">
-                                    ({t.nome_pericia})
-                                  </span>
+                                  <span className="font-bold text-zinc-100">{isVersatilidade ? 'Versatilidade' : t.Nome_Trilha}</span>
+                                  {!isVersatilidade && (
+                                    <span className="text-[10px] uppercase text-zinc-500">
+                                      ({t.nome_pericia})
+                                    </span>
+                                  )}
                                 </div>
                                 <div className="flex items-center gap-3">
                                   <span className="text-xs text-zinc-600">
-                                    {trilhasHook.trilhasExpandidas.includes(t.Codigo_Trilha) ? '▲' : '▼'}
+                                    {trilhasHook.trilhasExpandidas.includes(isVersatilidade ? t.Codigo_Trilha + 10000 : t.Codigo_Trilha) ? '▲' : '▼'}
                                   </span>
                                 </div>
                               </div>
               
-                              {trilhasHook.trilhasExpandidas.includes(t.Codigo_Trilha) && (
+                              {trilhasHook.trilhasExpandidas.includes(isVersatilidade ? t.Codigo_Trilha + 10000 : t.Codigo_Trilha) && (
                                 <div className="p-4 text-sm text-zinc-400">
                                   <div
                                     className="mb-4 text-zinc-300"
-                                    dangerouslySetInnerHTML={{ __html: formatarDescricao(t.Descricao_Trilha) }}
+                                    dangerouslySetInnerHTML={{ __html: formatarDescricao(isVersatilidade ? `Em ${regras['nex_experiencia'] ? 'Nível 10' : 'NEX 50%'}, escolha entre receber um poder de ${classe.toLowerCase()} ou o primeiro poder de uma trilha de ${classe.toLowerCase()} que não a sua.<br/><br/>Trilha Escolhida: <strong>${t.Nome_Trilha}</strong>` : t.Descricao_Trilha) }}
                                   />
               
                                   <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-red-400 border-b border-zinc-800 pb-1">
-                                    Habilidades da Trilha
+                                    {isVersatilidade ? 'Poder da Trilha' : 'Habilidades da Trilha'}
                                   </h4>
               
                                   {nexLevels.map((nexLvl) => {
@@ -433,7 +467,7 @@ export const AbasPanel: React.FC = () => {
               
                                     if (!nomeHab) return null;
               
-                                    const uniqueHabId = `trilha_${t.Codigo_Trilha}_hab_${nexLvl}`;
+                                    const uniqueHabId = `trilha_${isVersatilidade ? 'versatilidade_' : ''}${t.Codigo_Trilha}_hab_${nexLvl}`;
                                     const isHabExpanded = habilidadesExpandidas.includes(uniqueHabId);
               
                                     return (
@@ -465,10 +499,10 @@ export const AbasPanel: React.FC = () => {
                                   )}
 
                                   <div className="mt-4 flex gap-2.5">
-                                    <button onClick={(e) => { e.stopPropagation(); setEditandoTrilha(true); }}
+                                    <button onClick={(e) => { e.stopPropagation(); isVersatilidade ? setModalVersatilidadeAberto(true) : setEditandoTrilha(true); }}
                                       className="flex-1 rounded border border-zinc-700 bg-zinc-800 p-2 text-xs font-bold text-zinc-200 transition hover:bg-zinc-700"
-                                    >Editar</button>
-                                    <button onClick={(e) => { e.stopPropagation(); trilhasHook.setTrilhaSelecionada(null); }}
+                                    >{isVersatilidade ? 'Escolher Outra' : 'Editar'}</button>
+                                    <button onClick={(e) => { e.stopPropagation(); isVersatilidade ? trilhasHook.setVersatilidadeSelecionada(null) : trilhasHook.setTrilhaSelecionada(null); }}
                                       className="flex-1 rounded border border-red-900/50 bg-red-950/30 p-2 text-xs font-bold text-red-500 transition hover:bg-red-900/50 hover:text-red-300"
                                     >Remover</button>
                                   </div>
@@ -1184,6 +1218,9 @@ export const AbasPanel: React.FC = () => {
       })()}
       {modalTrilhasAberto && (
         <ModalTrilhas onClose={() => setModalTrilhasAberto(false)} />
+      )}
+      {modalVersatilidadeAberto && (
+        <ModalTrilhas onClose={() => setModalVersatilidadeAberto(false)} modoVersatilidade={true} />
       )}
       {editandoTrilha && (
         <ModalEditarTrilha onClose={() => setEditandoTrilha(false)} />

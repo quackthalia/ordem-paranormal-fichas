@@ -185,7 +185,7 @@ export const ModalPoderes: React.FC = () => {
     }
 
     if (abaModalPoderes === 'paranormais') {
-      return [...filtrada].sort((a: any, b: any) => sortPorElementoENome(a, b, p => p.Elemento, p => p.Nome));
+      return [...filtrada].sort((a: any, b: any) => sortPorElementoENome(a, b, p => p?.Elemento, p => p?.Nome));
     }
     
     return filtrada;

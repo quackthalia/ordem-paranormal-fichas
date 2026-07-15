@@ -175,11 +175,13 @@ export function sortPorElementoENome<T>(
   a: T, 
   b: T, 
   getElemento: (obj: T) => string | undefined | null, 
-  getNome: (obj: T) => string
+  getNome: (obj: T) => string | undefined | null
 ): number {
   const cmp = compararElementos(getElemento(a), getElemento(b));
   if (cmp !== 0) return cmp;
-  return getNome(a).localeCompare(getNome(b), 'pt-BR');
+  const nomeA = getNome(a) || '';
+  const nomeB = getNome(b) || '';
+  return nomeA.localeCompare(nomeB, 'pt-BR');
 }
 
 /** Cor da badge (Proteções/Resistências) */

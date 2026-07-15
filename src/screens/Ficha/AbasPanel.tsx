@@ -374,7 +374,7 @@ export const AbasPanel: React.FC = () => {
                 if (itensDaCategoria.length === 0) return null;
 
                 if (categoria === 'paranormais') {
-                  itensDaCategoria.sort((a, b) => sortPorElementoENome(a, b, hab => hab.elemento, hab => hab.nome));
+                  itensDaCategoria.sort((a, b) => sortPorElementoENome(a, b, hab => hab?.elemento, hab => hab?.nome));
                 }
 
                 return (
@@ -765,8 +765,8 @@ export const AbasPanel: React.FC = () => {
                     return sortPorElementoENome(
                       { el: a.ElementoEscolhidoPermanente || a.Elemento_Ritual, nm: a.customNome || a.Nome_Ritual },
                       { el: b.ElementoEscolhidoPermanente || b.Elemento_Ritual, nm: b.customNome || b.Nome_Ritual },
-                      obj => obj.el,
-                      obj => obj.nm
+                      obj => obj?.el,
+                      obj => obj?.nm
                     );
                   });
 

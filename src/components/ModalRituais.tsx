@@ -99,7 +99,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
       }
       
       return true;
-    }).sort((a, b) => sortPorElementoENome(a, b, r => r.Elemento_Ritual, r => r.Nome_Ritual));
+    }).sort((a, b) => sortPorElementoENome(a, b, r => r?.Elemento_Ritual, r => r?.Nome_Ritual));
   }, [rituais, abaElemento, abaCirculo, limiteCirculo, rituaisAprendidosIds]);
 
   return (

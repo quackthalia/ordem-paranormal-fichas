@@ -8,7 +8,7 @@ export function ModalEditarTrilha({
 }: {
   onClose: () => void;
 }) {
-  const { trilhasHook } = useRPG();
+  const { trilhasHook, nex } = useRPG();
   const trilhaOriginal = trilhasHook.trilhaSelecionada;
 
   const [nomeTrilha, setNomeTrilha] = useState(trilhaOriginal?.Nome_Trilha || '');
@@ -124,7 +124,7 @@ export function ModalEditarTrilha({
             { nex: 40, nome: nome40, setNome: setNome40, desc: desc40, setDesc: setDesc40, refEdit: editorDesc40 },
             { nex: 65, nome: nome65, setNome: setNome65, desc: desc65, setDesc: setDesc65, refEdit: editorDesc65 },
             { nex: 99, nome: nome99, setNome: setNome99, desc: desc99, setDesc: setDesc99, refEdit: editorDesc99 },
-          ].map((hab) => (
+          ].filter(hab => nex >= hab.nex).map((hab) => (
             <div key={hab.nex} className="rounded border border-zinc-800 bg-zinc-950 p-4">
               <h3 className="font-bold text-red-500 mb-2 border-b border-zinc-800 pb-2">Habilidade NEX {hab.nex}%</h3>
               <div className="flex flex-col gap-1.5 text-left">

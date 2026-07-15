@@ -11,22 +11,22 @@ export function ModalEditarTrilha({
   const { trilhasHook } = useRPG();
   const trilhaOriginal = trilhasHook.trilhaSelecionada;
 
-  const [nomeTrilha, setNomeTrilha] = useState('');
-  const [descTrilha, setDescTrilha] = useState('');
+  const [nomeTrilha, setNomeTrilha] = useState(trilhaOriginal?.Nome_Trilha || '');
+  const [descTrilha, setDescTrilha] = useState(trilhaOriginal?.Descricao_Trilha || '');
   
-  const [nome10, setNome10] = useState('');
-  const [desc10, setDesc10] = useState('');
+  const [nome10, setNome10] = useState(trilhaOriginal?.Nome_Habilidade_10 || '');
+  const [desc10, setDesc10] = useState(trilhaOriginal?.Descricao_Habilidade_10 || '');
   
-  const [nome40, setNome40] = useState('');
-  const [desc40, setDesc40] = useState('');
+  const [nome40, setNome40] = useState(trilhaOriginal?.Nome_Habilidade_40 || '');
+  const [desc40, setDesc40] = useState(trilhaOriginal?.Descricao_Habilidade_40 || '');
   
-  const [nome65, setNome65] = useState('');
-  const [desc65, setDesc65] = useState('');
+  const [nome65, setNome65] = useState(trilhaOriginal?.Nome_Habilidade_65 || '');
+  const [desc65, setDesc65] = useState(trilhaOriginal?.Descricao_Habilidade_65 || '');
   
-  const [nome99, setNome99] = useState('');
-  const [desc99, setDesc99] = useState('');
+  const [nome99, setNome99] = useState(trilhaOriginal?.Nome_Habilidade_99 || '');
+  const [desc99, setDesc99] = useState(trilhaOriginal?.Descricao_Habilidade_99 || '');
 
-  const [fonte, setFonte] = useState('');
+  const [fonte, setFonte] = useState(trilhaOriginal?.Fonte_Trilha || '');
 
   const ref = useRef<HTMLDivElement>(null);
   
@@ -37,21 +37,7 @@ export function ModalEditarTrilha({
   const editorDesc65 = useRef<HTMLDivElement>(null);
   const editorDesc99 = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (trilhaOriginal) {
-      setNomeTrilha(trilhaOriginal.Nome_Trilha || '');
-      setDescTrilha(trilhaOriginal.Descricao_Trilha || '');
-      setNome10(trilhaOriginal.Nome_Habilidade_10 || '');
-      setDesc10(trilhaOriginal.Descricao_Habilidade_10 || '');
-      setNome40(trilhaOriginal.Nome_Habilidade_40 || '');
-      setDesc40(trilhaOriginal.Descricao_Habilidade_40 || '');
-      setNome65(trilhaOriginal.Nome_Habilidade_65 || '');
-      setDesc65(trilhaOriginal.Descricao_Habilidade_65 || '');
-      setNome99(trilhaOriginal.Nome_Habilidade_99 || '');
-      setDesc99(trilhaOriginal.Descricao_Habilidade_99 || '');
-      setFonte(trilhaOriginal.Fonte_Trilha || '');
-    }
-  }, [trilhaOriginal]);
+
 
   if (!trilhaOriginal) return null;
 

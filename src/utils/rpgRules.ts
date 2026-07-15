@@ -152,6 +152,36 @@ export function proficienciasIniciais(classe: ClasseRPG): string[] {
   return [];
 }
 
+export const ORDEM_ELEMENTOS = ['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo'];
+
+export function compararElementos(a: string | undefined | null, b: string | undefined | null): number {
+  const getIndex = (elem: string | undefined | null) => {
+    if (!elem) return 99; // Sem elemento vai para o final
+    const lower = elem.toLowerCase();
+    const idx = ORDEM_ELEMENTOS.findIndex(e => e.toLowerCase() === lower);
+    return idx === -1 ? 99 : idx;
+  };
+
+  const idxA = getIndex(a);
+  const idxB = getIndex(b);
+
+  if (idxA !== idxB) {
+    return idxA - idxB;
+  }
+  return 0;
+}
+
+export function sortPorElementoENome<T>(
+  a: T, 
+  b: T, 
+  getElemento: (obj: T) => string | undefined | null, 
+  getNome: (obj: T) => string
+): number {
+  const cmp = compararElementos(getElemento(a), getElemento(b));
+  if (cmp !== 0) return cmp;
+  return getNome(a).localeCompare(getNome(b), 'pt-BR');
+}
+
 /** Cor da badge (Proteções/Resistências) */
 export function obterCorBadge(texto: string): string {
   const txt = texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();

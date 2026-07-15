@@ -12,6 +12,7 @@ import {
   calcularTotalRituais,
   obterLimiteCirculos,
   calcularNivel,
+  sortPorElementoENome,
 } from '../../utils/rpgRules';
 
 // ═══════════════════════════════════════════════════════════════
@@ -371,6 +372,10 @@ export const AbasPanel: React.FC = () => {
               {ordemCategorias.map(categoria => {
                 const itensDaCategoria = habilidadesFiltradas.filter(h => h.categoria === categoria);
                 if (itensDaCategoria.length === 0) return null;
+
+                if (categoria === 'paranormais') {
+                  itensDaCategoria.sort((a, b) => sortPorElementoENome(a, b, hab => hab.elemento, hab => hab.nome));
+                }
 
                 return (
                   <div key={categoria} className="mb-4">
@@ -754,7 +759,16 @@ export const AbasPanel: React.FC = () => {
                     const base = rituaisHook.rituais.find(r => r.Codigo_Ritual === ra.codigo_ritual);
                     return base ? { ...base, Origem: ra.origem, ElementoEscolhidoPermanente: ra.elemento_escolhido, customNome: ra.customNome, customDesc: ra.customDesc, customProps: ra.customProps } : null;
                   })
-                  .filter(r => r && r.Circulo_Ritual === circulo);
+                  .filter(r => r && r.Circulo_Ritual === circulo)
+                  .sort((a, b) => {
+                    if (!a || !b) return 0;
+                    return sortPorElementoENome(
+                      { el: a.ElementoEscolhidoPermanente || a.Elemento_Ritual, nm: a.customNome || a.Nome_Ritual },
+                      { el: b.ElementoEscolhidoPermanente || b.Elemento_Ritual, nm: b.customNome || b.Nome_Ritual },
+                      obj => obj.el,
+                      obj => obj.nm
+                    );
+                  });
 
                 if (rituaisAprendidosNesteCirculo.length === 0) return null;
 

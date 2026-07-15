@@ -3,6 +3,7 @@ import { useRPG } from '../context/RPGContext';
 import { usePoderesFiltrados } from '../hooks/usePoderes';
 import { InputOtimizado } from './InputOtimizado';
 import type { AbaModalPoderes } from '../types';
+import { sortPorElementoENome } from '../utils/rpgRules';
 
 const PATAMARES_COMBATE = [15, 25, 35, 45, 55, 65, 75, 85, 95];
 
@@ -175,11 +176,19 @@ export const ModalPoderes: React.FC = () => {
 
   // Filtro por elemento
   const listaFiltrada = useMemo(() => {
-    if (abaModalPoderes !== 'paranormais' || !subAbaElemento) return listaFiltradaBase;
-    return listaFiltradaBase.filter((p: any) => {
-      const el = (p.Elemento || '').toLowerCase();
-      return el === subAbaElemento.toLowerCase();
-    });
+    let filtrada = listaFiltradaBase;
+    if (abaModalPoderes === 'paranormais' && subAbaElemento) {
+      filtrada = filtrada.filter((p: any) => {
+        const el = (p.Elemento || '').toLowerCase();
+        return el === subAbaElemento.toLowerCase();
+      });
+    }
+
+    if (abaModalPoderes === 'paranormais') {
+      return [...filtrada].sort((a: any, b: any) => sortPorElementoENome(a, b, p => p.Elemento, p => p.Nome));
+    }
+    
+    return filtrada;
   }, [listaFiltradaBase, abaModalPoderes, subAbaElemento]);
 
   useEffect(() => { setSubAbaElemento(null); }, [abaModalPoderes]);

@@ -1,6 +1,6 @@
 import React, { useRef, useMemo, useEffect, useState } from 'react';
 import { useRPG } from '../context/RPGContext';
-import { Trilha } from '../types';
+import type { Trilha } from '../types';
 
 function formatarDescricao(texto: string): string {
   if (!texto) return '';

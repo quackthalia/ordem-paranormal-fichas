@@ -97,7 +97,7 @@ export interface HabilidadeItem {
   fonte?: string;
   elemento?: string;
   afinidade?: string;
-  categoria: CategoriaHabilidade;
+  categoria: CategoriaHabilidade | 'trilha';
 }
 
 export interface LimiteCirculos {
@@ -105,4 +105,30 @@ export interface LimiteCirculos {
   c2: number;
   c3: number;
   c4: number;
+}
+
+export interface Trilha {
+  Codigo_Trilha: number;
+  Classe_Trilha: string;
+  Nome_Trilha: string;
+  Descricao_Trilha: string;
+  Especial_Trilha?: string;
+  Perícia_Trilha: number;
+  Codigo_Regra_10?: number;
+  Nome_Habilidade_10: string;
+  Descricao_Habilidade_10: string;
+  Codigo_Regra_40?: number;
+  Nome_Habilidade_40: string;
+  Descricao_Habilidade_40: string;
+  Codigo_Regra_65?: number;
+  Nome_Habilidade_65: string;
+  Descricao_Habilidade_65: string;
+  Codigo_Regra_99?: number;
+  Nome_Habilidade_99: string;
+  Descricao_Habilidade_99: string;
+  Fonte_Trilha: string;
+}
+
+export interface TrilhaSelecionada extends Trilha {
+  nome_pericia: string | null;
 }

@@ -2,6 +2,7 @@ import React from 'react';
 import { useRPG } from '../../context/RPGContext';
 import { InputOtimizado } from '../../components/InputOtimizado';
 import { ModalRituais } from '../../components/ModalRituais';
+import { ModalTrilhas } from '../../components/ModalTrilhas';
 import type { HabilidadeItem, CategoriaHabilidade, VersaoRitual } from '../../types';
 import {
   calcularBonusAtaqueEspecial,
@@ -138,7 +139,7 @@ export const AbasPanel: React.FC = () => {
     rituaisExpandidos, setRituaisExpandidos,
     versaoRitual, setVersaoRitual,
     elementoRitual, setElementoRitual,
-    status,
+    status, trilhasHook,
   } = useRPG();
 
   const [escolhendoRitualPlaceholder, setEscolhendoRitualPlaceholder] = React.useState<{ origem: string, nex?: number } | null>(null);
@@ -147,6 +148,7 @@ export const AbasPanel: React.FC = () => {
   const [ritualDescricaoEditando, setRitualDescricaoEditando] = React.useState('');
   const [ritualPropsEditando, setRitualPropsEditando] = React.useState<import('../../types').RitualAprendido['customProps']>({});
   const [ritualVersaoEditando, setRitualVersaoEditando] = React.useState<'normal' | 'discente' | 'verdadeiro'>('normal');
+  const [modalTrilhasAberto, setModalTrilhasAberto] = React.useState(false);
 
   const { poderClasse, poderesClasse, poderesEscolhidos, poderesParanormais, removerPoder } = poderesHook;
   const { origemSelecionada } = origensHook;
@@ -178,6 +180,29 @@ export const AbasPanel: React.FC = () => {
         subPoder: null,
         categoria: 'origem',
       });
+    }
+
+    // 1.5 Trilha
+    if (nex >= 10 && (classe === 'Combatente' || classe === 'Especialista' || classe === 'Ocultista')) {
+      if (trilhasHook.trilhaSelecionada) {
+        lista.push({
+          id: 'trilha_selecionada',
+          nome: trilhasHook.trilhaSelecionada.Nome_Trilha,
+          descricao: '',
+          tipo: 'Trilha',
+          categoria: 'trilha',
+          extra: null,
+        });
+      } else {
+        lista.push({
+          id: 'escolha_trilha',
+          nome: 'Escolher Trilha',
+          descricao: 'Clique no "+" para abrir a lista e selecionar sua trilha.',
+          tipo: regras['nex_experiencia'] ? `Nível 2` : `NEX 10%`,
+          isSlotVazio: true,
+          categoria: 'trilha',
+        });
+      }
     }
 
     // 2. Classe
@@ -279,9 +304,10 @@ export const AbasPanel: React.FC = () => {
     hab.nome.toLowerCase().includes(filtroHabilidades.toLowerCase())
   );
 
-  const ordemCategorias: CategoriaHabilidade[] = ['origem', 'classe', 'utilidade', 'combate', 'paranormais', 'gerais'];
-  const rotuloCategoria: Record<CategoriaHabilidade, string> = {
+  const ordemCategorias: (CategoriaHabilidade | 'trilha')[] = ['origem', 'trilha', 'classe', 'utilidade', 'combate', 'paranormais', 'gerais'];
+  const rotuloCategoria: Record<CategoriaHabilidade | 'trilha', string> = {
     origem: 'Poder de Origem',
+    trilha: 'Trilha da Classe',
     classe: 'Poderes de Classe',
     utilidade: 'Poderes de Utilidade',
     combate: 'Poderes de Combate',
@@ -335,10 +361,14 @@ export const AbasPanel: React.FC = () => {
                             <div
                               key={hab.id}
                               onClick={() => {
-                                const tipo = hab.id.includes('combate') ? 'combate' : 'utilidade';
-                                setTipoModalPoderes(tipo);
-                                setAbaModalPoderes(tipo === 'combate' ? 'combate' : 'classe');
-                                setNexModalAberto(hab.nexDoSlot ?? extrairNexDoId(hab.id));
+                                if (hab.categoria === 'trilha') {
+                                  setModalTrilhasAberto(true);
+                                } else {
+                                  const tipo = hab.id.includes('combate') ? 'combate' : 'utilidade';
+                                  setTipoModalPoderes(tipo);
+                                  setAbaModalPoderes(tipo === 'combate' ? 'combate' : 'classe');
+                                  setNexModalAberto(hab.nexDoSlot ?? extrairNexDoId(hab.id));
+                                }
                               }}
                               className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-red-800 hover:bg-zinc-900/80"
                               style={{ borderLeftStyle: 'solid' }}
@@ -353,6 +383,86 @@ export const AbasPanel: React.FC = () => {
                               <div className="border-t border-zinc-800/50 px-4 py-3 text-left text-xs leading-relaxed text-zinc-500 transition group-hover:text-zinc-400">
                                 {hab.descricao}
                               </div>
+                            </div>
+                          );
+                        }
+
+                        if (hab.categoria === 'trilha' && trilhasHook.trilhaSelecionada) {
+                          const t = trilhasHook.trilhaSelecionada;
+                          const nexLevels = [10, 40, 65, 99];
+                          
+                          return (
+                            <div key={hab.id} className="mb-3 overflow-hidden rounded-r border-l-4 border-indigo-700 bg-zinc-950/60">
+                              <div
+                                onClick={() => trilhasHook.toggleTrilhaExpandida(t.Codigo_Trilha)}
+                                className="flex cursor-pointer items-center justify-between gap-3 bg-zinc-900/80 px-4 py-3 transition hover:bg-zinc-800/80"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <span className="font-bold text-zinc-100">{t.Nome_Trilha}</span>
+                                  <span className="text-[10px] uppercase text-zinc-500">
+                                    ({t.nome_pericia})
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                  <span className="text-xs text-zinc-600">
+                                    {trilhasHook.trilhasExpandidas.includes(t.Codigo_Trilha) ? '▲' : '▼'}
+                                  </span>
+                                </div>
+                              </div>
+              
+                              {trilhasHook.trilhasExpandidas.includes(t.Codigo_Trilha) && (
+                                <div className="p-4 text-sm text-zinc-400">
+                                  <div
+                                    className="mb-4 text-zinc-300"
+                                    dangerouslySetInnerHTML={{ __html: formatarDescricao(t.Descricao_Trilha) }}
+                                  />
+              
+                                  <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-indigo-400 border-b border-zinc-800 pb-1">
+                                    Habilidades da Trilha
+                                  </h4>
+              
+                                  {nexLevels.map((nexLvl) => {
+                                    if (nex < nexLvl) return null;
+
+                                    const habNameKey = `Nome_Habilidade_${nexLvl}` as keyof typeof t;
+                                    const habDescKey = `Descricao_Habilidade_${nexLvl}` as keyof typeof t;
+                                    const nomeHab = t[habNameKey] as string;
+                                    const descHab = t[habDescKey] as string;
+              
+                                    if (!nomeHab) return null;
+              
+                                    const uniqueHabId = `trilha_${t.Codigo_Trilha}_hab_${nexLvl}`;
+                                    const isHabExpanded = habilidadesExpandidas.includes(uniqueHabId);
+              
+                                    return (
+                                      <div key={nexLvl} className="mb-2 overflow-hidden rounded border border-zinc-800 bg-zinc-900/50">
+                                        <div
+                                          onClick={() => setHabilidadesExpandidas(prev => prev.includes(uniqueHabId) ? prev.filter(id => id !== uniqueHabId) : [...prev, uniqueHabId])}
+                                          className="flex cursor-pointer items-center justify-between px-3 py-2 transition hover:bg-zinc-800"
+                                        >
+                                          <span className="font-bold text-zinc-200 text-xs">
+                                            Nex {nexLvl}% - <span className="text-zinc-400">{nomeHab}</span>
+                                          </span>
+                                          <span className="text-xs text-zinc-600">
+                                            {isHabExpanded ? '▲' : '▼'}
+                                          </span>
+                                        </div>
+                                        {isHabExpanded && (
+                                          <div
+                                            className="px-3 pb-3 pt-1 text-xs text-zinc-400"
+                                            dangerouslySetInnerHTML={{ __html: formatarDescricao(descHab) }}
+                                          />
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+                                  {t.Fonte_Trilha && (
+                                     <div className="mt-3 flex justify-end">
+                                       <span className="text-[10px] uppercase tracking-wider text-zinc-600">Fonte: {t.Fonte_Trilha}</span>
+                                     </div>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           );
                         }
@@ -1061,6 +1171,9 @@ export const AbasPanel: React.FC = () => {
         </div>
         );
       })()}
+      {modalTrilhasAberto && (
+        <ModalTrilhas onClose={() => setModalTrilhasAberto(false)} />
+      )}
     </div>
   );
 };

@@ -13,6 +13,7 @@ import { usePericias } from '../hooks/usePericias';
 import { useStatus } from '../hooks/useStatus';
 import { useOrigem } from '../hooks/useOrigem';
 import { useRituais } from '../hooks/useRituais';
+import { useTrilhas } from '../hooks/useTrilhas';
 import { capMaximoAtributo, pontosIniciaisPorNex } from '../utils/rpgRules';
 
 // ============================================================
@@ -41,6 +42,7 @@ interface RPGContextType {
   tipoModalPoderes: 'utilidade' | 'combate';
   setTipoModalPoderes: React.Dispatch<React.SetStateAction<'utilidade' | 'combate'>>;
   origensHook: ReturnType<typeof useOrigem>;
+  trilhasHook: ReturnType<typeof useTrilhas>;
   defEquip: number;
   setDefEquip: React.Dispatch<React.SetStateAction<number>>;
   defOutros: number;
@@ -161,6 +163,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const poderesHook = usePoderes(classe);
   const origensHook = useOrigem();
   const rituaisHook = useRituais();
+  const trilhasHook = useTrilhas();
   const status = useStatus(classe, nex, atributos);
 
   const periciasGratis = useMemo(() => {
@@ -176,8 +179,11 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
       if (origensHook.origemSelecionada.nome_p2) gratis.push(origensHook.origemSelecionada.nome_p2);
       if (origensHook.origemSelecionada.nome_pesp) gratis.push(origensHook.origemSelecionada.nome_pesp);
     }
+    if (trilhasHook.trilhaSelecionada && trilhasHook.trilhaSelecionada.nome_pericia) {
+      gratis.push(trilhasHook.trilhaSelecionada.nome_pericia);
+    }
     return gratis;
-  }, [classe, skillCombatente1, skillCombatente2, origensHook.origemSelecionada]);
+  }, [classe, skillCombatente1, skillCombatente2, origensHook.origemSelecionada, trilhasHook.trilhaSelecionada]);
 
   const periciasHook = usePericias(classe, nex, atributos, regrasAtivas, periciasGratis);
 
@@ -252,13 +258,10 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     atributos, setAtributos,
     bonusAtributos, setBonusAtributos,
     pontosRestantes, alterarAtributo,
-    status,
-    periciasHook,
-    poderesHook,
+    status, periciasHook, poderesHook, origensHook, trilhasHook, rituaisHook,
     abaDireita, setAbaDireita,
     abaModalPoderes, setAbaModalPoderes,
     tipoModalPoderes, setTipoModalPoderes,
-    origensHook,
     defEquip, setDefEquip,
     defOutros, setDefOutros,
     defesaTotal,

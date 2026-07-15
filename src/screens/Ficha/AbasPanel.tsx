@@ -461,6 +461,15 @@ export const AbasPanel: React.FC = () => {
                                        <span className="text-[10px] uppercase tracking-wider text-zinc-600">Fonte: {t.Fonte_Trilha}</span>
                                      </div>
                                   )}
+
+                                  <div className="mt-4 flex gap-2.5">
+                                    <button onClick={(e) => { e.stopPropagation(); setModalTrilhasAberto(true); }}
+                                      className="flex-1 rounded border border-zinc-700 bg-zinc-800 p-2 text-xs font-bold text-zinc-200 transition hover:bg-zinc-700"
+                                    >Editar</button>
+                                    <button onClick={(e) => { e.stopPropagation(); trilhasHook.setTrilhaSelecionada(null); }}
+                                      className="flex-1 rounded border border-red-900/50 bg-red-950/30 p-2 text-xs font-bold text-red-500 transition hover:bg-red-900/50 hover:text-red-300"
+                                    >Remover</button>
+                                  </div>
                                 </div>
                               )}
                             </div>

@@ -131,8 +131,8 @@ export function ModalTrilhas({
                 >
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-zinc-100">{trilha.Nome_Trilha}</span>
-                    <span className="inline-block rounded bg-indigo-900/40 px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight text-indigo-300 border border-indigo-800">
-                      {nomePericia(trilha.Perícia_Trilha)}
+                    <span className="text-[10px] uppercase text-zinc-500">
+                      ({nomePericia(trilha.Perícia_Trilha)})
                     </span>
                   </div>
                   <div className="flex items-center gap-3">

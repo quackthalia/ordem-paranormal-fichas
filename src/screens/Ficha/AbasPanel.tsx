@@ -3,6 +3,7 @@ import { useRPG } from '../../context/RPGContext';
 import { InputOtimizado } from '../../components/InputOtimizado';
 import { ModalRituais } from '../../components/ModalRituais';
 import { ModalTrilhas } from '../../components/ModalTrilhas';
+import { ModalEditarTrilha } from '../../components/ModalEditarTrilha';
 import type { HabilidadeItem, CategoriaHabilidade, VersaoRitual } from '../../types';
 import {
   calcularBonusAtaqueEspecial,
@@ -149,6 +150,7 @@ export const AbasPanel: React.FC = () => {
   const [ritualPropsEditando, setRitualPropsEditando] = React.useState<import('../../types').RitualAprendido['customProps']>({});
   const [ritualVersaoEditando, setRitualVersaoEditando] = React.useState<'normal' | 'discente' | 'verdadeiro'>('normal');
   const [modalTrilhasAberto, setModalTrilhasAberto] = React.useState(false);
+  const [editandoTrilha, setEditandoTrilha] = React.useState(false);
 
   const { poderClasse, poderesClasse, poderesEscolhidos, poderesParanormais, removerPoder } = poderesHook;
   const { origemSelecionada } = origensHook;
@@ -463,7 +465,7 @@ export const AbasPanel: React.FC = () => {
                                   )}
 
                                   <div className="mt-4 flex gap-2.5">
-                                    <button onClick={(e) => { e.stopPropagation(); setModalTrilhasAberto(true); }}
+                                    <button onClick={(e) => { e.stopPropagation(); setEditandoTrilha(true); }}
                                       className="flex-1 rounded border border-zinc-700 bg-zinc-800 p-2 text-xs font-bold text-zinc-200 transition hover:bg-zinc-700"
                                     >Editar</button>
                                     <button onClick={(e) => { e.stopPropagation(); trilhasHook.setTrilhaSelecionada(null); }}
@@ -1182,6 +1184,9 @@ export const AbasPanel: React.FC = () => {
       })()}
       {modalTrilhasAberto && (
         <ModalTrilhas onClose={() => setModalTrilhasAberto(false)} />
+      )}
+      {editandoTrilha && (
+        <ModalEditarTrilha onClose={() => setEditandoTrilha(false)} />
       )}
     </div>
   );

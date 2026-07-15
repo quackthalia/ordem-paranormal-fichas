@@ -324,7 +324,7 @@ export const AbasPanel: React.FC = () => {
     });
 
     return lista;
-  }, [classe, nex, origemSelecionada, poderClasse, poderesClasse, poderesEscolhidos, poderesParanormaisMap, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras, trilhasHook.trilhaSelecionada]);
+  }, [classe, nex, origemSelecionada, poderClasse, poderesClasse, poderesEscolhidos, poderesParanormaisMap, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras, trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada]);
 
   const habilidadesFiltradas = listaHabilidades.filter(hab =>
     hab.nome.toLowerCase().includes(filtroHabilidades.toLowerCase())

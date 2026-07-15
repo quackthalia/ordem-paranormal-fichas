@@ -110,19 +110,23 @@ export function ModalEditarTrilha({
                 className="rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700"
               />
 
-              <InputLabel label="Descrição Principal" />
-              <div
-                ref={(el) => {
-                  editorDescTrilha.current = el;
-                  if (el && !el.dataset.initialized) {
-                    el.innerHTML = descTrilha;
-                    el.dataset.initialized = 'true';
-                  }
-                }}
-                contentEditable
-                onBlur={(e) => setDescTrilha(e.currentTarget.innerHTML)}
-                className="min-h-[60px] rounded border border-zinc-700 bg-zinc-950 p-2.5 text-sm text-zinc-300 outline-none focus:border-red-700"
-              />
+              {!isVersatilidade && (
+                <>
+                  <InputLabel label="Descrição Principal" />
+                  <div
+                    ref={(el) => {
+                      editorDescTrilha.current = el;
+                      if (el && !el.dataset.initialized) {
+                        el.innerHTML = descTrilha;
+                        el.dataset.initialized = 'true';
+                      }
+                    }}
+                    contentEditable
+                    onBlur={(e) => setDescTrilha(e.currentTarget.innerHTML)}
+                    className="min-h-[60px] rounded border border-zinc-700 bg-zinc-950 p-2.5 text-sm text-zinc-300 outline-none focus:border-red-700"
+                  />
+                </>
+              )}
             </div>
           </div>
 

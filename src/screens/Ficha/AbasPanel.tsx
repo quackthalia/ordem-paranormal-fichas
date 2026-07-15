@@ -160,12 +160,11 @@ export const AbasPanel: React.FC = () => {
 
   React.useEffect(() => {
     const handler = (e: any) => {
-      setAbaDireita('rituais');
       setEscolhendoRitualPlaceholder({ origem: `poder_57_${e.detail.nex}`, nex: e.detail.nex });
     };
     window.addEventListener('abrirModalRituais', handler);
     return () => window.removeEventListener('abrirModalRituais', handler);
-  }, [setAbaDireita]);
+  }, []);
 
   const poderesParanormaisMap = React.useMemo(() => {
     const map = new Map<string, typeof poderesParanormais[0]>();

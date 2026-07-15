@@ -1,6 +1,7 @@
 import React, { useRef, useMemo, useEffect, useState } from 'react';
 import { useRPG } from '../context/RPGContext';
 import type { Trilha } from '../types';
+import { calcularNivel } from '../utils/rpgRules';
 
 function formatarDescricao(texto: string): string {
   if (!texto) return '';
@@ -22,7 +23,7 @@ export function ModalTrilhas({
 }: {
   onClose: () => void;
 }) {
-  const { classe, trilhasHook } = useRPG();
+  const { classe, trilhasHook, regras } = useRPG();
   const {
     trilhas,
     loading,
@@ -178,7 +179,7 @@ export function ModalTrilhas({
                             className="flex cursor-pointer items-center justify-between px-3 py-2 transition hover:bg-zinc-800"
                           >
                             <span className="font-bold text-zinc-200 text-xs">
-                              Nex {nexLvl}% - <span className="text-zinc-400">{nomeHab}</span>
+                              {regras['nex_experiencia'] ? `Nível ${calcularNivel(nexLvl)}` : `NEX ${nexLvl}%`} - <span className="text-zinc-400">{nomeHab}</span>
                             </span>
                             <span className="text-xs text-zinc-600">
                               {isHabExpanded ? '▲' : '▼'}

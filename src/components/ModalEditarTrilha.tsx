@@ -2,13 +2,14 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useRPG } from '../context/RPGContext';
 import { InputOtimizado } from './InputOtimizado';
 import type { TrilhaSelecionada } from '../types';
+import { calcularNivel } from '../utils/rpgRules';
 
 export function ModalEditarTrilha({
   onClose,
 }: {
   onClose: () => void;
 }) {
-  const { trilhasHook, nex } = useRPG();
+  const { trilhasHook, nex, regras } = useRPG();
   const trilhaOriginal = trilhasHook.trilhaSelecionada;
 
   const [nomeTrilha, setNomeTrilha] = useState(trilhaOriginal?.Nome_Trilha || '');
@@ -126,7 +127,7 @@ export function ModalEditarTrilha({
             { nex: 99, nome: nome99, setNome: setNome99, desc: desc99, setDesc: setDesc99, refEdit: editorDesc99 },
           ].filter(hab => nex >= hab.nex).map((hab) => (
             <div key={hab.nex} className="rounded border border-zinc-800 bg-zinc-950 p-4">
-              <h3 className="font-bold text-red-500 mb-2 border-b border-zinc-800 pb-2">Habilidade NEX {hab.nex}%</h3>
+              <h3 className="font-bold text-red-500 mb-2 border-b border-zinc-800 pb-2">Habilidade {regras['nex_experiencia'] ? `Nível ${calcularNivel(hab.nex)}` : `NEX ${hab.nex}%`}</h3>
               <div className="flex flex-col gap-1.5 text-left">
                 <InputLabel label="Nome da Habilidade" />
                 <InputOtimizado

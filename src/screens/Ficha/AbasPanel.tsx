@@ -1126,11 +1126,11 @@ export const AbasPanel: React.FC = () => {
                   poderesHook.escolherPoder(nivel, {
                     codigo_poder: 57,
                     Nome: `Aprender Ritual (${ritual.Nome_Ritual})`,
-                    Descricao: ppBase.Descricao,
-                    PreRequisitos: ppBase.PreRequisitos,
-                    Afinidade: ppBase.Afinidade,
+                    Descricao: poderAtual.descricao,
+                    PreRequisitos: poderAtual.preRequisitos,
+                    Afinidade: poderAtual.afinidade,
                     Elemento: elementoVaria || ritual.Elemento_Ritual,
-                    Fonte: ppBase.Fonte,
+                    Fonte: poderAtual.fonte || ppBase.Fonte,
                     PreRequisitosAfinidade: ppBase.PreRequisitosAfinidade
                   } as any);
                 }

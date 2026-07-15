@@ -1,5 +1,22 @@
 import type { Atributos, ClasseRPG, LimiteCirculos } from '../types';
 
+export const CORES_ELEMENTOS: Record<string, string> = {
+  sangue: '#991b1b',
+  morte: '#18181b', // or gray/zinc
+  conhecimento: '#ca8a04',
+  energia: '#7e22ce'
+};
+
+export function obterElementoOpressor(elemento: string): string {
+  const map: Record<string, string> = {
+    sangue: 'Morte',
+    morte: 'Energia',
+    energia: 'Conhecimento',
+    conhecimento: 'Sangue'
+  };
+  return map[elemento.toLowerCase()] || 'Medo';
+}
+
 /** Valores de NEX disponíveis nos seletores */
 export const NEX_OPTIONS = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 99];
 
@@ -205,4 +222,49 @@ export function obterCorBadge(texto: string): string {
   if (txt.includes('leve')) return '#9BCD9B';
   if (txt.includes('pesada')) return '#698B69';
   return '#a1a1aa';
+}
+
+/** Verifica se atende requisito de ritual (Ex: Requer 3º círculo, Afinidade com Morte) */
+export function verificarRequisitoRitual(
+  requisito: string,
+  nex: number,
+  afinidadeAtiva: boolean,
+  afinidadeEscolhida: string | null,
+  elementoRitual: string
+): { atende: boolean; motivo?: string } {
+  if (!requisito || requisito.trim() === '') return { atende: true };
+
+  const reqLower = requisito.toLowerCase();
+  
+  // 1. Checar Afinidade
+  if (reqLower.includes('afinidade')) {
+    let elementoExigido = elementoRitual;
+    if (reqLower.includes('sangue')) elementoExigido = 'Sangue';
+    else if (reqLower.includes('morte')) elementoExigido = 'Morte';
+    else if (reqLower.includes('energia')) elementoExigido = 'Energia';
+    else if (reqLower.includes('conhecimento')) elementoExigido = 'Conhecimento';
+
+    if (!afinidadeAtiva || afinidadeEscolhida?.toLowerCase() !== elementoExigido.toLowerCase()) {
+      return { atende: false, motivo: `Requer afinidade com ${elementoExigido}` };
+    }
+  }
+
+  // 2. Checar Círculo
+  const circuloMatch = reqLower.match(/(\d+)º\s*c[ií]rculo/);
+  if (circuloMatch) {
+    const circuloExigido = parseInt(circuloMatch[1], 10);
+    // Para conjurar, você precisa ter nível de acesso àquele círculo.
+    // Regra geral de liberação de círculos (usada para Ocultistas e limitadora de poder para outros):
+    // 1º = 5%, 2º = 25%, 3º = 55%, 4º = 85%
+    let acessoCirculo = 1;
+    if (nex >= 85) acessoCirculo = 4;
+    else if (nex >= 55) acessoCirculo = 3;
+    else if (nex >= 25) acessoCirculo = 2;
+
+    if (acessoCirculo < circuloExigido) {
+      return { atende: false, motivo: `Requer acesso ao ${circuloExigido}º Círculo (NEX ${(circuloExigido === 2 ? 25 : circuloExigido === 3 ? 55 : 85)}%)` };
+    }
+  }
+
+  return { atende: true };
 }

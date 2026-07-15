@@ -147,12 +147,15 @@ export const ModalPoderes: React.FC = () => {
     descricaoEditando,
     atributos,
     bonusAtributos,
+    afinidadeEscolhida,
+    afinidadeAtiva,
   } = useRPG();
 
   const editorRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [subAbaElemento, setSubAbaElemento] = useState<string | null>(null);
   const [afinidadeEditando, setAfinidadeEditando] = useState('');
+  const [busca, setBusca] = useState('');
 
   const scrollPositions = useRef<Record<string, number>>({
     classe: 0, combate: 0, gerais: 0, paranormais: 0,
@@ -171,25 +174,34 @@ export const ModalPoderes: React.FC = () => {
     abaModalPoderes,
     classe,
     poderesHook.poderesEscolhidos,
-    atributos.INT + bonusAtributos.INT
+    atributos.INT + bonusAtributos.INT,
+    afinidadeEscolhida,
+    afinidadeAtiva
   );
 
   // Filtro por elemento
   const listaFiltrada = useMemo(() => {
-    let filtrada = listaFiltradaBase;
-    if (abaModalPoderes === 'paranormais' && subAbaElemento) {
-      filtrada = filtrada.filter((p: any) => {
-        const el = (p.Elemento || '').toLowerCase();
-        return el === subAbaElemento.toLowerCase();
-      });
-    }
+    let filtrada = listaFiltradaBase.filter((poder: any) => {
+      if (abaModalPoderes === 'paranormais') {
+        if (subAbaElemento) {
+          if (poder.Elemento?.toLowerCase() !== subAbaElemento.toLowerCase()) return false;
+        }
+      }
+
+      if (busca.trim()) {
+        const lower = busca.toLowerCase();
+        if (!poder.Nome.toLowerCase().includes(lower)) return false;
+      }
+
+      return true;
+    });
 
     if (abaModalPoderes === 'paranormais') {
       return [...filtrada].sort((a: any, b: any) => sortPorElementoENome(a, b, p => p?.Elemento, p => p?.Nome));
     }
     
     return filtrada;
-  }, [listaFiltradaBase, abaModalPoderes, subAbaElemento]);
+  }, [listaFiltradaBase, abaModalPoderes, subAbaElemento, busca]);
 
   useEffect(() => { setSubAbaElemento(null); }, [abaModalPoderes]);
 
@@ -225,7 +237,7 @@ export const ModalPoderes: React.FC = () => {
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-5">
         <div className="flex w-full max-w-2xl flex-col gap-4 rounded-lg border border-zinc-700 bg-zinc-900 p-6 shadow-2xl shadow-black/50">
           <h3 className="font-display border-b border-zinc-800 pb-2.5 text-left text-lg uppercase tracking-wide text-zinc-100">
-            Editar Poder <span className="text-red-500">(NEX {nexPoderEditando}%)</span>
+            Editar Poder <span className="text-red-500">({typeof nexPoderEditando === 'number' ? `NEX ${nexPoderEditando}%` : 'Poder Extra'})</span>
           </h3>
 
           <div className="flex flex-col gap-1.5 text-left">
@@ -291,16 +303,25 @@ export const ModalPoderes: React.FC = () => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-5">
       <div className="flex h-[75vh] w-full max-w-3xl flex-col rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50">
         {/* CABEÇALHO */}
-        <div className="flex items-center justify-between border-b border-zinc-800 p-5">
-          <h3 className="font-display m-0 text-lg uppercase tracking-wide text-zinc-100">
-            Escolher Poder — <span className="text-red-500">NEX {nexModalAberto}%</span>
-          </h3>
-          <button
-            onClick={() => setNexModalAberto(null)}
-            className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100"
-          >
-            &times;
-          </button>
+        <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-950 rounded-t-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-display m-0 text-lg uppercase tracking-wide text-zinc-100">
+              Escolher Poder — <span className="text-red-500">NEX {nexModalAberto}%</span>
+            </h3>
+            <button
+              onClick={() => setNexModalAberto(null)}
+              className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100"
+            >
+              &times;
+            </button>
+          </div>
+          <input
+            type="text"
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            placeholder="Buscar poder..."
+            className="w-full rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700"
+          />
         </div>
 
         {/* ABAS PRINCIPAIS */}

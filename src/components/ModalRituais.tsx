@@ -71,6 +71,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
   // Estado para elementos Varia temporários de cada ritual (se expandido/selecionando)
   const [elementosVaria, setElementosVaria] = useState<Record<number, string>>({});
   const [expandidos, setExpandidos] = useState<number[]>([]);
+  const [busca, setBusca] = useState('');
 
   // Filtragem
   const listaFiltrada = useMemo(() => {
@@ -98,28 +99,43 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
         if (r.Circulo_Ritual !== abaCirculo) return false;
       }
       
+      // Regra 5: Busca por nome
+      if (busca.trim()) {
+        const lower = busca.toLowerCase();
+        if (!r.Nome_Ritual.toLowerCase().includes(lower)) return false;
+      }
+
       return true;
     }).sort((a, b) => sortPorElementoENome(a, b, r => r?.Elemento_Ritual, r => r?.Nome_Ritual));
-  }, [rituais, abaElemento, abaCirculo, limiteCirculo, rituaisAprendidosIds]);
+  }, [rituais, abaElemento, abaCirculo, limiteCirculo, rituaisAprendidosIds, busca]);
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 p-5">
       <div className="flex h-[80vh] w-full max-w-4xl flex-col rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50">
         
         {/* CABEÇALHO */}
-        <div className="flex items-center justify-between border-b border-zinc-800 p-5 bg-zinc-950 rounded-t-lg">
-          <div className="flex flex-col">
-            <h3 className="font-display m-0 text-lg uppercase tracking-wide text-zinc-100">
-              Aprender Ritual
-            </h3>
-            <span className="text-xs text-zinc-500 mt-1">Selecione um ritual de até {limiteCirculo}º Círculo</span>
+        <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-950 rounded-t-lg">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col">
+              <h3 className="font-display m-0 text-lg uppercase tracking-wide text-zinc-100">
+                Aprender Ritual
+              </h3>
+              <span className="text-xs text-zinc-500 mt-1">Selecione um ritual de até {limiteCirculo}º Círculo</span>
+            </div>
+            <button
+              onClick={onClose}
+              className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100"
+            >
+              &times;
+            </button>
           </div>
-          <button
-            onClick={onClose}
-            className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100"
-          >
-            &times;
-          </button>
+          <input
+            type="text"
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            placeholder="Buscar ritual..."
+            className="w-full rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700"
+          />
         </div>
 
         {/* FILTROS (Abas Principais - Elementos) */}

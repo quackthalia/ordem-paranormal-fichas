@@ -74,11 +74,12 @@ export interface PoderSlot {
   preRequisitos?: string;
   fonte?: string;
   afinidade?: string;
+  elemento?: string;
   categoria?: 'utilidade' | 'combate' | 'gerais' | 'paranormais';
 }
 
 export interface PoderesEscolhidos {
-  [nex: number]: PoderSlot;
+  [id: string]: PoderSlot;
 }
 
 export type CategoriaHabilidade = 'origem' | 'classe' | 'utilidade' | 'gerais' | 'combate' | 'paranormais';
@@ -97,6 +98,7 @@ export interface HabilidadeItem {
   fonte?: string;
   elemento?: string;
   afinidade?: string;
+  afinidadeAtiva?: boolean;
   categoria: CategoriaHabilidade | 'trilha';
 }
 

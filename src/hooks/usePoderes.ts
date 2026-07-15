@@ -12,8 +12,9 @@ interface UsePoderesReturn {
   loading: boolean;
   error: string | null;
   escolherPoder: (nex: number, poder: Poder | PoderParanormal, categoria?: 'utilidade' | 'combate' | 'gerais') => void;
-  removerPoder: (nex: number) => void;
-  editarPoder: (nex: number, nome: string, descricao: string, afinidade?: string) => void;
+  escolherPoderExtra: (poder: Poder | PoderParanormal) => void;
+  removerPoder: (nex: number | string) => void;
+  editarPoder: (nex: number | string, nome: string, descricao: string, afinidade?: string) => void;
 }
 
 function normalizarPoder(item: Record<string, unknown>): Poder {
@@ -56,7 +57,7 @@ function normalizarPoderParanormal(item: Record<string, unknown>): PoderParanorm
     ),
     Afinidade: String(primeiro('Afinidade', 'afinidade') ?? ''),
     Elemento: String(primeiro('Elemento_Poder_Paranormal', 'elemento_poder_paranormal') ?? ''),
-    Fonte: String(primeiro('Fonte_Poder_Paranormal', 'fonte_poder_paranormal') ?? ''),
+    Fonte: String(primeiro('Fonte_Poder_Paranormal', 'fonte_poder_paranormal', 'fonte', 'Fonte', 'Fonte_Poder', 'fonte_poder', 'livro', 'Livro') ?? ''),
     PreRequisitosAfinidade: (() => {
       const raw = item['Pre_Requisitos_Afinidade'];
       if (raw !== null && raw !== undefined && String(raw).trim() !== '') {
@@ -153,30 +154,48 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
         nome: poder.Nome,
         descricao: poder.Descricao,
         preRequisitos: poder.PreRequisitos,
-        fonte: (poder as Poder).Fonte || pp.Fonte || '',
+        fonte: (poder as Poder).Fonte || (poder as any).fonte || pp.Fonte || '',
         afinidade: pp.Afinidade || '',
+        elemento: pp.Elemento || undefined,
         categoria: catFinal,
       },
     }));
   }, []);
 
-  const removerPoder = useCallback((nex: number) => {
+  const escolherPoderExtra = useCallback((poder: Poder | PoderParanormal) => {
+    const pp = poder as PoderParanormal;
+    const isParanormal = 'Elemento' in pp || 'Afinidade' in pp;
+    const catFinal: 'utilidade' | 'combate' | 'gerais' | 'paranormais' = 
+      isParanormal ? 'paranormais' : ((poder as Poder).Tipo?.toLowerCase() === 'geral' ? 'gerais' : 'utilidade');
+
+    const uniqueId = `extra_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
+    
+    setPoderesEscolhidos(prev => ({
+      ...prev,
+      [uniqueId]: {
+        nome: poder.Nome,
+        descricao: poder.Descricao,
+        preRequisitos: poder.PreRequisitos,
+        fonte: (poder as Poder).Fonte || (poder as any).fonte || pp.Fonte || '',
+        afinidade: pp.Afinidade || '',
+        elemento: pp.Elemento || undefined,
+        categoria: catFinal,
+      },
+    }));
+  }, []);
+
+  const removerPoder = useCallback((nex: number | string) => {
     setPoderesEscolhidos(prev => {
-      const novo = { ...prev };
-      delete novo[nex];
-      return novo;
+      const copy = { ...prev };
+      delete copy[nex];
+      return copy;
     });
   }, []);
 
-  const editarPoder = useCallback((nex: number, nome: string, descricao: string, afinidade?: string) => {
+  const editarPoder = useCallback((nex: number | string, nome: string, descricao: string, afinidade?: string) => {
     setPoderesEscolhidos(prev => ({
       ...prev,
-      [nex]: {
-        ...prev[nex],
-        nome,
-        descricao,
-        afinidade: afinidade !== undefined ? afinidade : (prev[nex]?.afinidade || ''),
-      },
+      [nex]: { ...prev[nex], nome, descricao, afinidade: afinidade || prev[nex]?.afinidade || '' }
     }));
   }, []);
 
@@ -190,6 +209,7 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
     loading,
     error,
     escolherPoder,
+    escolherPoderExtra,
     removerPoder,
     editarPoder,
   };
@@ -203,7 +223,9 @@ export function usePoderesFiltrados(
   abaModal: 'classe' | 'gerais' | 'combate' | 'paranormais',
   classe: ClasseRPG,
   poderesEscolhidos: PoderesEscolhidos,
-  intelecto: number
+  intelecto: number,
+  afinidadeEscolhida?: string | null,
+  afinidadeAtiva?: boolean
 ) {
   return useMemo(() => {
     // Conta quantas vezes cada poder base foi escolhido
@@ -227,6 +249,14 @@ export function usePoderesFiltrados(
         const limit = Math.max(0, intelecto);
         return count < limit;
       }
+
+      // Lógica de Afinidade (se tiver afinidade ativa e o poder for do elemento)
+      if (afinidadeAtiva && afinidadeEscolhida && 'Elemento' in p && p.Elemento) {
+        if (p.Elemento.toLowerCase() === afinidadeEscolhida.toLowerCase()) {
+          return count < 2;
+        }
+      }
+
       return count < 1;
     };
 

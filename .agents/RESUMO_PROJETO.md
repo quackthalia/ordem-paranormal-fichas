@@ -25,5 +25,20 @@ O arquivo `src/screens/Ficha/AbasPanel.tsx` renderiza quase tudo na aba de Habil
 ## 4. Regras do Agente (AGENTS.md)
 Existe uma regra em `.agents/AGENTS.md` definindo que toda vez que eu alterar um código com sucesso, devo fazer o `git commit` com mensagem descritiva e o `git push` automaticamente, sem perguntar!
 
+## 5. Sistema de Trilhas
+- As Trilhas foram integradas com sucesso! Elas possuem tipagem própria em `src/types/index.ts` e um hook próprio chamado `useTrilhas.ts`, que puxa da tabela `Trilhas` no Supabase e mapeia os nomes de perícia via tabela `Perícias`.
+- A escolha da trilha ocorre no **NEX 10%** (ou nível 2). Ela surge como um slot vazio na ficha em `AbasPanel.tsx` e é selecionada por meio do `ModalTrilhas.tsx`.
+- Assim que uma trilha é escolhida, a perícia ligada a ela entra em `periciasGratis` no `RPGContext` automaticamente, aplicando o status de Treinada (se a perícia já era treinada, nada ocorre por enquanto, até um sistema de compensação futuro).
+- As habilidades das trilhas (de NEX 10, 40, 65 e 99) são exibidas de forma dinâmica na ficha: o jogador só consegue ver (abrir/revelar) a habilidade se o personagem tiver alcançado o NEX mínimo necessário para ela.
+
+## 6. Sistema de Afinidade e Restrições de Rituais
+- **Afinidade (`RPGContext.tsx`)**: No NEX 50%, o jogador deve escolher um Elemento base. A afinidade começa no modo **Dormente (Pendente)** e só é ativada plenamente (`afinidadeAtiva: true`) quando o jogador adquire um novo Poder Paranormal (Transceder).
+- **Mecânica de Dupla Escolha**: Com a afinidade ativa, a lista de poderes paranormais do respectivo elemento permite que o jogador selecione o mesmo poder uma segunda vez. Isso desbloqueia a linha de bônus especial de "Afinidade" descrita no poder (a linha destaca dinamicamente na lista da ficha).
+- **Restrições Opressoras**: A interface (`StatusPanel.tsx`) possui um tooltip que detalha o elemento escolhido e o elemento opressor (ex: Sangue oprime Conhecimento, logo você recebe -2d20 de Morte, seguindo o ciclo estabelecido).
+- **Pré-requisitos de Rituais (`verificarRequisitoRitual`)**: As opções de lançar um ritual nas formas *Discente* ou *Verdadeiro* verificam ativamente os requisitos exigidos. Se o requisito exigir `Acesso ao 3º Círculo` (NEX > 55%) ou `Afinidade com X`, as opções ficam bloqueadas visualmente nos selects e mostram o motivo.
+
+## 7. Aprimoramentos de UI/UX
+- **Campos de Busca**: Quase todos os modais da aplicação (`ModalPoderes`, `ModalPoderesExtra`, `ModalRituais`, `ModalRituaisExtra`, `ModalTrilhas`) agora possuem um campo global de `<input>` que filtra dinamicamente a lista pelo nome exato, otimizando o uso para jogadores mais experientes.
+
 ## Próximos Passos (Para a próxima conversa)
-O usuário está satisfeito com a lógica da ficha de Ocultista e com a renderização dinâmica de Rituais. Quaisquer bugs visuais que surjam nas listas de poderes/rituais devem ser verificados em `AbasPanel.tsx`. Sempre consulte a tipagem de `customProps` se for mexer no sistema de customização.
+Testar livremente a mecânica de afinidade, evolução de círculo e requisitos discentes em rituais avançados. Discutir eventuais ajustes finos no sistema de inventário ou nos conflitos de perícias das Trilhas.

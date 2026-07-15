@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { useRPG } from '../../context/RPGContext';
-import { NEX_OPTIONS } from '../../utils/rpgRules';
+import { NEX_OPTIONS, CORES_ELEMENTOS, obterElementoOpressor } from '../../utils/rpgRules';
+import { ModalAfinidade } from '../../components/ModalAfinidade';
 
 const NIVEL_OPTIONS = Array.from({ length: 20 }, (_, i) => i + 1);
 
@@ -15,6 +16,8 @@ export const StatusPanel: React.FC = () => {
     regras,
     nivel, setNivel,
     nexManual, setNexManual,
+    afinidadeEscolhida, setAfinidadeEscolhida,
+    afinidadeAtiva,
   } = useRPG();
 
   const regraNexExperiencia = regras['nex_experiencia'];
@@ -79,8 +82,8 @@ export const StatusPanel: React.FC = () => {
 
   return (
     <div>
-      {/* LINHA: NEX + PE/TURNO + DESLOCAMENTO */}
-      <div className="mb-8 flex items-start justify-between border-b border-zinc-800 pb-5">
+      {/* LINHA: NEX + PE/TURNO + AFINIDADE + DESLOCAMENTO */}
+      <div className="mb-8 flex flex-wrap items-start gap-6 border-b border-zinc-800 pb-5">
         {/* NEX / NÍVEL (regra NEX & EXPERIÊNCIA) */}
         {regraNexExperiencia ? (
           <>
@@ -104,7 +107,7 @@ export const StatusPanel: React.FC = () => {
               <select
                 value={nivel}
                 onChange={(e) => setNivel(Number(e.target.value))}
-                className="cursor-pointer appearance-none rounded border border-zinc-600 bg-zinc-900 px-3 py-2 text-center text-lg font-bold text-zinc-100 transition hover:border-red-700"
+                className="cursor-pointer appearance-none rounded border border-zinc-600 bg-zinc-900 px-3 h-9 text-center text-base font-bold text-zinc-100 transition hover:border-red-700"
               >
                 {NIVEL_OPTIONS.map(n => (
                   <option key={n} value={n}>{n}</option>
@@ -118,7 +121,7 @@ export const StatusPanel: React.FC = () => {
             <select
               value={nex}
               onChange={(e) => setNex(Number(e.target.value))}
-              className="cursor-pointer appearance-none rounded border border-zinc-600 bg-zinc-900 px-3 py-2 text-center text-lg font-bold text-zinc-100 transition hover:border-red-700"
+              className="cursor-pointer appearance-none rounded border border-zinc-600 bg-zinc-900 px-3 h-9 text-center text-base font-bold text-zinc-100 transition hover:border-red-700"
             >
               {NEX_OPTIONS.map(n => (
                 <option key={n} value={n}>{n}%</option>
@@ -130,15 +133,52 @@ export const StatusPanel: React.FC = () => {
 
         {/* PE/TURNO */}
         <div className="flex flex-col items-center gap-1.5">
-          <div className="min-w-14 rounded border border-zinc-600 px-4 py-2 text-center text-lg font-bold">
+          <div className="flex h-9 min-w-[3.5rem] items-center justify-center rounded border border-zinc-600 px-3 text-base font-bold text-zinc-100">
             {peTurno}
           </div>
           <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">PE/Turno</span>
         </div>
 
+        {/* AFINIDADE */}
+        {afinidadeAtiva && afinidadeEscolhida && (
+          <div className="flex flex-col items-center gap-1.5">
+            <div 
+              className="group relative flex h-9 cursor-help items-center justify-center rounded border px-3 text-xs font-bold uppercase tracking-wider text-zinc-100 transition"
+              style={{
+                borderColor: CORES_ELEMENTOS[afinidadeEscolhida.toLowerCase()] || '#888',
+                backgroundColor: `${CORES_ELEMENTOS[afinidadeEscolhida.toLowerCase()] || '#888'}40`,
+                color: '#ffffff'
+              }}
+            >
+              {afinidadeEscolhida}
+              <button 
+                className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-zinc-800 text-xs text-zinc-400 opacity-0 transition hover:bg-red-900 hover:text-white group-hover:opacity-100"
+                onClick={(e) => { e.stopPropagation(); setAfinidadeEscolhida(null); }}
+                title="Trocar Afinidade"
+              >
+                &#8634;
+              </button>
+              
+              {/* TOOLTIP */}
+              <div className="pointer-events-none absolute left-1/2 top-full z-50 mt-2 w-72 -translate-x-1/2 rounded border border-zinc-700 bg-zinc-950 p-3 text-left text-xs font-normal text-zinc-300 opacity-0 shadow-xl transition-opacity group-hover:opacity-100">
+                <div className="mb-2 border-b border-zinc-800 pb-2">
+                  <strong className="text-zinc-100">Você está conectado à entidade de {afinidadeEscolhida}</strong>
+                </div>
+                <ul className="flex list-disc flex-col gap-2 pl-4">
+                  <li>Não precisa de componentes ritualísticos para conjurar rituais deste elemento.</li>
+                  <li>Pode aprender rituais que exigem afinidade com este elemento.</li>
+                  <li>Recebe +2d20 em testes contra efeitos de {afinidadeEscolhida}. Sofre -2d20 em testes contra efeitos de {obterElementoOpressor(afinidadeEscolhida)}.</li>
+                  <li>Pode escolher poderes paranormais deste elemento uma segunda vez para receber o benefício listado na linha "Afinidade".</li>
+                </ul>
+              </div>
+            </div>
+            <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Afinidade</span>
+          </div>
+        )}
+
         {/* DESLOCAMENTO */}
         <div className="flex flex-col items-center gap-1.5">
-          <div className="flex items-center rounded border border-zinc-600 px-2.5 py-2 text-lg font-bold">
+          <div className="flex h-9 items-center justify-center rounded border border-zinc-600 px-2.5 text-base font-bold text-zinc-100">
             <input
               type="number"
               value={deslocM}
@@ -243,6 +283,13 @@ export const StatusPanel: React.FC = () => {
           />
         )}
       </div>
+
+      {nex >= 50 && afinidadeEscolhida === null && (
+        <ModalAfinidade 
+          onEscolher={setAfinidadeEscolhida}
+          forcarEscolha={true}
+        />
+      )}
     </div>
   );
 };

@@ -66,8 +66,8 @@ interface RPGContextType {
   setNexModalAberto: React.Dispatch<React.SetStateAction<number | null>>;
   poderesModalExpandidos: number[];
   setPoderesModalExpandidos: React.Dispatch<React.SetStateAction<number[]>>;
-  nexPoderEditando: number | null;
-  setNexPoderEditando: React.Dispatch<React.SetStateAction<number | null>>;
+  nexPoderEditando: number | string | null;
+  setNexPoderEditando: React.Dispatch<React.SetStateAction<number | string | null>>;
   nomeEditando: string;
   setNomeEditando: React.Dispatch<React.SetStateAction<string>>;
   descricaoEditando: string;
@@ -93,6 +93,9 @@ interface RPGContextType {
   setElementoRitual: React.Dispatch<React.SetStateAction<Record<number, string>>>;
   nexManual: number;
   setNexManual: React.Dispatch<React.SetStateAction<number>>;
+  afinidadeEscolhida: string | null;
+  setAfinidadeEscolhida: React.Dispatch<React.SetStateAction<string | null>>;
+  afinidadeAtiva: boolean;
 }
 
 const RPGContext = createContext<RPGContextType | null>(null);
@@ -119,7 +122,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const [habilidadesExpandidas, setHabilidadesExpandidas] = useState<string[]>([]);
   const [nexModalAberto, setNexModalAberto] = useState<number | null>(null);
   const [poderesModalExpandidos, setPoderesModalExpandidos] = useState<number[]>([]);
-  const [nexPoderEditando, setNexPoderEditando] = useState<number | null>(null);
+  const [nexPoderEditando, setNexPoderEditando] = useState<number | string | null>(null);
   const [nomeEditando, setNomeEditando] = useState('');
   const [descricaoEditando, setDescricaoEditando] = useState('');
   const [skillCombatente1, setSkillCombatente1] = useState('');
@@ -132,6 +135,9 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const [rituaisExpandidos, setRituaisExpandidos] = useState<number[]>([]);
   const [versaoRitual, setVersaoRitual] = useState<Record<number, VersaoRitual>>({});
   const [elementoRitual, setElementoRitual] = useState<Record<number, string>>({});
+  
+  // Afinidade
+  const [afinidadeEscolhida, setAfinidadeEscolhida] = useState<string | null>(null);
 
   const toggleRegra = useCallback((nome: string) => {
     setRegras(prev => {
@@ -165,6 +171,16 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const rituaisHook = useRituais();
   const trilhasHook = useTrilhas();
   const status = useStatus(classe, nex, atributos);
+
+  const afinidadeAtiva = useMemo(() => {
+    if (!afinidadeEscolhida) return false;
+    return Object.entries(poderesHook.poderesEscolhidos).some(([key, p]) => {
+      if (p.categoria !== 'paranormais') return false;
+      const nexSlot = Number(key);
+      if (!isNaN(nexSlot) && nexSlot >= 50) return true;
+      return false;
+    });
+  }, [afinidadeEscolhida, poderesHook.poderesEscolhidos]);
 
   const periciasGratis = useMemo(() => {
     const gratis: string[] = [];
@@ -288,6 +304,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     versaoRitual, setVersaoRitual,
     elementoRitual, setElementoRitual,
     nexManual, setNexManual,
+    afinidadeEscolhida, setAfinidadeEscolhida, afinidadeAtiva,
   };
 
   return <RPGContext.Provider value={value}>{children}</RPGContext.Provider>;

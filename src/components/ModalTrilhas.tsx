@@ -40,6 +40,7 @@ export function ModalTrilhas({
 
   const [abaAtual, setAbaAtual] = useState<'classe' | 'gerais'>('classe');
   const [habilidadesExpandidas, setHabilidadesExpandidas] = useState<number[]>([]);
+  const [busca, setBusca] = useState('');
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -59,11 +60,19 @@ export function ModalTrilhas({
         return false;
       }
       if (abaAtual === 'classe') {
-        return t.Classe_Trilha === classe;
+        if (t.Classe_Trilha !== classe) return false;
+      } else {
+        if (t.Classe_Trilha !== 'Geral') return false;
       }
-      return t.Classe_Trilha === 'Geral';
+      
+      if (busca.trim()) {
+        const lower = busca.toLowerCase();
+        if (!t.Nome_Trilha.toLowerCase().includes(lower)) return false;
+      }
+
+      return true;
     });
-  }, [trilhas, abaAtual, classe, modoVersatilidade, trilhaSelecionada]);
+  }, [trilhas, abaAtual, classe, modoVersatilidade, trilhaSelecionada, busca]);
 
   const toggleHabilidade = (codigo: number) => {
     setHabilidadesExpandidas((prev) =>
@@ -87,16 +96,26 @@ export function ModalTrilhas({
         className="flex h-full max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-950 shadow-2xl shadow-black/50"
       >
         {/* Cabeçalho */}
-        <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-900/50 px-5 py-4">
-          <h2 className="font-display text-lg uppercase tracking-wide text-zinc-100">
-            {modoVersatilidade ? 'Selecionar Versatilidade' : 'Selecionar Trilha'} <span className="text-red-500">({modoVersatilidade ? 'NEX 50%' : 'NEX 10%'})</span>
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-zinc-500 hover:text-red-500 transition"
-          >
-            ✕
-          </button>
+        {/* CABEÇALHO */}
+        <div className="flex flex-col border-b border-zinc-800 bg-zinc-950/50 p-5 pb-4">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-display m-0 text-lg uppercase tracking-wide text-zinc-100">
+              {modoVersatilidade ? 'Selecionar Versatilidade' : 'Selecionar Trilha'} <span className="text-red-500">({modoVersatilidade ? 'NEX 50%' : 'NEX 10%'})</span>
+            </h2>
+            <button
+              onClick={onClose}
+              className="text-zinc-500 hover:text-red-500 transition"
+            >
+              ✕
+            </button>
+          </div>
+          <input
+            type="text"
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            placeholder="Buscar trilha..."
+            className="w-full rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700"
+          />
         </div>
 
         {/* Abas */}

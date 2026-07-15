@@ -152,6 +152,7 @@ export const AbasPanel: React.FC = () => {
   const [modalTrilhasAberto, setModalTrilhasAberto] = React.useState(false);
   const [modalVersatilidadeAberto, setModalVersatilidadeAberto] = React.useState(false);
   const [editandoTrilha, setEditandoTrilha] = React.useState(false);
+  const [editandoVersatilidade, setEditandoVersatilidade] = React.useState(false);
 
   const { poderClasse, poderesClasse, poderesEscolhidos, poderesParanormais, removerPoder } = poderesHook;
   const { origemSelecionada } = origensHook;
@@ -499,9 +500,9 @@ export const AbasPanel: React.FC = () => {
                                   )}
 
                                   <div className="mt-4 flex gap-2.5">
-                                    <button onClick={(e) => { e.stopPropagation(); isVersatilidade ? setModalVersatilidadeAberto(true) : setEditandoTrilha(true); }}
+                                    <button onClick={(e) => { e.stopPropagation(); isVersatilidade ? setEditandoVersatilidade(true) : setEditandoTrilha(true); }}
                                       className="flex-1 rounded border border-zinc-700 bg-zinc-800 p-2 text-xs font-bold text-zinc-200 transition hover:bg-zinc-700"
-                                    >{isVersatilidade ? 'Escolher Outra' : 'Editar'}</button>
+                                    >Editar</button>
                                     <button onClick={(e) => { e.stopPropagation(); isVersatilidade ? trilhasHook.setVersatilidadeSelecionada(null) : trilhasHook.setTrilhaSelecionada(null); }}
                                       className="flex-1 rounded border border-red-900/50 bg-red-950/30 p-2 text-xs font-bold text-red-500 transition hover:bg-red-900/50 hover:text-red-300"
                                     >Remover</button>
@@ -1224,6 +1225,9 @@ export const AbasPanel: React.FC = () => {
       )}
       {editandoTrilha && (
         <ModalEditarTrilha onClose={() => setEditandoTrilha(false)} />
+      )}
+      {editandoVersatilidade && (
+        <ModalEditarTrilha onClose={() => setEditandoVersatilidade(false)} isVersatilidade={true} />
       )}
     </div>
   );

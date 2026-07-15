@@ -298,7 +298,7 @@ export const AbasPanel: React.FC = () => {
     });
 
     return lista;
-  }, [classe, nex, origemSelecionada, poderClasse, poderesClasse, poderesEscolhidos, poderesParanormaisMap, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras]);
+  }, [classe, nex, origemSelecionada, poderClasse, poderesClasse, poderesEscolhidos, poderesParanormaisMap, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras, trilhasHook.trilhaSelecionada]);
 
   const habilidadesFiltradas = listaHabilidades.filter(hab =>
     hab.nome.toLowerCase().includes(filtroHabilidades.toLowerCase())
@@ -392,7 +392,7 @@ export const AbasPanel: React.FC = () => {
                           const nexLevels = [10, 40, 65, 99];
                           
                           return (
-                            <div key={hab.id} className="mb-3 overflow-hidden rounded-r border-l-4 border-indigo-700 bg-zinc-950/60">
+                            <div key={hab.id} className="mb-3 overflow-hidden rounded-r border-l-4 border-red-800 bg-zinc-950/60">
                               <div
                                 onClick={() => trilhasHook.toggleTrilhaExpandida(t.Codigo_Trilha)}
                                 className="flex cursor-pointer items-center justify-between gap-3 bg-zinc-900/80 px-4 py-3 transition hover:bg-zinc-800/80"
@@ -417,7 +417,7 @@ export const AbasPanel: React.FC = () => {
                                     dangerouslySetInnerHTML={{ __html: formatarDescricao(t.Descricao_Trilha) }}
                                   />
               
-                                  <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-indigo-400 border-b border-zinc-800 pb-1">
+                                  <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-red-400 border-b border-zinc-800 pb-1">
                                     Habilidades da Trilha
                                   </h4>
               

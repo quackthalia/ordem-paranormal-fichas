@@ -68,42 +68,42 @@ export function ModalTrilhas({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-5">
       <div
         ref={ref}
-        className="flex h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded border border-zinc-700 bg-zinc-900 shadow-2xl"
+        className="flex h-full max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-950 shadow-2xl shadow-black/50"
       >
         {/* Cabeçalho */}
-        <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-950 p-4">
-          <h2 className="text-xl font-bold uppercase tracking-wider text-red-500">
-            Selecionar Trilha
+        <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-900/50 px-5 py-4">
+          <h2 className="font-display text-lg uppercase tracking-wide text-zinc-100">
+            Selecionar Trilha <span className="text-red-500">(NEX 10%)</span>
           </h2>
           <button
             onClick={onClose}
-            className="text-zinc-500 hover:text-red-500"
+            className="text-zinc-500 hover:text-red-500 transition"
           >
             ✕
           </button>
         </div>
 
         {/* Abas */}
-        <div className="flex gap-2 border-b border-zinc-800 bg-zinc-950/50 p-2">
+        <div className="flex flex-wrap gap-1 border-b-2 border-red-900/30 bg-zinc-900/50 px-3 pt-3">
           <button
             onClick={() => setAbaAtual('classe')}
-            className={`flex-1 rounded py-2 text-sm font-bold uppercase transition ${
+            className={`min-w-[70px] flex-1 rounded-t px-1 py-2.5 text-xs font-bold uppercase tracking-wider transition ${
               abaAtual === 'classe'
-                ? 'bg-red-800 text-zinc-100 shadow'
-                : 'bg-zinc-800/50 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'
+                ? 'border border-b-0 border-red-900 bg-zinc-900 text-zinc-100'
+                : 'border border-transparent text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300'
             }`}
           >
             Trilhas da Classe ({classe})
           </button>
           <button
             onClick={() => setAbaAtual('gerais')}
-            className={`flex-1 rounded py-2 text-sm font-bold uppercase transition ${
+            className={`min-w-[70px] flex-1 rounded-t px-1 py-2.5 text-xs font-bold uppercase tracking-wider transition ${
               abaAtual === 'gerais'
-                ? 'bg-red-800 text-zinc-100 shadow'
-                : 'bg-zinc-800/50 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'
+                ? 'border border-b-0 border-red-900 bg-zinc-900 text-zinc-100'
+                : 'border border-transparent text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300'
             }`}
           >
             Trilhas Gerais
@@ -111,12 +111,12 @@ export function ModalTrilhas({
         </div>
 
         {/* Lista de Trilhas */}
-        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-          {loading && <div className="text-center text-zinc-500 mt-10">Carregando trilhas...</div>}
-          {error && <div className="text-center text-red-500 mt-10">Erro: {error}</div>}
+        <div className="flex-1 overflow-y-auto p-5 custom-scrollbar">
+          {loading && <div className="text-center italic text-zinc-500 mt-5">Carregando trilhas...</div>}
+          {error && <div className="text-center italic text-red-500 mt-5">Erro: {error}</div>}
 
           {!loading && !error && trilhasFiltradas.length === 0 && (
-            <div className="text-center text-zinc-500 mt-10">Nenhuma trilha encontrada.</div>
+            <div className="text-center italic text-zinc-500 mt-5">Nenhuma trilha encontrada.</div>
           )}
 
           {trilhasFiltradas.map((trilha) => {
@@ -131,14 +131,14 @@ export function ModalTrilhas({
                 >
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-zinc-100">{trilha.Nome_Trilha}</span>
-                    <span className="text-[10px] uppercase text-zinc-500">
-                      ({nomePericia(trilha.Perícia_Trilha)})
+                    <span className="inline-block rounded bg-indigo-900/40 px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight text-indigo-300 border border-indigo-800">
+                      {nomePericia(trilha.Perícia_Trilha)}
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
                     <button
                       onClick={(e) => { e.stopPropagation(); handleEscolher(trilha); }}
-                      className="rounded bg-indigo-700 px-3.5 py-1.5 text-xs font-bold uppercase text-zinc-100 transition hover:bg-indigo-600"
+                      className="rounded bg-red-700 px-3.5 py-1.5 text-xs font-bold uppercase text-zinc-100 transition hover:bg-red-600"
                     >
                       Escolher
                     </button>

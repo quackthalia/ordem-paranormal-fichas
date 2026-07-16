@@ -2,7 +2,9 @@ import React, { useRef, useMemo, useEffect, useState, useCallback } from 'react'
 import { useRPG } from '../context/RPGContext';
 import { usePoderesFiltrados } from '../hooks/usePoderes';
 import { InputOtimizado } from './InputOtimizado';
-import type { AbaModalPoderes } from '../types';
+import type { AbaModalPoderes, Poder } from '../types';
+import { verificarPreRequisitos, formatarTextoPreRequisitos } from '../utils/preRequisitos';
+import type { ContextoPreRequisitos } from '../utils/preRequisitos';
 import { sortPorElementoENome } from '../utils/rpgRules';
 
 const PATAMARES_COMBATE = [15, 25, 35, 45, 55, 65, 75, 85, 95];
@@ -54,8 +56,9 @@ function PoderCard({
   estaExpandido,
   onToggle,
   onEscolher,
+  contextoPrereq,
 }: {
-  poder: { codigo_poder: number; Nome: string; Descricao: string; PreRequisitos: string; Fonte: string };
+  poder: { codigo_poder: number; Nome: string; Descricao: string; PreRequisitos: string; Fonte: string; Pre_Codigo?: number | null; Tipo?: string; Classe?: string | null; };
   ehParanormal: boolean;
   paranormalData?: {
     Elemento?: string;
@@ -65,7 +68,11 @@ function PoderCard({
   estaExpandido: boolean;
   onToggle: () => void;
   onEscolher: () => void;
+  contextoPrereq?: ContextoPreRequisitos;
 }) {
+  const val = contextoPrereq ? verificarPreRequisitos(poder as Poder, contextoPrereq) : { atende: true };
+  const bloqueado = !val.atende;
+
   return (
     <div className="mb-3 overflow-hidden rounded-r border-l-4 border-red-800 bg-zinc-950/60">
       <div
@@ -88,8 +95,13 @@ function PoderCard({
         </div>
         <div className="flex items-center gap-3">
           <button
+            disabled={bloqueado}
             onClick={(e) => { e.stopPropagation(); onEscolher(); }}
-            className="rounded bg-red-700 px-3.5 py-1.5 text-xs font-bold uppercase text-zinc-100 transition hover:bg-red-600"
+            className={`rounded px-3.5 py-1.5 text-xs font-bold uppercase transition ${
+              bloqueado 
+                ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
+                : 'bg-red-700 text-zinc-100 hover:bg-red-600'
+            }`}
           >
             Escolher
           </button>
@@ -114,9 +126,11 @@ function PoderCard({
 
           {poder.PreRequisitos && (
             <div className="mt-3 inline-block rounded bg-amber-400/5 px-3 py-2 text-xs italic text-amber-400">
-              <strong>Pré-requisitos:</strong> {poder.PreRequisitos}
+              <strong>Pré-requisitos:</strong> {contextoPrereq ? formatarTextoPreRequisitos(poder.PreRequisitos, contextoPrereq.nomesPericias) : poder.PreRequisitos}
             </div>
           )}
+
+
 
           {ehParanormal && paranormalData?.PreRequisitosAfinidade && (
             <div className="mt-2 inline-block rounded bg-purple-400/5 px-3 py-2 text-xs italic text-purple-400">
@@ -149,7 +163,30 @@ export const ModalPoderes: React.FC = () => {
     bonusAtributos,
     afinidadeEscolhida,
     afinidadeAtiva,
+    periciasHook,
+    nex,
+    trilhasHook,
   } = useRPG();
+
+  const contextoPrereq = useMemo(() => {
+    const nomesPoderes = Object.values(poderesHook.poderesEscolhidos).map(p => p.nome.toLowerCase());
+    
+    if (trilhasHook.trilhaEscolhida) {
+      const t = trilhasHook.trilhaEscolhida;
+      if (nex >= 10 && t.Nome_Habilidade_10) nomesPoderes.push(t.Nome_Habilidade_10.toLowerCase());
+      if (nex >= 40 && t.Nome_Habilidade_40) nomesPoderes.push(t.Nome_Habilidade_40.toLowerCase());
+      if (nex >= 65 && t.Nome_Habilidade_65) nomesPoderes.push(t.Nome_Habilidade_65.toLowerCase());
+      if (nex >= 99 && t.Nome_Habilidade_99) nomesPoderes.push(t.Nome_Habilidade_99.toLowerCase());
+    }
+
+    return {
+      atributos,
+      nex,
+      pericias: periciasHook.pericias,
+      nomesPericias: periciasHook.nomesPericias,
+      poderes: nomesPoderes
+    };
+  }, [atributos, nex, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, trilhasHook.trilhaEscolhida]);
 
   const editorRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -396,7 +433,11 @@ export const ModalPoderes: React.FC = () => {
                   Descricao: poder.Descricao,
                   PreRequisitos: poder.PreRequisitos || '',
                   Fonte: (poder as any).Fonte || pp?.Fonte || '',
+                  Pre_Codigo: poder.Pre_Codigo,
+                  Tipo: poder.Tipo,
+                  Classe: poder.Classe,
                 }}
+                contextoPrereq={contextoPrereq}
                 ehParanormal={!!pp}
                 paranormalData={pp ? {
                   Elemento: pp.Elemento,

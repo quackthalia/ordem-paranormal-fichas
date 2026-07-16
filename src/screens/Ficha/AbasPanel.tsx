@@ -15,6 +15,7 @@ import {
   calcularNivel,
   sortPorElementoENome,
   verificarRequisitoRitual,
+  verificarAcessoCirculo,
 } from '../../utils/rpgRules';
 
 import { ModalPoderesExtra } from '../../components/ModalPoderesExtra';
@@ -376,12 +377,14 @@ export const AbasPanel: React.FC = () => {
         const categoria = escolhido.categoria || (pp ? 'paranormais' : 'utilidade');
         const afinidadeDoPoder = pp?.Afinidade;
         const afinidadeAtiva = afinidadeDoPoder ? contagemPoderes[nomePoderBase] >= 2 : false;
+        const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nex)}` : `NEX ${nex}%`;
+        const tipoLabel = categoria === 'paranormais' ? `Transcender, ${nivelLabel}` : nivelLabel;
         
         lista.push({ 
           id: `escolha_nex_${key}`, 
           nome: escolhido.nome, 
           descricao: escolhido.descricao, 
-          tipo: 'Poder Extra', 
+          tipo: tipoLabel, 
           preRequisitos: escolhido.preRequisitos, 
           fonte: escolhido.fonte || pp?.Fonte, 
           elemento: elementoDoPoder, 
@@ -412,11 +415,11 @@ export const AbasPanel: React.FC = () => {
 
   return (
     <div className="flex flex-col rounded-lg border border-zinc-800 bg-zinc-900/60 p-5">
-      <div className="mb-5 flex flex-wrap gap-1 border-b-2 border-zinc-800 pb-2.5">
+      <div className="mb-5 flex overflow-x-auto border-b border-zinc-800 bg-zinc-900/40">
         {(['combate','habilidades','rituais','inventario','descricao','regras'] as const).map(aba => (
           <button key={aba} onClick={() => setAbaDireita(aba)}
-            className={`min-w-[70px] flex-1 rounded px-1 py-2 text-xs font-bold uppercase tracking-wider transition ${
-              abaDireita === aba ? 'border border-red-900 bg-red-950/40 text-zinc-100' : 'border border-transparent text-zinc-500 hover:text-zinc-300'
+            className={`min-w-[70px] flex-1 rounded-t px-1 py-2.5 text-xs font-bold uppercase tracking-wider transition ${
+              abaDireita === aba ? 'border border-b-0 border-red-900 bg-zinc-900/60 text-zinc-100' : 'border border-transparent text-zinc-500 hover:bg-zinc-800/30 hover:text-zinc-300'
             }`}
           >{aba === 'inventario' ? 'Inventário' : aba === 'descricao' ? 'Descrição' : aba === 'regras' ? 'Regras' : aba}</button>
         ))}
@@ -490,7 +493,7 @@ export const AbasPanel: React.FC = () => {
                           );
                         }
 
-                        if (hab.categoria === 'trilha') {
+                        if (hab.id === 'trilha_selecionada' || hab.id === 'versatilidade_selecionada') {
                           const isVersatilidade = hab.isVersatilidade;
                           const t = isVersatilidade ? trilhasHook.versatilidadeSelecionada : trilhasHook.trilhaSelecionada;
                           
@@ -589,7 +592,7 @@ export const AbasPanel: React.FC = () => {
 
                         return (
                           <div key={hab.id}
-                            className={`overflow-hidden rounded-r border-l-4 bg-zinc-900/70 ${hab.categoria === 'paranormais' ? 'border-l-0' : 'border-red-800'}`}
+                            className={`overflow-hidden rounded-r border-l-4 bg-zinc-900/50 ${hab.categoria === 'paranormais' ? 'border-l-0' : 'border-red-800'}`}
                           >
                             {hab.elemento && (
                               <div className="h-0.5 w-full" style={{ background: obterCorBadge(hab.elemento) }} />
@@ -600,7 +603,7 @@ export const AbasPanel: React.FC = () => {
                                 prev.includes(hab.id) ? prev.filter(id => id !== hab.id) : [...prev, hab.id]
                               );
                             }}
-                              className="flex cursor-pointer items-center justify-between gap-2 bg-zinc-800/60 px-4 py-3 transition hover:bg-zinc-700/50"
+                              className="flex cursor-pointer items-center justify-between gap-2 bg-zinc-800/40 px-4 py-3 transition hover:bg-zinc-700/50"
                             >
                               <div className="flex items-center gap-3">
                                 <span className="text-sm font-bold text-zinc-100">{hab.nome}</span>
@@ -721,7 +724,7 @@ export const AbasPanel: React.FC = () => {
           // 1. Calcular slots vazios de Poder "Aprender Ritual"
           const slotsPoderPendentes = Object.entries(poderesEscolhidos)
             .filter(([nexStr, poder]) => poder.nome.trim().toLowerCase() === 'aprender ritual')
-            .map(([nexStr]) => parseInt(nexStr, 10));
+            .map(([nexStr]) => nexStr);
 
           // 2. Calcular slots vazios de Ocultista
           const slotsOcultistaPendentesList: { index: number, nex: number, maxCirculo: number }[] = [];
@@ -783,10 +786,14 @@ export const AbasPanel: React.FC = () => {
                 {/* SLOTS VAZIOS (no topo) */}
                 {(hasEmptySlots) && (
                   <div className="mb-4 flex flex-col gap-2">
-                    {slotsPoderPendentes.map(nivel => (
+                    {slotsPoderPendentes.map(chave => {
+                      const isExtra = chave.startsWith('extra_');
+                      const nivelNum = isExtra ? nex : parseInt(chave, 10);
+                      const labelNex = regras['nex_experiencia'] ? `Poder Nível ${calcularNivel(nivelNum)}` : `Poder NEX ${nivelNum}%`;
+                      return (
                       <div
-                        key={`vazio_poder_${nivel}`}
-                        onClick={() => setEscolhendoRitualPlaceholder({ origem: `poder_57_${nivel}`, nex: nivel })}
+                        key={`vazio_poder_${chave}`}
+                        onClick={() => setEscolhendoRitualPlaceholder({ origem: `poder_57_${chave}`, nex: isExtra ? nex : nivelNum })}
                         className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-red-800 hover:bg-zinc-900/80"
                         style={{ borderLeftStyle: 'solid' }}
                       >
@@ -794,7 +801,7 @@ export const AbasPanel: React.FC = () => {
                           <div className="flex flex-col items-start gap-0.5 text-left">
                             <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">Escolher Ritual</span>
                             <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-500 group-hover:text-zinc-400">
-                              {regras['nex_experiencia'] ? `Poder Nível ${calcularNivel(nivel)}` : `Poder NEX ${nivel}%`}
+                              {labelNex}
                             </span>
                           </div>
                           <span className="whitespace-nowrap rounded bg-red-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-400 transition group-hover:bg-red-900/60 group-hover:text-red-300">+ Adicionar</span>
@@ -803,7 +810,8 @@ export const AbasPanel: React.FC = () => {
                           Clique para selecionar um ritual aprendido através de um poder paranormal.
                         </div>
                       </div>
-                    ))}
+                      );
+                    })}
                     {slotsOcultistaPendentesList.map((slot) => (
                       <div
                         key={`vazio_ocultista_${slot.index}`}
@@ -895,11 +903,17 @@ export const AbasPanel: React.FC = () => {
                         const dados = ritual.customProps?.[versao]?.Dados_Ritual || obterValorVersao(ritual.Dados_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
 
                         // Opções de versão disponíveis
+                        const reqNormal = verificarAcessoCirculo(ritual.Circulo_Ritual, nex, classe);
                         const versoesDisponiveis: { value: VersaoRitual; label: string; disabled?: boolean; title?: string }[] = [
-                          { value: 'normal', label: 'Normal' },
+                          { 
+                            value: 'normal', 
+                            label: reqNormal.atende ? 'Normal' : `Normal (${reqNormal.motivo})`,
+                            disabled: !reqNormal.atende,
+                            title: reqNormal.motivo
+                          },
                         ];
                         if (ritual.Tem_Discente) {
-                          const req = verificarRequisitoRitual(ritual.Requisito_Discente, nex, afinidadeAtiva, afinidadeEscolhida, ritual.Elemento_Ritual);
+                          const req = verificarRequisitoRitual(ritual.Requisito_Discente, nex, classe, afinidadeAtiva, afinidadeEscolhida, ritual.Elemento_Ritual);
                           versoesDisponiveis.push({ 
                             value: 'discente', 
                             label: req.atende ? 'Discente' : `Discente (${req.motivo})`,
@@ -908,7 +922,7 @@ export const AbasPanel: React.FC = () => {
                           });
                         }
                         if (ritual.Tem_Verdadeiro) {
-                          const req = verificarRequisitoRitual(ritual.Requisito_Verdadeiro, nex, afinidadeAtiva, afinidadeEscolhida, ritual.Elemento_Ritual);
+                          const req = verificarRequisitoRitual(ritual.Requisito_Verdadeiro, nex, classe, afinidadeAtiva, afinidadeEscolhida, ritual.Elemento_Ritual);
                           versoesDisponiveis.push({ 
                             value: 'verdadeiro', 
                             label: req.atende ? 'Verdadeiro' : `Verdadeiro (${req.motivo})`,
@@ -1026,49 +1040,6 @@ export const AbasPanel: React.FC = () => {
                                         </div>
                                       )}
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setRitualEditandoOrigem(ritual.Origem);
-                                          setRitualNomeEditando(ritual.customNome || ritual.Nome_Ritual);
-                                          setRitualDescricaoEditando(ritual.customDesc || ritual.Descricao_Ritual);
-                                          setRitualPropsEditando(ritual.customProps || {});
-                                          setRitualVersaoEditando('normal');
-                                        }}
-                                        className="rounded bg-zinc-800 border border-zinc-700 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-zinc-300 transition hover:bg-zinc-700 hover:text-zinc-100"
-                                      >
-                                        Editar Ritual
-                                      </button>
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          if (ritual.Origem.startsWith('poder_57_')) {
-                                            const nivel = parseInt(ritual.Origem.replace('poder_57_', '').replace('combate_', ''), 10);
-                                            const poderExistente = poderesEscolhidos[nivel];
-                                            if (poderExistente && poderExistente.nome.toLowerCase().startsWith('aprender ritual (')) {
-                                              const ppBase = poderesParanormais.find(p => p.Nome.toLowerCase() === 'aprender ritual');
-                                              if (ppBase) {
-                                                poderesHook.escolherPoder(nivel, {
-                                                  codigo_poder: 57,
-                                                  Nome: 'Aprender Ritual',
-                                                  Descricao: ppBase.Descricao,
-                                                  PreRequisitos: ppBase.PreRequisitos,
-                                                  Afinidade: ppBase.Afinidade,
-                                                  Elemento: ppBase.Elemento,
-                                                  Fonte: ppBase.Fonte,
-                                                  PreRequisitosAfinidade: ppBase.PreRequisitosAfinidade
-                                                } as any);
-                                              }
-                                            }
-                                          }
-                                          rituaisHook.esquecerRitual(ritual.Origem);
-                                        }}
-                                        className="rounded bg-red-900/30 border border-red-800 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-500 transition hover:bg-red-900/50 hover:text-red-400"
-                                      >
-                                        Esquecer Ritual
-                                      </button>
-                                    </div>
                                   </div>
                                 )}
 
@@ -1151,6 +1122,51 @@ export const AbasPanel: React.FC = () => {
                                     });
                                   })()}
                                 </div>
+
+                                <div className="mt-4 flex justify-end gap-2 border-t border-zinc-800/50 pt-3">
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setRitualEditandoOrigem(ritual.Origem);
+                                      setRitualNomeEditando(ritual.customNome || ritual.Nome_Ritual);
+                                      setRitualDescricaoEditando(ritual.customDesc || ritual.Descricao_Ritual);
+                                      setRitualPropsEditando(ritual.customProps || {});
+                                      setRitualVersaoEditando('normal');
+                                    }}
+                                    className="rounded bg-zinc-800 border border-zinc-700 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-zinc-300 transition hover:bg-zinc-700 hover:text-zinc-100"
+                                  >
+                                    Editar Ritual
+                                  </button>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (ritual.Origem.startsWith('poder_57_')) {
+                                        const nivel = parseInt(ritual.Origem.replace('poder_57_', '').replace('combate_', ''), 10);
+                                        const poderExistente = poderesEscolhidos[nivel];
+                                        if (poderExistente && poderExistente.nome.toLowerCase().startsWith('aprender ritual (')) {
+                                          const ppBase = poderesParanormais.find(p => p.Nome.toLowerCase() === 'aprender ritual');
+                                          if (ppBase) {
+                                            poderesHook.escolherPoder(nivel, {
+                                              codigo_poder: 57,
+                                              Nome: 'Aprender Ritual',
+                                              Descricao: ppBase.Descricao,
+                                              PreRequisitos: ppBase.PreRequisitos,
+                                              Afinidade: ppBase.Afinidade,
+                                              Elemento: ppBase.Elemento,
+                                              Fonte: ppBase.Fonte,
+                                              PreRequisitosAfinidade: ppBase.PreRequisitosAfinidade
+                                            } as any);
+                                          }
+                                        }
+                                      }
+                                      rituaisHook.esquecerRitual(ritual.Origem);
+                                    }}
+                                    className="rounded bg-red-900/30 border border-red-800 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-500 transition hover:bg-red-900/50 hover:text-red-400"
+                                  >
+                                    Esquecer Ritual
+                                  </button>
+                                </div>
+
                               </div>
                             )}
                           </div>
@@ -1235,13 +1251,16 @@ export const AbasPanel: React.FC = () => {
 
             // Se for de poder, atualiza o poder na lista de poderes escolhidos para mostrar o ritual escolhido!
             if (origem.startsWith('poder_57_')) {
-              const nivel = parseInt(origem.replace('poder_57_', '').replace('combate_', ''), 10);
-              const poderAtual = poderesEscolhidos[nivel];
+              const chave = origem.replace('poder_57_', '').replace('combate_', '');
+              // Tenta como número primeiro (slots normais), senão usa a string (extras)
+              const chaveNum = parseInt(chave, 10);
+              const key = isNaN(chaveNum) ? chave : chaveNum;
+              const poderAtual = poderesEscolhidos[key];
               if (poderAtual) {
                 const baseName = poderAtual.nome.toLowerCase().startsWith('aprender ritual (') ? 'aprender ritual' : poderAtual.nome.toLowerCase();
                 const ppBase = poderesParanormais.find(p => p.Nome.toLowerCase() === baseName);
                 if (ppBase) {
-                  poderesHook.escolherPoder(nivel, {
+                  poderesHook.escolherPoder(key as number, {
                     codigo_poder: 57,
                     Nome: `Aprender Ritual (${ritual.Nome_Ritual})`,
                     Descricao: poderAtual.descricao,
@@ -1374,7 +1393,8 @@ export const AbasPanel: React.FC = () => {
         onClose={() => setModalExtraAberto(false)}
         poderesGerais={listaPoderesUtilidade}
         poderesParanormais={poderesParanormais}
-        onEscolher={escolherPoderExtra}
+        trilhas={trilhasHook.trilhas}
+        onEscolher={poderesHook.escolherPoderExtra}
       />
     </div>
   );

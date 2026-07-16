@@ -69,7 +69,6 @@ export function useRituais(): UseRituaisReturn & {
 
       if (data) {
         const normalizados = data.map(normalizarRitual);
-        console.log('🔮 Rituais carregados:', normalizados.length);
         setRituais(normalizados);
       }
 

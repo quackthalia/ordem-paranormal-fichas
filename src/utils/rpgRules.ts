@@ -228,6 +228,7 @@ export function obterCorBadge(texto: string): string {
 export function verificarRequisitoRitual(
   requisito: string,
   nex: number,
+  classe: string | null,
   afinidadeAtiva: boolean,
   afinidadeEscolhida: string | null,
   elementoRitual: string
@@ -235,6 +236,7 @@ export function verificarRequisitoRitual(
   if (!requisito || requisito.trim() === '') return { atende: true };
 
   const reqLower = requisito.toLowerCase();
+  const motivos: string[] = [];
   
   // 1. Checar Afinidade
   if (reqLower.includes('afinidade')) {
@@ -245,26 +247,43 @@ export function verificarRequisitoRitual(
     else if (reqLower.includes('conhecimento')) elementoExigido = 'Conhecimento';
 
     if (!afinidadeAtiva || afinidadeEscolhida?.toLowerCase() !== elementoExigido.toLowerCase()) {
-      return { atende: false, motivo: `Requer afinidade com ${elementoExigido}` };
+      motivos.push(`afinidade com ${elementoExigido}`);
     }
   }
 
   // 2. Checar Círculo
-  const circuloMatch = reqLower.match(/(\d+)º\s*c[ií]rculo/);
+  // Usamos c.*rculo porque no Supabase algumas palavras vêm com erro de encoding (ex: "Crculo")
+  const circuloMatch = reqLower.match(/(\d+)[º°o]?\s*c.*rculo/);
   if (circuloMatch) {
     const circuloExigido = parseInt(circuloMatch[1], 10);
-    // Para conjurar, você precisa ter nível de acesso àquele círculo.
-    // Regra geral de liberação de círculos (usada para Ocultistas e limitadora de poder para outros):
-    // 1º = 5%, 2º = 25%, 3º = 55%, 4º = 85%
-    let acessoCirculo = 1;
-    if (nex >= 85) acessoCirculo = 4;
-    else if (nex >= 55) acessoCirculo = 3;
-    else if (nex >= 25) acessoCirculo = 2;
-
-    if (acessoCirculo < circuloExigido) {
-      return { atende: false, motivo: `Requer acesso ao ${circuloExigido}º Círculo (NEX ${(circuloExigido === 2 ? 25 : circuloExigido === 3 ? 55 : 85)}%)` };
+    const acesso = verificarAcessoCirculo(circuloExigido, nex, classe);
+    if (!acesso.atende) {
+      motivos.push(acesso.motivo!);
     }
   }
 
+  if (motivos.length > 0) {
+    return { atende: false, motivo: `Requer ${motivos.join(' e ')}` };
+  }
+
+  return { atende: true };
+}
+
+export function verificarAcessoCirculo(circuloExigido: number, nex: number, classe: string | null): { atende: boolean; motivo?: string } {
+  let nexReqs = [5, 25, 55, 85]; // Ocultista
+  if (classe !== 'Ocultista') {
+    nexReqs = [5, 45, 75, 999]; // Especialista/Combatente
+  }
+
+  let acessoCirculo = 1;
+  if (nex >= nexReqs[3]) acessoCirculo = 4;
+  else if (nex >= nexReqs[2]) acessoCirculo = 3;
+  else if (nex >= nexReqs[1]) acessoCirculo = 2;
+
+  if (acessoCirculo < circuloExigido) {
+    const nexExigido = nexReqs[circuloExigido - 1];
+    const nexText = nexExigido === 999 ? 'Inacessível' : `NEX ${nexExigido}%`;
+    return { atende: false, motivo: `acesso ao ${circuloExigido}º Círculo (${nexText} para ${classe || 'sua classe'})` };
+  }
   return { atende: true };
 }

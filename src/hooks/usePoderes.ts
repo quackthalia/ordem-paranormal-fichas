@@ -36,6 +36,7 @@ function normalizarPoder(item: Record<string, unknown>): Poder {
       primeiro('Pre-Requisitos', 'pre-requisitos', 'Pre_Requisitos', 'pre_requisitos', 'Requisitos', 'requisitos') ?? ''
     ),
     Fonte: String(primeiro('Fonte', 'fonte') ?? ''),
+    Pre_Codigo: primeiro('Pre_Codigo', 'pre_codigo') ? Number(primeiro('Pre_Codigo', 'pre_codigo')) : null,
   };
 }
 
@@ -141,11 +142,11 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
   const escolherPoder = useCallback((
     nex: number,
     poder: Poder | PoderParanormal,
-    categoria?: 'utilidade' | 'combate' | 'gerais'
+    categoria?: 'utilidade' | 'combate' | 'gerais' | 'trilha'
   ) => {
     const pp = poder as PoderParanormal;
     const isParanormal = 'Elemento' in pp || 'Afinidade' in pp;
-    const catFinal: 'utilidade' | 'combate' | 'gerais' | 'paranormais' = 
+    const catFinal: 'utilidade' | 'combate' | 'gerais' | 'paranormais' | 'trilha' = 
       isParanormal ? 'paranormais' : (categoria || 'utilidade');
 
     setPoderesEscolhidos(prev => ({
@@ -165,8 +166,9 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
   const escolherPoderExtra = useCallback((poder: Poder | PoderParanormal) => {
     const pp = poder as PoderParanormal;
     const isParanormal = 'Elemento' in pp || 'Afinidade' in pp;
-    const catFinal: 'utilidade' | 'combate' | 'gerais' | 'paranormais' = 
-      isParanormal ? 'paranormais' : ((poder as Poder).Tipo?.toLowerCase() === 'geral' ? 'gerais' : 'utilidade');
+    const isTrilha = (poder as Poder).Tipo?.toLowerCase() === 'trilha';
+    const catFinal: 'utilidade' | 'combate' | 'gerais' | 'paranormais' | 'trilha' = 
+      isParanormal ? 'paranormais' : (isTrilha ? 'trilha' : ((poder as Poder).Tipo?.toLowerCase() === 'geral' ? 'gerais' : 'utilidade'));
 
     const uniqueId = `extra_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
     
@@ -182,6 +184,10 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
         categoria: catFinal,
       },
     }));
+
+    if (poder.Nome.toLowerCase() === 'aprender ritual') {
+      window.dispatchEvent(new CustomEvent('abrirModalRituais', { detail: { nex: uniqueId } }));
+    }
   }, []);
 
   const removerPoder = useCallback((nex: number | string) => {
@@ -272,9 +278,12 @@ export function usePoderesFiltrados(
         const tipoPoder = (p.Tipo || '').toLowerCase();
 
         let show = false;
-        if (abaModal === 'classe') show = classePoder === classe?.toLowerCase() && tipoPoder === 'utilidade';
-        else if (abaModal === 'combate') show = tipoPoder === 'combate';
-        else if (abaModal === 'gerais') show = tipoPoder === 'geral' || classePoder === 'geral' || classePoder === 'todos';
+        if (!tipoPoder) return false;
+        if (abaModal === 'classe' || abaModal === 'combate') {
+          show = classePoder === classe?.toLowerCase();
+        } else if (abaModal === 'gerais') {
+          show = tipoPoder === 'geral' || classePoder === 'geral' || classePoder === 'todos';
+        }
 
         if (!show) return false;
         return filterFn(p);

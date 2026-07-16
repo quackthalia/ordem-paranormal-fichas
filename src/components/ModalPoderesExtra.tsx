@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import type { Poder, PoderParanormal } from '../types';
+import type { Poder, PoderParanormal, Trilha } from '../types';
 import { sortPorElementoENome } from '../utils/rpgRules';
+import { useRPG } from '../context/RPGContext';
+import { verificarPreRequisitos, formatarTextoPreRequisitos } from '../utils/preRequisitos';
 
 function formatarDescricao(texto: string): string {
   if (!texto) return '';
@@ -41,23 +43,46 @@ interface ModalPoderesExtraProps {
   onClose: () => void;
   poderesGerais: Poder[];
   poderesParanormais: PoderParanormal[];
+  trilhas?: Trilha[];
   onEscolher: (poder: Poder | PoderParanormal) => void;
 }
 
-type MainAba = 'utilidade' | 'combate' | 'gerais' | 'paranormais';
-type SubAbaClasse = 'todas' | 'combatente' | 'especialista' | 'ocultista';
+type MainAba = 'utilidade' | 'combate' | 'gerais' | 'paranormais' | 'trilhas';
+type SubAbaClasse = 'todas' | 'combatente' | 'especialista' | 'ocultista' | 'geral';
 
 export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
   isOpen,
   onClose,
   poderesGerais,
   poderesParanormais,
+  trilhas = [],
   onEscolher
 }) => {
   const [abaPrincipal, setAbaPrincipal] = useState<MainAba>('utilidade');
   const [subAbaClasse, setSubAbaClasse] = useState<SubAbaClasse>('todas');
   const [subAbaElemento, setSubAbaElemento] = useState<string | null>(null);
   const [busca, setBusca] = useState('');
+
+  const { nex, atributos, periciasHook, trilhasHook } = useRPG();
+  const contextoPrereq = useMemo(() => {
+    const nomesPoderes = Object.values(poderesHook.poderesEscolhidos).map(p => p.nome.toLowerCase());
+    
+    if (trilhasHook.trilhaEscolhida) {
+      const t = trilhasHook.trilhaEscolhida;
+      if (nex >= 10 && t.Nome_Habilidade_10) nomesPoderes.push(t.Nome_Habilidade_10.toLowerCase());
+      if (nex >= 40 && t.Nome_Habilidade_40) nomesPoderes.push(t.Nome_Habilidade_40.toLowerCase());
+      if (nex >= 65 && t.Nome_Habilidade_65) nomesPoderes.push(t.Nome_Habilidade_65.toLowerCase());
+      if (nex >= 99 && t.Nome_Habilidade_99) nomesPoderes.push(t.Nome_Habilidade_99.toLowerCase());
+    }
+
+    return {
+      atributos,
+      nex,
+      pericias: periciasHook.pericias,
+      nomesPericias: periciasHook.nomesPericias,
+      poderes: nomesPoderes
+    };
+  }, [atributos, nex, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, trilhasHook.trilhaEscolhida]);
 
   const [poderesExpandidos, setPoderesExpandidos] = useState<number[]>([]);
 
@@ -76,6 +101,8 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
       });
       return lista.sort((a, b) => sortPorElementoENome(a, b, p => p.Elemento, p => p.Nome));
     }
+
+    if (abaPrincipal === 'trilhas') return []; // Handled separately
 
     return poderesGerais
       .filter(p => {
@@ -110,12 +137,35 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
       .sort((a, b) => a.Nome.localeCompare(b.Nome));
   }, [abaPrincipal, subAbaClasse, subAbaElemento, poderesGerais, poderesParanormais]);
 
+  const trilhasFiltradas = useMemo(() => {
+    return trilhas
+      .filter(t => {
+        const classeTrilha = (t.Classe_Trilha || '').toLowerCase();
+        if (subAbaClasse !== 'todas') {
+          // Para "geral", verifica se a classe contém 'geral' ou 'todas'
+          if (subAbaClasse === 'geral') {
+            if (classeTrilha !== 'geral' && classeTrilha !== 'todas' && classeTrilha !== 'todos') return false;
+          } else {
+            if (classeTrilha !== subAbaClasse) return false;
+          }
+        }
+        
+        if (busca.trim()) {
+          const lower = busca.toLowerCase();
+          if (!t.Nome_Trilha.toLowerCase().includes(lower)) return false;
+        }
+        return true;
+      })
+      .sort((a, b) => a.Nome_Trilha.localeCompare(b.Nome_Trilha));
+  }, [subAbaClasse, busca, trilhas]);
+
   if (!isOpen) return null;
 
   const abas: { id: MainAba; label: string }[] = [
     { id: 'utilidade', label: 'Utilidade' },
     { id: 'combate', label: 'Combate' },
     { id: 'gerais', label: 'Gerais' },
+    { id: 'trilhas', label: 'Trilhas' },
     { id: 'paranormais', label: 'Paranormais' },
   ];
 
@@ -124,9 +174,10 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
     { id: 'combatente', label: 'Combatente' },
     { id: 'especialista', label: 'Especialista' },
     { id: 'ocultista', label: 'Ocultista' },
+    { id: 'geral', label: 'Gerais' },
   ];
 
-  const subAbasElementos = ['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo'];
+  const subAbasElementos = ['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo', 'Varia'];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" onClick={onClose}>
@@ -167,7 +218,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
         </div>
 
           {/* Sub Abas */}
-          {(abaPrincipal === 'utilidade' || abaPrincipal === 'combate') && (
+          {(abaPrincipal === 'utilidade' || abaPrincipal === 'combate' || abaPrincipal === 'trilhas') && (
             <div className="flex flex-wrap gap-1 border-b border-zinc-800 bg-zinc-950/80 px-3 py-2">
               {subAbasClasses.map(sub => (
                 <button
@@ -222,10 +273,111 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
 
         {/* Lista */}
         <div className="flex-1 overflow-y-auto p-5">
-          {listaFiltrada.map(poder => {
+          {abaPrincipal === 'trilhas' && trilhasFiltradas.map(trilha => {
+            const codigo = trilha.Codigo_Trilha;
+            const estaExpandido = poderesExpandidos.includes(codigo);
+            return (
+              <div key={codigo} className="mb-3 overflow-hidden rounded-r border-l-4 border-zinc-600 bg-zinc-950/60">
+                <div
+                  onClick={() => toggleExpandir(codigo)}
+                  className="flex cursor-pointer items-center justify-between gap-3 bg-zinc-900/80 px-4 py-3 transition hover:bg-zinc-800/80"
+                >
+                  <div className="flex flex-col items-start gap-1">
+                    <span className="font-bold text-zinc-100">{trilha.Nome_Trilha}</span>
+                    <span className="inline-block rounded bg-zinc-800 px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight text-zinc-400">
+                      {trilha.Classe_Trilha}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // Adicionar a trilha inteira (4 poderes)
+                        [10, 40, 65, 99].forEach(nex => {
+                          onEscolher({
+                            codigo_poder: Date.now() + nex,
+                            Nome: `${trilha.Nome_Trilha} - ${(trilha as any)[`Nome_Habilidade_${nex}`]}`,
+                            Descricao: (trilha as any)[`Descricao_Habilidade_${nex}`],
+                            Tipo: 'Trilha',
+                            Classe: trilha.Classe_Trilha,
+                            Fonte: trilha.Fonte_Trilha,
+                          } as Poder);
+                        });
+                        onClose();
+                      }}
+                      className="rounded bg-zinc-700 px-3.5 py-1.5 text-[0.65rem] font-bold uppercase text-zinc-100 transition hover:bg-zinc-600"
+                    >
+                      Escolher Trilha Completa
+                    </button>
+                    <span className="w-5 text-center text-zinc-600">
+                      {estaExpandido ? '▲' : '▼'}
+                    </span>
+                  </div>
+                </div>
+
+                {estaExpandido && (
+                  <div className="border-t border-zinc-800 px-5 py-4 text-left">
+                    <div className="mb-4 text-sm leading-relaxed text-zinc-400" dangerouslySetInnerHTML={{ __html: formatarDescricao(trilha.Descricao_Trilha) }} />
+                    
+                    {[10, 40, 65, 99].map(nexLvl => {
+                      const habNameKey = `Nome_Habilidade_${nexLvl}` as keyof typeof trilha;
+                      const habDescKey = `Descricao_Habilidade_${nexLvl}` as keyof typeof trilha;
+                      const nomeHab = trilha[habNameKey] as string;
+                      const descHab = trilha[habDescKey] as string;
+                      
+                      if (!nomeHab) return null;
+
+                      return (
+                        <div key={nexLvl} className="mb-2 rounded border border-zinc-800 bg-zinc-900/40 p-3">
+                          <div className="mb-2 flex items-center justify-between">
+                            <span className="text-sm font-bold text-zinc-300">
+                              NEX {nexLvl}% - <span className="text-zinc-400">{nomeHab}</span>
+                            </span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onEscolher({
+                                  codigo_poder: Date.now() + nexLvl,
+                                  Nome: `${trilha.Nome_Trilha} - ${nomeHab}`,
+                                  Descricao: descHab,
+                                  Tipo: 'Trilha',
+                                  Classe: trilha.Classe_Trilha,
+                                  Fonte: trilha.Fonte_Trilha,
+                                } as Poder);
+                                onClose();
+                              }}
+                              className="rounded bg-red-900/60 px-2 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-200 transition hover:bg-red-800/80"
+                            >
+                              Escolher
+                            </button>
+                          </div>
+                          <div className="text-xs leading-relaxed text-zinc-500" dangerouslySetInnerHTML={{ __html: formatarDescricao(descHab) }} />
+                        </div>
+                      );
+                    })}
+
+                    {trilha.Especial_Trilha && (
+                      <div className="mt-3 inline-block rounded bg-purple-400/5 px-3 py-2 text-xs italic text-purple-400">
+                        <strong>Especial:</strong> {trilha.Especial_Trilha}
+                      </div>
+                    )}
+
+                    {trilha.Fonte_Trilha && (
+                      <div className="mt-2 text-[0.6rem] uppercase tracking-wider text-zinc-600">
+                        Fonte: {trilha.Fonte_Trilha}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {abaPrincipal !== 'trilhas' && listaFiltrada.map(poder => {
             const codigo = 'codigo_poder' in poder ? poder.codigo_poder : (poder as Poder).codigo_poder;
             const ehParanormal = abaPrincipal === 'paranormais';
             const estaExpandido = poderesExpandidos.includes(codigo);
+            const val = verificarPreRequisitos(poder as Poder, contextoPrereq);
 
             return (
               <div key={codigo} className="mb-3 overflow-hidden rounded-r border-l-4 border-red-800 bg-zinc-950/60">
@@ -281,7 +433,13 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
 
                     {poder.PreRequisitos && (
                       <div className="mt-3 inline-block rounded bg-amber-400/5 px-3 py-2 text-xs italic text-amber-400">
-                        <strong>Pré-requisitos:</strong> {poder.PreRequisitos}
+                        <strong>Pré-requisitos:</strong> {formatarTextoPreRequisitos(poder.PreRequisitos, contextoPrereq.nomesPericias)}
+                      </div>
+                    )}
+                    
+                    {!val.atende && val.motivo && (
+                      <div className="mt-2 block rounded bg-red-900/20 px-3 py-2 text-xs italic text-red-400">
+                        <strong>Aviso de Requisitos:</strong> Oficialmente requer {val.motivo} (Adição livre)
                       </div>
                     )}
 
@@ -302,9 +460,15 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
             );
           })}
           
-          {listaFiltrada.length === 0 && (
+          {abaPrincipal !== 'trilhas' && listaFiltrada.length === 0 && (
             <div className="py-10 text-center text-zinc-500">
               Nenhum poder encontrado nesta categoria.
+            </div>
+          )}
+          
+          {abaPrincipal === 'trilhas' && trilhasFiltradas.length === 0 && (
+            <div className="py-10 text-center text-zinc-500">
+              Nenhuma trilha encontrada nesta categoria.
             </div>
           )}
         </div>

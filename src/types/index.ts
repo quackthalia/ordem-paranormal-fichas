@@ -37,6 +37,7 @@ export interface Poder {
   Tipo: string;
   PreRequisitos: string;
   Fonte: string;
+  Pre_Codigo?: number | null;
 }
 
 export interface PoderParanormal {
@@ -75,7 +76,7 @@ export interface PoderSlot {
   fonte?: string;
   afinidade?: string;
   elemento?: string;
-  categoria?: 'utilidade' | 'combate' | 'gerais' | 'paranormais';
+  categoria?: 'utilidade' | 'combate' | 'gerais' | 'paranormais' | 'trilha';
 }
 
 export interface PoderesEscolhidos {

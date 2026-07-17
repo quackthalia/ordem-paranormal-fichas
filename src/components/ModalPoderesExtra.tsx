@@ -44,7 +44,7 @@ interface ModalPoderesExtraProps {
   poderesGerais: Poder[];
   poderesParanormais: PoderParanormal[];
   trilhas?: Trilha[];
-  onEscolher: (poder: Poder | PoderParanormal) => void;
+  onEscolher: (poder: Poder | PoderParanormal, elemento?: string) => void;
 }
 
 type MainAba = 'utilidade' | 'combate' | 'gerais' | 'paranormais' | 'trilhas';
@@ -63,12 +63,16 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
   const [subAbaElemento, setSubAbaElemento] = useState<string | null>(null);
   const [busca, setBusca] = useState('');
 
-  const { nex, atributos, periciasHook, trilhasHook } = useRPG();
+  const { nex, atributos, periciasHook, trilhasHook, poderesHook } = useRPG();
   const contextoPrereq = useMemo(() => {
     const nomesPoderes = Object.values(poderesHook.poderesEscolhidos).map(p => p.nome.toLowerCase());
     
-    if (trilhasHook.trilhaEscolhida) {
-      const t = trilhasHook.trilhaEscolhida;
+    if (poderesHook.poderClasse) {
+      nomesPoderes.push(poderesHook.poderClasse.Nome.toLowerCase());
+    }
+
+    if (trilhasHook.trilhaSelecionada) {
+      const t = trilhasHook.trilhaSelecionada;
       if (nex >= 10 && t.Nome_Habilidade_10) nomesPoderes.push(t.Nome_Habilidade_10.toLowerCase());
       if (nex >= 40 && t.Nome_Habilidade_40) nomesPoderes.push(t.Nome_Habilidade_40.toLowerCase());
       if (nex >= 65 && t.Nome_Habilidade_65) nomesPoderes.push(t.Nome_Habilidade_65.toLowerCase());
@@ -82,9 +86,10 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
       nomesPericias: periciasHook.nomesPericias,
       poderes: nomesPoderes
     };
-  }, [atributos, nex, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, trilhasHook.trilhaEscolhida]);
+  }, [atributos, nex, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, trilhasHook.trilhaSelecionada]);
 
   const [poderesExpandidos, setPoderesExpandidos] = useState<number[]>([]);
+  const [escolhendoElementoId, setEscolhendoElementoId] = useState<number | null>(null);
 
   const toggleExpandir = (codigo: number) => {
     setPoderesExpandidos(prev => 
@@ -405,16 +410,56 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                     )}
                   </div>
                   <div className="flex items-center gap-3">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onEscolher(poder);
-                        onClose();
-                      }}
-                      className="rounded bg-red-700 px-3.5 py-1.5 text-xs font-bold uppercase text-zinc-100 transition hover:bg-red-600"
-                    >
-                      Escolher
-                    </button>
+                    {escolhendoElementoId === codigo ? (
+                      <div className="flex gap-1 items-center bg-zinc-950 p-1 rounded border border-zinc-800">
+                        <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline">Elemento:</span>
+                        {['Sangue', 'Morte', 'Conhecimento', 'Energia'].map(elem => {
+                          const valElem = verificarPreRequisitos(poder as Poder, contextoPrereq, elem);
+                          return (
+                            <button
+                              key={elem}
+                              title={valElem.motivo || ''}
+                              onClick={(e) => { 
+                                e.stopPropagation(); 
+                                setEscolhendoElementoId(null); 
+                                onEscolher(poder, elem); 
+                                onClose(); 
+                              }}
+                              className={`rounded px-1.5 py-0.5 text-[0.55rem] font-bold uppercase transition border ${
+                                !valElem.atende 
+                                  ? 'bg-zinc-900 border-red-900/50 text-red-500 hover:bg-red-900/20' // Adição livre com warning
+                                  : 'border-zinc-700 hover:scale-105'
+                              }`}
+                              style={valElem.atende ? { backgroundColor: obterCorBadge(elem), color: obterCorTexto(elem) } : undefined}
+                            >
+                              {elem}
+                            </button>
+                          );
+                        })}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setEscolhendoElementoId(null); }}
+                          className="ml-1 rounded px-1 py-0.5 text-[0.6rem] font-bold text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 transition"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const precisaElemento = poder.Nome.toLowerCase().includes('elemento') || ((poder as any).Descricao && (poder as any).Descricao.toLowerCase().includes('escolha um elemento'));
+                          if (precisaElemento) {
+                            setEscolhendoElementoId(codigo);
+                          } else {
+                            onEscolher(poder);
+                            onClose();
+                          }
+                        }}
+                        className="rounded bg-red-700 px-3.5 py-1.5 text-xs font-bold uppercase text-zinc-100 transition hover:bg-red-600"
+                      >
+                        Escolher
+                      </button>
+                    )}
                     <span className="w-5 text-center text-zinc-600">
                       {estaExpandido ? '▲' : '▼'}
                     </span>

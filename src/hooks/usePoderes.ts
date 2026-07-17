@@ -142,28 +142,38 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
   const escolherPoder = useCallback((
     nex: number,
     poder: Poder | PoderParanormal,
-    categoria?: 'utilidade' | 'combate' | 'gerais' | 'trilha'
+    categoria?: 'utilidade' | 'combate' | 'gerais' | 'trilha',
+    elementoEscolhido?: string
   ) => {
     const pp = poder as PoderParanormal;
     const isParanormal = 'Elemento' in pp || 'Afinidade' in pp;
     const catFinal: 'utilidade' | 'combate' | 'gerais' | 'paranormais' | 'trilha' = 
       isParanormal ? 'paranormais' : (categoria || 'utilidade');
 
+    let nomeFinal = poder.Nome;
+    if (elementoEscolhido) {
+      if (nomeFinal.includes('<Elemento>')) {
+        nomeFinal = nomeFinal.replace('<Elemento>', elementoEscolhido);
+      } else {
+        nomeFinal = `${nomeFinal} (${elementoEscolhido})`;
+      }
+    }
+
     setPoderesEscolhidos(prev => ({
       ...prev,
       [nex]: {
-        nome: poder.Nome,
+        nome: nomeFinal,
         descricao: poder.Descricao,
         preRequisitos: poder.PreRequisitos,
         fonte: (poder as Poder).Fonte || (poder as any).fonte || pp.Fonte || '',
         afinidade: pp.Afinidade || '',
-        elemento: pp.Elemento || undefined,
+        elemento: elementoEscolhido || pp.Elemento || undefined,
         categoria: catFinal,
       },
     }));
   }, []);
 
-  const escolherPoderExtra = useCallback((poder: Poder | PoderParanormal) => {
+  const escolherPoderExtra = useCallback((poder: Poder | PoderParanormal, elementoEscolhido?: string) => {
     const pp = poder as PoderParanormal;
     const isParanormal = 'Elemento' in pp || 'Afinidade' in pp;
     const isTrilha = (poder as Poder).Tipo?.toLowerCase() === 'trilha';
@@ -172,15 +182,24 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
 
     const uniqueId = `extra_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
     
+    let nomeFinal = poder.Nome;
+    if (elementoEscolhido) {
+      if (nomeFinal.includes('<Elemento>')) {
+        nomeFinal = nomeFinal.replace('<Elemento>', elementoEscolhido);
+      } else {
+        nomeFinal = `${nomeFinal} (${elementoEscolhido})`;
+      }
+    }
+
     setPoderesEscolhidos(prev => ({
       ...prev,
       [uniqueId]: {
-        nome: poder.Nome,
+        nome: nomeFinal,
         descricao: poder.Descricao,
         preRequisitos: poder.PreRequisitos,
         fonte: (poder as Poder).Fonte || (poder as any).fonte || pp.Fonte || '',
         afinidade: pp.Afinidade || '',
-        elemento: pp.Elemento || undefined,
+        elemento: elementoEscolhido || pp.Elemento || undefined,
         categoria: catFinal,
       },
     }));

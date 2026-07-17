@@ -67,11 +67,14 @@ function PoderCard({
   };
   estaExpandido: boolean;
   onToggle: () => void;
-  onEscolher: () => void;
+  onEscolher: (elementoEscolhido?: string) => void;
   contextoPrereq?: ContextoPreRequisitos;
 }) {
   const val = contextoPrereq ? verificarPreRequisitos(poder as Poder, contextoPrereq) : { atende: true };
   const bloqueado = !val.atende;
+
+  const precisaEscolherElemento = poder.Nome.toLowerCase().includes('elemento') || (poder.Descricao && poder.Descricao.toLowerCase().includes('escolha um elemento'));
+  const [escolhendoElemento, setEscolhendoElemento] = useState(false);
 
   return (
     <div className="mb-3 overflow-hidden rounded-r border-l-4 border-red-800 bg-zinc-950/60">
@@ -94,17 +97,56 @@ function PoderCard({
           )}
         </div>
         <div className="flex items-center gap-3">
-          <button
-            disabled={bloqueado}
-            onClick={(e) => { e.stopPropagation(); onEscolher(); }}
-            className={`rounded px-3.5 py-1.5 text-xs font-bold uppercase transition ${
-              bloqueado 
-                ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
-                : 'bg-red-700 text-zinc-100 hover:bg-red-600'
-            }`}
-          >
-            Escolher
-          </button>
+          {escolhendoElemento ? (
+            <div className="flex gap-1 items-center bg-zinc-950 p-1 rounded border border-zinc-800">
+              <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline">Elemento:</span>
+              {['Sangue', 'Morte', 'Conhecimento', 'Energia'].map(elem => {
+                const valElem = contextoPrereq ? verificarPreRequisitos(poder as Poder, contextoPrereq, elem) : { atende: true };
+                return (
+                  <button
+                    key={elem}
+                    disabled={!valElem.atende}
+                    title={valElem.motivo || ''}
+                    onClick={(e) => { e.stopPropagation(); setEscolhendoElemento(false); onEscolher(elem); }}
+                    className={`rounded px-1.5 py-0.5 text-[0.55rem] font-bold uppercase transition border ${
+                      !valElem.atende 
+                        ? 'bg-zinc-900 border-zinc-800 text-zinc-600 cursor-not-allowed opacity-50'
+                        : 'border-zinc-700 hover:scale-105'
+                    }`}
+                    style={valElem.atende ? { backgroundColor: obterCorBadge(elem), color: obterCorTexto(elem) } : undefined}
+                  >
+                    {elem}
+                  </button>
+                );
+              })}
+              <button
+                onClick={(e) => { e.stopPropagation(); setEscolhendoElemento(false); }}
+                className="ml-1 rounded px-1 py-0.5 text-[0.6rem] font-bold text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 transition"
+              >
+                ✕
+              </button>
+            </div>
+          ) : (
+            <button
+              disabled={bloqueado}
+              title={val.motivo || ''}
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                if (precisaEscolherElemento) {
+                  setEscolhendoElemento(true);
+                } else {
+                  onEscolher(); 
+                }
+              }}
+              className={`rounded px-3.5 py-1.5 text-xs font-bold uppercase transition ${
+                bloqueado 
+                  ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
+                  : 'bg-red-700 text-zinc-100 hover:bg-red-600'
+              }`}
+            >
+              Escolher
+            </button>
+          )}
           <span className="w-5 text-center text-zinc-600">
             {estaExpandido ? '▲' : '▼'}
           </span>
@@ -171,13 +213,19 @@ export const ModalPoderes: React.FC = () => {
   const contextoPrereq = useMemo(() => {
     const nomesPoderes = Object.values(poderesHook.poderesEscolhidos).map(p => p.nome.toLowerCase());
     
-    if (trilhasHook.trilhaEscolhida) {
-      const t = trilhasHook.trilhaEscolhida;
+    if (poderesHook.poderClasse) {
+      nomesPoderes.push(poderesHook.poderClasse.Nome.toLowerCase());
+    }
+
+    if (trilhasHook.trilhaSelecionada) {
+      const t = trilhasHook.trilhaSelecionada;
       if (nex >= 10 && t.Nome_Habilidade_10) nomesPoderes.push(t.Nome_Habilidade_10.toLowerCase());
       if (nex >= 40 && t.Nome_Habilidade_40) nomesPoderes.push(t.Nome_Habilidade_40.toLowerCase());
       if (nex >= 65 && t.Nome_Habilidade_65) nomesPoderes.push(t.Nome_Habilidade_65.toLowerCase());
       if (nex >= 99 && t.Nome_Habilidade_99) nomesPoderes.push(t.Nome_Habilidade_99.toLowerCase());
     }
+
+    console.log("PODERES NO CONTEXTO:", nomesPoderes);
 
     return {
       atributos,
@@ -452,13 +500,13 @@ export const ModalPoderes: React.FC = () => {
                       : [...prev, poder.codigo_poder]
                   );
                 }}
-                onEscolher={() => {
+                onEscolher={(elem) => {
                   let categoria: 'utilidade' | 'combate' | 'gerais' = 'utilidade';
                   if (abaModalPoderes === 'combate') categoria = 'combate';
                   else if (abaModalPoderes === 'gerais') categoria = 'gerais';
                   
                   const nexEscolhido = nexModalAberto!;
-                  escolherPoder(nexEscolhido, poder, categoria);
+                  escolherPoder(nexEscolhido, poder, categoria, elem);
                   setNexModalAberto(null);
 
                   if (poder.Nome.toLowerCase() === 'aprender ritual') {

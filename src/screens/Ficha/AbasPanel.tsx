@@ -199,7 +199,7 @@ export const AbasPanel: React.FC = () => {
       contagemPoderes[nomeBase] = (contagemPoderes[nomeBase] || 0) + 1;
     });
 
-    const lista: HabilidadeItem[] = [];
+    let lista: HabilidadeItem[] = [];
 
     // 1. Origem
     if (origemSelecionada?.Nome_Poder) {
@@ -232,6 +232,7 @@ export const AbasPanel: React.FC = () => {
           descricao: 'Clique no "+" para abrir a lista e selecionar sua trilha.',
           tipo: regras['nex_experiencia'] ? `Nível 2` : `NEX 10%`,
           isSlotVazio: true,
+          nexDoSlot: 10,
           categoria: 'trilha',
         });
       }
@@ -255,6 +256,7 @@ export const AbasPanel: React.FC = () => {
           descricao: `Em ${regras['nex_experiencia'] ? 'Nível 10' : 'NEX 50%'}, escolha entre receber um poder de ${classe.toLowerCase()} ou o primeiro poder de uma trilha de ${classe.toLowerCase()} que não a sua. Clique no "+" para selecionar.`,
           tipo: regras['nex_experiencia'] ? `Nível 10` : `NEX 50%`,
           isSlotVazio: true,
+          nexDoSlot: 50,
           categoria: 'trilha',
         });
       }
@@ -394,6 +396,26 @@ export const AbasPanel: React.FC = () => {
         });
       }
     });
+    // Desbloqueio Cronológico: Separado por Combate e Utilidade/Trilha
+    const slotsVazios = lista.filter(h => h.isSlotVazio && h.nexDoSlot !== undefined);
+    if (slotsVazios.length > 0) {
+      const vaziosCombate = slotsVazios.filter(h => h.categoria === 'combate');
+      const vaziosUtilidade = slotsVazios.filter(h => h.categoria === 'utilidade' || h.categoria === 'trilha');
+      
+      const menorNexCombate = vaziosCombate.length > 0 ? Math.min(...vaziosCombate.map(h => h.nexDoSlot!)) : Infinity;
+      const menorNexUtilidade = vaziosUtilidade.length > 0 ? Math.min(...vaziosUtilidade.map(h => h.nexDoSlot!)) : Infinity;
+      
+      lista = lista.filter(h => {
+        if (h.isSlotVazio && h.nexDoSlot !== undefined) {
+          if (h.categoria === 'combate') {
+            return h.nexDoSlot <= menorNexCombate;
+          } else if (h.categoria === 'utilidade' || h.categoria === 'trilha') {
+            return h.nexDoSlot <= menorNexUtilidade;
+          }
+        }
+        return true;
+      });
+    }
 
     return lista;
   }, [classe, nex, origemSelecionada, poderClasse, poderesClasse, poderesEscolhidos, poderesParanormaisMap, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras, trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada]);

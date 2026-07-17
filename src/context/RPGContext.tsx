@@ -170,7 +170,12 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const origensHook = useOrigem();
   const rituaisHook = useRituais();
   const trilhasHook = useTrilhas();
-  const status = useStatus(classe, nex, atributos);
+
+  const quantidadePoderesParanormais = useMemo(() => {
+    return Object.values(poderesHook.poderesEscolhidos).filter(p => p.categoria === 'paranormais').length;
+  }, [poderesHook.poderesEscolhidos]);
+
+  const status = useStatus(classe, nex, atributos, quantidadePoderesParanormais);
 
   const afinidadeAtiva = useMemo(() => {
     if (!afinidadeEscolhida) return false;

@@ -19,7 +19,7 @@ function obterCorBadge(elemento: string): string {
 
 function obterCorTexto(elemento: string): string {
   const e = elemento?.toLowerCase();
-  if (e === 'medo' || e === 'conhecimento') return '#000000';
+  if (e === 'medo') return '#000000';
   return '#ffffff';
 }
 

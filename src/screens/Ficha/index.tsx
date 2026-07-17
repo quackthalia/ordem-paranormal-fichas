@@ -5,6 +5,7 @@ import { PericiasTable } from './PericiasTable';
 import { AbasPanel } from './AbasPanel';
 import { ModalPoderes } from '../../components/ModalPoderes';
 import { obterCorBadge } from '../../utils/rpgRules';
+import { CharacterHeader } from './CharacterHeader';
 
 export const FichaScreen: React.FC = () => {
   const {
@@ -27,27 +28,31 @@ export const FichaScreen: React.FC = () => {
   };
 
   return (
-    <div className="w-full px-2 md:px-5">
-      <h2 className="font-display mb-10 text-center text-2xl uppercase tracking-[0.2em] text-zinc-100">
-        Ficha de <span className="text-red-500">{classe}</span>
-      </h2>
+    <div className="mx-auto flex w-full max-w-[1600px] flex-col">
+      <div className="flex w-full justify-between gap-6 xl:gap-10">
+        
+        {/* BLOCO ESQUERDO: Header + (Atributos e Perícias) */}
+        <div className="flex flex-[2_2_66%] flex-col gap-6">
+          <CharacterHeader />
+          
+          <div className="flex w-full justify-between gap-6 xl:gap-10">
+            {/* COLUNA ESQUERDA: Atributos + Status + Defesa + Proteções */}
+            <div className="flex flex-1 flex-col gap-5 pb-10">
+              <AtributosFicha />
+              <StatusPanel />
+              <DefesaPanel />
+              <ProtecoesPanel />
+            </div>
 
-      <div className="flex w-full flex-wrap justify-between gap-5">
-        {/* COLUNA ESQUERDA: Atributos + Status + Defesa + Proteções */}
-        <div className="min-w-[340px] flex-[1_1_30%]">
-          <AtributosFicha />
-          <StatusPanel />
-          <DefesaPanel />
-          <ProtecoesPanel />
-        </div>
-
-        {/* COLUNA MEIO: Perícias */}
-        <div className="min-w-[340px] flex-[1_1_32%]">
-          <PericiasTable />
+            {/* COLUNA MEIO: Perícias */}
+            <div className="flex flex-1 flex-col pb-10">
+              <PericiasTable />
+            </div>
+          </div>
         </div>
 
         {/* COLUNA DIREITA: Abas (Combate, Habilidades, Rituais...) */}
-        <div className="min-w-[340px] flex-[1_1_34%]">
+        <div className="flex min-w-[320px] flex-[1_1_34%] flex-col pb-10 pt-[22px]">
           <AbasPanel />
         </div>
       </div>

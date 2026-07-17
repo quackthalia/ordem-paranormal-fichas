@@ -25,6 +25,8 @@ export interface Pericia {
   atributo: AtributoKey;
   treino: number;
   outros: number;
+  kit?: boolean;
+  descricao?: string;
 }
 
 export type PericiasMap = Record<string, Pericia>;

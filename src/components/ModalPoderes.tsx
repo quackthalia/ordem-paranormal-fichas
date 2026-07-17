@@ -29,7 +29,7 @@ function obterCorBadge(elemento: string): string {
 
 function obterCorTexto(elemento: string): string {
   const e = elemento.toLowerCase();
-  if (e === 'medo' || e === 'conhecimento') return '#000000';
+  if (e === 'medo') return '#000000';
   return '#ffffff';
 }
 
@@ -208,6 +208,7 @@ export const ModalPoderes: React.FC = () => {
     periciasHook,
     nex,
     trilhasHook,
+    rituaisHook,
   } = useRPG();
 
   const contextoPrereq = useMemo(() => {
@@ -232,9 +233,11 @@ export const ModalPoderes: React.FC = () => {
       nex,
       pericias: periciasHook.pericias,
       nomesPericias: periciasHook.nomesPericias,
-      poderes: nomesPoderes
+      poderes: nomesPoderes,
+      rituaisAprendidos: rituaisHook.rituaisAprendidos,
+      rituais: rituaisHook.rituais
     };
-  }, [atributos, nex, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, trilhasHook.trilhaEscolhida]);
+  }, [atributos, nex, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, trilhasHook.trilhaEscolhida, rituaisHook.rituaisAprendidos, rituaisHook.rituais]);
 
   const editorRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);

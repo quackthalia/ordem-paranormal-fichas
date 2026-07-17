@@ -6,6 +6,8 @@ export interface ContextoPreRequisitos {
   pericias: PericiasMap;
   nomesPericias: Record<number, string>;
   poderes: string[];
+  rituaisAprendidos?: import('../types').RitualAprendido[];
+  rituais?: import('../types').Ritual[];
 }
 
 export interface ResultadoValidacao {
@@ -271,7 +273,29 @@ export function verificarPreRequisitos(
       const resAttr = verificarAtributo(textoLower);
       if (!resAttr.atende) return resAttr;
 
-      if (contexto.nex < 25) return { atende: false, motivo: 'Rituais de 2º Círculo' };
+      if (!elementoTentado) {
+        if (contexto.nex < 25) return { atende: false, motivo: 'Acesso a 2º Círculo' };
+      } else {
+        if (contexto.rituaisAprendidos && contexto.rituais) {
+          const temRitual = contexto.rituaisAprendidos.some(ra => {
+            const ritualBase = contexto.rituais?.find(r => r.Codigo_Ritual === ra.codigo_ritual);
+            if (!ritualBase) return false;
+            if (ritualBase.Circulo_Ritual < 2) return false;
+            
+            const elementoDoRitual = ritualBase.Elemento_Ritual.toLowerCase();
+            if (elementoDoRitual === 'lista' || elementoDoRitual === 'varia' || elementoDoRitual === 'vária') {
+               return ra.elemento_escolhido?.toLowerCase() === elementoTentado.toLowerCase();
+            }
+            return elementoDoRitual === elementoTentado.toLowerCase();
+          });
+
+          if (!temRitual) {
+            return { atende: false, motivo: `Ritual de 2º Círculo (${elementoTentado})` };
+          }
+        } else {
+          if (contexto.nex < 25) return { atende: false, motivo: `Ritual de 2º Círculo (${elementoTentado})` };
+        }
+      }
       
       return { atende: true };
     }

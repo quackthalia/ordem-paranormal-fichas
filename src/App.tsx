@@ -23,10 +23,20 @@ function Rotas() {
 function App() {
   return (
     <RPGProvider>
-      <div className="min-h-screen px-6 py-8 md:px-10">
-        <Rotas />
-      </div>
+      <AppContent />
     </RPGProvider>
+  );
+}
+
+function AppContent() {
+  const { telaAtual } = useRPG();
+  
+  const isFicha = telaAtual === 'ficha';
+
+  return (
+    <div className="min-h-screen w-full bg-zinc-950 p-4 md:p-6 overflow-x-hidden">
+      <Rotas />
+    </div>
   );
 }
 

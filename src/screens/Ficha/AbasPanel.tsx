@@ -68,7 +68,7 @@ function obterCorTexto(elemento: string): string {
   if (!elemento) return '#ffffff';
   const e = elemento.toLowerCase();
   if (e.includes(' e ')) return '#ffffff';
-  if (e === 'medo' || e === 'conhecimento') return '#000000';
+  if (e === 'medo') return '#000000';
   return '#ffffff';
 }
 
@@ -400,17 +400,21 @@ export const AbasPanel: React.FC = () => {
     const slotsVazios = lista.filter(h => h.isSlotVazio && h.nexDoSlot !== undefined);
     if (slotsVazios.length > 0) {
       const vaziosCombate = slotsVazios.filter(h => h.categoria === 'combate');
-      const vaziosUtilidade = slotsVazios.filter(h => h.categoria === 'utilidade' || h.categoria === 'trilha');
+      const vaziosUtilidade = slotsVazios.filter(h => h.categoria === 'utilidade');
+      const vaziosTrilha = slotsVazios.filter(h => h.categoria === 'trilha');
       
       const menorNexCombate = vaziosCombate.length > 0 ? Math.min(...vaziosCombate.map(h => h.nexDoSlot!)) : Infinity;
       const menorNexUtilidade = vaziosUtilidade.length > 0 ? Math.min(...vaziosUtilidade.map(h => h.nexDoSlot!)) : Infinity;
+      const menorNexTrilha = vaziosTrilha.length > 0 ? Math.min(...vaziosTrilha.map(h => h.nexDoSlot!)) : Infinity;
       
       lista = lista.filter(h => {
         if (h.isSlotVazio && h.nexDoSlot !== undefined) {
           if (h.categoria === 'combate') {
             return h.nexDoSlot <= menorNexCombate;
-          } else if (h.categoria === 'utilidade' || h.categoria === 'trilha') {
+          } else if (h.categoria === 'utilidade') {
             return h.nexDoSlot <= menorNexUtilidade;
+          } else if (h.categoria === 'trilha') {
+            return h.nexDoSlot <= menorNexTrilha;
           }
         }
         return true;
@@ -436,12 +440,12 @@ export const AbasPanel: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col rounded-lg border border-zinc-800 bg-zinc-900/60 p-5">
-      <div className="mb-5 flex overflow-x-auto border-b border-zinc-800 bg-zinc-900/40">
+    <div className="flex flex-col h-full min-h-0 rounded-lg border border-zinc-800 bg-zinc-900/60 p-5">
+      <div className="mb-5 flex flex-wrap gap-x-1 gap-y-1 border-b border-zinc-800">
         {(['combate','habilidades','rituais','inventario','descricao','regras'] as const).map(aba => (
           <button key={aba} onClick={() => setAbaDireita(aba)}
-            className={`min-w-[70px] flex-1 rounded-t px-1 py-2.5 text-xs font-bold uppercase tracking-wider transition ${
-              abaDireita === aba ? 'border border-b-0 border-red-900 bg-zinc-900/60 text-zinc-100' : 'border border-transparent text-zinc-500 hover:bg-zinc-800/30 hover:text-zinc-300'
+            className={`px-1.5 py-2 text-xs font-bold uppercase tracking-wider transition whitespace-nowrap ${
+              abaDireita === aba ? 'border-b-2 border-red-800 text-zinc-100' : 'border-b-2 border-transparent text-zinc-500 hover:text-zinc-300'
             }`}
           >{aba === 'inventario' ? 'Inventário' : aba === 'descricao' ? 'Descrição' : aba === 'regras' ? 'Regras' : aba}</button>
         ))}
@@ -460,7 +464,7 @@ export const AbasPanel: React.FC = () => {
               <button onClick={() => setModalExtraAberto(true)} className="whitespace-nowrap rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-xs font-bold text-zinc-200 transition hover:border-red-800 hover:bg-red-950/40">+ Adicionar</button>
             </div>
 
-            <div className="flex flex-1 flex-col gap-0 overflow-y-auto pr-1">
+            <div className="flex flex-1 flex-col gap-0 overflow-y-auto pr-1 min-h-0 custom-scrollbar">
               {ordemCategorias.map(categoria => {
                 const itensDaCategoria = habilidadesFiltradas.filter(h => h.categoria === categoria);
                 if (itensDaCategoria.length === 0) return null;
@@ -744,12 +748,27 @@ export const AbasPanel: React.FC = () => {
 
         {abaDireita === 'rituais' && (() => {
           // 1. Calcular slots vazios de Poder "Aprender Ritual"
-          const slotsPoderPendentes = Object.entries(poderesEscolhidos)
+          const slotsPoderPendentesRaw = Object.entries(poderesEscolhidos)
             .filter(([nexStr, poder]) => poder.nome.trim().toLowerCase() === 'aprender ritual')
             .map(([nexStr]) => nexStr);
+            
+          // Filtra os que já foram pegos
+          const slotsPoderPendentesList = [];
+          for (const chave of slotsPoderPendentesRaw) {
+             const pego = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === `poder_57_${chave}`);
+             if (!pego) {
+                const isExtra = chave.startsWith('extra_');
+                const nivelNum = isExtra ? nex : parseInt(chave, 10);
+                let c = 1;
+                if (nivelNum >= 85) c = 4;
+                else if (nivelNum >= 55) c = 3;
+                else if (nivelNum >= 25) c = 2;
+                slotsPoderPendentesList.push({ chave, isExtra, nex: nivelNum, maxCirculo: c, isOcultista: false });
+             }
+          }
 
           // 2. Calcular slots vazios de Ocultista
-          const slotsOcultistaPendentesList: { index: number, nex: number, maxCirculo: number }[] = [];
+          const slotsOcultistaPendentesList: { index: number, nex: number, maxCirculo: number, isOcultista: boolean }[] = [];
           if (classe === 'Ocultista') {
             const todosSlots: { index: number, nex: number, maxCirculo: number }[] = [];
             if (nex >= 5) {
@@ -769,17 +788,39 @@ export const AbasPanel: React.FC = () => {
             for (const slot of todosSlots) {
               const pego = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === `ocultista_${slot.index}`);
               if (!pego) {
-                slotsOcultistaPendentesList.push(slot);
+                slotsOcultistaPendentesList.push({ ...slot, isOcultista: true });
               }
             }
           }
 
-          const hasEmptySlots = slotsPoderPendentes.length > 0 || slotsOcultistaPendentesList.length > 0;
+          // 3. Desbloqueio Cronológico por Círculo
+          const allRitualSlots = [...slotsPoderPendentesList, ...slotsOcultistaPendentesList];
+          const sortedSlots = allRitualSlots.sort((a, b) => {
+             if (a.nex !== b.nex) return a.nex - b.nex;
+             if (a.isOcultista && !b.isOcultista) return -1;
+             if (!a.isOcultista && b.isOcultista) return 1;
+             if (a.isOcultista && b.isOcultista) return (a as any).index - (b as any).index;
+             return 0;
+          });
+
+          const visibleRitualSlots = [];
+          const circlesSeen = new Set<number>();
+          for (const slot of sortedSlots) {
+             if (!circlesSeen.has(slot.maxCirculo)) {
+                visibleRitualSlots.push(slot);
+                circlesSeen.add(slot.maxCirculo);
+             }
+          }
+
+          const slotsPoderPendentes = visibleRitualSlots.filter(s => !s.isOcultista).map(s => (s as any).chave);
+          const slotsOcultistaPendentesFinal = visibleRitualSlots.filter(s => s.isOcultista).map(s => ({ index: (s as any).index, nex: s.nex, maxCirculo: s.maxCirculo }));
+
+          const hasEmptySlots = slotsPoderPendentes.length > 0 || slotsOcultistaPendentesFinal.length > 0;
           const hasAnyRitual = (rituaisHook.rituaisAprendidos && rituaisHook.rituaisAprendidos.length > 0) || hasEmptySlots;
 
           return (
-            <div className="flex h-full flex-col">
-              <div className="mb-4 flex items-center justify-between">
+            <div className="flex h-full min-h-0 flex-col">
+              <div className="mb-5 flex items-center justify-between gap-4">
                 <span className="text-sm font-bold text-zinc-400">Rituais Aprendidos ({rituaisHook.rituaisAprendidos?.length || 0})</span>
               </div>
 
@@ -791,7 +832,7 @@ export const AbasPanel: React.FC = () => {
                 <button onClick={() => setModalRituaisExtraAberto(true)} className="whitespace-nowrap rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-xs font-bold text-zinc-200 transition hover:border-red-800 hover:bg-red-950/40">+ Adicionar</button>
               </div>
 
-              <div className="flex flex-1 flex-col gap-0 overflow-y-auto pr-1">
+              <div className="flex flex-1 flex-col gap-1 overflow-y-auto pr-1 min-h-0 custom-scrollbar">
                 {rituaisHook.loading && (
                   <div className="mt-5 text-center italic text-zinc-600">Carregando banco de rituais...</div>
                 )}
@@ -805,60 +846,7 @@ export const AbasPanel: React.FC = () => {
                   </div>
                 )}
 
-                {/* SLOTS VAZIOS (no topo) */}
-                {(hasEmptySlots) && (
-                  <div className="mb-4 flex flex-col gap-2">
-                    {slotsPoderPendentes.map(chave => {
-                      const isExtra = chave.startsWith('extra_');
-                      const nivelNum = isExtra ? nex : parseInt(chave, 10);
-                      const labelNex = regras['nex_experiencia'] ? `Poder Nível ${calcularNivel(nivelNum)}` : `Poder NEX ${nivelNum}%`;
-                      return (
-                      <div
-                        key={`vazio_poder_${chave}`}
-                        onClick={() => setEscolhendoRitualPlaceholder({ origem: `poder_57_${chave}`, nex: isExtra ? nex : nivelNum })}
-                        className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-red-800 hover:bg-zinc-900/80"
-                        style={{ borderLeftStyle: 'solid' }}
-                      >
-                        <div className="flex items-center justify-between gap-3 bg-zinc-800/40 px-4 py-3 transition group-hover:bg-zinc-800/60">
-                          <div className="flex flex-col items-start gap-0.5 text-left">
-                            <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">Escolher Ritual</span>
-                            <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-500 group-hover:text-zinc-400">
-                              {labelNex}
-                            </span>
-                          </div>
-                          <span className="whitespace-nowrap rounded bg-red-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-400 transition group-hover:bg-red-900/60 group-hover:text-red-300">+ Adicionar</span>
-                        </div>
-                        <div className="border-t border-zinc-800/50 px-4 py-3 text-left text-xs leading-relaxed text-zinc-500 transition group-hover:text-zinc-400">
-                          Clique para selecionar um ritual aprendido através de um poder paranormal.
-                        </div>
-                      </div>
-                      );
-                    })}
-                    {slotsOcultistaPendentesList.map((slot) => (
-                      <div
-                        key={`vazio_ocultista_${slot.index}`}
-                        onClick={() => {
-                          setEscolhendoRitualPlaceholder({ origem: `ocultista_${slot.index}`, nex: slot.nex });
-                        }}
-                        className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-red-800 hover:bg-zinc-900/80"
-                        style={{ borderLeftStyle: 'solid' }}
-                      >
-                        <div className="flex items-center justify-between gap-3 bg-zinc-800/40 px-4 py-3 transition group-hover:bg-zinc-800/60">
-                          <div className="flex flex-col items-start gap-0.5 text-left">
-                            <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">Escolher Ritual</span>
-                            <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-500 group-hover:text-zinc-400">
-                              Ocultista ({regras['nex_experiencia'] ? `Nível ${calcularNivel(slot.nex)}` : `NEX ${slot.nex}%`}) — Até {slot.maxCirculo}º Círculo
-                            </span>
-                          </div>
-                          <span className="whitespace-nowrap rounded bg-red-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-400 transition group-hover:bg-red-900/60 group-hover:text-red-300">+ Adicionar</span>
-                        </div>
-                        <div className="border-t border-zinc-800/50 px-4 py-3 text-left text-xs leading-relaxed text-zinc-500 transition group-hover:text-zinc-400">
-                          Você possui um espaço livre concedido pela sua classe para aprender um novo ritual.
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+
 
                 {/* Agrupamento por Círculo usando Rituais Aprendidos */}
               {[1, 2, 3, 4].map(circulo => {
@@ -886,7 +874,10 @@ export const AbasPanel: React.FC = () => {
                   return (r.customNome || r.Nome_Ritual).toLowerCase().includes(search);
                 });
 
-                if (rituaisAprendidosNesteCirculoFiltrados.length === 0) return null;
+                // Slots vazios pertencentes a este círculo
+                const slotsVaziosNesteCirculo = visibleRitualSlots.filter(s => s.maxCirculo === circulo);
+
+                if (rituaisAprendidosNesteCirculoFiltrados.length === 0 && slotsVaziosNesteCirculo.length === 0) return null;
 
                 return (
                   <div key={circulo} className="mb-4">
@@ -897,6 +888,54 @@ export const AbasPanel: React.FC = () => {
                     </div>
 
                     <div className="flex flex-col gap-2.5">
+                      {/* Slots Vazios do Círculo */}
+                      {slotsVaziosNesteCirculo.map((slot, idx) => {
+                        if (slot.isOcultista) {
+                          return (
+                            <div
+                              key={`vazio_ocultista_${(slot as any).index}_${idx}`}
+                              onClick={() => {
+                                setEscolhendoRitualPlaceholder({ origem: `ocultista_${(slot as any).index}`, nex: slot.nex });
+                              }}
+                              className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-red-800 hover:bg-zinc-900/80"
+                              style={{ borderLeftStyle: 'solid' }}
+                            >
+                              <div className="flex items-center justify-between gap-3 bg-zinc-800/40 px-4 py-3 transition group-hover:bg-zinc-800/60">
+                                <div className="flex flex-col items-start gap-0.5 text-left">
+                                  <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">Escolher Ritual</span>
+                                  <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-500 group-hover:text-zinc-400">
+                                    Ocultista ({regras['nex_experiencia'] ? `Nível ${calcularNivel(slot.nex)}` : `NEX ${slot.nex}%`})
+                                  </span>
+                                </div>
+                                <span className="whitespace-nowrap rounded bg-red-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-400 transition group-hover:bg-red-900/60 group-hover:text-red-300">+ Adicionar</span>
+                              </div>
+                            </div>
+                          );
+                        } else {
+                          const chave = (slot as any).chave;
+                          const isExtra = chave.startsWith('extra_');
+                          const nivelNum = isExtra ? nex : parseInt(chave, 10);
+                          const labelNex = regras['nex_experiencia'] ? `Poder Nível ${calcularNivel(nivelNum)}` : `Poder NEX ${nivelNum}%`;
+                          return (
+                            <div
+                              key={`vazio_poder_${chave}_${idx}`}
+                              onClick={() => setEscolhendoRitualPlaceholder({ origem: `poder_57_${chave}`, nex: isExtra ? nex : nivelNum })}
+                              className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-red-800 hover:bg-zinc-900/80"
+                              style={{ borderLeftStyle: 'solid' }}
+                            >
+                              <div className="flex items-center justify-between gap-3 bg-zinc-800/40 px-4 py-3 transition group-hover:bg-zinc-800/60">
+                                <div className="flex flex-col items-start gap-0.5 text-left">
+                                  <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">Escolher Ritual</span>
+                                  <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-500 group-hover:text-zinc-400">
+                                    {labelNex}
+                                  </span>
+                                </div>
+                                <span className="whitespace-nowrap rounded bg-red-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-400 transition group-hover:bg-red-900/60 group-hover:text-red-300">+ Adicionar</span>
+                              </div>
+                            </div>
+                          );
+                        }
+                      })}
                       {rituaisAprendidosNesteCirculoFiltrados.map(ritual => {
                         if (!ritual) return null;
                         

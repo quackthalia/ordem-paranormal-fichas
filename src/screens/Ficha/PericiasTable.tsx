@@ -21,17 +21,28 @@ export const PericiasTable: React.FC = () => {
   const { periciasHook, regrasAtivas, setRegrasAtivas } = useRPG();
   const { pericias, handleMudarPericia, limites, totais } = periciasHook;
 
+  const [periciaAberta, setPericiaAberta] = React.useState<{ nome: string; descricao: string } | null>(null);
+
   const { maxTreinadas, maxUpgrades } = limites;
   const { totalTreinadasUsadas, totalUpgradesGastos } = totais;
 
+  const formatarTexto = (texto: string) => {
+    let resultado = texto;
+    // Formata *texto* como negrito
+    resultado = resultado.replace(/\*(.*?)\*/g, '<strong class="text-zinc-100">$1</strong>');
+    // Troca quebra de linha por tag <br/>
+    resultado = resultado.replace(/\n/g, '<br/>');
+    return resultado;
+  };
+
   return (
     <div className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-6">
-      <h3 className="font-display mb-5 border-b border-zinc-800 pb-3 text-center text-lg uppercase tracking-[0.2em] text-zinc-300">
+      <h3 className="font-display mb-2 border-b border-zinc-800 pb-1 text-center text-lg uppercase tracking-[0.2em] text-zinc-300">
         Perícias
       </h3>
 
       {/* PAINEL DE REGRAS */}
-      <div className="mb-4 flex items-center justify-between rounded border border-zinc-800 bg-zinc-950/80 px-3 py-1.5 text-xs">
+      <div className="mb-2 flex items-center justify-between rounded border border-zinc-800 bg-zinc-950/80 px-3 py-1.5 text-xs">
         <label className="flex cursor-pointer items-center gap-2 text-zinc-400">
           <input
             type="checkbox"
@@ -55,15 +66,15 @@ export const PericiasTable: React.FC = () => {
       </div>
 
       {/* TABELA */}
-      <div className="overflow-x-auto">
+      <div className="w-full">
         <table className="w-full border-collapse text-zinc-100">
           <thead>
             <tr className="border-b border-zinc-700 text-xs uppercase tracking-wider text-zinc-500">
-              <th className="px-2 py-2.5 text-left">Perícia</th>
-              <th className="px-2 py-2.5">Dados</th>
-              <th className="px-2 py-2.5">Bônus</th>
-              <th className="px-2 py-2.5">Treino</th>
-              <th className="px-2 py-2.5">Outros</th>
+              <th className="px-2 py-1.5 text-left">Perícia</th>
+              <th className="px-2 py-1.5">Dados</th>
+              <th className="px-2 py-1.5">Bônus</th>
+              <th className="px-2 py-1.5">Treino</th>
+              <th className="px-2 py-1.5">Outros</th>
             </tr>
           </thead>
           <tbody>
@@ -74,9 +85,38 @@ export const PericiasTable: React.FC = () => {
 
               return (
                 <tr key={nome} className="border-b border-zinc-800/70 transition hover:bg-zinc-800/30">
-                  <td className={`px-2 py-2 font-bold ${corTexto}`}>{nome}</td>
+                  <td className={`px-2 py-1.5 font-bold text-sm ${corTexto}`}>
+                    <div className="flex items-center gap-1">
+                      <span 
+                        className="cursor-pointer hover:underline hover:text-red-400 transition"
+                        onClick={() => setPericiaAberta({ nome, descricao: dadosPericia.descricao || 'Sem descrição.' })}
+                      >
+                        {nome}
+                      </span>
+                      {dadosPericia.kit && (
+                        <div className="group relative flex items-center">
+                          <img 
+                            src="/kit-icon.png" 
+                            alt="Requer Kit" 
+                            className="h-6 w-auto cursor-help opacity-75 transition group-hover:opacity-100 object-contain"
+                          />
+                          <div className="pointer-events-none absolute left-full top-1/2 z-50 ml-2 w-56 -translate-y-1/2 opacity-0 transition-all duration-200 group-hover:opacity-100">
+                            <div className="rounded-md border border-zinc-700 bg-zinc-900/95 p-3 text-xs leading-relaxed text-zinc-400 shadow-2xl backdrop-blur-md">
+                              <p className="mb-1 font-bold uppercase tracking-wider text-zinc-200 text-[0.65rem]">
+                                Requer Kit
+                              </p>
+                              <p>
+                                Algumas perícias ou usos de perícias exigem ferramentas, chamadas “kits de perícias”. Se você não possui o kit apropriado, ainda pode usar a perícia, mas sofre –5 no teste.
+                              </p>
+                            </div>
+                            <div className="absolute top-1/2 -left-1.5 h-3 w-3 -translate-y-1/2 rotate-45 border-b border-l border-zinc-700 bg-zinc-900"></div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </td>
 
-                  <td className={`px-2 py-2 text-center ${corTexto}`}>
+                  <td className={`px-2 py-1.5 text-center text-sm ${corTexto}`}>
                     <span>(</span>
                     <select
                       value={dadosPericia.atributo}
@@ -94,11 +134,11 @@ export const PericiasTable: React.FC = () => {
                     <span>)</span>
                   </td>
 
-                  <td className={`px-2 py-2 text-center text-[1.05rem] font-bold ${corTexto}`}>
+                  <td className={`px-2 py-1.5 text-center font-bold ${corTexto}`}>
                     ( {totalBonus} )
                   </td>
 
-                  <td className="px-2 py-2 text-center">
+                  <td className="px-2 py-1.5 text-center">
                     <select
                       value={dadosPericia.treino}
                       onChange={(e) =>
@@ -113,7 +153,7 @@ export const PericiasTable: React.FC = () => {
                     </select>
                   </td>
 
-                  <td className="px-2 py-2 text-center">
+                  <td className="px-2 py-1.5 text-center">
                     <input
                       type="number"
                       onKeyDown={(e) => {
@@ -133,6 +173,31 @@ export const PericiasTable: React.FC = () => {
           </tbody>
         </table>
       </div>
+
+      {/* MODAL DE DESCRIÇÃO DA PERÍCIA */}
+      {periciaAberta && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          onClick={() => setPericiaAberta(null)}
+        >
+          <div 
+            className="w-full max-w-md rounded-xl border border-zinc-700 bg-zinc-900 p-6 shadow-2xl relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              onClick={() => setPericiaAberta(null)}
+              className="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 transition"
+            >
+              ✕
+            </button>
+            <h4 className="mb-4 text-xl font-display uppercase tracking-widest text-red-500">{periciaAberta.nome}</h4>
+            <div 
+              className="max-h-[60vh] overflow-y-auto custom-scrollbar text-sm text-zinc-300 leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: formatarTexto(periciaAberta.descricao) }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

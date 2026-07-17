@@ -45,7 +45,8 @@ interface UseStatusReturn {
 export function useStatus(
   classe: ClasseRPG,
   nex: number,
-  atributos: Atributos
+  atributos: Atributos,
+  paranormalPenalty: number = 0
 ): UseStatusReturn {
   // Estados com null = "não inicializado" (melhor que -1)
   const [pvAtual, setPvAtual] = useState<number | null>(null);
@@ -69,10 +70,13 @@ export function useStatus(
 
   const prevCalc = useRef({ pv: 0, san: 0, pe: 0, pd: 0, init: false });
 
-  const { pvMax: calcMaxPv, peMax: calcMaxPe, sanMax: calcMaxSan, peTurno } =
-    calcularStatusBase(classe, atributos, nex);
+  const baseStatus = calcularStatusBase(classe, atributos, nex);
+  const calcMaxPv = baseStatus.pvMax;
+  const calcMaxPe = baseStatus.peMax;
+  const calcMaxSan = Math.max(0, baseStatus.sanMax - paranormalPenalty);
+  const peTurno = baseStatus.peTurno;
 
-  const calcMaxPd = calcularPD(classe, atributos, nex);
+  const calcMaxPd = Math.max(0, calcularPD(classe, atributos, nex) - paranormalPenalty);
 
   // Efeito de sincronização (mesma lógica do original, mas sem -1)
   useEffect(() => {

@@ -34,7 +34,7 @@ function obterCorBadge(elemento: string): string {
 
 function obterCorTexto(elemento: string): string {
   const e = elemento?.toLowerCase();
-  if (e === 'medo' || e === 'conhecimento') return '#000000';
+  if (e === 'medo') return '#000000';
   return '#ffffff';
 }
 
@@ -63,7 +63,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
   const [subAbaElemento, setSubAbaElemento] = useState<string | null>(null);
   const [busca, setBusca] = useState('');
 
-  const { nex, atributos, periciasHook, trilhasHook, poderesHook } = useRPG();
+  const { nex, atributos, periciasHook, trilhasHook, poderesHook, rituaisHook } = useRPG();
   const contextoPrereq = useMemo(() => {
     const nomesPoderes = Object.values(poderesHook.poderesEscolhidos).map(p => p.nome.toLowerCase());
     
@@ -84,9 +84,11 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
       nex,
       pericias: periciasHook.pericias,
       nomesPericias: periciasHook.nomesPericias,
-      poderes: nomesPoderes
+      poderes: nomesPoderes,
+      rituaisAprendidos: rituaisHook.rituaisAprendidos,
+      rituais: rituaisHook.rituais
     };
-  }, [atributos, nex, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, trilhasHook.trilhaSelecionada]);
+  }, [atributos, nex, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, trilhasHook.trilhaSelecionada, rituaisHook.rituaisAprendidos, rituaisHook.rituais]);
 
   const [poderesExpandidos, setPoderesExpandidos] = useState<number[]>([]);
   const [escolhendoElementoId, setEscolhendoElementoId] = useState<number | null>(null);

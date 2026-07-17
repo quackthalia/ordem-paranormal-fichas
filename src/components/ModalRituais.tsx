@@ -39,7 +39,7 @@ function obterCorTexto(elemento: string): string {
   if (!elemento) return '#ffffff';
   const e = elemento.toLowerCase();
   if (e.includes(' e ')) return '#ffffff';
-  if (e === 'medo' || e === 'conhecimento') return '#000000';
+  if (e === 'medo') return '#000000';
   return '#ffffff';
 }
 

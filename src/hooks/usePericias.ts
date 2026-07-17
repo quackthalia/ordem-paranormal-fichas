@@ -36,7 +36,7 @@ export function usePericias(
 
       const { data, error: err } = await supabase
         .from('Perícias')
-        .select('Codigo_Pericia, Nome_Pericia, Atributo_Pericia');
+        .select('Codigo_Pericia, Nome_Pericia, Atributo_Pericia, Kit, Desc_Pericia');
 
       if (cancelled) return;
 
@@ -51,12 +51,14 @@ export function usePericias(
         const objetoPericias: PericiasMap = {};
         const mapaNomes: Record<number, string> = {};
 
-        data.forEach((p: { Codigo_Pericia: number; Nome_Pericia: string; Atributo_Pericia: string }) => {
+        data.forEach((p: { Codigo_Pericia: number; Nome_Pericia: string; Atributo_Pericia: string; Kit: boolean | string; Desc_Pericia: string }) => {
           objetoPericias[p.Nome_Pericia] = {
             id: p.Codigo_Pericia,
             atributo: (p.Atributo_Pericia as AtributoKey) || 'FOR',
             treino: 0,
             outros: 0,
+            kit: p.Kit === true || p.Kit === 'TRUE' || p.Kit === 'true' || p.Kit === '1',
+            descricao: p.Desc_Pericia
           };
           mapaNomes[p.Codigo_Pericia] = p.Nome_Pericia;
         });

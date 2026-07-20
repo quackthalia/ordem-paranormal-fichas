@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../services/supabase';
+import Papa from 'papaparse';
 
 export interface ProgressaoNexItem {
   Codigo_Progrecao: number;
@@ -17,21 +18,37 @@ export function useProgressaoNex() {
 
     async function loadData() {
       try {
+        // Tenta buscar do Supabase primeiro
         const { data, error } = await supabase
           .from('Progressão NEX')
           .select('*')
           .order('Codigo_Progrecao', { ascending: true });
 
-        if (error) {
-          console.error("Erro ao buscar Progressão NEX do Supabase:", error);
-          if (isMounted) setLoading(false);
+        // Se retornar dados válidos e não vazio
+        if (!error && data && data.length > 0) {
+          if (isMounted) {
+            setItensProgressao(data as ProgressaoNexItem[]);
+            setLoading(false);
+          }
           return;
         }
 
-        if (data && isMounted) {
-          setItensProgressao(data as ProgressaoNexItem[]);
-          setLoading(false);
-        }
+        // Se deu erro ou vazio, faz fallback pro CSV local!
+        console.warn("Supabase não retornou dados para Progressão NEX (RLS ativo ou tabela não encontrada?). Usando fallback CSV...");
+        
+        const response = await fetch('/progressao_nex.csv');
+        const csvText = await response.text();
+
+        Papa.parse<ProgressaoNexItem>(csvText, {
+          header: true,
+          skipEmptyLines: true,
+          complete: (results) => {
+            if (isMounted) {
+              setItensProgressao(results.data as ProgressaoNexItem[]);
+              setLoading(false);
+            }
+          },
+        });
       } catch (err) {
         console.error("Erro ao carregar progressão de NEX:", err);
         if (isMounted) setLoading(false);

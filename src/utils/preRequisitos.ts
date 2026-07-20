@@ -640,8 +640,8 @@ export function verificarPreRequisitos(
 
     case 45: {
       // Ter um ritual de Sangue
-      const temSangue = contexto.rituaisAprendidos.some(ra => {
-        const def = contexto.rituais?.find(r => r.Nome_Ritual === ra.nome);
+      const temSangue = contexto.rituaisAprendidos?.some(ra => {
+        const def = contexto.rituais?.find(r => r.Nome_Ritual === (ra as any).nome);
         return def && def.Elemento?.toLowerCase().trim() === 'sangue';
       });
       if (!temSangue) {

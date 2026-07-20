@@ -395,7 +395,19 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
             const codigo = 'codigo_poder' in poder ? poder.codigo_poder : (poder as Poder).codigo_poder;
             const ehParanormal = abaPrincipal === 'paranormais';
             const estaExpandido = poderesExpandidos.includes(codigo);
-            const val = verificarPreRequisitos(poder as Poder, contextoPrereq);
+            
+            const count = contextoPrereq ? contextoPrereq.poderes.filter(p => p.nome === poder.Nome.toLowerCase()).length : 0;
+            let val = { atende: true, motivo: '' };
+            if (contextoPrereq) {
+              if (count >= 1 && ehParanormal && ('Pre_Codigo_Afinidade' in poder) && poder.Pre_Codigo_Afinidade) {
+                val = verificarPreRequisitos(
+                  { ...poder, PreRequisitos: (poder as any).PreRequisitosAfinidade || '', Pre_Codigo: poder.Pre_Codigo_Afinidade } as Poder,
+                  contextoPrereq
+                );
+              } else {
+                val = verificarPreRequisitos(poder as Poder, contextoPrereq);
+              }
+            }
 
             return (
               <div key={codigo} className="mb-3 overflow-hidden rounded-r border-l-4 border-red-800 bg-zinc-950/60">

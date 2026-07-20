@@ -69,6 +69,9 @@ function normalizarPoderParanormal(item: Record<string, unknown>): PoderParanorm
     Pre_Codigo: primeiro('Pre_Regra', 'pre_regra', 'Pre_Codigo_Poder_Paranormal', 'pre_codigo_poder_paranormal', 'Pre_Codigo', 'pre_codigo') 
       ? Number(primeiro('Pre_Regra', 'pre_regra', 'Pre_Codigo_Poder_Paranormal', 'pre_codigo_poder_paranormal', 'Pre_Codigo', 'pre_codigo')) 
       : null,
+    Pre_Codigo_Afinidade: primeiro('Pre_Regra_Afinidade', 'pre_regra_afinidade', 'Codigo_Regra_Afinidade', 'codigo_regra_afinidade')
+      ? Number(primeiro('Pre_Regra_Afinidade', 'pre_regra_afinidade', 'Codigo_Regra_Afinidade', 'codigo_regra_afinidade'))
+      : null,
   };
 }
 

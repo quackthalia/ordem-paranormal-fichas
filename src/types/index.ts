@@ -52,6 +52,7 @@ export interface PoderParanormal {
   Fonte: string;
   Pre_Codigo?: number | null;
   PreRequisitosAfinidade?: string;
+  Pre_Codigo_Afinidade?: number | null;
 }
 
 export interface Origem {

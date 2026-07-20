@@ -64,13 +64,27 @@ function PoderCard({
     Elemento?: string;
     Afinidade?: string;
     PreRequisitosAfinidade?: string;
+    Pre_Codigo_Afinidade?: number | null;
   };
   estaExpandido: boolean;
   onToggle: () => void;
   onEscolher: (elementoEscolhido?: string, periciaEscolhida?: number) => void;
   contextoPrereq?: ContextoPreRequisitos;
 }) {
-  const val = contextoPrereq ? verificarPreRequisitos(poder as Poder, contextoPrereq) : { atende: true };
+  const count = contextoPrereq ? contextoPrereq.poderes.filter(p => p.nome === poder.Nome.toLowerCase()).length : 0;
+  
+  let val = { atende: true, motivo: '' };
+  if (contextoPrereq) {
+    if (count >= 1 && ehParanormal && paranormalData?.Pre_Codigo_Afinidade) {
+      val = verificarPreRequisitos(
+        { ...poder, PreRequisitos: paranormalData.PreRequisitosAfinidade || '', Pre_Codigo: paranormalData.Pre_Codigo_Afinidade } as Poder,
+        contextoPrereq
+      );
+    } else {
+      val = verificarPreRequisitos(poder as Poder, contextoPrereq);
+    }
+  }
+
   const bloqueado = !val.atende;
 
   const precisaEscolherElemento = poder.Nome.toLowerCase().includes('elemento') || (poder.Descricao && poder.Descricao.toLowerCase().includes('escolha um elemento'));
@@ -548,6 +562,7 @@ export const ModalPoderes: React.FC = () => {
                   Elemento: pp.Elemento,
                   Afinidade: pp.Afinidade,
                   PreRequisitosAfinidade: pp.PreRequisitosAfinidade || undefined,
+                  Pre_Codigo_Afinidade: pp.Pre_Codigo_Afinidade,
                 } : undefined}
                 estaExpandido={estaExpandido}
                 onToggle={() => {

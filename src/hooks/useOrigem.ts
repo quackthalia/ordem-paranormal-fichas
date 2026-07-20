@@ -30,41 +30,49 @@ export function useOrigem(): UseOrigemReturn {
       setLoading(true);
       setError(null);
 
-      // Busca origens
-      const { data: dataOrigens, error: errOrigens } = await supabase
-        .from('Origens')
-        .select('*');
+      try {
+        // Busca origens
+        const { data: dataOrigens, error: errOrigens } = await supabase
+          .from('Origens')
+          .select('*');
 
-      if (cancelled) return;
+        if (cancelled) return;
 
-      if (errOrigens) {
-        console.error('Erro ao buscar origens:', errOrigens);
-        setError(errOrigens.message);
-        setLoading(false);
-        return;
+        if (errOrigens) {
+          console.error('Erro ao buscar origens:', errOrigens);
+          setError(errOrigens.message);
+          return;
+        }
+
+        if (dataOrigens) {
+          // Ordena A-Z
+          setOrigens(dataOrigens.sort((a, b) => a.Nome.localeCompare(b.Nome)));
+        }
+
+        // Busca nomes das perícias
+        const { data: dataPericias } = await supabase
+          .from('Perícias')
+          .select('Codigo_Pericia, Nome_Pericia');
+
+        if (cancelled) return;
+
+        if (dataPericias) {
+          const mapa: Record<number, string> = {};
+          dataPericias.forEach((p: { Codigo_Pericia: number; Nome_Pericia: string }) => {
+            mapa[p.Codigo_Pericia] = p.Nome_Pericia;
+          });
+          setNomesPericias(mapa);
+        }
+      } catch (err: any) {
+        if (!cancelled) {
+          console.error('Exceção ao buscar origens:', err);
+          setError(err.message || String(err));
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
-
-      if (dataOrigens) {
-        // Ordena A-Z
-        setOrigens(dataOrigens.sort((a, b) => a.Nome.localeCompare(b.Nome)));
-      }
-
-      // Busca nomes das perícias
-      const { data: dataPericias } = await supabase
-        .from('Perícias')
-        .select('Codigo_Pericia, Nome_Pericia');
-
-      if (cancelled) return;
-
-      if (dataPericias) {
-        const mapa: Record<number, string> = {};
-        dataPericias.forEach((p: { Codigo_Pericia: number; Nome_Pericia: string }) => {
-          mapa[p.Codigo_Pericia] = p.Nome_Pericia;
-        });
-        setNomesPericias(mapa);
-      }
-
-      setLoading(false);
     }
 
     carregar();

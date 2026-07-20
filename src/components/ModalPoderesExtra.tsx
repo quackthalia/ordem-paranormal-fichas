@@ -44,7 +44,7 @@ interface ModalPoderesExtraProps {
   poderesGerais: Poder[];
   poderesParanormais: PoderParanormal[];
   trilhas?: Trilha[];
-  onEscolher: (poder: Poder | PoderParanormal, elemento?: string) => void;
+  onEscolher: (poder: Poder | PoderParanormal, elemento?: string, pericia?: number) => void;
 }
 
 type MainAba = 'utilidade' | 'combate' | 'gerais' | 'paranormais' | 'trilhas';
@@ -63,20 +63,23 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
   const [subAbaElemento, setSubAbaElemento] = useState<string | null>(null);
   const [busca, setBusca] = useState('');
 
-  const { nex, atributos, periciasHook, trilhasHook, poderesHook, rituaisHook } = useRPG();
+  const { nex, atributos, periciasHook, trilhasHook, poderesHook, rituaisHook, origensHook } = useRPG();
   const contextoPrereq = useMemo(() => {
-    const nomesPoderes = Object.values(poderesHook.poderesEscolhidos).map(p => p.nome.toLowerCase());
+    const poderesArray: { nome: string; elemento?: string }[] = Object.values(poderesHook.poderesEscolhidos).map(p => ({
+      nome: p.nome.toLowerCase(),
+      elemento: p.elemento
+    }));
     
     if (poderesHook.poderClasse) {
-      nomesPoderes.push(poderesHook.poderClasse.Nome.toLowerCase());
+      poderesArray.push({ nome: poderesHook.poderClasse.Nome.toLowerCase() });
     }
 
     if (trilhasHook.trilhaSelecionada) {
       const t = trilhasHook.trilhaSelecionada;
-      if (nex >= 10 && t.Nome_Habilidade_10) nomesPoderes.push(t.Nome_Habilidade_10.toLowerCase());
-      if (nex >= 40 && t.Nome_Habilidade_40) nomesPoderes.push(t.Nome_Habilidade_40.toLowerCase());
-      if (nex >= 65 && t.Nome_Habilidade_65) nomesPoderes.push(t.Nome_Habilidade_65.toLowerCase());
-      if (nex >= 99 && t.Nome_Habilidade_99) nomesPoderes.push(t.Nome_Habilidade_99.toLowerCase());
+      if (nex >= 10 && t.Nome_Habilidade_10) poderesArray.push({ nome: t.Nome_Habilidade_10.toLowerCase() });
+      if (nex >= 40 && t.Nome_Habilidade_40) poderesArray.push({ nome: t.Nome_Habilidade_40.toLowerCase() });
+      if (nex >= 65 && t.Nome_Habilidade_65) poderesArray.push({ nome: t.Nome_Habilidade_65.toLowerCase() });
+      if (nex >= 99 && t.Nome_Habilidade_99) poderesArray.push({ nome: t.Nome_Habilidade_99.toLowerCase() });
     }
 
     return {
@@ -84,14 +87,22 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
       nex,
       pericias: periciasHook.pericias,
       nomesPericias: periciasHook.nomesPericias,
-      poderes: nomesPoderes,
+      poderes: poderesArray,
+      origem: origensHook.origemSelecionada?.nome_origem,
       rituaisAprendidos: rituaisHook.rituaisAprendidos,
       rituais: rituaisHook.rituais
     };
-  }, [atributos, nex, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, trilhasHook.trilhaSelecionada, rituaisHook.rituaisAprendidos, rituaisHook.rituais]);
+  }, [atributos, nex, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, trilhasHook.trilhaSelecionada, rituaisHook.rituaisAprendidos, rituaisHook.rituais, origensHook.origemSelecionada]);
 
   const [poderesExpandidos, setPoderesExpandidos] = useState<number[]>([]);
   const [escolhendoElementoId, setEscolhendoElementoId] = useState<number | null>(null);
+  const [escolhendoPericiaId, setEscolhendoPericiaId] = useState<number | null>(null);
+
+  const periciasDisponiveis = useMemo(() => {
+    return Object.entries(contextoPrereq.nomesPericias)
+      .map(([id, nome]) => ({ id: Number(id), nome }))
+      .sort((a,b) => a.nome.localeCompare(b.nome));
+  }, [contextoPrereq.nomesPericias]);
 
   const toggleExpandir = (codigo: number) => {
     setPoderesExpandidos(prev => 
@@ -445,13 +456,55 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                           ✕
                         </button>
                       </div>
+                    ) : escolhendoPericiaId === codigo ? (
+                      <div className="flex gap-1 items-center bg-zinc-950 p-1 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
+                        <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline">Perícia:</span>
+                        <select
+                          className="bg-zinc-900 border border-zinc-700 text-xs text-zinc-300 rounded px-1 outline-none py-1 max-w-[120px]"
+                          onChange={(e) => {
+                            const cod = Number(e.target.value);
+                            if (cod) {
+                              setEscolhendoPericiaId(null);
+                              onEscolher(poder, undefined, cod);
+                              onClose();
+                            }
+                          }}
+                          defaultValue=""
+                        >
+                          <option value="" disabled>Escolher...</option>
+                          {periciasDisponiveis.map(p => {
+                            const valPericia = verificarPreRequisitos(poder as Poder, contextoPrereq, undefined, p.id);
+                            return (
+                              <option 
+                                key={p.id} 
+                                value={p.id} 
+                                disabled={!valPericia.atende}
+                                style={{ color: !valPericia.atende ? '#52525b' : '#e4e4e7', backgroundColor: !valPericia.atende ? '#18181b' : '#27272a' }}
+                                className={!valPericia.atende ? "italic" : ""}
+                              >
+                                {p.nome}
+                              </option>
+                            );
+                          })}
+                        </select>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setEscolhendoPericiaId(null); }}
+                          className="ml-1 rounded px-1 py-0.5 text-[0.6rem] font-bold text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 transition"
+                        >
+                          ✕
+                        </button>
+                      </div>
                     ) : (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           const precisaElemento = poder.Nome.toLowerCase().includes('elemento') || ((poder as any).Descricao && (poder as any).Descricao.toLowerCase().includes('escolha um elemento'));
+                          const precisaPericia = poder.Nome.toLowerCase().includes('perícia') || ((poder as any).Descricao && (poder as any).Descricao.toLowerCase().includes('escolha uma perícia'));
+                          
                           if (precisaElemento) {
                             setEscolhendoElementoId(codigo);
+                          } else if (precisaPericia) {
+                            setEscolhendoPericiaId(codigo);
                           } else {
                             onEscolher(poder);
                             onClose();

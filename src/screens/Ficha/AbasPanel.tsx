@@ -1455,7 +1455,10 @@ export const AbasPanel: React.FC = () => {
         poderesGerais={listaPoderesUtilidade}
         poderesParanormais={poderesParanormais}
         trilhas={trilhasHook.trilhas}
-        onEscolher={poderesHook.escolherPoderExtra}
+        onEscolher={(poder, elemento, periciaId) => {
+          const nomePericia = periciaId ? periciasHook.nomesPericias[periciaId] : undefined;
+          poderesHook.escolherPoderExtra(poder, elemento, nomePericia);
+        }}
       />
     </div>
   );

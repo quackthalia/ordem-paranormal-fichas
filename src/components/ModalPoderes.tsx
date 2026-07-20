@@ -67,7 +67,7 @@ function PoderCard({
   };
   estaExpandido: boolean;
   onToggle: () => void;
-  onEscolher: (elementoEscolhido?: string) => void;
+  onEscolher: (elementoEscolhido?: string, periciaEscolhida?: number) => void;
   contextoPrereq?: ContextoPreRequisitos;
 }) {
   const val = contextoPrereq ? verificarPreRequisitos(poder as Poder, contextoPrereq) : { atende: true };
@@ -75,6 +75,10 @@ function PoderCard({
 
   const precisaEscolherElemento = poder.Nome.toLowerCase().includes('elemento') || (poder.Descricao && poder.Descricao.toLowerCase().includes('escolha um elemento'));
   const [escolhendoElemento, setEscolhendoElemento] = useState(false);
+
+  const precisaEscolherPericia = poder.Nome.toLowerCase().includes('perícia') || (poder.Descricao && poder.Descricao.toLowerCase().includes('escolha uma perícia'));
+  const [escolhendoPericia, setEscolhendoPericia] = useState(false);
+  const periciasDisponiveis = contextoPrereq ? Object.entries(contextoPrereq.nomesPericias).map(([id, nome]) => ({ id: Number(id), nome })).sort((a,b) => a.nome.localeCompare(b.nome)) : [];
 
   return (
     <div className="mb-3 overflow-hidden rounded-r border-l-4 border-red-800 bg-zinc-950/60">
@@ -126,6 +130,43 @@ function PoderCard({
                 ✕
               </button>
             </div>
+          ) : escolhendoPericia ? (
+            <div className="flex gap-1 items-center bg-zinc-950 p-1 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
+              <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline">Perícia:</span>
+              <select
+                className="bg-zinc-900 border border-zinc-700 text-xs text-zinc-300 rounded px-1 outline-none py-1 max-w-[120px]"
+                onChange={(e) => {
+                  const cod = Number(e.target.value);
+                  if (cod) {
+                    setEscolhendoPericia(false);
+                    onEscolher(undefined, cod);
+                  }
+                }}
+                defaultValue=""
+              >
+                <option value="" disabled>Escolher...</option>
+                {periciasDisponiveis.map(p => {
+                  const valPericia = contextoPrereq ? verificarPreRequisitos(poder as Poder, contextoPrereq, undefined, p.id) : { atende: true };
+                  return (
+                    <option 
+                      key={p.id} 
+                      value={p.id} 
+                      disabled={!valPericia.atende}
+                      style={{ color: !valPericia.atende ? '#52525b' : '#e4e4e7', backgroundColor: !valPericia.atende ? '#18181b' : '#27272a' }}
+                      className={!valPericia.atende ? "italic" : ""}
+                    >
+                      {p.nome}
+                    </option>
+                  );
+                })}
+              </select>
+              <button
+                onClick={(e) => { e.stopPropagation(); setEscolhendoPericia(false); }}
+                className="ml-1 rounded px-1 py-0.5 text-[0.6rem] font-bold text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 transition"
+              >
+                ✕
+              </button>
+            </div>
           ) : (
             <button
               disabled={bloqueado}
@@ -134,6 +175,8 @@ function PoderCard({
                 e.stopPropagation(); 
                 if (precisaEscolherElemento) {
                   setEscolhendoElemento(true);
+                } else if (precisaEscolherPericia) {
+                  setEscolhendoPericia(true);
                 } else {
                   onEscolher(); 
                 }
@@ -209,35 +252,40 @@ export const ModalPoderes: React.FC = () => {
     nex,
     trilhasHook,
     rituaisHook,
+    origensHook,
   } = useRPG();
 
   const contextoPrereq = useMemo(() => {
-    const nomesPoderes = Object.values(poderesHook.poderesEscolhidos).map(p => p.nome.toLowerCase());
+    const poderesArray: { nome: string; elemento?: string }[] = Object.values(poderesHook.poderesEscolhidos).map(p => ({
+      nome: p.nome.toLowerCase(),
+      elemento: p.elemento
+    }));
     
     if (poderesHook.poderClasse) {
-      nomesPoderes.push(poderesHook.poderClasse.Nome.toLowerCase());
+      poderesArray.push({ nome: poderesHook.poderClasse.Nome.toLowerCase() });
     }
 
     if (trilhasHook.trilhaSelecionada) {
       const t = trilhasHook.trilhaSelecionada;
-      if (nex >= 10 && t.Nome_Habilidade_10) nomesPoderes.push(t.Nome_Habilidade_10.toLowerCase());
-      if (nex >= 40 && t.Nome_Habilidade_40) nomesPoderes.push(t.Nome_Habilidade_40.toLowerCase());
-      if (nex >= 65 && t.Nome_Habilidade_65) nomesPoderes.push(t.Nome_Habilidade_65.toLowerCase());
-      if (nex >= 99 && t.Nome_Habilidade_99) nomesPoderes.push(t.Nome_Habilidade_99.toLowerCase());
+      if (nex >= 10 && t.Nome_Habilidade_10) poderesArray.push({ nome: t.Nome_Habilidade_10.toLowerCase() });
+      if (nex >= 40 && t.Nome_Habilidade_40) poderesArray.push({ nome: t.Nome_Habilidade_40.toLowerCase() });
+      if (nex >= 65 && t.Nome_Habilidade_65) poderesArray.push({ nome: t.Nome_Habilidade_65.toLowerCase() });
+      if (nex >= 99 && t.Nome_Habilidade_99) poderesArray.push({ nome: t.Nome_Habilidade_99.toLowerCase() });
     }
 
-    console.log("PODERES NO CONTEXTO:", nomesPoderes);
+    console.log("PODERES NO CONTEXTO:", poderesArray);
 
     return {
       atributos,
       nex,
       pericias: periciasHook.pericias,
       nomesPericias: periciasHook.nomesPericias,
-      poderes: nomesPoderes,
+      poderes: poderesArray,
+      origem: origensHook.origemSelecionada?.nome_origem,
       rituaisAprendidos: rituaisHook.rituaisAprendidos,
       rituais: rituaisHook.rituais
     };
-  }, [atributos, nex, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, trilhasHook.trilhaEscolhida, rituaisHook.rituaisAprendidos, rituaisHook.rituais]);
+  }, [atributos, nex, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, trilhasHook.trilhaSelecionada, rituaisHook.rituaisAprendidos, rituaisHook.rituais, origensHook.origemSelecionada]);
 
   const editorRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -503,13 +551,14 @@ export const ModalPoderes: React.FC = () => {
                       : [...prev, poder.codigo_poder]
                   );
                 }}
-                onEscolher={(elem) => {
+                onEscolher={(elem, periciaId) => {
                   let categoria: 'utilidade' | 'combate' | 'gerais' = 'utilidade';
                   if (abaModalPoderes === 'combate') categoria = 'combate';
                   else if (abaModalPoderes === 'gerais') categoria = 'gerais';
                   
                   const nexEscolhido = nexModalAberto!;
-                  escolherPoder(nexEscolhido, poder, categoria, elem);
+                  const nomePericia = periciaId ? contextoPrereq.nomesPericias[periciaId] : undefined;
+                  escolherPoder(nexEscolhido, poder, categoria, elem, nomePericia);
                   setNexModalAberto(null);
 
                   if (poder.Nome.toLowerCase() === 'aprender ritual') {

@@ -5,7 +5,8 @@ export interface ContextoPreRequisitos {
   nex: number;
   pericias: PericiasMap;
   nomesPericias: Record<number, string>;
-  poderes: string[];
+  poderes: { nome: string; elemento?: string }[];
+  origem?: string;
   rituaisAprendidos?: import('../types').RitualAprendido[];
   rituais?: import('../types').Ritual[];
 }
@@ -18,13 +19,14 @@ export interface ResultadoValidacao {
 export function verificarPreRequisitos(
   poder: Poder,
   contexto: ContextoPreRequisitos,
-  elementoTentado?: string
+  elementoTentado?: string,
+  periciaTentada?: number
 ): ResultadoValidacao {
   const codigo = poder.Pre_Codigo;
   const texto = poder.PreRequisitos || '';
 
   // Se não houver código, ou se for código não implementado ainda, libera por padrão
-  if (!codigo || codigo > 20) {
+  if (!codigo || codigo > 30) {
     return { atende: true };
   }
 
@@ -160,7 +162,7 @@ export function verificarPreRequisitos(
       // Exige ter outro poder específico (Ex: "Ataque Especial" ou "Proteção Pesada")
       // Removemos ponto final no final da string se houver
       const poderRequerido = textoLower.replace(/\.$/, '').trim();
-      const temPoder = contexto.poderes.some(p => p === poderRequerido);
+      const temPoder = contexto.poderes.some(p => p.nome === poderRequerido);
       if (!temPoder) {
         return { atende: false, motivo: texto };
       }
@@ -213,7 +215,7 @@ export function verificarPreRequisitos(
       // Exige 2 poderes (Ex: "Ataque Especial, Casca Grossa")
       const partes = textoLower.split(',').map(p => p.trim().replace(/\.$/, ''));
       for (const poder of partes) {
-        if (!contexto.poderes.includes(poder)) {
+        if (!contexto.poderes.some(p => p.nome === poder)) {
           return { atende: false, motivo: texto };
         }
       }
@@ -233,7 +235,7 @@ export function verificarPreRequisitos(
       
       const partes = textoLower.split(',');
       const ultimo = partes[partes.length - 1].trim().replace(/\.$/, '');
-      if (!contexto.poderes.includes(ultimo)) {
+      if (!contexto.poderes.some(p => p.nome === ultimo)) {
         return { atende: false, motivo: texto };
       }
       
@@ -257,11 +259,11 @@ export function verificarPreRequisitos(
       if (contexto.nex < nexMin) return { atende: false, motivo: `NEX ${nexMin}%` };
       
       if (!elementoTentado) {
-        const temAlgum = contexto.poderes.some(p => p.startsWith('especialista em elemento'));
+        const temAlgum = contexto.poderes.some(p => p.nome.startsWith('especialista em elemento'));
         if (!temAlgum) return { atende: false, motivo: 'Especialista em Elemento' };
       } else {
         const poderExato = `especialista em elemento (${elementoTentado.toLowerCase()})`;
-        if (!contexto.poderes.includes(poderExato)) {
+        if (!contexto.poderes.some(p => p.nome === poderExato)) {
           return { atende: false, motivo: `Especialista em Elemento (${elementoTentado})` };
         }
       }
@@ -297,6 +299,380 @@ export function verificarPreRequisitos(
         }
       }
       
+      return { atende: true };
+    }
+
+    case 16: {
+      // Exige Treinado em 2 perícias
+      const codigos = extrairCodigosPericias(textoLower);
+      if (codigos.length >= 2) {
+        const res = verificarPericia([codigos[0], codigos[1]]);
+        if (!res.atende) return res;
+      } else {
+        return { atende: false, motivo: texto };
+      }
+      return { atende: true };
+    }
+
+    case 21: {
+      // Exige Atributo 3, treinado em perícia, Conjurar ritual
+      const resAttr = verificarAtributo(textoLower);
+      if (!resAttr.atende) return resAttr;
+
+      const codigos = extrairCodigosPericias(textoLower);
+      if (codigos.length > 0) {
+        const resPericia = verificarPericia([codigos[0]]);
+        if (!resPericia.atende) return resPericia;
+      }
+      
+      if (!contexto.rituaisAprendidos || contexto.rituaisAprendidos.length === 0) {
+        return { atende: false, motivo: 'Conjurar ritual' };
+      }
+      return { atende: true };
+    }
+
+    case 22: {
+      // Mestre em Elemento no elemento escolhido, NEX 60%
+      if (contexto.nex < 60) return { atende: false, motivo: 'NEX 60%' };
+      
+      if (!elementoTentado) {
+        const temAlgum = contexto.poderes.some(p => p.nome.startsWith('mestre em elemento'));
+        if (!temAlgum) return { atende: false, motivo: 'Mestre em Elemento' };
+      } else {
+        const poderExato = `mestre em elemento (${elementoTentado.toLowerCase()})`;
+        if (!contexto.poderes.some(p => p.nome === poderExato)) {
+          return { atende: false, motivo: `Mestre em Elemento (${elementoTentado})` };
+        }
+      }
+      return { atende: true };
+    }
+
+    case 23: {
+      // Dois atributos 2
+      const regexStr = /(for|agi|int|pre|vig)\s*(\d+)/gi;
+      const matches = [...texto.matchAll(regexStr)];
+      
+      if (matches.length >= 2) {
+        for (let i = 0; i < 2; i++) {
+          const attrName = matches[i][1].toUpperCase() as keyof Atributos;
+          const attrMin = parseInt(matches[i][2], 10);
+          if (contexto.atributos[attrName] < attrMin) {
+            return { atende: false, motivo: `${attrName} ${attrMin}` };
+          }
+        }
+      } else {
+        return { atende: false, motivo: texto };
+      }
+      return { atende: true };
+    }
+
+    case 24: {
+      // Um atributo 3 ou outro, treinado em uma pericia ou outra
+      // Ex: "Agi 3 ou Int 3, treinado em Luta ou Pontaria"
+      const regexStr = /(for|agi|int|pre|vig)\s*(\d+)/gi;
+      const matches = [...texto.matchAll(regexStr)];
+      if (matches.length > 0) {
+        const atendeAlgumAttr = matches.some(match => {
+          const attrName = match[1].toUpperCase() as keyof Atributos;
+          const attrMin = parseInt(match[2], 10);
+          return contexto.atributos[attrName] >= attrMin;
+        });
+        if (!atendeAlgumAttr) {
+          const attrMotivos = matches.map(m => `${m[1].toUpperCase()} ${m[2]}`).join(' ou ');
+          return { atende: false, motivo: attrMotivos };
+        }
+      }
+      
+      const codigos = extrairCodigosPericias(textoLower);
+      if (codigos.length > 0) {
+        const atendeAlgumaPericia = codigos.some(cod => verificarPericia([cod]).atende);
+        if (!atendeAlgumaPericia) {
+          const nomes = codigos.map(c => contexto.nomesPericias[c] || c).join(' ou ');
+          return { atende: false, motivo: `Treinado em ${nomes}` };
+        }
+      }
+      return { atende: true };
+    }
+
+    case 25: {
+      // Atributo 2, Ter ritual de 1 circulo, regra de reter ritual ativa
+      const resAttr = verificarAtributo(textoLower);
+      if (!resAttr.atende) return resAttr;
+      
+      if (!contexto.rituaisAprendidos || contexto.rituaisAprendidos.length === 0) {
+        return { atende: false, motivo: 'Ritual de 1º Círculo' };
+      }
+      return { atende: true };
+    }
+
+    case 26: {
+      // Atributo 2, Atributo 2, ter ritual de 1 circulo
+      const regexStr = /(for|agi|int|pre|vig)\s*(\d+)/gi;
+      const matches = [...texto.matchAll(regexStr)];
+      if (matches.length >= 2) {
+        for (let i = 0; i < 2; i++) {
+          const attrName = matches[i][1].toUpperCase() as keyof Atributos;
+          const attrMin = parseInt(matches[i][2], 10);
+          if (contexto.atributos[attrName] < attrMin) {
+            return { atende: false, motivo: `${attrName} ${attrMin}` };
+          }
+        }
+      }
+      
+      if (!contexto.rituaisAprendidos || contexto.rituaisAprendidos.length === 0) {
+        return { atende: false, motivo: 'Ritual de 1º Círculo' };
+      }
+      return { atende: true };
+    }
+
+    case 27: {
+      // Atributo 3, treinado em uma perícia ou outra
+      const resAttr = verificarAtributo(textoLower);
+      if (!resAttr.atende) return resAttr;
+      
+      const codigos = extrairCodigosPericias(textoLower);
+      if (codigos.length > 0) {
+        const atendeAlgumaPericia = codigos.some(cod => verificarPericia([cod]).atende);
+        if (!atendeAlgumaPericia) {
+          const nomes = codigos.map(c => contexto.nomesPericias[c] || c).join(' ou ');
+          return { atende: false, motivo: `Treinado em ${nomes}` };
+        }
+      }
+      return { atende: true };
+    }
+
+    case 28: {
+      // Treinado na perícia escolhida
+      if (periciaTentada) {
+        const res = verificarPericia([periciaTentada]);
+        if (!res.atende) {
+          const nomePericia = contexto.nomesPericias[periciaTentada] || `Perícia ${periciaTentada}`;
+          return { atende: false, motivo: `Treinado em ${nomePericia}` };
+        }
+      }
+      return { atende: true };
+    }
+
+    case 29: {
+      // Treinado em perícia, NEX 30%
+      if (contexto.nex < 30) return { atende: false, motivo: 'NEX 30%' };
+      const codigos = extrairCodigosPericias(textoLower);
+      if (codigos.length > 0) {
+        const res = verificarPericia([codigos[0]]);
+        if (!res.atende) return res;
+      }
+      return { atende: true };
+    }
+
+    case 30: {
+      // Um atributo 2 ou outro, treinado em perícia
+      const regexStr = /(for|agi|int|pre|vig)\s*(\d+)/gi;
+      const matches = [...texto.matchAll(regexStr)];
+      if (matches.length > 0) {
+        const atendeAlgumAttr = matches.some(match => {
+          const attrName = match[1].toUpperCase() as keyof Atributos;
+          const attrMin = parseInt(match[2], 10);
+          return contexto.atributos[attrName] >= attrMin;
+        });
+        if (!atendeAlgumAttr) {
+          const attrMotivos = matches.map(m => `${m[1].toUpperCase()} ${m[2]}`).join(' ou ');
+          return { atende: false, motivo: attrMotivos };
+        }
+      }
+      const codigos = extrairCodigosPericias(textoLower);
+      if (codigos.length > 0) {
+        const res = verificarPericia([codigos[0]]);
+        if (!res.atende) return res;
+      }
+      return { atende: true };
+    }
+
+    case 31: {
+      // Atributo 3, Ter ritual de 2 circulo, Poder
+      const resAttr = verificarAtributo(textoLower);
+      if (!resAttr.atende) return resAttr;
+      if (!contexto.rituaisAprendidos || !contexto.rituaisAprendidos.some(r => {
+         const def = contexto.rituais?.find(rd => rd.Nome_Ritual === r.nome);
+         return def && parseInt(def.Circulo) >= 2;
+      })) {
+        return { atende: false, motivo: 'Ritual de 2º Círculo' };
+      }
+      const partes = textoLower.split(',');
+      const ultimo = partes[partes.length - 1].trim().replace(/\.$/, '');
+      if (!contexto.poderes.some(p => p.nome === ultimo)) {
+        return { atende: false, motivo: ultimo };
+      }
+      return { atende: true };
+    }
+
+    case 32: {
+      // Atributo 2, ter algum ritual
+      const resAttr = verificarAtributo(textoLower);
+      if (!resAttr.atende) return resAttr;
+      if (!contexto.rituaisAprendidos || contexto.rituaisAprendidos.length === 0) {
+        return { atende: false, motivo: 'Ter algum ritual' };
+      }
+      return { atende: true };
+    }
+
+    case 33: {
+      // Atributo 2, treinado em perícia, ter um ritual
+      const resAttr = verificarAtributo(textoLower);
+      if (!resAttr.atende) return resAttr;
+      const codigos = extrairCodigosPericias(textoLower);
+      if (codigos.length > 0) {
+        const res = verificarPericia([codigos[0]]);
+        if (!res.atende) return res;
+      }
+      if (!contexto.rituaisAprendidos || contexto.rituaisAprendidos.length === 0) {
+        return { atende: false, motivo: 'Ter algum ritual' };
+      }
+      return { atende: true };
+    }
+
+    case 34: {
+      // Um atributo 2 ou outro
+      const regexStr = /(for|agi|int|pre|vig)\s*(\d+)/gi;
+      const matches = [...texto.matchAll(regexStr)];
+      if (matches.length > 0) {
+        const atendeAlgumAttr = matches.some(match => {
+          const attrName = match[1].toUpperCase() as keyof Atributos;
+          const attrMin = parseInt(match[2], 10);
+          return contexto.atributos[attrName] >= attrMin;
+        });
+        if (!atendeAlgumAttr) {
+          const attrMotivos = matches.map(m => `${m[1].toUpperCase()} ${m[2]}`).join(' ou ');
+          return { atende: false, motivo: attrMotivos };
+        }
+      }
+      return { atende: true };
+    }
+
+    case 35: {
+      // Um atributo 2 ou outro, treinado em perícia, ter um ritual
+      const regexStr = /(for|agi|int|pre|vig)\s*(\d+)/gi;
+      const matches = [...texto.matchAll(regexStr)];
+      if (matches.length > 0) {
+        const atendeAlgumAttr = matches.some(match => {
+          const attrName = match[1].toUpperCase() as keyof Atributos;
+          const attrMin = parseInt(match[2], 10);
+          return contexto.atributos[attrName] >= attrMin;
+        });
+        if (!atendeAlgumAttr) {
+          const attrMotivos = matches.map(m => `${m[1].toUpperCase()} ${m[2]}`).join(' ou ');
+          return { atende: false, motivo: attrMotivos };
+        }
+      }
+      const codigos = extrairCodigosPericias(textoLower);
+      if (codigos.length > 0) {
+        const res = verificarPericia([codigos[0]]);
+        if (!res.atende) return res;
+      }
+      if (!contexto.rituaisAprendidos || contexto.rituaisAprendidos.length === 0) {
+        return { atende: false, motivo: 'Ter algum ritual' };
+      }
+      return { atende: true };
+    }
+
+    case 36: {
+      // Ter a habilidade de alguma das origens artisticas
+      const origensArtisticas = ['ator', 'músico', 'escritor', 'dançarino', 'cantor', 'pintor', 'influencer', 'anfitrião', 'cosplayer', 'fotógrafo', 'influencer paranormal'];
+      if (!contexto.origem || !origensArtisticas.includes(contexto.origem.toLowerCase())) {
+        return { atende: false, motivo: 'Origem Artística' };
+      }
+      return { atende: true };
+    }
+
+    case 37: {
+      // NEX 40%
+      if (contexto.nex < 40) return { atende: false, motivo: 'NEX 40%' };
+      return { atende: true };
+    }
+
+    case 38: {
+      // Ter 1 outro poder de sangue
+      const qtdSangue = contexto.poderes.filter(p => p.elemento === 'Sangue').length;
+      if (qtdSangue < 1) return { atende: false, motivo: '1 Poder de Sangue' };
+      return { atende: true };
+    }
+
+    case 39: {
+      // Ter 2 outros poderes de Sangue
+      const qtdSangue = contexto.poderes.filter(p => p.elemento === 'Sangue').length;
+      if (qtdSangue < 2) return { atende: false, motivo: '2 Poderes de Sangue' };
+      return { atende: true };
+    }
+
+    case 40: {
+      // Ter 1 outro poder de Conhecimento
+      const qtdConh = contexto.poderes.filter(p => p.elemento === 'Conhecimento').length;
+      if (qtdConh < 1) return { atende: false, motivo: '1 Poder de Conhecimento' };
+      return { atende: true };
+    }
+
+    case 41: {
+      // Ter 1 outro poder de Energia
+      const qtdEnergia = contexto.poderes.filter(p => p.elemento === 'Energia').length;
+      if (qtdEnergia < 1) return { atende: false, motivo: '1 Poder de Energia' };
+      return { atende: true };
+    }
+
+    case 42: {
+      // Ter 1 outro poder de Morte
+      const qtdMorte = contexto.poderes.filter(p => p.elemento === 'Morte').length;
+      if (qtdMorte < 1) return { atende: false, motivo: '1 Poder de Morte' };
+      return { atende: true };
+    }
+
+    case 43: {
+      // Ter outros 2 poderes de Morte
+      const qtdMorte = contexto.poderes.filter(p => p.elemento === 'Morte').length;
+      if (qtdMorte < 2) return { atende: false, motivo: '2 Poderes de Morte' };
+      return { atende: true };
+    }
+
+    case 44: {
+      // Ter 2 outros poderes de Energia
+      const qtdEnergia = contexto.poderes.filter(p => p.elemento === 'Energia').length;
+      if (qtdEnergia < 2) return { atende: false, motivo: '2 Poderes de Energia' };
+      return { atende: true };
+    }
+
+    case 45: {
+      // Ter um ritual de Sangue
+      if (!contexto.rituaisAprendidos || !contexto.rituaisAprendidos.some(r => {
+        const def = contexto.rituais?.find(rd => rd.Nome_Ritual === r.nome);
+        return def && def.Elemento === 'Sangue';
+      })) {
+        return { atende: false, motivo: 'Ritual de Sangue' };
+      }
+      return { atende: true };
+    }
+
+    case 46: {
+      // Conhecimento 1, NEX 45% e treinado em 18.
+      const qtdConh = contexto.poderes.filter(p => p.elemento === 'Conhecimento').length;
+      if (qtdConh < 1) return { atende: false, motivo: '1 Poder de Conhecimento' };
+      if (contexto.nex < 45) return { atende: false, motivo: 'NEX 45%' };
+      const codigos = extrairCodigosPericias(textoLower);
+      if (codigos.length > 0) {
+        const res = verificarPericia([codigos[0]]);
+        if (!res.atende) return res;
+      }
+      return { atende: true };
+    }
+
+    case 47: {
+      // NEX 50%
+      if (contexto.nex < 50) return { atende: false, motivo: 'NEX 50%' };
+      return { atende: true };
+    }
+
+    case 48: {
+      // Ritual Vomitar Pestes
+      if (!contexto.rituaisAprendidos || !contexto.rituaisAprendidos.some(r => r.nome.toLowerCase() === 'vomitar pestes')) {
+        return { atende: false, motivo: 'Ritual Vomitar Pestes' };
+      }
       return { atende: true };
     }
 

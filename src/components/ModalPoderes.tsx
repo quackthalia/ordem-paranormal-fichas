@@ -248,6 +248,7 @@ export const ModalPoderes: React.FC = () => {
     bonusAtributos,
     afinidadeEscolhida,
     afinidadeAtiva,
+    regras,
     periciasHook,
     nex,
     trilhasHook,
@@ -352,11 +353,16 @@ export const ModalPoderes: React.FC = () => {
   const abasDisponiveis = useMemo((): [AbaModalPoderes, string][] => {
     const base: [AbaModalPoderes, string][] = [
       ['gerais', 'Poderes Gerais'],
-      ['paranormais', 'Poderes Paranormais'],
     ];
+    
+    // Se a regra nex_experiencia NÃO estiver ativa, permite poderes paranormais nos slots normais
+    if (!regras['nex_experiencia']) {
+      base.push(['paranormais', 'Poderes Paranormais']);
+    }
+
     if (ehCombate) return [['combate', 'Poderes de Combate'], ...base];
     return [['classe', 'Poderes de Utilidade'], ...base];
-  }, [ehCombate]);
+  }, [ehCombate, regras]);
 
   const handleTabChange = useCallback((aba: AbaModalPoderes) => {
     if (scrollContainerRef.current) {

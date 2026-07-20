@@ -91,11 +91,12 @@ interface RPGContextType {
   setVersaoRitual: React.Dispatch<React.SetStateAction<Record<number, VersaoRitual>>>;
   elementoRitual: Record<number, string>;
   setElementoRitual: React.Dispatch<React.SetStateAction<Record<number, string>>>;
-  nexManual: number;
-  setNexManual: React.Dispatch<React.SetStateAction<number>>;
+
   afinidadeEscolhida: string | null;
   setAfinidadeEscolhida: React.Dispatch<React.SetStateAction<string | null>>;
   afinidadeAtiva: boolean;
+  progressaoNexRecusados: number[];
+  setProgressaoNexRecusados: React.Dispatch<React.SetStateAction<number[]>>;
 }
 
 const RPGContext = createContext<RPGContextType | null>(null);
@@ -131,37 +132,27 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const [deslocQ, setDeslocQ] = useState(6);
   const [regras, setRegras] = useState<Record<string, boolean>>({});
   const [nivel, setNivel] = useState(1);
-  const [nexManual, setNexManual] = useState(0);
+
   const [rituaisExpandidos, setRituaisExpandidos] = useState<number[]>([]);
   const [versaoRitual, setVersaoRitual] = useState<Record<number, VersaoRitual>>({});
   const [elementoRitual, setElementoRitual] = useState<Record<number, string>>({});
   
-  // Afinidade
   const [afinidadeEscolhida, setAfinidadeEscolhida] = useState<string | null>(null);
+  const [progressaoNexRecusados, setProgressaoNexRecusados] = useState<number[]>([]);
 
   const toggleRegra = useCallback((nome: string) => {
     setRegras(prev => {
       const novo = { ...prev, [nome]: !prev[nome] };
-      // Quando ativa a regra NEX & EXPERIÊNCIA, zera o NEX manual e calcula nivel a partir do nex atual
+      // Se ativar nex_experiencia, pode calcular um nivel base inicial pra facilitar
       if (nome === 'nex_experiencia' && novo[nome]) {
-        setNexManual(0);
         setNivel(Math.min(20, Math.max(1, Math.ceil(nex / 5))));
-        setNex(nex <= 5 ? 5 : nex); // mantém nex atual
-      }
-      // Quando desativa, restaura o nex baseado no nivel
-      if (nome === 'nex_experiencia' && !novo[nome]) {
-        setNex(nivel === 20 ? 99 : nivel * 5);
       }
       return novo;
     });
-  }, [nex, nivel, setNex]);
+  }, [nex, setNex]);
 
-  // Sincroniza nex com nivel quando a regra NEX & EXPERIÊNCIA está ativa
-  React.useEffect(() => {
-    if (regras['nex_experiencia']) {
-      setNex(nivel === 20 ? 99 : nivel * 5);
-    }
-  }, [nivel, regras['nex_experiencia']]);
+  // Removermos a sincronia automática de nex = nivel * 5. 
+  // Agora eles são entidades independentes.
 
   // ============================================================
   // HOOKS
@@ -171,6 +162,45 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const rituaisHook = useRituais();
   const trilhasHook = useTrilhas();
 
+  // Sincroniza ganho/perda de NEX pelos Rituais
+  const rituaisAprendidosRef = React.useRef(rituaisHook.rituaisAprendidos);
+
+  React.useEffect(() => {
+    if (!regras['nex_experiencia']) {
+      rituaisAprendidosRef.current = rituaisHook.rituaisAprendidos;
+      return;
+    }
+
+    const previous = rituaisAprendidosRef.current;
+    const current = rituaisHook.rituaisAprendidos;
+
+    if (previous && current && previous !== current) {
+      let nexDiff = 0;
+      
+      // Calculate what was added
+      current.forEach(ritual => {
+        if (!previous.some(p => p.id === ritual.id)) {
+          const def = rituaisHook.rituais?.find(r => r.Nome_Ritual === ritual.nome);
+          if (def) nexDiff += parseInt(def.Circulo, 10) || 0;
+        }
+      });
+      
+      // Calculate what was removed
+      previous.forEach(ritual => {
+        if (!current.some(p => p.id === ritual.id)) {
+          const def = rituaisHook.rituais?.find(r => r.Nome_Ritual === ritual.nome);
+          if (def) nexDiff -= parseInt(def.Circulo, 10) || 0;
+        }
+      });
+
+      if (nexDiff !== 0) {
+        setNex(prev => Math.min(99, Math.max(0, prev + nexDiff)));
+      }
+    }
+
+    rituaisAprendidosRef.current = current;
+  }, [rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras]);
+
   const quantidadePoderesParanormais = useMemo(() => {
     return Object.values(poderesHook.poderesEscolhidos).filter(p => p.categoria === 'paranormais').length;
   }, [poderesHook.poderesEscolhidos]);
@@ -179,13 +209,20 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
 
   const afinidadeAtiva = useMemo(() => {
     if (!afinidadeEscolhida) return false;
+
+    // Se a regra estiver ativa, a afinidade é garantida a partir do NEX 60 automaticamente
+    if (regras['nex_experiencia'] && nex >= 60) {
+      return true;
+    }
+
+    // Comportamento original
     return Object.entries(poderesHook.poderesEscolhidos).some(([key, p]) => {
       if (p.categoria !== 'paranormais') return false;
       const nexSlot = Number(key);
       if (!isNaN(nexSlot) && nexSlot >= 50) return true;
       return false;
     });
-  }, [afinidadeEscolhida, poderesHook.poderesEscolhidos]);
+  }, [afinidadeEscolhida, poderesHook.poderesEscolhidos, regras, nex]);
 
   const periciasGratis = useMemo(() => {
     const gratis: string[] = [];
@@ -308,7 +345,6 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     rituaisExpandidos, setRituaisExpandidos,
     versaoRitual, setVersaoRitual,
     elementoRitual, setElementoRitual,
-    nexManual, setNexManual,
     afinidadeEscolhida, setAfinidadeEscolhida, afinidadeAtiva,
   };
 

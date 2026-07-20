@@ -15,7 +15,6 @@ export const StatusPanel: React.FC = () => {
     deslocQ, setDeslocQ,
     regras,
     nivel, setNivel,
-    nexManual, setNexManual,
     afinidadeEscolhida, setAfinidadeEscolhida,
     afinidadeAtiva,
   } = useRPG();
@@ -93,8 +92,8 @@ export const StatusPanel: React.FC = () => {
                 <input
                   type="number"
                   onKeyDown={bloquearLetras}
-                  value={nexManual}
-                  onChange={(e) => setNexManual(Math.max(0, Number(e.target.value)))}
+                  value={nex}
+                  onChange={(e) => setNex(Math.max(0, Math.min(99, Number(e.target.value))))}
                   className="w-14 bg-transparent px-3 py-2 text-center text-lg font-bold text-zinc-100 outline-none"
                 />
                 <span className="pr-2 text-lg font-bold text-zinc-500">%</span>

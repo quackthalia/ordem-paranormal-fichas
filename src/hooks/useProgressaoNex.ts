@@ -3,9 +3,9 @@ import { supabase } from "../services/supabase";
 
 export interface ProgressaoNexItem {
   Codigo_Progrecao: number;
-  Nex_Progrecao: string; // Ex: '25%'
+  Nex_Progrecao: string;
   Desc_Progrecao: string;
-  Elemento_Progrecao: string;
+  Elemento_Progrecao?: string | null;
 }
 
 export function useProgressaoNex() {

@@ -44,10 +44,8 @@ export function capMaximoAtributo(nex: number): number {
 export function calcularStatusBase(
   classe: ClasseRPG,
   atributos: Atributos,
-  nex: number
+  nivel: number
 ): { pvMax: number; peMax: number; sanMax: number; peTurno: number } {
-  const nivel = calcularNivel(nex);
-
   let pvMax = 0, peMax = 0, sanMax = 0;
 
   if (classe === 'Combatente') {
@@ -121,9 +119,8 @@ export function obterLimiteCirculos(nex: number): LimiteCirculos {
 export function calcularPD(
   classe: ClasseRPG,
   atributos: Atributos,
-  nex: number
+  nivel: number
 ): number {
-  const nivel = calcularNivel(nex);
   const pre = atributos.PRE;
 
   if (classe === 'Combatente') {

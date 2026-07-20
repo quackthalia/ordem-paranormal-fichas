@@ -36,7 +36,9 @@ const ProgressaoBlock = ({ item, nexPatamar }: { item: ProgressaoNexItem, nexPat
     afinidadeEscolhida, 
     setAfinidadeEscolhida, 
     setNexModalAberto,
-    poderesHook
+    poderesHook,
+    progressaoNexEditados,
+    setProgressaoNexEditados
   } = useRPG();
   
   const [expandido, setExpandido] = useState(false);

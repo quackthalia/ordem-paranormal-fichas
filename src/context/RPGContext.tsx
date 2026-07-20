@@ -210,7 +210,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     return Object.values(poderesHook.poderesEscolhidos).filter(p => p.categoria === 'paranormais').length;
   }, [poderesHook.poderesEscolhidos]);
 
-  const status = useStatus(classe, nex, atributos, quantidadePoderesParanormais);
+  const status = useStatus(classe, nex, nivel, atributos, quantidadePoderesParanormais);
 
   const afinidadeAtiva = useMemo(() => {
     if (!afinidadeEscolhida) return false;

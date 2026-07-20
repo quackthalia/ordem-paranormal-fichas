@@ -26,7 +26,7 @@ export function verificarPreRequisitos(
   const texto = poder.PreRequisitos || '';
 
   // Se não houver código, ou se for código não implementado ainda, libera por padrão
-  if (!codigo || codigo > 30) {
+  if (!codigo || codigo > 48) {
     return { atende: true };
   }
 

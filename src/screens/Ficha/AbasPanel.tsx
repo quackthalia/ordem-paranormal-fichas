@@ -1417,7 +1417,6 @@ export const AbasPanel: React.FC = () => {
               </div>
 
               <div className="flex flex-col gap-1.5 flex-1 min-h-[150px]">
-                <label className="text-xs font-bold uppercase tracking-wider text-zinc-400">Descrição Personalizada</label>
                 <div className="flex flex-col flex-1">
                   <ToolbarFormato editorRef={ritualEditorRef as any} />
                   <div

@@ -113,7 +113,6 @@ export function ModalEditarTrilha({
 
               {!isVersatilidade && (
                 <>
-                  <InputLabel label="Descrição Principal" />
                   <div>
                     <ToolbarFormato editorRef={editorDescTrilha as any} />
                     <div
@@ -150,7 +149,6 @@ export function ModalEditarTrilha({
                   className="rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700"
                 />
 
-                <InputLabel label="Descrição da Habilidade" />
                 <div>
                   <ToolbarFormato editorRef={hab.refEdit as any} />
                   <div

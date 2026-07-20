@@ -120,7 +120,6 @@ const ProgressaoBlock = ({ item, nexPatamar }: { item: ProgressaoNexItem, nexPat
                 </h3>
 
                 <div className="flex flex-col gap-1.5 text-left">
-                  <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Descrição</label>
                   <div>
                     <ToolbarFormato editorRef={editorRef as any} />
                     <div

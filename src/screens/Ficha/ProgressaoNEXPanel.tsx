@@ -101,9 +101,9 @@ const ProgressaoBlock = ({ item, nexPatamar }: { item: ProgressaoNexItem, nexPat
             {!isEditing && (
               <button 
                 onClick={(e) => { e.stopPropagation(); handleEditClick(); }}
-                className="text-[10px] uppercase font-bold text-zinc-500 hover:text-zinc-300 transition"
+                className="rounded bg-zinc-800 border border-zinc-700 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-zinc-300 transition hover:bg-zinc-700 hover:text-zinc-100"
               >
-                ✏️ Editar Texto
+                Editar
               </button>
             )}
           </div>

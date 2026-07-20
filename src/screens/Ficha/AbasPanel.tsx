@@ -19,7 +19,7 @@ import {
 } from '../../utils/rpgRules';
 
 import { ModalPoderesExtra } from '../../components/ModalPoderesExtra';
-
+import { ProgressaoNEXPanel } from './ProgressaoNEXPanel';
 // ═══════════════════════════════════════════════════════════════
 // CORES DOS ELEMENTOS
 // ═══════════════════════════════════════════════════════════════

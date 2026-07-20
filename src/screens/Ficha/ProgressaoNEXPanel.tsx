@@ -54,22 +54,22 @@ const ProgressaoBlock = ({ item, nexPatamar }: { item: ProgressaoNexItem, nexPat
   const poder = poderesHook.poderesEscolhidos[nexPatamar];
 
   return (
-    <div className="border border-zinc-700 bg-zinc-950 rounded mb-2 overflow-hidden">
+    <div className="mb-3 overflow-hidden rounded-r border-l-4 border-red-800 bg-zinc-900/50">
       <div 
-        className="flex justify-between items-center p-4 cursor-pointer hover:bg-zinc-900 transition"
+        className="flex cursor-pointer items-center justify-between gap-3 bg-zinc-800/40 px-4 py-3 transition hover:bg-zinc-700/50"
         onClick={() => setExpandido(!expandido)}
       >
-        <h3 className="text-lg font-bold text-zinc-100 flex items-center gap-2">
+        <h3 className="text-sm font-bold text-zinc-100 flex items-center gap-2">
           NEX {item.Nex_Progrecao}
-          {elementoDaLinha && <span className="text-xs uppercase bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded">{elementoDaLinha}</span>}
-          {temPoderEscolhido && <span className="text-xs uppercase bg-purple-900 text-purple-200 px-2 py-0.5 rounded ml-2 truncate max-w-[150px]">{poder.nome}</span>}
+          {elementoDaLinha && <span className="text-[10px] uppercase bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded">{elementoDaLinha}</span>}
+          {temPoderEscolhido && <span className="text-[10px] uppercase bg-purple-900 text-purple-200 px-2 py-0.5 rounded ml-2 truncate max-w-[150px]">{poder.nome}</span>}
         </h3>
-        <span className="text-zinc-500 font-bold">{expandido ? '▼' : '▶'}</span>
+        <span className="text-xs text-zinc-600">{expandido ? '▲' : '▼'}</span>
       </div>
       
       {expandido && (
-        <div className="p-4 pt-0 border-t border-zinc-800 bg-zinc-950/50 mt-2">
-          <div className="text-sm text-zinc-300 leading-relaxed space-y-2 mb-4 mt-3">
+        <div className="p-4 text-sm text-zinc-400">
+          <div className="text-zinc-300 leading-relaxed space-y-2 mb-4">
             {item.Desc_Progrecao.split('\n').map((linha: string, idx: number) => (
               <p key={idx} dangerouslySetInnerHTML={{ __html: formatarDescricaoProg(linha) }} />
             ))}

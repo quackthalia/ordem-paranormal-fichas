@@ -166,6 +166,7 @@ export const AbasPanel: React.FC = () => {
   const { poderClasse, poderesClasse, poderesEscolhidos, poderesParanormais, removerPoder, listaPoderesUtilidade, escolherPoderExtra } = poderesHook;
   const { origemSelecionada } = origensHook;
   const { afinidadeEscolhida, afinidadeAtiva, nivel } = useRPG();
+  const effectiveNex = regras['nex_experiencia'] ? (nivel * 5) : nex;
 
   React.useEffect(() => {
     const handler = (e: any) => {
@@ -193,7 +194,6 @@ export const AbasPanel: React.FC = () => {
   };
 
   const listaHabilidades = React.useMemo(() => {
-    const effectiveNex = regras['nex_experiencia'] ? (nivel * 5) : nex;
     const contagemPoderes: Record<string, number> = {};
     Object.values(poderesEscolhidos).forEach(p => {
       const nomeBase = p.nome.toLowerCase().startsWith('aprender ritual') ? 'aprender ritual' : p.nome.toLowerCase().trim();

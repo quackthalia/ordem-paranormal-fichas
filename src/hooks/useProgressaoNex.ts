@@ -15,9 +15,9 @@ export function useProgressaoNex() {
   useEffect(() => {
     async function fetchProgressao() {
       try {
-        // TABELA NO SUPABASE: Progreção NEX (com ç)
+        // TABELA NO SUPABASE: Progressão NEX
         const { data, error } = await supabase
-          .from("Progreção NEX")
+          .from("Progressão NEX")
           .select("*")
           .order("Codigo_Progrecao", { ascending: true });
 

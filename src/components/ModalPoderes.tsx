@@ -85,6 +85,11 @@ function PoderCard({
     }
   }
 
+  // DEBUG PARA PRE REQUISITO SANGUE 2
+  if (poder.Nome.includes("Anatomia Insana") || poder.Nome.includes("Sangue Fervente")) {
+    console.log("DEBUG PODER:", poder.Nome, "Pre_Codigo:", poder.Pre_Codigo, "Val:", val);
+  }
+
   const bloqueado = !val.atende;
 
   const precisaEscolherElemento = poder.Nome.toLowerCase().includes('elemento') || (poder.Descricao && poder.Descricao.toLowerCase().includes('escolha um elemento'));

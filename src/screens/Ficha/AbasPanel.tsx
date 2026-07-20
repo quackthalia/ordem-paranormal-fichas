@@ -18,6 +18,9 @@ import {
   verificarAcessoCirculo,
 } from '../../utils/rpgRules';
 
+import { ModalPoderes } from '../../components/ModalPoderes';
+import { obterCorBadge } from '../../utils/rpgRules';
+import { ToolbarFormato } from '../../components/ToolbarFormato';
 import { ModalPoderesExtra } from '../../components/ModalPoderesExtra';
 import { ProgressaoNEXPanel } from './ProgressaoNEXPanel';
 // ═══════════════════════════════════════════════════════════════
@@ -162,6 +165,7 @@ export const AbasPanel: React.FC = () => {
   const [filtroRituais, setFiltroRituais] = React.useState('');
   const [editandoTrilha, setEditandoTrilha] = React.useState(false);
   const [editandoVersatilidade, setEditandoVersatilidade] = React.useState(false);
+  const ritualEditorRef = React.useRef<HTMLDivElement>(null);
 
   const { poderClasse, poderesClasse, poderesEscolhidos, poderesParanormais, removerPoder, listaPoderesUtilidade, escolherPoderExtra } = poderesHook;
   const { origemSelecionada } = origensHook;
@@ -1413,13 +1417,22 @@ export const AbasPanel: React.FC = () => {
               </div>
 
               <div className="flex flex-col gap-1.5 flex-1 min-h-[150px]">
-                <label className="text-xs font-bold uppercase tracking-wider text-zinc-400">Descrição Personalizada (Markdown/Quebras de linha)</label>
-                <textarea
-                  value={ritualDescricaoEditando}
-                  onChange={(e) => setRitualDescricaoEditando(e.target.value)}
-                  placeholder="Escreva como o ritual funciona..."
-                  className="min-h-[200px] w-full resize-y rounded border border-zinc-700 bg-zinc-950 p-3 text-sm leading-relaxed text-zinc-300 focus:border-red-700 focus:outline-none flex-1"
-                />
+                <label className="text-xs font-bold uppercase tracking-wider text-zinc-400">Descrição Personalizada</label>
+                <div className="flex flex-col flex-1">
+                  <ToolbarFormato editorRef={ritualEditorRef as any} />
+                  <div
+                    ref={(el) => {
+                      ritualEditorRef.current = el;
+                      if (el && !el.dataset.initialized) {
+                        el.innerHTML = ritualDescricaoEditando;
+                        el.dataset.initialized = 'true';
+                      }
+                    }}
+                    contentEditable
+                    onBlur={(e) => setRitualDescricaoEditando(e.currentTarget.innerHTML)}
+                    className="min-h-[200px] w-full rounded-b border border-zinc-700 bg-zinc-950 p-3 text-sm leading-relaxed text-zinc-300 focus:border-red-700 focus:outline-none flex-1 overflow-y-auto"
+                  />
+                </div>
               </div>
             </div>
             <div className="bg-zinc-950/50 p-4 border-t border-zinc-800 flex justify-end gap-3 mt-auto">
@@ -1431,7 +1444,8 @@ export const AbasPanel: React.FC = () => {
               </button>
               <button
                 onClick={() => {
-                  rituaisHook.editarRitual(ritualEditandoOrigem, ritualNomeEditando, ritualDescricaoEditando, ritualPropsEditando);
+                  const finalDesc = ritualEditorRef.current?.innerHTML || ritualDescricaoEditando;
+                  rituaisHook.editarRitual(ritualEditandoOrigem, ritualNomeEditando, finalDesc, ritualPropsEditando);
                   setRitualEditandoOrigem(null);
                 }}
                 className="rounded bg-red-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-800"

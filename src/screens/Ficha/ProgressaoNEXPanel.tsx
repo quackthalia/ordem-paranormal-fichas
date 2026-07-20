@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useRPG } from '../../context/RPGContext';
+import { ToolbarFormato } from '../../components/ToolbarFormato';
 import { useProgressaoNex, type ProgressaoNexItem } from '../../hooks/useProgressaoNex';
 
 export const ProgressaoNEXPanel: React.FC = () => {
@@ -58,6 +59,7 @@ const ProgressaoBlock = ({ item, nexPatamar }: { item: ProgressaoNexItem, nexPat
 
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState('');
+  const editorRef = useRef<HTMLDivElement>(null);
 
   const handleEditClick = () => {
     setEditText(progressaoNexEditados[item.Codigo_Progrecao] || item.Desc_Progrecao);
@@ -65,7 +67,8 @@ const ProgressaoBlock = ({ item, nexPatamar }: { item: ProgressaoNexItem, nexPat
   };
 
   const handleSaveEdit = () => {
-    setProgressaoNexEditados(prev => ({ ...prev, [item.Codigo_Progrecao]: editText }));
+    const finalHtml = editorRef.current?.innerHTML || editText;
+    setProgressaoNexEditados(prev => ({ ...prev, [item.Codigo_Progrecao]: finalHtml }));
     setIsEditing(false);
   };
 
@@ -118,12 +121,21 @@ const ProgressaoBlock = ({ item, nexPatamar }: { item: ProgressaoNexItem, nexPat
 
                 <div className="flex flex-col gap-1.5 text-left">
                   <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Descrição</label>
-                  <textarea
-                    value={editText}
-                    onChange={(e) => setEditText(e.target.value)}
-                    className="min-h-48 overflow-y-auto rounded border border-zinc-700 bg-zinc-950 p-3 text-left text-sm leading-relaxed text-zinc-100 outline-none focus:border-red-700 resize-y"
-                  />
-                  <span className="text-[10px] text-zinc-500 mt-1">Dica: Você pode usar _texto_ para deixar em itálico.</span>
+                  <div>
+                    <ToolbarFormato editorRef={editorRef as any} />
+                    <div
+                      ref={(el) => {
+                        editorRef.current = el;
+                        if (el && !el.dataset.initialized) {
+                          el.innerHTML = editText;
+                          el.dataset.initialized = 'true';
+                        }
+                      }}
+                      contentEditable
+                      onBlur={(e) => setEditText(e.currentTarget.innerHTML)}
+                      className="min-h-48 overflow-y-auto rounded-b border border-zinc-700 bg-zinc-950 p-3 text-left text-sm leading-relaxed text-zinc-100 outline-none focus:border-red-700"
+                    />
+                  </div>
                 </div>
 
                 <div className="mt-2 flex justify-end gap-2.5">

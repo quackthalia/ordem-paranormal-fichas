@@ -2,6 +2,7 @@ import React, { useRef, useMemo, useEffect, useState, useCallback } from 'react'
 import { useRPG } from '../context/RPGContext';
 import { usePoderesFiltrados } from '../hooks/usePoderes';
 import { InputOtimizado } from './InputOtimizado';
+import { ToolbarFormato } from './ToolbarFormato';
 import type { AbaModalPoderes, Poder } from '../types';
 import { verificarPreRequisitos, formatarTextoPreRequisitos } from '../utils/preRequisitos';
 import type { ContextoPreRequisitos } from '../utils/preRequisitos';
@@ -433,17 +434,20 @@ export const ModalPoderes: React.FC = () => {
 
           <div className="flex flex-col gap-1.5 text-left">
             <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Descrição</label>
-            <div
-              ref={(el) => {
-                editorRef.current = el;
-                if (el && !el.dataset.initialized) {
-                  el.innerHTML = descricaoEditando;
-                  el.dataset.initialized = 'true';
-                }
-              }}
-              contentEditable
-              className="min-h-36 overflow-y-auto rounded border border-zinc-700 bg-zinc-950 p-3 text-left text-sm leading-relaxed text-zinc-100 outline-none focus:border-red-700"
-            />
+            <div>
+              <ToolbarFormato editorRef={editorRef as any} />
+              <div
+                ref={(el) => {
+                  editorRef.current = el;
+                  if (el && !el.dataset.initialized) {
+                    el.innerHTML = descricaoEditando;
+                    el.dataset.initialized = 'true';
+                  }
+                }}
+                contentEditable
+                className="min-h-36 overflow-y-auto rounded-b border border-zinc-700 bg-zinc-950 p-3 text-left text-sm leading-relaxed text-zinc-100 outline-none focus:border-red-700"
+              />
+            </div>
           </div>
 
           <div className="mt-2 flex justify-end gap-2.5">

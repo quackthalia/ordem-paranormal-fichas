@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useRPG } from '../context/RPGContext';
 import { InputOtimizado } from './InputOtimizado';
+import { ToolbarFormato } from './ToolbarFormato';
 import type { TrilhaSelecionada } from '../types';
 import { calcularNivel } from '../utils/rpgRules';
 
@@ -113,18 +114,21 @@ export function ModalEditarTrilha({
               {!isVersatilidade && (
                 <>
                   <InputLabel label="Descrição Principal" />
-                  <div
-                    ref={(el) => {
-                      editorDescTrilha.current = el;
-                      if (el && !el.dataset.initialized) {
-                        el.innerHTML = descTrilha;
-                        el.dataset.initialized = 'true';
-                      }
-                    }}
-                    contentEditable
-                    onBlur={(e) => setDescTrilha(e.currentTarget.innerHTML)}
-                    className="min-h-[60px] rounded border border-zinc-700 bg-zinc-950 p-2.5 text-sm text-zinc-300 outline-none focus:border-red-700"
-                  />
+                  <div>
+                    <ToolbarFormato editorRef={editorDescTrilha as any} />
+                    <div
+                      ref={(el) => {
+                        editorDescTrilha.current = el;
+                        if (el && !el.dataset.initialized) {
+                          el.innerHTML = descTrilha;
+                          el.dataset.initialized = 'true';
+                        }
+                      }}
+                      contentEditable
+                      onBlur={(e) => setDescTrilha(e.currentTarget.innerHTML)}
+                      className="min-h-[60px] rounded-b border border-zinc-700 bg-zinc-950 p-2.5 text-sm text-zinc-300 outline-none focus:border-red-700"
+                    />
+                  </div>
                 </>
               )}
             </div>
@@ -147,18 +151,21 @@ export function ModalEditarTrilha({
                 />
 
                 <InputLabel label="Descrição da Habilidade" />
-                <div
-                  ref={(el) => {
-                    hab.refEdit.current = el;
-                    if (el && !el.dataset.initialized) {
-                      el.innerHTML = hab.desc;
-                      el.dataset.initialized = 'true';
-                    }
-                  }}
-                  contentEditable
-                  onBlur={(e) => hab.setDesc(e.currentTarget.innerHTML)}
-                  className="min-h-[60px] rounded border border-zinc-700 bg-zinc-950 p-2.5 text-sm text-zinc-300 outline-none focus:border-red-700"
-                />
+                <div>
+                  <ToolbarFormato editorRef={hab.refEdit as any} />
+                  <div
+                    ref={(el) => {
+                      hab.refEdit.current = el;
+                      if (el && !el.dataset.initialized) {
+                        el.innerHTML = hab.desc;
+                        el.dataset.initialized = 'true';
+                      }
+                    }}
+                    contentEditable
+                    onBlur={(e) => hab.setDesc(e.currentTarget.innerHTML)}
+                    className="min-h-[60px] rounded-b border border-zinc-700 bg-zinc-950 p-2.5 text-sm text-zinc-300 outline-none focus:border-red-700"
+                  />
+                </div>
               </div>
             </div>
           ))}

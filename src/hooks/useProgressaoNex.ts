@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '../services/supabase';
-import Papa from 'papaparse';
+import { useState, useEffect } from "react";
+import { supabase } from "../services/supabase";
 
 export interface ProgressaoNexItem {
   Codigo_Progrecao: number;
@@ -10,56 +9,31 @@ export interface ProgressaoNexItem {
 }
 
 export function useProgressaoNex() {
-  const [itensProgressao, setItensProgressao] = useState<ProgressaoNexItem[]>([]);
+  const [itensProgressao, setItensProgressao] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let isMounted = true;
-
-    async function loadData() {
+    async function fetchProgressao() {
       try {
-        // Tenta buscar do Supabase primeiro
+        // TABELA NO SUPABASE: Progreção NEX (com ç)
         const { data, error } = await supabase
-          .from('Progressão NEX')
-          .select('*')
-          .order('Codigo_Progrecao', { ascending: true });
+          .from("Progreção NEX")
+          .select("*")
+          .order("Codigo_Progrecao", { ascending: true });
 
-        // Se retornar dados válidos e não vazio
-        if (!error && data && data.length > 0) {
-          if (isMounted) {
-            setItensProgressao(data as ProgressaoNexItem[]);
-            setLoading(false);
-          }
-          return;
+        if (error) {
+          console.error("Erro ao buscar Progressão NEX:", error);
+        } else if (data) {
+          setItensProgressao(data);
         }
-
-        // Se deu erro ou vazio, faz fallback pro CSV local!
-        console.warn("Supabase não retornou dados para Progressão NEX (RLS ativo ou tabela não encontrada?). Usando fallback CSV...");
-        
-        const response = await fetch('/progressao_nex.csv');
-        const csvText = await response.text();
-
-        Papa.parse<ProgressaoNexItem>(csvText, {
-          header: true,
-          skipEmptyLines: true,
-          complete: (results) => {
-            if (isMounted) {
-              setItensProgressao(results.data as ProgressaoNexItem[]);
-              setLoading(false);
-            }
-          },
-        });
       } catch (err) {
-        console.error("Erro ao carregar progressão de NEX:", err);
-        if (isMounted) setLoading(false);
+        console.error("Exceção ao buscar Progressão NEX:", err);
+      } finally {
+        setLoading(false);
       }
     }
 
-    loadData();
-
-    return () => {
-      isMounted = false;
-    };
+    fetchProgressao();
   }, []);
 
   return { itensProgressao, loading };

@@ -346,6 +346,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     versaoRitual, setVersaoRitual,
     elementoRitual, setElementoRitual,
     afinidadeEscolhida, setAfinidadeEscolhida, afinidadeAtiva,
+    progressaoNexRecusados, setProgressaoNexRecusados,
   };
 
   return <RPGContext.Provider value={value}>{children}</RPGContext.Provider>;

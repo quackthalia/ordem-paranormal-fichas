@@ -442,18 +442,17 @@ export const AbasPanel: React.FC = () => {
   return (
     <div className="flex flex-col h-full min-h-0 rounded-lg border border-zinc-800 bg-zinc-900/60 p-5">
       <div className="mb-5 flex flex-wrap gap-x-1 gap-y-1 border-b border-zinc-800">
-        {(['combate','habilidades','rituais','inventario','descricao','regras', 'ficha', ...(regras['nex_experiencia'] ? ['progressao_nex'] : [])] as const).map(aba => (
+        {(['combate','habilidades','rituais','inventario','descricao','regras'] as const).map(aba => (
           <button key={aba} onClick={() => setAbaDireita(aba)}
             className={`px-1.5 py-2 text-xs font-bold uppercase tracking-wider transition whitespace-nowrap ${
               abaDireita === aba ? 'border-b-2 border-red-800 text-zinc-100' : 'border-b-2 border-transparent text-zinc-500 hover:text-zinc-300'
             }`}
-          >{aba === 'inventario' ? 'Inventário' : aba === 'descricao' ? 'Descrição' : aba === 'regras' ? 'Regras' : aba === 'progressao_nex' ? 'Progressão NEX' : aba === 'ficha' ? 'Ficha' : aba}</button>
+          >{aba === 'inventario' ? 'Inventário' : aba === 'descricao' ? 'Descrição' : aba === 'regras' ? 'Regras' : aba}</button>
         ))}
       </div>
 
       <div className="mt-2 flex flex-1 flex-col">
         {abaDireita === 'combate' && <div className="mt-5 text-center italic text-zinc-600">Conteúdo de Combate</div>}
-        {abaDireita === 'progressao_nex' && <ProgressaoNEXPanel />}
 
         {abaDireita === 'habilidades' && (
           <div className="flex h-full flex-col">
@@ -742,6 +741,11 @@ export const AbasPanel: React.FC = () => {
 
               {habilidadesFiltradas.length === 0 && (
                 <div className="mt-5 text-center italic text-zinc-600">Nenhuma habilidade encontrada.</div>
+              )}
+              {regras['nex_experiencia'] && (
+                <div className="mt-4 border-t border-zinc-800 pt-4">
+                  <ProgressaoNEXPanel />
+                </div>
               )}
             </div>
           </div>

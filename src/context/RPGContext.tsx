@@ -95,7 +95,10 @@ interface RPGContextType {
   afinidadeEscolhida: string | null;
   setAfinidadeEscolhida: React.Dispatch<React.SetStateAction<string | null>>;
   afinidadeAtiva: boolean;
+  poderesExtras: Record<string, string>;
   progressaoNexRecusados: number[];
+  progressaoNexEditados: Record<number, string>;
+  setProgressaoNexEditados: React.Dispatch<React.SetStateAction<Record<number, string>>>;
   setProgressaoNexRecusados: React.Dispatch<React.SetStateAction<number[]>>;
 }
 
@@ -138,7 +141,9 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const [elementoRitual, setElementoRitual] = useState<Record<number, string>>({});
   
   const [afinidadeEscolhida, setAfinidadeEscolhida] = useState<string | null>(null);
+  const [poderesExtras, setPoderesExtras] = useState<Record<string, string>>({});
   const [progressaoNexRecusados, setProgressaoNexRecusados] = useState<number[]>([]);
+  const [progressaoNexEditados, setProgressaoNexEditados] = useState<Record<number, string>>({});
 
   const toggleRegra = useCallback((nome: string) => {
     setRegras(prev => {
@@ -347,6 +352,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     elementoRitual, setElementoRitual,
     afinidadeEscolhida, setAfinidadeEscolhida, afinidadeAtiva,
     progressaoNexRecusados, setProgressaoNexRecusados,
+    progressaoNexEditados, setProgressaoNexEditados,
   };
 
   return <RPGContext.Provider value={value}>{children}</RPGContext.Provider>;

@@ -54,6 +54,30 @@ const ProgressaoBlock = ({ item, nexPatamar }: { item: ProgressaoNexItem, nexPat
   const temPoderEscolhido = !!poderesHook.poderesEscolhidos[chaveTranscender];
   const poder = poderesHook.poderesEscolhidos[chaveTranscender];
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState('');
+
+  const handleEditClick = () => {
+    setEditText(progressaoNexEditados[item.Codigo_Progrecao] || item.Desc_Progrecao);
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = () => {
+    setProgressaoNexEditados(prev => ({ ...prev, [item.Codigo_Progrecao]: editText }));
+    setIsEditing(false);
+  };
+
+  const handleResetEdit = () => {
+    setProgressaoNexEditados(prev => {
+      const { [item.Codigo_Progrecao]: _, ...rest } = prev;
+      return rest;
+    });
+    setIsEditing(false);
+  };
+
+  // Texto que será exibido (editado ou original)
+  const textoParaExibir = progressaoNexEditados[item.Codigo_Progrecao] || item.Desc_Progrecao;
+
   return (
     <div className="mb-3 overflow-hidden rounded-r border-l-4 border-red-800 bg-zinc-900/50">
       <div 
@@ -70,11 +94,55 @@ const ProgressaoBlock = ({ item, nexPatamar }: { item: ProgressaoNexItem, nexPat
       
       {expandido && (
         <div className="p-4 text-sm text-zinc-400">
-          <div className="text-zinc-300 leading-relaxed space-y-2 mb-4">
-            {item.Desc_Progrecao.split('\n').map((linha: string, idx: number) => (
-              <p key={idx} dangerouslySetInnerHTML={{ __html: formatarDescricaoProg(linha) }} />
-            ))}
+          <div className="flex justify-between items-center mb-3">
+            <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Descrição</span>
+            {!isEditing && (
+              <button 
+                onClick={(e) => { e.stopPropagation(); handleEditClick(); }}
+                className="text-[10px] uppercase font-bold text-zinc-500 hover:text-zinc-300 transition"
+              >
+                ✏️ Editar Texto
+              </button>
+            )}
           </div>
+
+          {isEditing ? (
+            <div className="mb-4 flex flex-col gap-2">
+              <textarea
+                value={editText}
+                onChange={(e) => setEditText(e.target.value)}
+                className="w-full min-h-[100px] bg-zinc-950 border border-zinc-700 text-zinc-300 p-3 rounded text-sm outline-none focus:border-red-700"
+              />
+              <div className="flex gap-2 justify-end">
+                {progressaoNexEditados[item.Codigo_Progrecao] && (
+                  <button 
+                    onClick={handleResetEdit}
+                    className="text-xs text-red-500 hover:text-red-400 font-bold px-3 py-1.5"
+                  >
+                    Restaurar Original
+                  </button>
+                )}
+                <button 
+                  onClick={() => setIsEditing(false)}
+                  className="text-xs text-zinc-400 hover:text-zinc-200 font-bold px-3 py-1.5"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  onClick={handleSaveEdit}
+                  className="text-xs bg-red-900 hover:bg-red-800 text-red-100 font-bold px-3 py-1.5 rounded"
+                >
+                  Salvar
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="text-zinc-300 leading-relaxed space-y-2 mb-4">
+              {textoParaExibir.split('\n').map((linha: string, idx: number) => (
+                <p key={idx} dangerouslySetInnerHTML={{ __html: formatarDescricaoProg(linha) }} />
+              ))}
+            </div>
+          )}
 
           {/* ESCOLHA DE AFINIDADE EM 50% */}
           {is50 && (

@@ -47,11 +47,12 @@ const ProgressaoBlock = ({ item, nexPatamar }: { item: ProgressaoNexItem, nexPat
     return null; 
   }
 
+  const chaveTranscender = nexPatamar + 1000;
   const is50 = nexPatamar === 50;
   const recusou = progressaoNexRecusados.includes(nexPatamar);
   const podeTranscender = [25, 35, 50, 75, 90].includes(nexPatamar);
-  const temPoderEscolhido = !!poderesHook.poderesEscolhidos[nexPatamar];
-  const poder = poderesHook.poderesEscolhidos[nexPatamar];
+  const temPoderEscolhido = !!poderesHook.poderesEscolhidos[chaveTranscender];
+  const poder = poderesHook.poderesEscolhidos[chaveTranscender];
 
   return (
     <div className="mb-3 overflow-hidden rounded-r border-l-4 border-red-800 bg-zinc-900/50">
@@ -99,13 +100,13 @@ const ProgressaoBlock = ({ item, nexPatamar }: { item: ProgressaoNexItem, nexPat
                 <span className="text-xs font-bold text-purple-400 uppercase">Poder Transcendido</span>
                 <div className="flex gap-2">
                   <button 
-                    onClick={() => setNexModalAberto(nexPatamar)}
+                    onClick={() => setNexModalAberto(chaveTranscender)}
                     className="text-xs text-zinc-400 hover:text-zinc-100 transition"
                   >
                     Editar
                   </button>
                   <button 
-                    onClick={() => poderesHook.removerPoder(nexPatamar)}
+                    onClick={() => poderesHook.removerPoder(chaveTranscender)}
                     className="text-xs text-red-500 hover:text-red-400 transition"
                   >
                     Remover
@@ -123,7 +124,7 @@ const ProgressaoBlock = ({ item, nexPatamar }: { item: ProgressaoNexItem, nexPat
               {!recusou ? (
                 <>
                   <button 
-                    onClick={() => setNexModalAberto(nexPatamar)}
+                    onClick={() => setNexModalAberto(chaveTranscender)}
                     className="bg-purple-900 hover:bg-purple-800 text-purple-100 text-xs font-bold uppercase px-4 py-2 rounded transition"
                   >
                     Transcender

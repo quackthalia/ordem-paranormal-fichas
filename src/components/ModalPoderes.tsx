@@ -467,7 +467,7 @@ export const ModalPoderes: React.FC = () => {
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-950 rounded-t-lg">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-display m-0 text-lg uppercase tracking-wide text-zinc-100">
-              Escolher Poder — <span className="text-red-500">NEX {nexModalAberto}%</span>
+              Escolher Poder — <span className="text-red-500">NEX {nexModalAberto && nexModalAberto > 1000 ? nexModalAberto - 1000 : nexModalAberto}%</span>
             </h3>
             <button
               onClick={() => setNexModalAberto(null)}

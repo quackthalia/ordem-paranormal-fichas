@@ -130,8 +130,16 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
   useEffect(() => {
     let cancelled = false;
     async function carregar() {
-      if (classe !== 'Combatente') { setPoderClasse(null); return; }
-      const { data, error: err } = await supabase.from('Poderes').select('*').eq('Codigo_Poder', 179).single();
+      if (!classe) { setPoderClasse(null); return; }
+      
+      let codigoPoder = 0;
+      if (classe === 'Combatente') codigoPoder = 179;
+      else if (classe === 'Especialista') codigoPoder = 181;
+      else if (classe === 'Ocultista') codigoPoder = 183;
+      
+      if (codigoPoder === 0) return;
+
+      const { data, error: err } = await supabase.from('Poderes').select('*').eq('Codigo_Poder', codigoPoder).single();
       if (cancelled) return;
       if (!err && data) setPoderClasse(normalizarPoder(data));
     }

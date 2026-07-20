@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Papa from 'papaparse';
+import { supabase } from '../services/supabase';
 
 export interface ProgressaoNexItem {
   Codigo_Progrecao: number;
@@ -17,19 +17,21 @@ export function useProgressaoNex() {
 
     async function loadData() {
       try {
-        const response = await fetch('/progressao_nex.csv');
-        const csvText = await response.text();
+        const { data, error } = await supabase
+          .from('Progressão NEX')
+          .select('*')
+          .order('Codigo_Progrecao', { ascending: true });
 
-        Papa.parse<ProgressaoNexItem>(csvText, {
-          header: true,
-          skipEmptyLines: true,
-          complete: (results) => {
-            if (isMounted) {
-              setItensProgressao(results.data as ProgressaoNexItem[]);
-              setLoading(false);
-            }
-          },
-        });
+        if (error) {
+          console.error("Erro ao buscar Progressão NEX do Supabase:", error);
+          if (isMounted) setLoading(false);
+          return;
+        }
+
+        if (data && isMounted) {
+          setItensProgressao(data as ProgressaoNexItem[]);
+          setLoading(false);
+        }
       } catch (err) {
         console.error("Erro ao carregar progressão de NEX:", err);
         if (isMounted) setLoading(false);

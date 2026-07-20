@@ -14,11 +14,21 @@ const CORES_ELEMENTOS: Record<string, string> = {
 };
 
 function obterCorBadge(elemento: string): string {
-  return CORES_ELEMENTOS[elemento?.toLowerCase()] || '#666';
+  if (!elemento) return '#666';
+  const elementoStr = elemento.toLowerCase();
+  if (elementoStr.includes(' e ')) {
+    const partes = elementoStr.split(' e ');
+    const cor1 = CORES_ELEMENTOS[partes[0].trim()] || '#666';
+    const cor2 = CORES_ELEMENTOS[partes[1].trim()] || '#666';
+    return `linear-gradient(135deg, ${cor1} 50%, ${cor2} 50%)`;
+  }
+  return CORES_ELEMENTOS[elementoStr] || '#666';
 }
 
 function obterCorTexto(elemento: string): string {
-  const e = elemento?.toLowerCase();
+  if (!elemento) return '#ffffff';
+  const e = elemento.toLowerCase();
+  if (e.includes(' e ')) return '#ffffff';
   if (e === 'medo') return '#000000';
   return '#ffffff';
 }

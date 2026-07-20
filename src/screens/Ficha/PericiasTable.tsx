@@ -78,7 +78,9 @@ export const PericiasTable: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {Object.entries(pericias).map(([nome, dadosPericia]) => {
+            {Object.entries(pericias)
+              .sort((a, b) => a[1].id - b[1].id)
+              .map(([nome, dadosPericia]) => {
               const totalBonus = dadosPericia.treino + dadosPericia.outros;
               const corTexto = COR_TREINO[dadosPericia.treino] ?? 'text-zinc-400';
               const corBorda = BORDA_TREINO[dadosPericia.treino] ?? 'border-zinc-600';

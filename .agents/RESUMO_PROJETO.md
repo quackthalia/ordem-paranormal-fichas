@@ -39,6 +39,11 @@ Existe uma regra em `.agents/AGENTS.md` definindo que toda vez que eu alterar um
 
 ## 7. Aprimoramentos de UI/UX
 - **Campos de Busca**: Quase todos os modais da aplicação (`ModalPoderes`, `ModalPoderesExtra`, `ModalRituais`, `ModalRituaisExtra`, `ModalTrilhas`) agora possuem um campo global de `<input>` que filtra dinamicamente a lista pelo nome exato, otimizando o uso para jogadores mais experientes.
+- **Micro-ajustes Visuais na Ficha**:
+  - O bloco de **Trilha** (e Versatilidade) teve a paleta de fundo equalizada (Zinc 900/50 e 800/40) para não destoar dos poderes e habilidades normais.
+  - A interface de **Defesa** (`AbasPanel.tsx` -> `DefesaPanel`) recebeu descritores (`Equip.` e `Outros`) abaixo dos inputs numéricos para melhor clareza.
+  - O alinhamento dos **dados de rituais** (ex: `6d6` vs `4d6`) foi parametrizado com largura fixa (em colunas invisíveis) para manter perfeita simetria mesmo quando versões prévias não causam dano.
+  - Corrigido suporte a **elementos compostos** (ex: "Sangue e Conhecimento") no `ModalRituaisExtra`, unificando as funções que geram gradients baseados nas strings de tipo combinadas.
 
 ## Próximos Passos (Para a próxima conversa)
 Testar livremente a mecânica de afinidade, evolução de círculo e requisitos discentes em rituais avançados. Discutir eventuais ajustes finos no sistema de inventário ou nos conflitos de perícias das Trilhas.

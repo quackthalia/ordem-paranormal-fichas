@@ -528,10 +528,10 @@ export const AbasPanel: React.FC = () => {
                           const nexLevels = isVersatilidade ? [10] : [10, 40, 65, 99];
                           
                           return (
-                            <div key={hab.id} className="mb-3 overflow-hidden rounded-r border-l-4 border-red-800 bg-zinc-950/60">
+                            <div key={hab.id} className="mb-3 overflow-hidden rounded-r border-l-4 border-red-800 bg-zinc-900/50">
                               <div
                                 onClick={() => trilhasHook.toggleTrilhaExpandida(isVersatilidade ? t.Codigo_Trilha + 10000 : t.Codigo_Trilha)}
-                                className="flex cursor-pointer items-center justify-between gap-3 bg-zinc-900/80 px-4 py-3 transition hover:bg-zinc-800/80"
+                                className="flex cursor-pointer items-center justify-between gap-3 bg-zinc-800/40 px-4 py-3 transition hover:bg-zinc-700/50"
                               >
                                 <div className="flex items-center gap-2">
                                   <span className="font-bold text-zinc-100">{isVersatilidade ? 'Versatilidade' : t.Nome_Trilha}</span>

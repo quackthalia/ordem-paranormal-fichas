@@ -147,25 +147,31 @@ function DefesaPanel() {
           <div className="text-xs font-bold uppercase tracking-wider text-zinc-500">Defesa</div>
           <div className="mt-0.5 flex items-center gap-1.5 text-sm text-zinc-300">
             = 10 + AGI +
-            <input
-              type="number"
-              onKeyDown={bloquearLetras}
-              value={defEquip || ''}
-              placeholder="0"
-              title="Defesa de equipamento"
-              onChange={e => setDefEquip(Math.max(0, Number(e.target.value)))}
-              className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-red-600"
-            />
+            <div className="relative flex flex-col items-center">
+              <input
+                type="number"
+                onKeyDown={bloquearLetras}
+                value={defEquip || ''}
+                placeholder="0"
+                title="Defesa de equipamento"
+                onChange={e => setDefEquip(Math.max(0, Number(e.target.value)))}
+                className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-red-600"
+              />
+              <span className="absolute top-full text-[9px] uppercase tracking-wider text-zinc-500 mt-0.5">Equip.</span>
+            </div>
             +
-            <input
-              type="number"
-              onKeyDown={bloquearLetras}
-              value={defOutros || ''}
-              placeholder="0"
-              title="Outros bônus de defesa"
-              onChange={e => setDefOutros(Math.max(0, Number(e.target.value)))}
-              className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-red-600"
-            />
+            <div className="relative flex flex-col items-center">
+              <input
+                type="number"
+                onKeyDown={bloquearLetras}
+                value={defOutros || ''}
+                placeholder="0"
+                title="Outros bônus de defesa"
+                onChange={e => setDefOutros(Math.max(0, Number(e.target.value)))}
+                className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-red-600"
+              />
+              <span className="absolute top-full text-[9px] uppercase tracking-wider text-zinc-500 mt-0.5">Outros</span>
+            </div>
           </div>
         </div>
       </div>

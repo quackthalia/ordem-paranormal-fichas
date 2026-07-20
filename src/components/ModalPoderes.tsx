@@ -370,6 +370,11 @@ export const ModalPoderes: React.FC = () => {
   const ehCombate = nexModalAberto !== null && PATAMARES_COMBATE.includes(nexModalAberto);
 
   const abasDisponiveis = useMemo((): [AbaModalPoderes, string][] => {
+    // Se for um slot de Transcender, só pode pegar poder paranormal
+    if (nexModalAberto !== null && nexModalAberto > 1000) {
+      return [['paranormais', 'Poderes Paranormais']];
+    }
+
     const base: [AbaModalPoderes, string][] = [
       ['gerais', 'Poderes Gerais'],
     ];
@@ -381,7 +386,14 @@ export const ModalPoderes: React.FC = () => {
 
     if (ehCombate) return [['combate', 'Poderes de Combate'], ...base];
     return [['classe', 'Poderes de Utilidade'], ...base];
-  }, [ehCombate, regras]);
+  }, [ehCombate, regras, nexModalAberto]);
+
+  useEffect(() => {
+    // Se a aba atual não estiver nas abas disponíveis, força para a primeira aba disponível
+    if (!abasDisponiveis.some(([aba]) => aba === abaModalPoderes)) {
+      setAbaModalPoderes(abasDisponiveis[0][0]);
+    }
+  }, [abasDisponiveis, abaModalPoderes, setAbaModalPoderes]);
 
   const handleTabChange = useCallback((aba: AbaModalPoderes) => {
     if (scrollContainerRef.current) {

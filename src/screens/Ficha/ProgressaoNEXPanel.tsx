@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useRPG } from '../../context/RPGContext';
-import { useProgressaoNex, ProgressaoNexItem } from '../../hooks/useProgressaoNex';
+import { useProgressaoNex, type ProgressaoNexItem } from '../../hooks/useProgressaoNex';
 
 export const ProgressaoNEXPanel: React.FC = () => {
   const { nex, regras } = useRPG();

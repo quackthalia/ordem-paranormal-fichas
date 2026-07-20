@@ -591,59 +591,60 @@ export function verificarPreRequisitos(
 
     case 38: {
       // Ter 1 outro poder de sangue
-      const qtdSangue = contexto.poderes.filter(p => p.elemento === 'Sangue').length;
+      const qtdSangue = contexto.poderes.filter(p => p.elemento?.toLowerCase().trim() === 'sangue').length;
       if (qtdSangue < 1) return { atende: false, motivo: '1 Poder de Sangue' };
       return { atende: true };
     }
 
     case 39: {
       // Ter 2 outros poderes de Sangue
-      const qtdSangue = contexto.poderes.filter(p => p.elemento === 'Sangue').length;
+      const qtdSangue = contexto.poderes.filter(p => p.elemento?.toLowerCase().trim() === 'sangue').length;
       if (qtdSangue < 2) return { atende: false, motivo: '2 Poderes de Sangue' };
       return { atende: true };
     }
 
     case 40: {
       // Ter 1 outro poder de Conhecimento
-      const qtdConh = contexto.poderes.filter(p => p.elemento === 'Conhecimento').length;
+      const qtdConh = contexto.poderes.filter(p => p.elemento?.toLowerCase().trim() === 'conhecimento').length;
       if (qtdConh < 1) return { atende: false, motivo: '1 Poder de Conhecimento' };
       return { atende: true };
     }
 
     case 41: {
       // Ter 1 outro poder de Energia
-      const qtdEnergia = contexto.poderes.filter(p => p.elemento === 'Energia').length;
+      const qtdEnergia = contexto.poderes.filter(p => p.elemento?.toLowerCase().trim() === 'energia').length;
       if (qtdEnergia < 1) return { atende: false, motivo: '1 Poder de Energia' };
       return { atende: true };
     }
 
     case 42: {
       // Ter 1 outro poder de Morte
-      const qtdMorte = contexto.poderes.filter(p => p.elemento === 'Morte').length;
+      const qtdMorte = contexto.poderes.filter(p => p.elemento?.toLowerCase().trim() === 'morte').length;
       if (qtdMorte < 1) return { atende: false, motivo: '1 Poder de Morte' };
       return { atende: true };
     }
 
     case 43: {
       // Ter outros 2 poderes de Morte
-      const qtdMorte = contexto.poderes.filter(p => p.elemento === 'Morte').length;
+      const qtdMorte = contexto.poderes.filter(p => p.elemento?.toLowerCase().trim() === 'morte').length;
       if (qtdMorte < 2) return { atende: false, motivo: '2 Poderes de Morte' };
       return { atende: true };
     }
 
     case 44: {
       // Ter 2 outros poderes de Energia
-      const qtdEnergia = contexto.poderes.filter(p => p.elemento === 'Energia').length;
+      const qtdEnergia = contexto.poderes.filter(p => p.elemento?.toLowerCase().trim() === 'energia').length;
       if (qtdEnergia < 2) return { atende: false, motivo: '2 Poderes de Energia' };
       return { atende: true };
     }
 
     case 45: {
       // Ter um ritual de Sangue
-      if (!contexto.rituaisAprendidos || !contexto.rituaisAprendidos.some(r => {
-        const def = contexto.rituais?.find(rd => rd.Nome_Ritual === r.nome);
-        return def && def.Elemento === 'Sangue';
-      })) {
+      const temSangue = contexto.rituaisAprendidos.some(ra => {
+        const def = contexto.rituais?.find(r => r.Nome_Ritual === ra.nome);
+        return def && def.Elemento?.toLowerCase().trim() === 'sangue';
+      });
+      if (!temSangue) {
         return { atende: false, motivo: 'Ritual de Sangue' };
       }
       return { atende: true };

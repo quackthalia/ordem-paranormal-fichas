@@ -108,43 +108,55 @@ const ProgressaoBlock = ({ item, nexPatamar }: { item: ProgressaoNexItem, nexPat
             )}
           </div>
 
-          {isEditing ? (
-            <div className="mb-4 flex flex-col gap-2">
-              <textarea
-                value={editText}
-                onChange={(e) => setEditText(e.target.value)}
-                className="w-full min-h-[100px] bg-zinc-950 border border-zinc-700 text-zinc-300 p-3 rounded text-sm outline-none focus:border-red-700"
-              />
-              <div className="flex gap-2 justify-end">
-                {progressaoNexEditados[item.Codigo_Progrecao] && (
-                  <button 
-                    onClick={handleResetEdit}
-                    className="text-xs text-red-500 hover:text-red-400 font-bold px-3 py-1.5"
+          {/* MODAL DE EDIÇÃO DE TEXTO */}
+          {isEditing && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-5" onClick={(e) => e.stopPropagation()}>
+              <div className="flex w-full max-w-2xl flex-col gap-4 rounded-lg border border-zinc-700 bg-zinc-900 p-6 shadow-2xl shadow-black/50" onClick={e => e.stopPropagation()}>
+                <h3 className="font-display border-b border-zinc-800 pb-2.5 text-left text-lg uppercase tracking-wide text-zinc-100">
+                  Editar Texto <span className="text-red-500">(NEX {item.Nex_Progrecao})</span>
+                </h3>
+
+                <div className="flex flex-col gap-1.5 text-left">
+                  <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Descrição</label>
+                  <textarea
+                    value={editText}
+                    onChange={(e) => setEditText(e.target.value)}
+                    className="min-h-48 overflow-y-auto rounded border border-zinc-700 bg-zinc-950 p-3 text-left text-sm leading-relaxed text-zinc-100 outline-none focus:border-red-700 resize-y"
+                  />
+                  <span className="text-[10px] text-zinc-500 mt-1">Dica: Você pode usar _texto_ para deixar em itálico.</span>
+                </div>
+
+                <div className="mt-2 flex justify-end gap-2.5">
+                  {progressaoNexEditados[item.Codigo_Progrecao] && (
+                    <button 
+                      onClick={handleResetEdit}
+                      className="rounded border border-red-900/50 bg-red-950/30 px-4 py-2 text-sm font-bold text-red-500 transition hover:bg-red-900/50 hover:text-red-300 mr-auto"
+                    >
+                      Restaurar Original
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setIsEditing(false)}
+                    className="rounded border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-bold text-zinc-300 transition hover:bg-zinc-700"
                   >
-                    Restaurar Original
+                    Cancelar
                   </button>
-                )}
-                <button 
-                  onClick={() => setIsEditing(false)}
-                  className="text-xs text-zinc-400 hover:text-zinc-200 font-bold px-3 py-1.5"
-                >
-                  Cancelar
-                </button>
-                <button 
-                  onClick={handleSaveEdit}
-                  className="text-xs bg-red-900 hover:bg-red-800 text-red-100 font-bold px-3 py-1.5 rounded"
-                >
-                  Salvar
-                </button>
+                  <button
+                    onClick={handleSaveEdit}
+                    className="rounded bg-red-700 px-4 py-2 text-sm font-bold text-zinc-100 transition hover:bg-red-600"
+                  >
+                    Aplicar
+                  </button>
+                </div>
               </div>
             </div>
-          ) : (
-            <div className="text-zinc-300 leading-relaxed space-y-2 mb-4">
-              {textoParaExibir.split('\n').map((linha: string, idx: number) => (
-                <p key={idx} dangerouslySetInnerHTML={{ __html: formatarDescricaoProg(linha) }} />
-              ))}
-            </div>
           )}
+
+          <div className="text-zinc-300 leading-relaxed space-y-2 mb-4">
+            {textoParaExibir.split('\n').map((linha: string, idx: number) => (
+              <p key={idx} dangerouslySetInnerHTML={{ __html: formatarDescricaoProg(linha) }} />
+            ))}
+          </div>
 
           {/* ESCOLHA DE AFINIDADE EM 50% */}
           {is50 && (

@@ -226,9 +226,22 @@ function ProtecoesPanel() {
       
       <button 
         onClick={() => setMostrarOutros(!mostrarOutros)}
-        className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-zinc-300 transition w-fit mt-1"
+        className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-zinc-300 transition w-fit mt-1"
       >
-        Outros {mostrarOutros ? 'v' : '>'}
+        <svg 
+          width="12" 
+          height="12" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2.5" 
+          strokeLinecap="round" 
+          strokeLinejoin="round"
+          className={`transition-transform duration-200 ${mostrarOutros ? 'rotate-90' : ''}`}
+        >
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+        Outros
       </button>
 
       {mostrarOutros && (

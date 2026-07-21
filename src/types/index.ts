@@ -55,8 +55,15 @@ export interface PoderParanormal {
   Pre_Codigo_Afinidade?: number | null;
 }
 
+export interface GrupoOrigem {
+  Codigo_Grupo: number;
+  Nome_Grupo: string;
+  Descricao_Grupo: string;
+}
+
 export interface Origem {
   Codigo_Origem: number;
+  Codigo_Grupo?: number | null;
   Codigo_Regra?: number | null;
   Codigo_Per_Regra?: number | null;
   Nome: string;

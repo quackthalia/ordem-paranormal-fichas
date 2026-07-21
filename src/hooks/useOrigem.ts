@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../services/supabase';
-import type { Origem, OrigemSelecionada } from '../types';
+import type { Origem, OrigemSelecionada, GrupoOrigem } from '../types';
 
 interface UseOrigemReturn {
   origens: Origem[];
+  grupos: GrupoOrigem[];
   origemSelecionada: OrigemSelecionada | null;
   setOrigemSelecionada: React.Dispatch<React.SetStateAction<OrigemSelecionada | null>>;
   origensExpandidas: number[];
@@ -16,6 +17,7 @@ interface UseOrigemReturn {
 
 export function useOrigem(): UseOrigemReturn {
   const [origens, setOrigens] = useState<Origem[]>([]);
+  const [grupos, setGrupos] = useState<GrupoOrigem[]>([]);
   const [origemSelecionada, setOrigemSelecionada] = useState<OrigemSelecionada | null>(null);
   const [origensExpandidas, setOrigensExpandidas] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
@@ -34,7 +36,14 @@ export function useOrigem(): UseOrigemReturn {
         // Busca origens
         const { data: dataOrigens, error: errOrigens } = await supabase
           .from('Origens')
-          .select('*');
+          .select('*')
+          .order('Nome');
+
+        // Busca grupos
+        const { data: dataGrupos, error: errGrupos } = await supabase
+          .from('Grupos de Origens')
+          .select('*')
+          .order('Codigo_Grupo');
 
         if (cancelled) return;
 
@@ -42,6 +51,11 @@ export function useOrigem(): UseOrigemReturn {
           console.error('Erro ao buscar origens:', errOrigens);
           setError(errOrigens.message);
           return;
+        }
+        if (errGrupos) {
+          console.error('Erro ao buscar grupos de origens:', errGrupos);
+        } else if (dataGrupos) {
+          setGrupos(dataGrupos as GrupoOrigem[]);
         }
 
         if (dataOrigens) {
@@ -115,6 +129,7 @@ export function useOrigem(): UseOrigemReturn {
 
   return {
     origens,
+    grupos,
     origemSelecionada,
     setOrigemSelecionada,
     origensExpandidas,

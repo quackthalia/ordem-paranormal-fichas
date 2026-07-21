@@ -5,6 +5,7 @@ export const OrigensScreen: React.FC = () => {
   const { setTelaAtual, origensHook } = useRPG();
   const {
     origens,
+    grupos,
     origensExpandidas,
     toggleOrigemExpandida,
     loading,
@@ -15,6 +16,7 @@ export const OrigensScreen: React.FC = () => {
 
   const [escolhasRegra6, setEscolhasRegra6] = React.useState<Record<number, 'p2' | 'pesp'>>({});
   const [busca, setBusca] = React.useState('');
+  const [grupoAtivo, setGrupoAtivo] = React.useState<number | 'todos'>('todos');
 
   if (loading) {
     return <div className="mx-auto max-w-3xl text-zinc-400">Carregando origens...</div>;
@@ -23,10 +25,14 @@ export const OrigensScreen: React.FC = () => {
     return <div className="mx-auto max-w-3xl text-red-500">Erro: {error}</div>;
   }
 
-  const origensFiltradas = origens.filter(o => 
-    o.Nome.toLowerCase().includes(busca.toLowerCase()) || 
-    (o.Nome_Poder && o.Nome_Poder.toLowerCase().includes(busca.toLowerCase()))
-  );
+  const origensFiltradas = origens.filter(o => {
+    const matchBusca = o.Nome.toLowerCase().includes(busca.toLowerCase()) || 
+      (o.Nome_Poder && o.Nome_Poder.toLowerCase().includes(busca.toLowerCase()));
+    
+    const matchGrupo = grupoAtivo === 'todos' || o.Codigo_Grupo === grupoAtivo;
+
+    return matchBusca && matchGrupo;
+  });
 
   return (
     <div className="mx-auto w-full max-w-3xl">
@@ -36,6 +42,35 @@ export const OrigensScreen: React.FC = () => {
       <p className="mb-4 border-b border-zinc-800 pb-4 text-sm uppercase tracking-widest text-red-600">
         Passo 2 — Quem você era antes do Paranormal
       </p>
+
+      {/* Abas de Grupos */}
+      {grupos.length > 0 && (
+        <div className="mb-4 flex flex-wrap gap-2">
+          <button
+            onClick={() => setGrupoAtivo('todos')}
+            className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
+              grupoAtivo === 'todos'
+                ? 'bg-red-700 text-white shadow-md shadow-red-900/50'
+                : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200'
+            }`}
+          >
+            Todos
+          </button>
+          {grupos.map(g => (
+            <button
+              key={g.Codigo_Grupo}
+              onClick={() => setGrupoAtivo(g.Codigo_Grupo)}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
+                grupoAtivo === g.Codigo_Grupo
+                  ? 'bg-red-700 text-white shadow-md shadow-red-900/50'
+                  : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200'
+              }`}
+            >
+              {g.Nome_Grupo}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="mb-8">
         <input

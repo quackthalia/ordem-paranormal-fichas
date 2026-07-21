@@ -7,6 +7,7 @@ export interface ContextoPreRequisitos {
   nomesPericias: Record<number, string>;
   poderes: { nome: string; elemento?: string }[];
   origem?: string;
+  grupo_origem?: number | null;
   rituaisAprendidos?: import('../types').RitualAprendido[];
   rituais?: import('../types').Ritual[];
   regras?: Record<string, boolean>;
@@ -589,8 +590,9 @@ export function verificarPreRequisitos(
         if (qtdSangue < 1) return { atende: false, motivo: '1 Poder de Sangue' };
         return { atende: true };
       }
-      const origensArtisticas = ['ator', 'músico', 'escritor', 'dançarino', 'cantor', 'pintor', 'influencer', 'anfitrião', 'cosplayer', 'fotógrafo', 'influencer paranormal'];
-      if (!contexto.origem || !origensArtisticas.includes(contexto.origem.toLowerCase())) {
+      
+      // Grupo_Origem 5 = Artísticas
+      if (contexto.grupo_origem !== 5) {
         return { atende: false, motivo: 'Origem Artística' };
       }
       return { atende: true };

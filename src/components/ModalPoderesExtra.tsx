@@ -89,6 +89,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
       nomesPericias: periciasHook.nomesPericias,
       poderes: poderesArray,
       origem: origensHook.origemSelecionada?.nome_origem,
+      grupo_origem: origensHook.origemSelecionada?.Codigo_Grupo || null,
       rituaisAprendidos: rituaisHook.rituaisAprendidos,
       rituais: rituaisHook.rituais
     };

@@ -473,7 +473,7 @@ export const AbasPanel: React.FC = () => {
 
     // 5. Poderes Extras
     Object.keys(poderesEscolhidos).forEach(key => {
-      if (String(key).startsWith('extra_')) {
+      if (String(key).startsWith('extra_') && key !== 'extra_regra1') {
         const escolhido = poderesEscolhidos[key];
         const isAprenderRitual = escolhido.nome.toLowerCase().startsWith('aprender ritual (');
         const nomePoderBase = isAprenderRitual ? 'aprender ritual' : escolhido.nome.toLowerCase();

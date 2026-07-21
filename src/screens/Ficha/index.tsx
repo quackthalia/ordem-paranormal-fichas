@@ -288,14 +288,14 @@ function BadgeBlock({
         />
       </div>
       {itens.length > 0 && (
-        <div className="flex flex-wrap gap-2 pl-[124px]">
+        <div className="flex flex-wrap gap-2 pl-[154px]">
           {itens.map((item, i) => (
             <div
               key={i}
-              className="flex items-center gap-1.5 rounded border bg-zinc-900 px-2 py-1 text-sm text-zinc-100"
+              className="flex items-center gap-1.5 rounded border bg-zinc-900 px-2 py-1 text-sm text-zinc-100 max-w-full"
               style={{ borderColor: obterCorBadge(item) }}
             >
-              <span>{item}</span>
+              <span className="break-all">{item}</span>
               <button
                 onClick={() => setItens(itens.filter((_, j) => j !== i))}
                 className="px-0.5 text-zinc-500 transition hover:text-red-500"

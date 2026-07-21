@@ -18,13 +18,16 @@ export function usePericias(
   nex: number,
   atributos: Atributos,
   regrasAtivas: boolean, // true = regras aplicadas, false = livre
-  periciasGratis: string[]
+  periciasGratis: string[],
+  codigoPerRegra?: number | null,
+  veteranasGratis: string[] = []
 ): UsePericiasReturn {
   const [pericias, setPericias] = useState<PericiasMap>({});
   const [nomesPericias, setNomesPericias] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [gratisAplicadas, setGratisAplicadas] = useState<string[]>([]);
+  const [veteranasAplicadas, setVeteranasAplicadas] = useState<string[]>([]);
 
   // Busca as perícias do banco
   useEffect(() => {
@@ -67,6 +70,7 @@ export function usePericias(
         setNomesPericias(mapaNomes);
         // Força a re-aplicação das perícias grátis após o carregamento
         setGratisAplicadas([]);
+        setVeteranasAplicadas([]);
       }
 
       setLoading(false);
@@ -77,26 +81,45 @@ export function usePericias(
   }, []);
 
   // Aplica treino 5 automaticamente nas perícias grátis (classe/origem)
-  // quando a lista muda — padrão "adjust state during render"
-  if (gratisAplicadas !== periciasGratis) {
+  // e treino 10 nas veteranas grátis
+  if (gratisAplicadas !== periciasGratis || veteranasAplicadas !== veteranasGratis) {
     setGratisAplicadas(periciasGratis);
+    setVeteranasAplicadas(veteranasGratis);
     setPericias(prev => {
       let mudou = false;
       const novo = { ...prev };
+      
       periciasGratis.forEach(nome => {
         if (novo[nome] && novo[nome].treino < 5) {
           novo[nome] = { ...novo[nome], treino: 5 };
           mudou = true;
         }
       });
+
+      veteranasGratis.forEach(nome => {
+        if (novo[nome] && novo[nome].treino < 10) {
+          novo[nome] = { ...novo[nome], treino: 10 };
+          mudou = true;
+        }
+      });
+
       return mudou ? novo : prev;
     });
   }
 
-  const limites = useMemo(
-    () => calcularLimitesPericias(classe, nex, atributos),
-    [classe, nex, atributos]
-  );
+  const limites = useMemo(() => {
+    const lim = calcularLimitesPericias(classe, nex, atributos);
+    let extra = 0;
+    if (codigoPerRegra === 1 || codigoPerRegra === 3) extra = 1;
+    if (codigoPerRegra === 2) extra = 2;
+    if (codigoPerRegra === 4) extra = 5;
+    if (codigoPerRegra === 5) extra = 3;
+    
+    return {
+      ...lim,
+      maxTreinadas: lim.maxTreinadas + extra
+    };
+  }, [classe, nex, atributos, codigoPerRegra]);
 
   const totais = useMemo(() => {
     let totalTreinadasUsadas = 0;

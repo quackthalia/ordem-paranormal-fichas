@@ -13,6 +13,8 @@ export const OrigensScreen: React.FC = () => {
     nomePericia,
   } = origensHook;
 
+  const [escolhasRegra6, setEscolhasRegra6] = React.useState<Record<number, 'p2' | 'pesp'>>({});
+
   if (loading) {
     return <div className="mx-auto max-w-3xl text-zinc-400">Carregando origens...</div>;
   }
@@ -47,27 +49,87 @@ export const OrigensScreen: React.FC = () => {
                   <span className={`text-xs text-zinc-600 transition-transform ${estaExpandida ? 'rotate-180' : ''}`}>▼</span>
                   <span className="text-lg font-bold text-zinc-100">{origem.Nome}</span>
                 </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    selecionarOrigem(origem);
-                    setTelaAtual('classe');
-                  }}
-                  className="rounded-md bg-red-700 px-4 py-2 text-xs font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-red-600"
-                >
-                  Escolher
-                </button>
+                
+                {origem.Codigo_Per_Regra === 6 && estaExpandida ? (
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-zinc-400">Escolha uma perícia abaixo primeiro</span>
+                  </div>
+                ) : (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      selecionarOrigem(origem, escolhasRegra6[origem.Codigo_Origem] || 'p2');
+                      setTelaAtual('classe');
+                    }}
+                    disabled={origem.Codigo_Per_Regra === 6 && !escolhasRegra6[origem.Codigo_Origem]}
+                    className={`rounded-md px-4 py-2 text-xs font-bold uppercase tracking-wider text-zinc-100 transition ${origem.Codigo_Per_Regra === 6 && !escolhasRegra6[origem.Codigo_Origem] ? 'bg-zinc-700 opacity-50 cursor-not-allowed' : 'bg-red-700 hover:bg-red-600'}`}
+                  >
+                    Escolher
+                  </button>
+                )}
               </div>
 
               {/* CONTEÚDO EXPANSÍVEL */}
               {estaExpandida && (
                 <div className="border-t border-zinc-800 px-5 pb-5 pt-4 text-left leading-relaxed text-zinc-400">
                   <p className="mb-3">{origem.Descricao}</p>
-                  <p className="mb-3">
-                    <strong className="text-zinc-200">Perícias treinadas. </strong>
-                    {nomePericia(origem.Pericia_Treinada_1)} e {nomePericia(origem.Pericia_Treinada_2)}
-                    {origem.Pericia_Treinada_Especial ? ` e ${nomePericia(origem.Pericia_Treinada_Especial)}` : ''}.
-                  </p>
+                  
+                  {origem.Codigo_Per_Regra === 6 ? (
+                    <div className="mb-4 rounded-md border border-zinc-700 bg-zinc-800 p-4">
+                      <strong className="text-zinc-200 block mb-2">Perícias treinadas.</strong>
+                      <p className="mb-3 text-sm text-zinc-400">
+                        Sua origem treina automaticamente <strong className="text-zinc-300">{nomePericia(origem.Pericia_Treinada_1)}</strong>. 
+                        Escolha a sua segunda perícia treinada:
+                      </p>
+                      <div className="flex flex-col gap-2">
+                        <label className="flex items-center gap-3 cursor-pointer">
+                          <input
+                            type="radio"
+                            name={`regra6_${origem.Codigo_Origem}`}
+                            checked={escolhasRegra6[origem.Codigo_Origem] === 'p2'}
+                            onChange={() => setEscolhasRegra6(prev => ({ ...prev, [origem.Codigo_Origem]: 'p2' }))}
+                            className="text-red-600 focus:ring-red-500 bg-zinc-900 border-zinc-700"
+                          />
+                          <span>{nomePericia(origem.Pericia_Treinada_2)}</span>
+                        </label>
+                        <label className="flex items-center gap-3 cursor-pointer">
+                          <input
+                            type="radio"
+                            name={`regra6_${origem.Codigo_Origem}`}
+                            checked={escolhasRegra6[origem.Codigo_Origem] === 'pesp'}
+                            onChange={() => setEscolhasRegra6(prev => ({ ...prev, [origem.Codigo_Origem]: 'pesp' }))}
+                            className="text-red-600 focus:ring-red-500 bg-zinc-900 border-zinc-700"
+                          />
+                          <span>{nomePericia(origem.Pericia_Treinada_Especial as any)}</span>
+                        </label>
+                      </div>
+                      <div className="mt-4 flex justify-end">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            selecionarOrigem(origem, escolhasRegra6[origem.Codigo_Origem]);
+                            setTelaAtual('classe');
+                          }}
+                          disabled={!escolhasRegra6[origem.Codigo_Origem]}
+                          className={`rounded-md px-4 py-2 text-xs font-bold uppercase tracking-wider text-zinc-100 transition ${!escolhasRegra6[origem.Codigo_Origem] ? 'bg-zinc-700 opacity-50 cursor-not-allowed' : 'bg-red-700 hover:bg-red-600'}`}
+                        >
+                          Escolher Origem
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="mb-3">
+                      <strong className="text-zinc-200">Perícias treinadas. </strong>
+                      {origem.Codigo_Per_Regra === 1 && origem.Pericia_Treinada_Especial ? (
+                        <>{nomePericia(origem.Pericia_Treinada_1)} e {origem.Pericia_Treinada_Especial}.</>
+                      ) : origem.Pericia_Treinada_Especial && ![1].includes(origem.Codigo_Per_Regra || 0) ? (
+                        <>{origem.Pericia_Treinada_Especial}.</>
+                      ) : (
+                        <>{nomePericia(origem.Pericia_Treinada_1)} e {nomePericia(origem.Pericia_Treinada_2)}.</>
+                      )}
+                    </p>
+                  )}
+
                   <p>
                     <strong className="text-red-500">{origem.Nome_Poder}. </strong>
                     {origem.Descricao_Poder}

@@ -10,7 +10,7 @@ interface UseOrigemReturn {
   toggleOrigemExpandida: (id: number) => void;
   loading: boolean;
   error: string | null;
-  selecionarOrigem: (origem: Origem) => void;
+  selecionarOrigem: (origem: Origem, escolhaRegra6?: 'p2' | 'pesp') => void;
   nomePericia: (codigo: number | null) => string | null;
 }
 
@@ -94,18 +94,20 @@ export function useOrigem(): UseOrigemReturn {
   );
 
   const selecionarOrigem = useCallback(
-    (origem: Origem) => {
+    (origem: Origem, escolhaRegra6?: 'p2' | 'pesp') => {
       const nomeP1 = nomesPericias[origem.Pericia_Treinada_1] || String(origem.Pericia_Treinada_1);
       const nomeP2 = nomesPericias[origem.Pericia_Treinada_2] || String(origem.Pericia_Treinada_2);
-      const nomePEsp = origem.Pericia_Treinada_Especial
-        ? nomesPericias[origem.Pericia_Treinada_Especial] || String(origem.Pericia_Treinada_Especial)
-        : null;
+      let nomePEsp = null;
+      if (origem.Pericia_Treinada_Especial) {
+        nomePEsp = nomesPericias[origem.Pericia_Treinada_Especial as any] || String(origem.Pericia_Treinada_Especial);
+      }
 
       setOrigemSelecionada({
         ...origem,
         nome_p1: nomeP1,
         nome_p2: nomeP2,
         nome_pesp: nomePEsp,
+        escolhaRegra6: escolhaRegra6 || null,
       });
     },
     [nomesPericias]

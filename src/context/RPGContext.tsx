@@ -247,9 +247,21 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
       if (skillCombatente2) gratis.push(skillCombatente2);
     }
     if (origensHook.origemSelecionada) {
-      if (origensHook.origemSelecionada.nome_p1) gratis.push(origensHook.origemSelecionada.nome_p1);
-      if (origensHook.origemSelecionada.nome_p2) gratis.push(origensHook.origemSelecionada.nome_p2);
-      if (origensHook.origemSelecionada.nome_pesp) gratis.push(origensHook.origemSelecionada.nome_pesp);
+      const { nome_p1, nome_p2, nome_pesp, Codigo_Per_Regra, escolhaRegra6 } = origensHook.origemSelecionada;
+      if (nome_p1) gratis.push(nome_p1);
+
+      if (Codigo_Per_Regra === 1) {
+        // Regra 1: Apenas a perícia 1
+      } else if (Codigo_Per_Regra === 6) {
+        // Regra 6: Perícia 1 + escolha
+        if (escolhaRegra6 === 'p2' && nome_p2) gratis.push(nome_p2);
+        else if (escolhaRegra6 === 'pesp' && nome_pesp) gratis.push(nome_pesp);
+      } else if (Codigo_Per_Regra === 7) {
+        // Regra 7 não adiciona treino básico aqui
+      } else {
+        // Padrão: Perícia 1 + Perícia 2
+        if (nome_p2) gratis.push(nome_p2);
+      }
     }
     if (trilhasHook.trilhaSelecionada && trilhasHook.trilhaSelecionada.nome_pericia) {
       gratis.push(trilhasHook.trilhaSelecionada.nome_pericia);
@@ -257,7 +269,15 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     return gratis;
   }, [classe, skillCombatente1, skillCombatente2, origensHook.origemSelecionada, trilhasHook.trilhaSelecionada]);
 
-  const periciasHook = usePericias(classe, nex, atributos, regrasAtivas, periciasGratis);
+  const veteranasGratis = useMemo(() => {
+    const vet: string[] = [];
+    if (origensHook.origemSelecionada?.Codigo_Per_Regra === 7) {
+      vet.push('Pilotagem');
+    }
+    return vet;
+  }, [origensHook.origemSelecionada]);
+
+  const periciasHook = usePericias(classe, nex, atributos, regrasAtivas, periciasGratis, origensHook.origemSelecionada?.Codigo_Per_Regra, veteranasGratis);
 
   // ============================================================
   // LÓGICA DE ATRIBUTOS

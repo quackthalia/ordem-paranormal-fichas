@@ -57,11 +57,13 @@ export interface PoderParanormal {
 
 export interface Origem {
   Codigo_Origem: number;
+  Codigo_Regra?: number | null;
+  Codigo_Per_Regra?: number | null;
   Nome: string;
   Descricao: string;
   Pericia_Treinada_1: number;
   Pericia_Treinada_2: number;
-  Pericia_Treinada_Especial: number | null;
+  Pericia_Treinada_Especial: string | number | null;
   Nome_Poder: string;
   Descricao_Poder: string;
   Fonte: string;
@@ -71,6 +73,7 @@ export interface OrigemSelecionada extends Origem {
   nome_p1: string;
   nome_p2: string;
   nome_pesp: string | null;
+  escolhaRegra6?: 'p2' | 'pesp' | null;
 }
 
 export interface PoderSlot {

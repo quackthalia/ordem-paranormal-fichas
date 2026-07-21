@@ -214,12 +214,14 @@ function ProtecoesPanel() {
     proficiencias, setProficiencias,
     sentidos, setSentidos,
     imunidades, setImunidades,
+    vulnerabilidades, setVulnerabilidades,
   } = useRPG();
 
   return (
     <div className="mt-6 flex w-full flex-col gap-5">
       <BadgeBlock titulo="Proteção" itens={protecoes} setItens={setProtecoes} />
       <BadgeBlock titulo="Resistências" itens={resistencias} setItens={setResistencias} />
+      <BadgeBlock titulo="Vulnerabilidades" itens={vulnerabilidades} setItens={setVulnerabilidades} />
       <BadgeBlock titulo="Imunidades" itens={imunidades} setItens={setImunidades} />
       <BadgeBlock titulo="Sentidos" itens={sentidos} setItens={setSentidos} />
       <BadgeBlock titulo="Proficiências" itens={proficiencias} setItens={setProficiencias} />

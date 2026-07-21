@@ -51,9 +51,11 @@ interface RPGContextType {
   protecoes: string[];
   sentidos: string[];
   imunidades: string[];
+  vulnerabilidades: string[];
   setProtecoes: React.Dispatch<React.SetStateAction<string[]>>;
   setSentidos: React.Dispatch<React.SetStateAction<string[]>>;
   setImunidades: React.Dispatch<React.SetStateAction<string[]>>;
+  setVulnerabilidades: React.Dispatch<React.SetStateAction<string[]>>;
   resistencias: string[];
   setResistencias: React.Dispatch<React.SetStateAction<string[]>>;
   proficiencias: string[];
@@ -125,6 +127,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const [protecoes, setProtecoes] = useState<string[]>([]);
   const [sentidos, setSentidos] = useState<string[]>([]);
   const [imunidades, setImunidades] = useState<string[]>([]);
+  const [vulnerabilidades, setVulnerabilidades] = useState<string[]>([]);
   const [resistencias, setResistencias] = useState<string[]>([]);
   const [proficiencias, setProficiencias] = useState<string[]>([]);
   const [regrasAtivas, setRegrasAtivas] = useState(true);
@@ -337,6 +340,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     protecoes, setProtecoes,
     sentidos, setSentidos,
     imunidades, setImunidades,
+    vulnerabilidades, setVulnerabilidades,
     resistencias, setResistencias,
     proficiencias, setProficiencias,
     regrasAtivas, setRegrasAtivas,

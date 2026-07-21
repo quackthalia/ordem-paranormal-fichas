@@ -14,6 +14,7 @@ export const OrigensScreen: React.FC = () => {
   } = origensHook;
 
   const [escolhasRegra6, setEscolhasRegra6] = React.useState<Record<number, 'p2' | 'pesp'>>({});
+  const [busca, setBusca] = React.useState('');
 
   if (loading) {
     return <div className="mx-auto max-w-3xl text-zinc-400">Carregando origens...</div>;
@@ -22,17 +23,35 @@ export const OrigensScreen: React.FC = () => {
     return <div className="mx-auto max-w-3xl text-red-500">Erro: {error}</div>;
   }
 
+  const origensFiltradas = origens.filter(o => 
+    o.Nome.toLowerCase().includes(busca.toLowerCase()) || 
+    (o.Nome_Poder && o.Nome_Poder.toLowerCase().includes(busca.toLowerCase()))
+  );
+
   return (
     <div className="mx-auto w-full max-w-3xl">
       <h1 className="font-display mb-2 text-3xl uppercase tracking-wide text-zinc-100">
         Escolha sua Origem
       </h1>
-      <p className="mb-8 border-b border-zinc-800 pb-4 text-sm uppercase tracking-widest text-red-600">
+      <p className="mb-4 border-b border-zinc-800 pb-4 text-sm uppercase tracking-widest text-red-600">
         Passo 2 — Quem você era antes do Paranormal
       </p>
 
+      <div className="mb-8">
+        <input
+          type="text"
+          placeholder="Buscar origem ou poder..."
+          value={busca}
+          onChange={e => setBusca(e.target.value)}
+          className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+        />
+      </div>
+
       <div className="mb-8 flex flex-col gap-3">
-        {origens.map(origem => {
+        {origensFiltradas.length === 0 && (
+          <div className="text-center text-zinc-500 py-4">Nenhuma origem encontrada.</div>
+        )}
+        {origensFiltradas.map(origem => {
           const estaExpandida = origensExpandidas.includes(origem.Codigo_Origem);
 
           return (

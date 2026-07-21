@@ -216,15 +216,28 @@ function ProtecoesPanel() {
     imunidades, setImunidades,
     vulnerabilidades, setVulnerabilidades,
   } = useRPG();
+  const [mostrarOutros, setMostrarOutros] = React.useState(false);
 
   return (
     <div className="mt-6 flex w-full flex-col gap-5">
       <BadgeBlock titulo="Proteção" itens={protecoes} setItens={setProtecoes} />
       <BadgeBlock titulo="Resistências" itens={resistencias} setItens={setResistencias} />
-      <BadgeBlock titulo="Vulnerabilidades" itens={vulnerabilidades} setItens={setVulnerabilidades} />
-      <BadgeBlock titulo="Imunidades" itens={imunidades} setItens={setImunidades} />
-      <BadgeBlock titulo="Sentidos" itens={sentidos} setItens={setSentidos} />
       <BadgeBlock titulo="Proficiências" itens={proficiencias} setItens={setProficiencias} />
+      
+      <button 
+        onClick={() => setMostrarOutros(!mostrarOutros)}
+        className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-zinc-300 transition w-fit mt-1"
+      >
+        Outros {mostrarOutros ? 'v' : '>'}
+      </button>
+
+      {mostrarOutros && (
+        <div className="flex flex-col gap-5">
+          <BadgeBlock titulo="Vulnerabilidades" itens={vulnerabilidades} setItens={setVulnerabilidades} />
+          <BadgeBlock titulo="Imunidades" itens={imunidades} setItens={setImunidades} />
+          <BadgeBlock titulo="Sentidos" itens={sentidos} setItens={setSentidos} />
+        </div>
+      )}
     </div>
   );
 }

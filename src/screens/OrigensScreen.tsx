@@ -19,10 +19,10 @@ export const OrigensScreen: React.FC = () => {
   const [grupoAtivo, setGrupoAtivo] = React.useState<number | 'todos'>('todos');
 
   if (loading) {
-    return <div className="mx-auto max-w-4xl text-zinc-400">Carregando origens...</div>;
+    return <div className="mx-auto max-w-[820px] text-zinc-400">Carregando origens...</div>;
   }
   if (error) {
-    return <div className="mx-auto max-w-4xl text-red-500">Erro: {error}</div>;
+    return <div className="mx-auto max-w-[820px] text-red-500">Erro: {error}</div>;
   }
 
   const origensFiltradas = origens.filter(o => {
@@ -35,7 +35,7 @@ export const OrigensScreen: React.FC = () => {
   });
 
   return (
-    <div className="mx-auto w-full max-w-4xl">
+    <div className="mx-auto w-full max-w-[820px]">
       <h1 className="font-display mb-2 text-3xl uppercase tracking-wide text-zinc-100">
         Escolha sua Origem
       </h1>

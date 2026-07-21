@@ -44,22 +44,26 @@ export function capMaximoAtributo(nex: number): number {
 export function calcularStatusBase(
   classe: ClasseRPG,
   atributos: Atributos,
-  nivel: number
+  nivel: number,
+  codigoRegra?: number | null
 ): { pvMax: number; peMax: number; sanMax: number; peTurno: number } {
   let pvMax = 0, peMax = 0, sanMax = 0;
+
+  // Se a origem possui a Regra 1, a sanidade inicial é reduzida pela metade.
+  const redSanidade = codigoRegra === 1 ? 0.5 : 1;
 
   if (classe === 'Combatente') {
     pvMax = (20 + atributos.VIG) + ((nivel - 1) * (4 + atributos.VIG));
     peMax = (2 + atributos.PRE) + ((nivel - 1) * (2 + atributos.PRE));
-    sanMax = 12 + ((nivel - 1) * 3);
+    sanMax = Math.floor(12 * redSanidade) + ((nivel - 1) * 3);
   } else if (classe === 'Especialista') {
     pvMax = (16 + atributos.VIG) + ((nivel - 1) * (3 + atributos.VIG));
     peMax = (3 + atributos.PRE) + ((nivel - 1) * (3 + atributos.PRE));
-    sanMax = 16 + ((nivel - 1) * 4);
+    sanMax = Math.floor(16 * redSanidade) + ((nivel - 1) * 4);
   } else if (classe === 'Ocultista') {
     pvMax = (12 + atributos.VIG) + ((nivel - 1) * (2 + atributos.VIG));
     peMax = (4 + atributos.PRE) + ((nivel - 1) * (4 + atributos.PRE));
-    sanMax = 20 + ((nivel - 1) * 5);
+    sanMax = Math.floor(20 * redSanidade) + ((nivel - 1) * 5);
   }
 
   return { pvMax, peMax, sanMax, peTurno: nivel };

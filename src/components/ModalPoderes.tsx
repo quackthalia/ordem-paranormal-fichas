@@ -374,7 +374,7 @@ export const ModalPoderes: React.FC = () => {
 
   const abasDisponiveis = useMemo((): [AbaModalPoderes, string][] => {
     // Se for um slot de Transcender, só pode pegar poder paranormal
-    if (nexModalAberto !== null && nexModalAberto > 1000) {
+    if ((nexModalAberto !== null && typeof nexModalAberto === 'number' && nexModalAberto > 1000) || nexModalAberto === 'extra_regra1') {
       return [['paranormais', 'Poderes Paranormais']];
     }
 

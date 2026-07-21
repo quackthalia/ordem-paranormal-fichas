@@ -261,6 +261,34 @@ export const AbasPanel: React.FC = () => {
       });
     }
 
+    // 1.1 Poder Extra da Origem (Regra 1)
+    if (origemSelecionada?.Codigo_Regra === 1) {
+      const extraKey = 'extra_regra1';
+      const escolhido = poderesEscolhidos[extraKey];
+      if (escolhido) {
+        lista.push({
+          id: `escolha_${extraKey}`,
+          nome: escolhido.nome,
+          descricao: escolhido.descricao,
+          tipo: 'Poder Paranormal (Origem)',
+          categoria: 'paranormais',
+          preRequisitos: escolhido.preRequisitos,
+          fonte: escolhido.fonte,
+          elemento: escolhido.elemento
+        });
+      } else {
+        lista.push({
+          id: `escolha_${extraKey}`,
+          nome: 'Escolher Poder Paranormal',
+          descricao: 'Sua origem fornece um poder paranormal extra.',
+          tipo: 'Poder Paranormal (Origem)',
+          categoria: 'paranormais',
+          isSlotVazio: true,
+          nexDoSlot: 0
+        });
+      }
+    }
+
     // 1.5 Trilha
     if (effectiveNex >= 10 && (classe === 'Combatente' || classe === 'Especialista' || classe === 'Ocultista')) {
       if (trilhasHook.trilhaSelecionada) {
@@ -670,6 +698,10 @@ export const AbasPanel: React.FC = () => {
                                   } else {
                                     setModalTrilhasAberto(true);
                                   }
+                                } else if (hab.id === 'escolha_extra_regra1') {
+                                  setTipoModalPoderes('utilidade');
+                                  setAbaModalPoderes('paranormais');
+                                  setNexModalAberto('extra_regra1');
                                 } else {
                                   const tipo = hab.id.includes('combate') ? 'combate' : 'utilidade';
                                   setTipoModalPoderes(tipo);

@@ -343,6 +343,12 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   // ============================================================
   // VALUE DO CONTEXTO
   // ============================================================
+  // Calcula status reais
+  const { pvMax, peMax, sanMax, peTurno } = useMemo(() => {
+    if (!classe) return { pvMax: 0, peMax: 0, sanMax: 0, peTurno: 0 };
+    return calcularStatusBase(classe, atributos, nivel, origensHook.origemSelecionada?.Codigo_Regra);
+  }, [classe, atributos, nivel, origensHook.origemSelecionada?.Codigo_Regra]);
+
   const value: RPGContextType = {
     telaAtual, setTelaAtual,
     classe, setClasse,

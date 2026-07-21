@@ -14,7 +14,7 @@ import { useStatus } from '../hooks/useStatus';
 import { useOrigem } from '../hooks/useOrigem';
 import { useRituais } from '../hooks/useRituais';
 import { useTrilhas } from '../hooks/useTrilhas';
-import { capMaximoAtributo, pontosIniciaisPorNex } from '../utils/rpgRules';
+import { capMaximoAtributo, pontosIniciaisPorNex, calcularStatusBase } from '../utils/rpgRules';
 
 // ============================================================
 // TUDO QUE O CONTEXTO EXPÕE

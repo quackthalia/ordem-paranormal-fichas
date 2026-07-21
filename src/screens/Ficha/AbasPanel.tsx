@@ -19,7 +19,6 @@ import {
 } from '../../utils/rpgRules';
 
 import { ModalPoderes } from '../../components/ModalPoderes';
-import { obterCorBadge } from '../../utils/rpgRules';
 import { ToolbarFormato } from '../../components/ToolbarFormato';
 import { ModalPoderesExtra } from '../../components/ModalPoderesExtra';
 import { ProgressaoNEXPanel } from './ProgressaoNEXPanel';
@@ -188,6 +187,28 @@ export const AbasPanel: React.FC = () => {
     return map;
   }, [poderesParanormais]);
 
+  React.useEffect(() => {
+    if (regras['nex_experiencia']) {
+      let changed = false;
+      const novosPoderes = { ...poderesHook.poderesEscolhidos };
+      
+      Object.entries(novosPoderes).forEach(([key, p]) => {
+        const keyNum = parseInt(key, 10);
+        if (!isNaN(keyNum) && keyNum >= 1000) return; // Ignora slots específicos da Progressão NEX
+        
+        const nomeBase = p.nome.toLowerCase().startsWith('aprender ritual') ? 'aprender ritual' : p.nome.toLowerCase().trim();
+        if (poderesParanormaisMap.has(nomeBase)) {
+          delete novosPoderes[key as unknown as number];
+          changed = true;
+        }
+      });
+
+      if (changed) {
+        poderesHook.setPoderesEscolhidos(novosPoderes);
+      }
+    }
+  }, [regras['nex_experiencia'], poderesParanormaisMap, poderesHook.setPoderesEscolhidos]);
+
   const extrairKeyDoId = (id: string): number | string | null => {
     if (id.includes('_extra_')) {
       const match = id.match(/_(extra_.+)$/);
@@ -199,11 +220,24 @@ export const AbasPanel: React.FC = () => {
 
   const listaHabilidades = React.useMemo(() => {
     const contagemPoderes: Record<string, number> = {};
-    Object.values(poderesEscolhidos).forEach(p => {
+    const primeiraVez: Record<string, string | number> = {};
+    const afinidadesAdquiridas: Record<string, string | number> = {};
+
+    Object.entries(poderesEscolhidos).forEach(([key, p]) => {
       const nomeBase = p.nome.toLowerCase().startsWith('aprender ritual') ? 'aprender ritual' : p.nome.toLowerCase().trim();
+      const pp = poderesParanormaisMap.get(nomeBase);
       contagemPoderes[nomeBase] = (contagemPoderes[nomeBase] || 0) + 1;
+      
+      if (pp) {
+        if (!primeiraVez[nomeBase]) {
+          primeiraVez[nomeBase] = key;
+        } else {
+          afinidadesAdquiridas[nomeBase] = key;
+        }
+      }
     });
 
+    const poderesRenderizados = new Set<string>();
     let lista: HabilidadeItem[] = [];
 
     // 1. Origem
@@ -312,10 +346,29 @@ export const AbasPanel: React.FC = () => {
             categoria = 'utilidade';
           }
           const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
-          const tipoLabel = categoria === 'paranormais' ? `Transcender, ${nivelLabel}` : nivelLabel;
+          const tipoLabel = categoria === 'paranormais' ? `Transcender ${nivelLabel.replace('NEX ', '')}` : nivelLabel;
           const afinidadeDoPoder = pp?.Afinidade;
           const afinidadeAtiva = afinidadeDoPoder ? contagemPoderes[nomePoderBase] >= 2 : false;
-          lista.push({ id: `escolha_nex_${nivelPatamar}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: tipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, categoria });
+          const nomeBaseCheck = escolhido.nome.toLowerCase().trim();
+          const adqKey = afinidadesAdquiridas[nomeBaseCheck];
+          const adqLabel = adqKey ? (
+            String(adqKey).startsWith('extra_') ? 'Extra' : (
+              (parseInt(String(adqKey), 10) >= 1000) ? 
+              (regras['nex_experiencia'] ? `Nível ${calcularNivel(parseInt(String(adqKey), 10) - 1000)}` : `NEX ${parseInt(String(adqKey), 10) - 1000}%`) :
+              (regras['nex_experiencia'] ? `Nível ${calcularNivel(parseInt(String(adqKey), 10))}` : `NEX ${parseInt(String(adqKey), 10)}%`)
+            )
+          ) : '';
+          
+          const finalTipoLabel = (categoria === 'paranormais' && afinidadeAtiva && adqLabel) 
+            ? `${tipoLabel}, Afinidade`
+            : tipoLabel;
+
+          if (pp && poderesRenderizados.has(nomeBaseCheck)) {
+            // Ignora o segundo block completamente
+          } else {
+            if (pp) poderesRenderizados.add(nomeBaseCheck);
+            lista.push({ id: `escolha_nex_${nivelPatamar}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria });
+          }
         } else {
           const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
           lista.push({ id: `escolha_nex_${nivelPatamar}`, nome: 'Escolher Poder de Utilidade', descricao: 'Clique no "+" para abrir a lista e selecionar seu poder.', tipo: nivelLabel, isSlotVazio: true, nexDoSlot: nivelPatamar, categoria: 'utilidade' });
@@ -352,10 +405,29 @@ export const AbasPanel: React.FC = () => {
             categoria = 'combate';
           }
           const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
-          const tipoLabel = categoria === 'paranormais' ? `Transcender, ${nivelLabel}` : nivelLabel;
+          const tipoLabel = categoria === 'paranormais' ? `Transcender ${nivelLabel.replace('NEX ', '')}` : nivelLabel;
           const afinidadeDoPoder = pp?.Afinidade;
           const afinidadeAtiva = afinidadeDoPoder ? contagemPoderes[nomePoderBase] >= 2 : false;
-          lista.push({ id: `escolha_nex_combate_${nivelPatamar}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: tipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, categoria });
+          const nomeBaseCheck = escolhido.nome.toLowerCase().trim();
+          const adqKey = afinidadesAdquiridas[nomeBaseCheck];
+          const adqLabel = adqKey ? (
+            String(adqKey).startsWith('extra_') ? 'Extra' : (
+              (parseInt(String(adqKey), 10) >= 1000) ? 
+              (regras['nex_experiencia'] ? `Nível ${calcularNivel(parseInt(String(adqKey), 10) - 1000)}` : `NEX ${parseInt(String(adqKey), 10) - 1000}%`) :
+              (regras['nex_experiencia'] ? `Nível ${calcularNivel(parseInt(String(adqKey), 10))}` : `NEX ${parseInt(String(adqKey), 10)}%`)
+            )
+          ) : '';
+          
+          const finalTipoLabel = (categoria === 'paranormais' && afinidadeAtiva && adqLabel) 
+            ? `${tipoLabel}, Afinidade`
+            : tipoLabel;
+
+          if (pp && poderesRenderizados.has(nomeBaseCheck)) {
+            // Ignora o segundo block
+          } else {
+            if (pp) poderesRenderizados.add(nomeBaseCheck);
+            lista.push({ id: `escolha_nex_combate_${nivelPatamar}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria });
+          }
         } else {
           const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
           lista.push({ id: `escolha_nex_combate_${nivelPatamar}`, nome: 'Escolher Poder de Combate', descricao: 'Clique no "+" para abrir a lista e selecionar seu poder de combate.', tipo: nivelLabel, isSlotVazio: true, nexDoSlot: nivelPatamar, categoria: 'combate' });
@@ -380,25 +452,98 @@ export const AbasPanel: React.FC = () => {
             elementoDoPoder = isLista ? ra.elemento_escolhido : rBase?.Elemento_Ritual;
           }
         }
-
-        const categoria = escolhido.categoria || (pp ? 'paranormais' : 'utilidade');
+        
+        let categoria: CategoriaHabilidade;
+        if (pp) {
+          categoria = 'paranormais';
+        } else if (escolhido.tipo?.toLowerCase() === 'geral') {
+          categoria = 'gerais';
+        } else {
+          categoria = 'utilidade';
+        }
+        const tipoLabel = categoria === 'paranormais' ? `Transcender Extra` : `Extra`;
         const afinidadeDoPoder = pp?.Afinidade;
         const afinidadeAtiva = afinidadeDoPoder ? contagemPoderes[nomePoderBase] >= 2 : false;
-        const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(effectiveNex)}` : `NEX ${effectiveNex}%`;
-        const tipoLabel = categoria === 'paranormais' ? `Transcender, ${nivelLabel}` : nivelLabel;
+        const nomeBaseCheck = escolhido.nome.toLowerCase().trim();
+        const adqKey = afinidadesAdquiridas[nomeBaseCheck];
+        const adqLabel = adqKey ? (
+          String(adqKey).startsWith('extra_') ? 'Extra' : (
+            (parseInt(String(adqKey), 10) >= 1000) ? 
+            (regras['nex_experiencia'] ? `Nível ${calcularNivel(parseInt(String(adqKey), 10) - 1000)}` : `NEX ${parseInt(String(adqKey), 10) - 1000}%`) :
+            (regras['nex_experiencia'] ? `Nível ${calcularNivel(parseInt(String(adqKey), 10))}` : `NEX ${parseInt(String(adqKey), 10)}%`)
+          )
+        ) : '';
         
-        lista.push({ 
-          id: `escolha_nex_${key}`, 
-          nome: escolhido.nome, 
-          descricao: escolhido.descricao, 
-          tipo: tipoLabel, 
-          preRequisitos: escolhido.preRequisitos, 
-          fonte: escolhido.fonte || pp?.Fonte, 
-          elemento: elementoDoPoder, 
-          afinidade: afinidadeDoPoder,
-          afinidadeAtiva,
-          categoria 
-        });
+        const finalTipoLabel = (categoria === 'paranormais' && afinidadeAtiva && adqLabel) 
+          ? `${tipoLabel}, Afinidade`
+          : tipoLabel;
+
+        if (pp && poderesRenderizados.has(nomeBaseCheck)) {
+          // Ignora duplicata
+        } else {
+          if (pp) poderesRenderizados.add(nomeBaseCheck);
+          lista.push({ id: `escolha_extra_${key}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria });
+        }
+      }
+    });
+
+    // 6. Transcender via Progressão de NEX (Custom)
+    const patamaresTranscenderProgressao = [25, 35, 50, 75, 90];
+    patamaresTranscenderProgressao.forEach(nivelPatamar => {
+      const chave = 1000 + nivelPatamar;
+      const escolhido = poderesEscolhidos[chave];
+      if (escolhido) {
+        const isAprenderRitual = escolhido.nome.toLowerCase().startsWith('aprender ritual (');
+        const nomePoderBase = isAprenderRitual ? 'aprender ritual' : escolhido.nome.toLowerCase();
+        const pp = poderesParanormaisMap.get(nomePoderBase);
+        
+        let elementoDoPoder = pp?.Elemento;
+        if (isAprenderRitual) {
+          const ra = rituaisHook.rituaisAprendidos?.find(r => r.origem === `poder_57_${chave}`);
+          if (ra) {
+            const rBase = rituaisHook.rituais.find(r => r.Codigo_Ritual === ra.codigo_ritual);
+            const isLista = rBase?.Elemento_Ritual.toLowerCase() === 'lista' || rBase?.Elemento_Ritual.toLowerCase() === 'varia';
+            elementoDoPoder = isLista ? ra.elemento_escolhido : rBase?.Elemento_Ritual;
+          }
+        }
+
+        const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
+        const tipoLabel = `Transcender ${nivelLabel.replace('NEX ', '')}`;
+        const afinidadeDoPoder = pp?.Afinidade;
+        const afinidadeAtiva = afinidadeDoPoder ? contagemPoderes[nomePoderBase] >= 2 : false;
+        
+        const nomeBaseCheck = escolhido.nome.toLowerCase().trim();
+        const adqKey = afinidadesAdquiridas[nomeBaseCheck];
+        const adqLabel = adqKey ? (
+          String(adqKey).startsWith('extra_') ? 'Extra' : (
+            (parseInt(String(adqKey), 10) >= 1000) ? 
+            (regras['nex_experiencia'] ? `Nível ${calcularNivel(parseInt(String(adqKey), 10) - 1000)}` : `NEX ${parseInt(String(adqKey), 10) - 1000}%`) :
+            (regras['nex_experiencia'] ? `Nível ${calcularNivel(parseInt(String(adqKey), 10))}` : `NEX ${parseInt(String(adqKey), 10)}%`)
+          )
+        ) : '';
+        
+        const finalTipoLabel = (categoria === 'paranormais' && afinidadeAtiva && adqLabel) 
+          ? `${tipoLabel}, Afinidade`
+          : tipoLabel;
+
+        if (pp && poderesRenderizados.has(nomeBaseCheck)) {
+          // Ignora duplicata
+        } else {
+          if (pp) poderesRenderizados.add(nomeBaseCheck);
+          lista.push({ 
+            id: `escolha_nex_${chave}`, 
+            nome: escolhido.nome, 
+            descricao: escolhido.descricao, 
+            tipo: finalTipoLabel, 
+            preRequisitos: escolhido.preRequisitos, 
+            fonte: escolhido.fonte || pp?.Fonte, 
+            elemento: elementoDoPoder, 
+            afinidade: afinidadeDoPoder,
+            afinidadeAtiva,
+            afinidadeAdquiridaKey: adqKey,
+            categoria: 'paranormais'
+          });
+        }
       }
     });
     // Desbloqueio Cronológico: Separado por Combate e Utilidade/Trilha
@@ -456,11 +601,11 @@ export const AbasPanel: React.FC = () => {
         ))}
       </div>
 
-      <div className="mt-2 flex flex-1 flex-col">
+      <div className="mt-2 flex flex-1 flex-col min-h-0">
         {abaDireita === 'combate' && <div className="mt-5 text-center italic text-zinc-600">Conteúdo de Combate</div>}
 
         {abaDireita === 'habilidades' && (
-          <div className="flex h-full flex-col">
+          <div className="flex flex-1 flex-col min-h-0">
             <div className="mb-5 flex items-center gap-4">
               <InputOtimizado value={filtroHabilidades} onChange={setFiltroHabilidades}
                 placeholder="Filtrar habilidades..."
@@ -661,10 +806,35 @@ export const AbasPanel: React.FC = () => {
 
                                 {/* 🔥 Afinidade: texto puro */}
                                 {hab.afinidade && (
-                                  <p className={`mt-3 text-sm leading-relaxed transition-opacity duration-300 ${hab.afinidadeAtiva ? 'text-zinc-300 opacity-100' : 'text-zinc-500 opacity-40'}`}>
-                                    <strong className={hab.afinidadeAtiva ? 'text-zinc-100' : 'text-zinc-400'}>Afinidade:</strong> {hab.afinidade}
-                                    {!hab.afinidadeAtiva && <span className="ml-2 text-[0.65rem] uppercase tracking-widest text-zinc-600">(Requer 2ª Escolha)</span>}
-                                  </p>
+                                  <div className={`mt-2 text-sm leading-relaxed transition-opacity duration-300 ${hab.afinidadeAtiva ? 'text-zinc-300 opacity-100' : 'text-zinc-500 opacity-40'}`}>
+                                    {hab.afinidadeAtiva && hab.afinidadeAdquiridaKey && (
+                                      <div className="flex justify-end mb-2">
+                                        <span className="text-[0.65rem] uppercase tracking-widest text-zinc-500 font-semibold bg-zinc-800/50 px-2 py-0.5 rounded">
+                                          {String(hab.afinidadeAdquiridaKey).startsWith('extra_') ? 'Transcender Extra' : (
+                                            (parseInt(String(hab.afinidadeAdquiridaKey), 10) >= 1000) ? 
+                                            (regras['nex_experiencia'] ? `Transcender Nível ${calcularNivel(parseInt(String(hab.afinidadeAdquiridaKey), 10) - 1000)}` : `Transcender ${parseInt(String(hab.afinidadeAdquiridaKey), 10) - 1000}%`) :
+                                            (regras['nex_experiencia'] ? `Transcender Nível ${calcularNivel(parseInt(String(hab.afinidadeAdquiridaKey), 10))}` : `Transcender ${parseInt(String(hab.afinidadeAdquiridaKey), 10)}%`)
+                                          )}
+                                        </span>
+                                      </div>
+                                    )}
+                                    <p>
+                                      <strong className={hab.afinidadeAtiva ? 'text-zinc-100' : 'text-zinc-400'}>Afinidade:</strong> {hab.afinidade}
+                                    </p>
+                                    {hab.afinidadeAtiva && hab.afinidadeAdquiridaKey && (
+                                      <div className="mt-2 flex justify-end">
+                                        <button 
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            poderesHook.removerPoder(hab.afinidadeAdquiridaKey as number | string);
+                                          }}
+                                          className="text-[10px] font-bold uppercase tracking-wider text-red-500/70 transition hover:text-red-400"
+                                        >
+                                          Remover
+                                        </button>
+                                      </div>
+                                    )}
+                                  </div>
                                 )}
 
                                 <div className="mt-3 text-[0.6rem] uppercase tracking-wider text-zinc-600">Fonte: {hab.fonte || 'NÃO DEFINIDA'}</div>
@@ -829,7 +999,7 @@ export const AbasPanel: React.FC = () => {
           const hasAnyRitual = (rituaisHook.rituaisAprendidos && rituaisHook.rituaisAprendidos.length > 0) || hasEmptySlots;
 
           return (
-            <div className="flex h-full min-h-0 flex-col">
+            <div className="flex flex-1 min-h-0 flex-col">
               <div className="mb-5 flex items-center justify-between gap-4">
                 <span className="text-sm font-bold text-zinc-400">Rituais Aprendidos ({rituaisHook.rituaisAprendidos?.length || 0})</span>
               </div>
@@ -1220,12 +1390,12 @@ export const AbasPanel: React.FC = () => {
                                             poderesHook.escolherPoder(nivel, {
                                               codigo_poder: 57,
                                               Nome: 'Aprender Ritual',
-                                              Descricao: ppBase.Descricao,
-                                              PreRequisitos: ppBase.PreRequisitos,
-                                              Afinidade: ppBase.Afinidade,
-                                              Elemento: ppBase.Elemento,
-                                              Fonte: ppBase.Fonte,
-                                              PreRequisitosAfinidade: ppBase.PreRequisitosAfinidade
+                                              Descricao: ppBase?.Descricao || '',
+                                              PreRequisitos: ppBase?.PreRequisitos || '',
+                                              Afinidade: ppBase?.Afinidade,
+                                              Elemento: ppBase?.Elemento,
+                                              Fonte: ppBase?.Fonte,
+                                              PreRequisitosAfinidade: ppBase?.PreRequisitosAfinidade
                                             } as any);
                                           }
                                         }

@@ -17,6 +17,7 @@ export const StatusPanel: React.FC = () => {
     nivel, setNivel,
     afinidadeEscolhida, setAfinidadeEscolhida,
     afinidadeAtiva,
+    poderesHook,
   } = useRPG();
 
   const regraNexExperiencia = regras['nex_experiencia'];
@@ -152,12 +153,21 @@ export const StatusPanel: React.FC = () => {
               {afinidadeEscolhida}
               <button 
                 className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-zinc-800 text-xs text-zinc-400 opacity-0 transition hover:bg-red-900 hover:text-white group-hover:opacity-100"
-                onClick={(e) => { e.stopPropagation(); setAfinidadeEscolhida(null); }}
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  setAfinidadeEscolhida(null); 
+                  const nexElementais = [60, 75, 90];
+                  nexElementais.forEach(n => {
+                    const chave = n + 1000;
+                    if (poderesHook.poderesEscolhidos[chave]) {
+                      poderesHook.removerPoder(chave);
+                    }
+                  });
+                }}
                 title="Trocar Afinidade"
               >
                 &#8634;
               </button>
-              
               {/* TOOLTIP */}
               <div className="pointer-events-none absolute left-1/2 top-full z-50 mt-2 w-72 -translate-x-1/2 rounded border border-zinc-700 bg-zinc-950 p-3 text-left text-xs font-normal text-zinc-300 opacity-0 shadow-xl transition-opacity group-hover:opacity-100">
                 <div className="mb-2 border-b border-zinc-800 pb-2">

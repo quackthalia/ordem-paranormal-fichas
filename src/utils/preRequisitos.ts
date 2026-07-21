@@ -575,7 +575,12 @@ export function verificarPreRequisitos(
     }
 
     case 36: {
-      // Ter a habilidade de alguma das origens artisticas
+      // Duplo uso: Origem Artística (para poderes normais) OU "Sangue 1" (para paranormais - BD inconsistente)
+      if (textoLower.includes('sangue')) {
+        const qtdSangue = contexto.poderes.filter(p => p.elemento?.toLowerCase().trim() === 'sangue').length;
+        if (qtdSangue < 1) return { atende: false, motivo: '1 Poder de Sangue' };
+        return { atende: true };
+      }
       const origensArtisticas = ['ator', 'músico', 'escritor', 'dançarino', 'cantor', 'pintor', 'influencer', 'anfitrião', 'cosplayer', 'fotógrafo', 'influencer paranormal'];
       if (!contexto.origem || !origensArtisticas.includes(contexto.origem.toLowerCase())) {
         return { atende: false, motivo: 'Origem Artística' };

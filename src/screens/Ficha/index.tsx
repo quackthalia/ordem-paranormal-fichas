@@ -52,8 +52,10 @@ export const FichaScreen: React.FC = () => {
         </div>
 
         {/* COLUNA DIREITA: Abas (Combate, Habilidades, Rituais...) */}
-        <div className="flex min-w-[320px] flex-[1_1_34%] flex-col pb-10 pt-[22px]">
-          <AbasPanel />
+        <div className="relative min-w-[320px] flex-[1_1_34%]">
+          <div className="absolute inset-0 pb-10 pt-[22px]">
+            <AbasPanel />
+          </div>
         </div>
       </div>
 

@@ -104,6 +104,7 @@ export interface HabilidadeItem {
   elemento?: string;
   afinidade?: string;
   afinidadeAtiva?: boolean;
+  afinidadeAdquiridaKey?: string | number;
   categoria: CategoriaHabilidade | 'trilha';
 }
 

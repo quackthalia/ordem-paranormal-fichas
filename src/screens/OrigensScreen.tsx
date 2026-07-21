@@ -45,10 +45,10 @@ export const OrigensScreen: React.FC = () => {
 
       {/* Abas de Grupos */}
       {grupos.length > 0 && (
-        <div className="mb-4 flex flex-wrap gap-2">
+        <div className="mb-4 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
           <button
             onClick={() => setGrupoAtivo('todos')}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
+            className={`whitespace-nowrap rounded-md px-4 py-1.5 text-sm font-medium transition ${
               grupoAtivo === 'todos'
                 ? 'bg-red-700 text-white shadow-md shadow-red-900/50'
                 : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200'
@@ -60,7 +60,7 @@ export const OrigensScreen: React.FC = () => {
             <button
               key={g.Codigo_Grupo}
               onClick={() => setGrupoAtivo(g.Codigo_Grupo)}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
+              className={`whitespace-nowrap rounded-md px-4 py-1.5 text-sm font-medium transition ${
                 grupoAtivo === g.Codigo_Grupo
                   ? 'bg-red-700 text-white shadow-md shadow-red-900/50'
                   : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200'

@@ -216,7 +216,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   }, [rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras]);
 
   const quantidadePoderesParanormais = useMemo(() => {
-    return Object.values(poderesHook.poderesEscolhidos).filter(p => p.categoria === 'paranormais').length;
+    return Object.entries(poderesHook.poderesEscolhidos).filter(([key, p]) => p.categoria === 'paranormais' && key !== 'extra_regra1').length;
   }, [poderesHook.poderesEscolhidos]);
 
   const status = useStatus(classe, nex, nivel, atributos, quantidadePoderesParanormais, origensHook.origemSelecionada?.Codigo_Regra);

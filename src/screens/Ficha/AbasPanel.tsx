@@ -270,7 +270,7 @@ export const AbasPanel: React.FC = () => {
           id: `escolha_${extraKey}`,
           nome: escolhido.nome,
           descricao: escolhido.descricao,
-          tipo: 'Poder Paranormal (Origem)',
+          tipo: 'Transcender (Origem)',
           categoria: 'paranormais',
           preRequisitos: escolhido.preRequisitos,
           fonte: escolhido.fonte,
@@ -281,7 +281,7 @@ export const AbasPanel: React.FC = () => {
           id: `escolha_${extraKey}`,
           nome: 'Escolher Poder Paranormal',
           descricao: 'Sua origem fornece um poder paranormal extra.',
-          tipo: 'Poder Paranormal (Origem)',
+          tipo: 'Transcender (Origem)',
           categoria: 'paranormais',
           isSlotVazio: true,
           nexDoSlot: 0

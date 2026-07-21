@@ -9,6 +9,7 @@ export interface ContextoPreRequisitos {
   origem?: string;
   rituaisAprendidos?: import('../types').RitualAprendido[];
   rituais?: import('../types').Ritual[];
+  regras?: Record<string, boolean>;
 }
 
 export interface ResultadoValidacao {
@@ -399,9 +400,15 @@ export function verificarPreRequisitos(
       const resAttr = verificarAtributo(textoLower);
       if (!resAttr.atende) return resAttr;
       
-      if (!contexto.rituaisAprendidos || contexto.rituaisAprendidos.length === 0) {
+      const isOcultista = contexto.poderes.some(p => p.nome === 'escolhido pelo outro lado');
+      if (!isOcultista && (!contexto.rituaisAprendidos || contexto.rituaisAprendidos.length === 0)) {
         return { atende: false, motivo: 'Ritual de 1º Círculo' };
       }
+      
+      if (!contexto.regras?.['reter_ritual']) {
+        return { atende: false, motivo: 'Regra de Reter Ritual Inativa' };
+      }
+      
       return { atende: true };
     }
 
@@ -419,7 +426,8 @@ export function verificarPreRequisitos(
         }
       }
       
-      if (!contexto.rituaisAprendidos || contexto.rituaisAprendidos.length === 0) {
+      const isOcultista = contexto.poderes.some(p => p.nome === 'escolhido pelo outro lado');
+      if (!isOcultista && (!contexto.rituaisAprendidos || contexto.rituaisAprendidos.length === 0)) {
         return { atende: false, motivo: 'Ritual de 1º Círculo' };
       }
       return { atende: true };

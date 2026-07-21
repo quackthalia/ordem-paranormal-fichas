@@ -48,7 +48,7 @@ interface ModalPoderesExtraProps {
 }
 
 type MainAba = 'utilidade' | 'combate' | 'gerais' | 'paranormais' | 'trilhas';
-type SubAbaClasse = 'todas' | 'combatente' | 'especialista' | 'ocultista' | 'geral';
+type SubAbaClasse = 'todas' | 'combatente' | 'especialista' | 'ocultista';
 
 export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
   isOpen,
@@ -191,8 +191,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
     { id: 'todas', label: 'Todas Classes' },
     { id: 'combatente', label: 'Combatente' },
     { id: 'especialista', label: 'Especialista' },
-    { id: 'ocultista', label: 'Ocultista' },
-    { id: 'geral', label: 'Gerais' },
+    { id: 'ocultista', label: 'Ocultista' }
   ];
 
   const subAbasElementos = ['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo', 'Varia'];

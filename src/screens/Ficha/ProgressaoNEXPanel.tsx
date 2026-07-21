@@ -66,7 +66,7 @@ const ProgressaoBlock = ({ item, nexPatamar }: { item: ProgressaoNexItem, nexPat
   const chaveTranscender = nexPatamar + 1000;
   const is50 = nexPatamar === 50;
   const recusou = progressaoNexRecusados.includes(nexPatamar);
-  const podeTranscender = [25, 35, 50, 75, 90].includes(nexPatamar);
+  const podeTranscender = [25, 35, 50, 60, 75, 90].includes(nexPatamar);
   const temPoderEscolhido = !!poderesHook.poderesEscolhidos[chaveTranscender];
   const poder = poderesHook.poderesEscolhidos[chaveTranscender];
 

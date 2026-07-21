@@ -304,9 +304,10 @@ export const ModalPoderes: React.FC = () => {
       poderes: poderesArray,
       origem: origensHook.origemSelecionada?.nome_origem,
       rituaisAprendidos: rituaisHook.rituaisAprendidos,
-      rituais: rituaisHook.rituais
+      rituais: rituaisHook.rituais,
+      regras
     };
-  }, [atributos, nex, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, trilhasHook.trilhaSelecionada, rituaisHook.rituaisAprendidos, rituaisHook.rituais, origensHook.origemSelecionada]);
+  }, [atributos, nex, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, trilhasHook.trilhaSelecionada, rituaisHook.rituaisAprendidos, rituaisHook.rituais, origensHook.origemSelecionada, regras]);
 
   const editorRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);

@@ -188,10 +188,10 @@ export const AbasPanel: React.FC = () => {
   }, [poderesParanormais]);
 
   React.useEffect(() => {
+    let changed = false;
+    const novosPoderes = { ...poderesHook.poderesEscolhidos };
+    
     if (regras['nex_experiencia']) {
-      let changed = false;
-      const novosPoderes = { ...poderesHook.poderesEscolhidos };
-      
       Object.entries(novosPoderes).forEach(([key, p]) => {
         const keyNum = parseInt(key, 10);
         if (!isNaN(keyNum) && keyNum >= 1000) return; // Ignora slots específicos da Progressão NEX
@@ -202,10 +202,18 @@ export const AbasPanel: React.FC = () => {
           changed = true;
         }
       });
+    } else {
+      Object.entries(novosPoderes).forEach(([key, p]) => {
+        const keyNum = parseInt(key, 10);
+        if (!isNaN(keyNum) && keyNum >= 1000) {
+          delete novosPoderes[key as unknown as number];
+          changed = true;
+        }
+      });
+    }
 
-      if (changed) {
-        poderesHook.setPoderesEscolhidos(novosPoderes);
-      }
+    if (changed) {
+      poderesHook.setPoderesEscolhidos(novosPoderes);
     }
   }, [regras['nex_experiencia'], poderesParanormaisMap, poderesHook.setPoderesEscolhidos]);
 
@@ -346,7 +354,7 @@ export const AbasPanel: React.FC = () => {
             categoria = 'utilidade';
           }
           const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
-          const tipoLabel = categoria === 'paranormais' ? `Transcender ${nivelLabel.replace('NEX ', '')}` : nivelLabel;
+          const tipoLabel = categoria === 'paranormais' ? `Transcender ${nivelPatamar}%` : nivelLabel;
           const afinidadeDoPoder = pp?.Afinidade;
           const afinidadeAtiva = afinidadeDoPoder ? contagemPoderes[nomePoderBase] >= 2 : false;
           const nomeBaseCheck = escolhido.nome.toLowerCase().trim();
@@ -405,7 +413,7 @@ export const AbasPanel: React.FC = () => {
             categoria = 'combate';
           }
           const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
-          const tipoLabel = categoria === 'paranormais' ? `Transcender ${nivelLabel.replace('NEX ', '')}` : nivelLabel;
+          const tipoLabel = categoria === 'paranormais' ? `Transcender ${nivelPatamar}%` : nivelLabel;
           const afinidadeDoPoder = pp?.Afinidade;
           const afinidadeAtiva = afinidadeDoPoder ? contagemPoderes[nomePoderBase] >= 2 : false;
           const nomeBaseCheck = escolhido.nome.toLowerCase().trim();
@@ -488,7 +496,7 @@ export const AbasPanel: React.FC = () => {
     });
 
     // 6. Transcender via Progressão de NEX (Custom)
-    const patamaresTranscenderProgressao = [25, 35, 50, 75, 90];
+    const patamaresTranscenderProgressao = [25, 35, 50, 60, 75, 90];
     patamaresTranscenderProgressao.forEach(nivelPatamar => {
       const chave = 1000 + nivelPatamar;
       const escolhido = poderesEscolhidos[chave];
@@ -508,7 +516,7 @@ export const AbasPanel: React.FC = () => {
         }
 
         const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
-        const tipoLabel = `Transcender ${nivelLabel.replace('NEX ', '')}`;
+        const tipoLabel = `Transcender ${nivelPatamar}%`;
         const afinidadeDoPoder = pp?.Afinidade;
         const afinidadeAtiva = afinidadeDoPoder ? contagemPoderes[nomePoderBase] >= 2 : false;
         
@@ -522,7 +530,7 @@ export const AbasPanel: React.FC = () => {
           )
         ) : '';
         
-        const finalTipoLabel = (categoria === 'paranormais' && afinidadeAtiva && adqLabel) 
+        const finalTipoLabel = (afinidadeAtiva && adqLabel) 
           ? `${tipoLabel}, Afinidade`
           : tipoLabel;
 
@@ -620,7 +628,24 @@ export const AbasPanel: React.FC = () => {
                 if (itensDaCategoria.length === 0) return null;
 
                 if (categoria === 'paranormais') {
-                  itensDaCategoria.sort((a, b) => sortPorElementoENome(a, b, hab => hab?.elemento, hab => hab?.nome));
+                  itensDaCategoria.sort((a, b) => {
+                    const keyA = extrairKeyDoId(a.id);
+                    const keyB = extrairKeyDoId(b.id);
+                    
+                    const getNex = (key: number | string | null) => {
+                      if (typeof key === 'string') return 9999;
+                      if (typeof key === 'number') {
+                         return key >= 1000 ? key - 1000 : key;
+                      }
+                      return 9999;
+                    };
+                    
+                    const nexA = getNex(keyA);
+                    const nexB = getNex(keyB);
+                    
+                    if (nexA !== nexB) return nexA - nexB;
+                    return sortPorElementoENome(a, b, hab => hab?.elemento, hab => hab?.nome);
+                  });
                 }
 
                 return (
@@ -812,8 +837,8 @@ export const AbasPanel: React.FC = () => {
                                         <span className="text-[0.65rem] uppercase tracking-widest text-zinc-500 font-semibold bg-zinc-800/50 px-2 py-0.5 rounded">
                                           {String(hab.afinidadeAdquiridaKey).startsWith('extra_') ? 'Transcender Extra' : (
                                             (parseInt(String(hab.afinidadeAdquiridaKey), 10) >= 1000) ? 
-                                            (regras['nex_experiencia'] ? `Transcender Nível ${calcularNivel(parseInt(String(hab.afinidadeAdquiridaKey), 10) - 1000)}` : `Transcender ${parseInt(String(hab.afinidadeAdquiridaKey), 10) - 1000}%`) :
-                                            (regras['nex_experiencia'] ? `Transcender Nível ${calcularNivel(parseInt(String(hab.afinidadeAdquiridaKey), 10))}` : `Transcender ${parseInt(String(hab.afinidadeAdquiridaKey), 10)}%`)
+                                            `Transcender ${parseInt(String(hab.afinidadeAdquiridaKey), 10) - 1000}%` :
+                                            `Transcender ${parseInt(String(hab.afinidadeAdquiridaKey), 10)}%`
                                           )}
                                         </span>
                                       </div>

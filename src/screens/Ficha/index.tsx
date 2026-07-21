@@ -246,7 +246,7 @@ function BadgeBlock({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2.5">
-        <span className="min-w-28 text-xs font-bold uppercase tracking-wider text-zinc-500">{titulo}</span>
+        <span className="min-w-36 text-xs font-bold uppercase tracking-wider text-zinc-500">{titulo}</span>
         <input
           type="text"
           value={inputValue}

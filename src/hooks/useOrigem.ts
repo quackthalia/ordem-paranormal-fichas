@@ -41,7 +41,7 @@ export function useOrigem(): UseOrigemReturn {
 
         // Busca grupos
         const { data: dataGrupos, error: errGrupos } = await supabase
-          .from('Grupos de Origens')
+          .from('Grupo de Origens')
           .select('*')
           .order('Codigo_Grupo');
 

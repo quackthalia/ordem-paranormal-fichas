@@ -18,7 +18,7 @@ const BORDA_TREINO: Record<number, string> = {
 };
 
 export const PericiasTable: React.FC = () => {
-  const { periciasHook, regrasAtivas, setRegrasAtivas } = useRPG();
+  const { periciasHook, regrasAtivas, setRegrasAtivas, origensHook } = useRPG();
   const { pericias, handleMudarPericia, limites, totais } = periciasHook;
 
   const [periciaAberta, setPericiaAberta] = React.useState<{ nome: string; descricao: string } | null>(null);
@@ -81,7 +81,8 @@ export const PericiasTable: React.FC = () => {
             {Object.entries(pericias)
               .sort((a, b) => a[1].id - b[1].id)
               .map(([nome, dadosPericia]) => {
-              const totalBonus = dadosPericia.treino + dadosPericia.outros;
+              const bonusRegra8 = (nome === 'Diplomacia' && origensHook.origemSelecionada?.Codigo_Regra === 8) ? 2 : 0;
+              const totalBonus = dadosPericia.treino + dadosPericia.outros + bonusRegra8;
               const corTexto = COR_TREINO[dadosPericia.treino] ?? 'text-zinc-400';
               const corBorda = BORDA_TREINO[dadosPericia.treino] ?? 'border-zinc-600';
 
@@ -161,10 +162,10 @@ export const PericiasTable: React.FC = () => {
                       onKeyDown={(e) => {
                         if (['e', 'E', '+', '-', '.', ','].includes(e.key)) e.preventDefault();
                       }}
-                      value={dadosPericia.outros === 0 ? '' : dadosPericia.outros}
+                      value={(dadosPericia.outros + bonusRegra8) === 0 ? '' : (dadosPericia.outros + bonusRegra8)}
                       placeholder="0"
                       onChange={(e) =>
-                        handleMudarPericia(nome, 'outros', Math.max(0, Number(e.target.value)))
+                        handleMudarPericia(nome, 'outros', Math.max(0, Number(e.target.value) - bonusRegra8))
                       }
                       className={`w-11 border-b bg-transparent text-center font-bold outline-none ${corTexto} ${corBorda}`}
                     />

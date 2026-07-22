@@ -113,7 +113,7 @@ function AtributosFicha() {
 // COMPONENTE INTERNO: DEFESA
 // ============================================================
 function DefesaPanel() {
-  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras, periciasHook, atributos, regrasAutomaticasAtivas } = useRPG();
+  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras, periciasHook, atributos, regrasAutomaticasAtivas, protecoes } = useRPG();
 
   const [bloqueio, setBloqueio] = React.useState(0);
   const [esquiva, setEsquiva] = React.useState(0);
@@ -169,14 +169,21 @@ function DefesaPanel() {
                 value={(() => {
                   // REGRA 4 e 12: +2 na defesa
                   const defOutrosBonusRegra = (regrasAutomaticasAtivas.has(4) || regrasAutomaticasAtivas.has(12)) ? 2 : 0;
-                  return defOutros + defOutrosBonusRegra || '';
+                  // REGRA 21
+                  const temProtecaoPesada = protecoes.some(p => p.toLowerCase().includes('pesada'));
+                  const bonusRegra21 = (regrasAutomaticasAtivas.has(21) && temProtecaoPesada) ? 2 : 0;
+                  
+                  return defOutros + defOutrosBonusRegra + bonusRegra21 || '';
                 })()}
                 placeholder="0"
                 title="Outros bônus de defesa"
                 onChange={e => {
                   const valDigitado = Math.max(0, Number(e.target.value));
                   const defOutrosBonusRegra = (regrasAutomaticasAtivas.has(4) || regrasAutomaticasAtivas.has(12)) ? 2 : 0;
-                  setDefOutros(Math.max(0, valDigitado - defOutrosBonusRegra));
+                  const temProtecaoPesada = protecoes.some(p => p.toLowerCase().includes('pesada'));
+                  const bonusRegra21 = (regrasAutomaticasAtivas.has(21) && temProtecaoPesada) ? 2 : 0;
+                  
+                  setDefOutros(Math.max(0, valDigitado - defOutrosBonusRegra - bonusRegra21));
                 }}
                 className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-red-600"
               />
@@ -266,17 +273,34 @@ function ProtecoesPanel() {
     }
   }
 
-  // REGRA 18: Resistência 10 ao elemento escolhido
+  // REGRA 18 e 19: Resistência 10 (ou 20) ao elemento escolhido
   // O menu de escolha será exibido logo antes da lista de resistências
   const { elementoRegra18, setElementoRegra18 } = useRPG();
   if (regrasAutomaticasAtivas.has(18) && elementoRegra18) {
-    resistenciasExtras.push(`${elementoRegra18} 10`);
+    const valorResistencia = regrasAutomaticasAtivas.has(19) ? 20 : 10;
+    resistenciasExtras.push(`${elementoRegra18} ${valorResistencia}`);
   }
 
   // REGRA 17: Adiciona "Armas Pesadas" em Proficiências
   const proficienciasExtras = [];
   if (regrasAutomaticasAtivas.has(17)) {
     proficienciasExtras.push('Armas Pesadas');
+  }
+
+  // REGRA 20: Adiciona "Proteções Pesadas" em Proficiências
+  if (regrasAutomaticasAtivas.has(20)) {
+    proficienciasExtras.push('Proteções Pesadas');
+  }
+
+  // REGRA 21: Se "Proteção Pesada" (ou similar) estiver em Proteções, +2 Defesa e +2 Resistências Físicas
+  const temProtecaoPesada = protecoes.some(p => p.toLowerCase().includes('pesada'));
+  let bonusDefesaRegra21 = 0;
+  if (regrasAutomaticasAtivas.has(21) && temProtecaoPesada) {
+    bonusDefesaRegra21 = 2;
+    resistenciasExtras.push('Balístico 2');
+    resistenciasExtras.push('Corte 2');
+    resistenciasExtras.push('Impacto 2');
+    resistenciasExtras.push('Perfuração 2');
   }
 
   return (

@@ -242,10 +242,13 @@ function ProtecoesPanel() {
     Object.values(poderesHook.poderesEscolhidos || {}).forEach(poder => {
       if (poder.elemento === 'Sangue') qtdSangue++;
     });
-    (rituaisHook.rituaisAprendidos || []).forEach((ritual: any) => {
-      const isLista = ritual.Elemento_Ritual?.toLowerCase() === 'lista' || ritual.Elemento_Ritual?.toLowerCase() === 'varia';
-      const elemento = isLista ? (ritual.ElementoEscolhidoPermanente || 'Sangue') : ritual.Elemento_Ritual;
-      if (elemento === 'Sangue') qtdSangue++;
+    (rituaisHook.rituaisAprendidos || []).forEach((aprendido: any) => {
+      const ritualCompleto = (rituaisHook.rituais || []).find((r: any) => r.Codigo_Ritual === aprendido.codigo_ritual);
+      if (ritualCompleto) {
+        const isLista = ritualCompleto.Elemento_Ritual?.toLowerCase() === 'lista' || ritualCompleto.Elemento_Ritual?.toLowerCase() === 'varia';
+        const elemento = isLista ? (aprendido.elemento_escolhido || 'Sangue') : ritualCompleto.Elemento_Ritual;
+        if (elemento === 'Sangue') qtdSangue++;
+      }
     });
     const rdMental = 2 + Math.floor(qtdSangue / 2);
     resistenciasExtras.push(`Mental ${rdMental}`);

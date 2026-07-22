@@ -37,6 +37,7 @@ function normalizarPoder(item: Record<string, unknown>): Poder {
     ),
     Fonte: String(primeiro('Fonte', 'fonte') ?? ''),
     Pre_Codigo: primeiro('Pre_Codigo', 'pre_codigo') ? Number(primeiro('Pre_Codigo', 'pre_codigo')) : null,
+    Codigo_Regra: primeiro('Codigo_Regra', 'codigo_regra') ? Number(primeiro('Codigo_Regra', 'codigo_regra')) : null,
   };
 }
 
@@ -72,6 +73,7 @@ function normalizarPoderParanormal(item: Record<string, unknown>): PoderParanorm
     Pre_Codigo_Afinidade: primeiro('Pre_Regra_Afinidade', 'pre_regra_afinidade', 'Codigo_Regra_Afinidade', 'codigo_regra_afinidade')
       ? Number(primeiro('Pre_Regra_Afinidade', 'pre_regra_afinidade', 'Codigo_Regra_Afinidade', 'codigo_regra_afinidade'))
       : null,
+    Codigo_Regra: primeiro('Codigo_Regra', 'codigo_regra') ? Number(primeiro('Codigo_Regra', 'codigo_regra')) : null,
   };
 }
 

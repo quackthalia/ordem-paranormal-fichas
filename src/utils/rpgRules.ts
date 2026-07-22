@@ -45,12 +45,14 @@ export function calcularStatusBase(
   classe: ClasseRPG,
   atributos: Atributos,
   nivel: number,
-  codigoRegra?: number | null
+  regrasAtivas?: Set<number>
 ): { pvMax: number; peMax: number; sanMax: number; peTurno: number } {
   let pvMax = 0, peMax = 0, sanMax = 0;
 
-  // Se a origem possui a Regra 1, a sanidade inicial é reduzida pela metade.
-  const redSanidade = codigoRegra === 1 ? 0.5 : 1;
+  const temRegra = (r: number) => regrasAtivas?.has(r) ?? false;
+
+  // Se a origem/poder possui a Regra 1, a sanidade inicial é reduzida pela metade.
+  const redSanidade = temRegra(1) ? 0.5 : 1;
 
   if (classe === 'Combatente') {
     pvMax = (20 + atributos.VIG) + ((nivel - 1) * (4 + atributos.VIG));
@@ -67,30 +69,30 @@ export function calcularStatusBase(
   }
 
   // Regra 2: +1 PV por nível de NEX
-  if (codigoRegra === 2) {
+  if (temRegra(2)) {
     pvMax += nivel;
   }
 
   // Regra 10: +5 PV fixos
-  if (codigoRegra === 10) {
+  if (temRegra(10)) {
     pvMax += 5;
   }
 
   let peTurno = nivel;
 
   // Regra 6: +1 PE a cada NEX ímpar (níveis 1, 3, 5...), +1 Limite de PE/turno
-  if (codigoRegra === 6) {
+  if (temRegra(6)) {
     peMax += Math.ceil(nivel / 2);
     peTurno += 1;
   }
 
   // Regra 7: +1 de Sanidade para cada 5% de NEX (ou seja, +1 por nível)
-  if (codigoRegra === 7) {
+  if (temRegra(7)) {
     sanMax += nivel;
   }
 
   // Regra 14: Diminui os PE iniciais em 1/3 (fica com 2/3)
-  if (codigoRegra === 14) {
+  if (temRegra(14)) {
     peMax = Math.floor(peMax * (2 / 3));
   }
 
@@ -152,7 +154,7 @@ export function calcularPD(
   classe: ClasseRPG,
   atributos: Atributos,
   nivel: number,
-  codigoRegra?: number | null
+  regrasAtivas?: Set<number>
 ): number {
   const pre = atributos.PRE;
   let pd = 0;
@@ -166,7 +168,7 @@ export function calcularPD(
   }
 
   // Regra 14: Diminui os PE (e PD) iniciais em 1/3 (fica com 2/3)
-  if (codigoRegra === 14) {
+  if (regrasAtivas?.has(14)) {
     pd = Math.floor(pd * (2 / 3));
   }
 

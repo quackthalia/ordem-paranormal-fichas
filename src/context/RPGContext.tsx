@@ -111,6 +111,7 @@ interface RPGContextType {
   setProgressaoNexEditados: React.Dispatch<React.SetStateAction<Record<number, string>>>;
   elementoRegra18: string | null;
   setElementoRegra18: React.Dispatch<React.SetStateAction<string | null>>;
+  regrasAutomaticasAtivas: Set<number>;
 }
 
 const RPGContext = createContext<RPGContextType | null>(null);
@@ -169,19 +170,28 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
       }
       return novo;
     });
-  }, [nex, setNex]);
-
-  // Removermos a sincronia automática de nex = nivel * 5. 
-  // Agora eles são entidades independentes.
+  }, [nex]);
 
   // ============================================================
   // HOOKS
   // ============================================================
+  const trilhasHook = useTrilhas(classe);
   const poderesHook = usePoderes(classe);
   const origensHook = useOrigem();
   const inventarioHook = useInventario(origensHook.origemSelecionada?.Codigo_Regra);
   const rituaisHook = useRituais();
-  const trilhasHook = useTrilhas();
+
+  // Computa o conjunto de regras automáticas ativas
+  const regrasAutomaticasAtivas = useMemo(() => {
+    const set = new Set<number>();
+    if (origensHook.origemSelecionada?.Codigo_Regra) {
+      set.add(origensHook.origemSelecionada.Codigo_Regra);
+    }
+    Object.values(poderesHook.poderesEscolhidos).forEach(p => {
+      if (p.Codigo_Regra) set.add(p.Codigo_Regra);
+    });
+    return set;
+  }, [origensHook.origemSelecionada, poderesHook.poderesEscolhidos]);
 
   // Sincroniza ganho/perda de NEX pelos Rituais
   const rituaisAprendidosRef = React.useRef(rituaisHook.rituaisAprendidos);
@@ -226,7 +236,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     return Object.entries(poderesHook.poderesEscolhidos).filter(([key, p]) => p.categoria === 'paranormais' && key !== 'extra_regra1').length;
   }, [poderesHook.poderesEscolhidos]);
 
-  const status = useStatus(classe, nex, nivel, atributos, quantidadePoderesParanormais, origensHook.origemSelecionada?.Codigo_Regra);
+  const status = useStatus(classe, nex, nivel, atributos, quantidadePoderesParanormais, regrasAutomaticasAtivas);
 
   const afinidadeAtiva = useMemo(() => {
     if (!afinidadeEscolhida) return false;
@@ -323,7 +333,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   // ============================================================
   // DEFESA
   // ============================================================
-  const defOutrosBonusRegra4 = origensHook.origemSelecionada?.Codigo_Regra === 4 ? 2 : 0;
+  const defOutrosBonusRegra4 = regrasAutomaticasAtivas.has(4) ? 2 : 0;
   const defesaTotal = 10 + atributos.AGI + bonusAtributos.AGI + defEquip + defOutros + defOutrosBonusRegra4;
 
   // ============================================================
@@ -401,6 +411,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     progressaoNexRecusados, setProgressaoNexRecusados,
     progressaoNexEditados, setProgressaoNexEditados,
     elementoRegra18, setElementoRegra18,
+    regrasAutomaticasAtivas,
   };
 
   return <RPGContext.Provider value={value}>{children}</RPGContext.Provider>;

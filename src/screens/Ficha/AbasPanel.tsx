@@ -169,7 +169,7 @@ export const AbasPanel: React.FC = () => {
 
   const { poderClasse, poderesClasse, poderesEscolhidos, poderesParanormais, removerPoder, listaPoderesUtilidade, escolherPoderExtra } = poderesHook;
   const { origemSelecionada } = origensHook;
-  const { afinidadeEscolhida, afinidadeAtiva, nivel } = useRPG();
+  const { afinidadeEscolhida, afinidadeAtiva, nivel, regrasAutomaticasAtivas } = useRPG();
   const effectiveNex = regras['nex_experiencia'] ? (nivel * 5) : nex;
 
   React.useEffect(() => {
@@ -1031,9 +1031,9 @@ export const AbasPanel: React.FC = () => {
             }
           }
 
-          // 2.5 Calcular slot de Origem (Regra 16)
+          // 2.5 Calcular slot de Origem/Poder (Regra 16)
           const slotsOrigemPendentesList: { chave?: string, index: number, nex: number, maxCirculo: number, isOcultista: boolean, isOrigem?: boolean }[] = [];
-          if (origensHook.origemSelecionada?.Codigo_Regra === 16) {
+          if (regrasAutomaticasAtivas.has(16)) {
             const pego = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'origem_16');
             if (!pego) {
               slotsOrigemPendentesList.push({ chave: 'origem_16', index: 999, nex: 0, maxCirculo: 1, isOcultista: false, isOrigem: true });

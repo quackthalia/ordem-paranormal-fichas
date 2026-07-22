@@ -18,15 +18,12 @@ const BORDA_TREINO: Record<number, string> = {
 };
 
 export const PericiasTable: React.FC = () => {
-  const { periciasHook, regrasAtivas, setRegrasAtivas, origensHook } = useRPG();
+  const { periciasHook, regrasAtivas, setRegrasAtivas, regrasAutomaticasAtivas } = useRPG();
   const { pericias, handleMudarPericia, limites, totais } = periciasHook;
 
   const [periciaAberta, setPericiaAberta] = React.useState<{ nome: string; descricao: string } | null>(null);
 
-  const { maxTreinadas, maxUpgrades } = limites;
-  const { totalTreinadasUsadas, totalUpgradesGastos } = totais;
-
-  const formatarTexto = (texto: string) => {
+  const formatarDescricaoHTML = (texto: string) => {
     let resultado = texto;
     // Formata *texto* como negrito
     resultado = resultado.replace(/\*(.*?)\*/g, '<strong class="text-zinc-100">$1</strong>');
@@ -55,18 +52,18 @@ export const PericiasTable: React.FC = () => {
 
         {regrasAtivas && (
           <div className="flex gap-4 font-bold">
-            <span className={maxTreinadas - totalTreinadasUsadas < 0 ? 'text-red-500' : 'text-emerald-400'}>
-              Treinar: {maxTreinadas - totalTreinadasUsadas}
+            <span className={limites.maxTreinadas - totais.totalTreinadasUsadas < 0 ? 'text-red-500' : 'text-emerald-400'}>
+              Treinar: {limites.maxTreinadas - totais.totalTreinadasUsadas}
             </span>
-            <span className={maxUpgrades - totalUpgradesGastos < 0 ? 'text-red-500' : 'text-amber-400'}>
-              Aumentar Grau: {maxUpgrades - totalUpgradesGastos}
+            <span className={limites.maxUpgrades - totais.totalUpgradesGastos < 0 ? 'text-red-500' : 'text-amber-400'}>
+              Upgrades: {limites.maxUpgrades - totais.totalUpgradesGastos}
             </span>
           </div>
         )}
       </div>
 
       {/* TABELA */}
-      <div className="w-full">
+      <div className="overflow-x-auto">
         <table className="w-full border-collapse text-zinc-100">
           <thead>
             <tr className="border-b border-zinc-700 text-xs uppercase tracking-wider text-zinc-500">
@@ -81,8 +78,8 @@ export const PericiasTable: React.FC = () => {
             {Object.entries(pericias)
               .sort((a, b) => a[1].id - b[1].id)
               .map(([nome, dadosPericia]) => {
-              const bonusRegra8 = (nome === 'Diplomacia' && origensHook.origemSelecionada?.Codigo_Regra === 8) ? 2 : 0;
-              const bonusRegra13 = (nome === 'Vontade' && origensHook.origemSelecionada?.Codigo_Regra === 13) ? 2 : 0;
+              const bonusRegra8 = (nome === 'Diplomacia' && regrasAutomaticasAtivas.has(8)) ? 2 : 0;
+              const bonusRegra13 = (nome === 'Vontade' && regrasAutomaticasAtivas.has(13)) ? 2 : 0;
               const totalBonus = dadosPericia.treino + dadosPericia.outros + bonusRegra8 + bonusRegra13;
               const corTexto = COR_TREINO[dadosPericia.treino] ?? 'text-zinc-400';
               const corBorda = BORDA_TREINO[dadosPericia.treino] ?? 'border-zinc-600';

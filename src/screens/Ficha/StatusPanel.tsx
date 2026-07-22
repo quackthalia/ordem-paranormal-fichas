@@ -19,6 +19,7 @@ export const StatusPanel: React.FC = () => {
     afinidadeAtiva,
     poderesHook,
     origensHook,
+    regrasAutomaticasAtivas,
   } = useRPG();
 
   const regraNexExperiencia = regras['nex_experiencia'];
@@ -192,11 +193,11 @@ export const StatusPanel: React.FC = () => {
             <input
               type="number"
               value={(() => {
-                const bonusDeslocRegra12 = origensHook.origemSelecionada?.Codigo_Regra === 12 ? 3 : 0;
+                const bonusDeslocRegra12 = regrasAutomaticasAtivas.has(12) ? 3 : 0;
                 return deslocM + bonusDeslocRegra12;
               })()}
               onChange={(e) => {
-                const bonusDeslocRegra12 = origensHook.origemSelecionada?.Codigo_Regra === 12 ? 3 : 0;
+                const bonusDeslocRegra12 = regrasAutomaticasAtivas.has(12) ? 3 : 0;
                 const totalM = Number(e.target.value);
                 const m = totalM - bonusDeslocRegra12;
                 setDeslocM(m);
@@ -208,12 +209,12 @@ export const StatusPanel: React.FC = () => {
             <input
               type="number"
               value={(() => {
-                const bonusDeslocRegra12 = origensHook.origemSelecionada?.Codigo_Regra === 12 ? 3 : 0;
+                const bonusDeslocRegra12 = regrasAutomaticasAtivas.has(12) ? 3 : 0;
                 const bonusDeslocQ = Math.floor(bonusDeslocRegra12 / 1.5);
                 return deslocQ + bonusDeslocQ;
               })()}
               onChange={(e) => {
-                const bonusDeslocRegra12 = origensHook.origemSelecionada?.Codigo_Regra === 12 ? 3 : 0;
+                const bonusDeslocRegra12 = regrasAutomaticasAtivas.has(12) ? 3 : 0;
                 const bonusDeslocQ = Math.floor(bonusDeslocRegra12 / 1.5);
                 const totalQ = Number(e.target.value);
                 const q = totalQ - bonusDeslocQ;

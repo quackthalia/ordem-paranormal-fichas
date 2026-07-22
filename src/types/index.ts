@@ -40,6 +40,7 @@ export interface Poder {
   PreRequisitos: string;
   Fonte: string;
   Pre_Codigo?: number | null;
+  Codigo_Regra?: number | null;
 }
 
 export interface PoderParanormal {
@@ -53,6 +54,7 @@ export interface PoderParanormal {
   Pre_Codigo?: number | null;
   PreRequisitosAfinidade?: string;
   Pre_Codigo_Afinidade?: number | null;
+  Codigo_Regra?: number | null;
 }
 
 export interface GrupoOrigem {

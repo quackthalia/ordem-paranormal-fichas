@@ -168,14 +168,14 @@ function DefesaPanel() {
                 onKeyDown={bloquearLetras}
                 value={(() => {
                   // REGRA 4 e 12: +2 na defesa
-                  const defOutrosBonusRegra = (origensHook.origemSelecionada?.Codigo_Regra === 4 || origensHook.origemSelecionada?.Codigo_Regra === 12) ? 2 : 0;
+                  const defOutrosBonusRegra = (regrasAutomaticasAtivas.has(4) || regrasAutomaticasAtivas.has(12)) ? 2 : 0;
                   return defOutros + defOutrosBonusRegra || '';
                 })()}
                 placeholder="0"
                 title="Outros bônus de defesa"
                 onChange={e => {
                   const valDigitado = Math.max(0, Number(e.target.value));
-                  const defOutrosBonusRegra = (origensHook.origemSelecionada?.Codigo_Regra === 4 || origensHook.origemSelecionada?.Codigo_Regra === 12) ? 2 : 0;
+                  const defOutrosBonusRegra = (regrasAutomaticasAtivas.has(4) || regrasAutomaticasAtivas.has(12)) ? 2 : 0;
                   setDefOutros(Math.max(0, valDigitado - defOutrosBonusRegra));
                 }}
                 className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-red-600"
@@ -223,22 +223,23 @@ function ProtecoesPanel() {
     sentidos, setSentidos,
     imunidades, setImunidades,
     vulnerabilidades, setVulnerabilidades,
-    origensHook, atributos, poderesHook, rituaisHook, periciasHook
+    regrasAutomaticasAtivas, atributos, poderesHook, rituaisHook, periciasHook
   } = useRPG();
   const [mostrarOutros, setMostrarOutros] = React.useState(false);
 
-  // REGRA 5: Resistência Mental +INT
-  const codigoRegra = origensHook.origemSelecionada?.Codigo_Regra;
   const resistenciasExtras = [];
-  if (codigoRegra === 5) {
+  
+  // REGRA 5: Resistência Mental +INT
+  if (regrasAutomaticasAtivas.has(5)) {
     resistenciasExtras.push(`Mental ${atributos.INT}`);
   }
-  if (codigoRegra === 9) {
+  // REGRA 9: Dano 2
+  if (regrasAutomaticasAtivas.has(9)) {
     resistenciasExtras.push('Dano 2');
   }
 
   // REGRA 11: Resistência Mental 2 + (+1 pra cada 2 poderes/rituais de Sangue)
-  if (codigoRegra === 11) {
+  if (regrasAutomaticasAtivas.has(11)) {
     let qtdSangue = 0;
     Object.values(poderesHook.poderesEscolhidos || {}).forEach(poder => {
       if (poder.elemento === 'Sangue') qtdSangue++;
@@ -256,7 +257,7 @@ function ProtecoesPanel() {
   }
 
   // REGRA 15: Resistência Mental igual a metade de Intimidação (Treino + Outros), arredondado pra cima
-  if (codigoRegra === 15) {
+  if (regrasAutomaticasAtivas.has(15)) {
     const intimida = periciasHook.pericias['Intimidação'];
     if (intimida) {
       const bonus = intimida.treino + intimida.outros;
@@ -268,13 +269,13 @@ function ProtecoesPanel() {
   // REGRA 18: Resistência 10 ao elemento escolhido
   // O menu de escolha será exibido logo antes da lista de resistências
   const { elementoRegra18, setElementoRegra18 } = useRPG();
-  if (codigoRegra === 18 && elementoRegra18) {
+  if (regrasAutomaticasAtivas.has(18) && elementoRegra18) {
     resistenciasExtras.push(`${elementoRegra18} 10`);
   }
 
   // REGRA 17: Adiciona "Armas Pesadas" em Proficiências
   const proficienciasExtras = [];
-  if (codigoRegra === 17) {
+  if (regrasAutomaticasAtivas.has(17)) {
     proficienciasExtras.push('Armas Pesadas');
   }
 
@@ -283,7 +284,7 @@ function ProtecoesPanel() {
       <BadgeBlock titulo="Proteção" itens={protecoes} setItens={setProtecoes} />
 
       {/* Regra 18: Seletor de Elemento */}
-      {codigoRegra === 18 && (
+      {regrasAutomaticasAtivas.has(18) && (
         <div className="flex flex-col gap-1 -mt-2">
           <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Escolha o Elemento (Regra 18):</span>
           <select 

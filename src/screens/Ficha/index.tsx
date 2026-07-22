@@ -222,7 +222,7 @@ function ProtecoesPanel() {
     sentidos, setSentidos,
     imunidades, setImunidades,
     vulnerabilidades, setVulnerabilidades,
-    origensHook, atributos
+    origensHook, atributos, poderesHook, rituaisHook
   } = useRPG();
   const [mostrarOutros, setMostrarOutros] = React.useState(false);
 
@@ -234,6 +234,21 @@ function ProtecoesPanel() {
   }
   if (codigoRegra === 9) {
     resistenciasExtras.push('Dano 2');
+  }
+
+  // REGRA 11: Resistência Mental 2 + (+1 pra cada 2 poderes/rituais de Sangue)
+  if (codigoRegra === 11) {
+    let qtdSangue = 0;
+    Object.values(poderesHook.poderesEscolhidos || {}).forEach(poder => {
+      if (poder.elemento === 'Sangue') qtdSangue++;
+    });
+    (rituaisHook.rituaisAprendidos || []).forEach((ritual: any) => {
+      const isLista = ritual.Elemento_Ritual?.toLowerCase() === 'lista' || ritual.Elemento_Ritual?.toLowerCase() === 'varia';
+      const elemento = isLista ? (ritual.ElementoEscolhidoPermanente || 'Sangue') : ritual.Elemento_Ritual;
+      if (elemento === 'Sangue') qtdSangue++;
+    });
+    const rdMental = 2 + Math.floor(qtdSangue / 2);
+    resistenciasExtras.push(`Mental ${rdMental}`);
   }
 
   return (

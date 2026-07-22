@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRPG } from '../../context/RPGContext';
-import { Patente, LimiteCredito } from '../../hooks/useInventario';
+import type { Patente, LimiteCredito } from '../../hooks/useInventario';
 
 export function InventarioPanel() {
   const { inventarioHook, atributos } = useRPG();

@@ -298,7 +298,7 @@ export const ModalPoderes: React.FC = () => {
 
     return {
       atributos,
-      nex,
+      nex: typeof nexModalAberto === 'number' ? nexModalAberto : nex,
       pericias: periciasHook.pericias,
       nomesPericias: periciasHook.nomesPericias,
       poderes: poderesArray,

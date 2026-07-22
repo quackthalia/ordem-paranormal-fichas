@@ -7,7 +7,7 @@ export interface UseInventarioReturn {
   prestigio: number;
   setPrestigio: (val: number) => void;
   patente: Patente;
-  setPatenteOverride: (val: Patente | null) => void;
+  setPatenteManual: (val: Patente) => void;
   credito: LimiteCredito;
   setCreditoOverride: (val: LimiteCredito | null) => void;
   limitesItens: [number, number, number, number];
@@ -40,7 +40,17 @@ export function useInventario(codigoRegra?: number | null): UseInventarioReturn 
     return { p: 'Recruta' as Patente, c: 'Baixo' as LimiteCredito, l: [2, 0, 0, 0] };
   }, [prestigio]);
 
-  const patente = patenteOverride || valoresBase.p;
+  const patente = valoresBase.p;
+
+  const setPatenteManual = (novaPatente: Patente) => {
+    switch (novaPatente) {
+      case 'Recruta': setPrestigio(0); break;
+      case 'Operador': setPrestigio(20); break;
+      case 'Agente Especial': setPrestigio(50); break;
+      case 'Oficial de Operações': setPrestigio(100); break;
+      case 'Agente de Elite': setPrestigio(200); break;
+    }
+  };
   
   let credito = creditoOverride || valoresBase.c;
 
@@ -64,7 +74,7 @@ export function useInventario(codigoRegra?: number | null): UseInventarioReturn 
     prestigio,
     setPrestigio,
     patente,
-    setPatenteOverride,
+    setPatenteManual,
     credito,
     setCreditoOverride,
     limitesItens,

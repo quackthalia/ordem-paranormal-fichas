@@ -6,7 +6,7 @@ export function InventarioPanel() {
   const { inventarioHook, atributos } = useRPG();
   const {
     prestigio, setPrestigio,
-    patente, setPatenteOverride,
+    patente, setPatenteManual,
     credito, setCreditoOverride,
     limitesItens, setLimiteItemCategoria
   } = inventarioHook;
@@ -37,7 +37,7 @@ export function InventarioPanel() {
           <label className="text-sm font-bold uppercase tracking-wider text-zinc-400">Patente</label>
           <select
             value={patente}
-            onChange={(e) => setPatenteOverride(e.target.value as Patente)}
+            onChange={(e) => setPatenteManual(e.target.value as Patente)}
             className="w-48 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-center text-sm font-bold text-zinc-100 outline-none transition focus:border-red-800"
           >
             {patentesDisponiveis.map(p => (

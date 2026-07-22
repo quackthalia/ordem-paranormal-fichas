@@ -71,6 +71,11 @@ export function calcularStatusBase(
     pvMax += nivel;
   }
 
+  // Regra 10: +5 PV fixos
+  if (codigoRegra === 10) {
+    pvMax += 5;
+  }
+
   let peTurno = nivel;
 
   // Regra 6: +1 PE a cada NEX ímpar (níveis 1, 3, 5...), +1 Limite de PE/turno

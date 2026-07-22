@@ -71,7 +71,15 @@ export function calcularStatusBase(
     pvMax += nivel;
   }
 
-  return { pvMax, peMax, sanMax, peTurno: nivel };
+  let peTurno = nivel;
+
+  // Regra 6: +1 PE a cada NEX ímpar (níveis 1, 3, 5...), +1 Limite de PE/turno
+  if (codigoRegra === 6) {
+    peMax += Math.ceil(nivel / 2);
+    peTurno += 1;
+  }
+
+  return { pvMax, peMax, sanMax, peTurno };
 }
 
 /** Ataque Especial (Combatente) */

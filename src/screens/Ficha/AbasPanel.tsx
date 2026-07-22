@@ -241,13 +241,15 @@ export const AbasPanel: React.FC = () => {
       const isResistir = baseNomeStr.startsWith('resistir a ');
       const nomeBase = isAprenderRitual ? 'aprender ritual' : (isResistir ? 'resistir a <elemento>' : baseNomeStr);
       const pp = poderesParanormaisMap.get(nomeBase);
-      contagemPoderes[nomeBase] = (contagemPoderes[nomeBase] || 0) + 1;
+      const trackingKey = baseNomeStr; // Usa o nome específico (ex: "resistir a sangue")
+      
+      contagemPoderes[trackingKey] = (contagemPoderes[trackingKey] || 0) + 1;
       
       if (pp) {
-        if (!primeiraVez[nomeBase]) {
-          primeiraVez[nomeBase] = key;
+        if (!primeiraVez[trackingKey]) {
+          primeiraVez[trackingKey] = key;
         } else {
-          afinidadesAdquiridas[nomeBase] = key;
+          afinidadesAdquiridas[trackingKey] = key;
         }
       }
     });
@@ -391,9 +393,8 @@ export const AbasPanel: React.FC = () => {
           }
           const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
           const tipoLabel = categoria === 'paranormais' ? `Transcender ${nivelPatamar}%` : nivelLabel;
-          const afinidadeDoPoder = pp?.Afinidade;
-          const afinidadeAtiva = afinidadeDoPoder ? contagemPoderes[nomePoderBase] >= 2 : false;
           const nomeBaseCheck = escolhido.nome.toLowerCase().trim();
+          const afinidadeAtiva = afinidadeDoPoder ? contagemPoderes[nomeBaseCheck] >= 2 : false;
           const adqKey = afinidadesAdquiridas[nomeBaseCheck];
           const adqLabel = adqKey ? (
             String(adqKey).startsWith('extra_') ? 'Extra' : (
@@ -451,9 +452,8 @@ export const AbasPanel: React.FC = () => {
           }
           const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
           const tipoLabel = categoria === 'paranormais' ? `Transcender ${nivelPatamar}%` : nivelLabel;
-          const afinidadeDoPoder = pp?.Afinidade;
-          const afinidadeAtiva = afinidadeDoPoder ? contagemPoderes[nomePoderBase] >= 2 : false;
           const nomeBaseCheck = escolhido.nome.toLowerCase().trim();
+          const afinidadeAtiva = afinidadeDoPoder ? contagemPoderes[nomeBaseCheck] >= 2 : false;
           const adqKey = afinidadesAdquiridas[nomeBaseCheck];
           const adqLabel = adqKey ? (
             String(adqKey).startsWith('extra_') ? 'Extra' : (
@@ -508,9 +508,8 @@ export const AbasPanel: React.FC = () => {
           categoria = 'utilidade';
         }
         const tipoLabel = categoria === 'paranormais' ? `Transcender Extra` : `Extra`;
-        const afinidadeDoPoder = pp?.Afinidade;
-        const afinidadeAtiva = afinidadeDoPoder ? contagemPoderes[nomePoderBase] >= 2 : false;
         const nomeBaseCheck = escolhido.nome.toLowerCase().trim();
+        const afinidadeAtiva = afinidadeDoPoder ? contagemPoderes[nomeBaseCheck] >= 2 : false;
         const adqKey = afinidadesAdquiridas[nomeBaseCheck];
         const adqLabel = adqKey ? (
           String(adqKey).startsWith('extra_') ? 'Extra' : (
@@ -557,9 +556,9 @@ export const AbasPanel: React.FC = () => {
         const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
         const tipoLabel = `Transcender ${nivelPatamar}%`;
         const afinidadeDoPoder = pp?.Afinidade;
-        const afinidadeAtiva = afinidadeDoPoder ? contagemPoderes[nomePoderBase] >= 2 : false;
-        
         const nomeBaseCheck = escolhido.nome.toLowerCase().trim();
+        const afinidadeAtiva = afinidadeDoPoder ? contagemPoderes[nomeBaseCheck] >= 2 : false;
+        
         const adqKey = afinidadesAdquiridas[nomeBaseCheck];
         const adqLabel = adqKey ? (
           String(adqKey).startsWith('extra_') ? 'Extra' : (

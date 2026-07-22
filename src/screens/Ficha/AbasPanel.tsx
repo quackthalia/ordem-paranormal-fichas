@@ -22,6 +22,7 @@ import { ModalPoderes } from '../../components/ModalPoderes';
 import { ToolbarFormato } from '../../components/ToolbarFormato';
 import { ModalPoderesExtra } from '../../components/ModalPoderesExtra';
 import { ProgressaoNEXPanel } from './ProgressaoNEXPanel';
+import { InventarioPanel } from './InventarioPanel';
 // ═══════════════════════════════════════════════════════════════
 // CORES DOS ELEMENTOS
 // ═══════════════════════════════════════════════════════════════
@@ -1478,7 +1479,7 @@ export const AbasPanel: React.FC = () => {
             </div>
           );
         })()}
-        {abaDireita === 'inventario' && <div className="mt-5 text-center italic text-zinc-600">Conteúdo de Inventário</div>}
+        {abaDireita === 'inventario' && <InventarioPanel />}
         {abaDireita === 'descricao' && <div className="mt-5 text-center italic text-zinc-600">Conteúdo de Descrição</div>}
 
         {abaDireita === 'regras' && (

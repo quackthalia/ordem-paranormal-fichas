@@ -73,7 +73,9 @@ function normalizarPoderParanormal(item: Record<string, unknown>): PoderParanorm
     Pre_Codigo_Afinidade: primeiro('Pre_Regra_Afinidade', 'pre_regra_afinidade', 'Codigo_Regra_Afinidade', 'codigo_regra_afinidade')
       ? Number(primeiro('Pre_Regra_Afinidade', 'pre_regra_afinidade', 'Codigo_Regra_Afinidade', 'codigo_regra_afinidade'))
       : null,
-    Codigo_Regra: primeiro('Codigo_Regra', 'codigo_regra') ? Number(primeiro('Codigo_Regra', 'codigo_regra')) : null,
+    Codigo_Regra: primeiro('Codigo_Regra_Poder_Paranormal', 'codigo_regra_poder_paranormal', 'Codigo_Regra', 'codigo_regra') 
+      ? Number(primeiro('Codigo_Regra_Poder_Paranormal', 'codigo_regra_poder_paranormal', 'Codigo_Regra', 'codigo_regra')) 
+      : null,
   };
 }
 
@@ -194,6 +196,7 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
         afinidade: pp.Afinidade || '',
         elemento: elementoEscolhido || pp.Elemento || undefined,
         categoria: catFinal,
+        codigoRegra: poder.Codigo_Regra,
       },
     }));
   }, []);
@@ -234,6 +237,7 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
         afinidade: pp.Afinidade || '',
         elemento: elementoEscolhido || pp.Elemento || undefined,
         categoria: catFinal,
+        codigoRegra: poder.Codigo_Regra,
       },
     }));
 

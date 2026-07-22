@@ -19,7 +19,8 @@ export function InventarioPanel() {
   const creditosDisponiveis: LimiteCredito[] = ['Baixo', 'Médio', 'Alto', 'Ilimitado'];
 
   return (
-    <div className="flex flex-col gap-6 p-4 font-sans">
+    <div className="flex flex-col gap-6 p-4 font-sans text-zinc-300">
+      
       {/* LINHA 1: Prestígio e Patente */}
       <div className="flex flex-wrap items-center gap-6">
         <div className="flex items-center gap-3">
@@ -32,7 +33,6 @@ export function InventarioPanel() {
             className="w-20 rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-center text-lg font-bold text-zinc-100 outline-none transition focus:border-red-800"
           />
         </div>
-        
         <div className="flex items-center gap-3">
           <label className="text-sm font-bold uppercase tracking-wider text-zinc-400">Patente</label>
           <select
@@ -47,10 +47,10 @@ export function InventarioPanel() {
         </div>
       </div>
 
-      {/* LINHA 2 e 3: Limites de Itens e No Inventário */}
+      {/* LINHAS 2 E 3: Limites e Estoque */}
       <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-6">
-          <label className="w-32 text-sm font-bold uppercase tracking-wider text-zinc-400 text-right">Limite de Itens</label>
+        <div className="flex flex-wrap items-center gap-4">
+          <label className="w-36 text-sm font-bold uppercase tracking-wider text-zinc-400">Limite de Itens</label>
           <div className="flex gap-2">
             {limitesItens.map((limite, index) => (
               <input
@@ -65,8 +65,8 @@ export function InventarioPanel() {
           </div>
         </div>
 
-        <div className="flex items-center gap-6">
-          <label className="w-32 text-sm font-bold uppercase tracking-wider text-zinc-400 text-right">No Inventário</label>
+        <div className="flex flex-wrap items-center gap-4">
+          <label className="w-36 text-sm font-bold uppercase tracking-wider text-zinc-400">No Inventário</label>
           <div className="flex gap-2">
             {noInventario.map((qtd, index) => (
               <div
@@ -80,14 +80,14 @@ export function InventarioPanel() {
         </div>
       </div>
 
-      {/* LINHA 4: Limite de Crédito e Carga Máx */}
-      <div className="flex flex-wrap items-center gap-6 pt-2">
-        <div className="flex items-center gap-3">
-          <label className="w-32 text-sm font-bold uppercase tracking-wider text-zinc-400 text-right">Limite de Crédito</label>
+      {/* LINHA 4: Limite de Crédito e Carga Máxima */}
+      <div className="flex flex-wrap items-center gap-8 mt-2">
+        <div className="flex items-center gap-4">
+          <label className="text-sm font-bold uppercase tracking-wider text-zinc-400">Limite de Crédito</label>
           <select
             value={credito}
             onChange={(e) => setCreditoOverride(e.target.value as LimiteCredito)}
-            className="w-32 rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-center text-sm font-bold text-zinc-100 outline-none transition focus:border-red-800"
+            className="w-36 rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-center text-sm font-bold text-zinc-100 outline-none transition focus:border-red-800"
           >
             {creditosDisponiveis.map(c => (
               <option key={c} value={c}>{c}</option>
@@ -95,7 +95,7 @@ export function InventarioPanel() {
           </select>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <label className="text-sm font-bold uppercase tracking-wider text-zinc-400">Carga Máx.</label>
           <div className="flex gap-2">
             <div className="w-14 rounded border border-zinc-700 bg-zinc-900 px-1 py-2 text-center text-lg font-bold text-zinc-100">

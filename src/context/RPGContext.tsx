@@ -188,7 +188,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
       set.add(origensHook.origemSelecionada.Codigo_Regra);
     }
     Object.values(poderesHook.poderesEscolhidos).forEach(p => {
-      if (p.Codigo_Regra) set.add(p.Codigo_Regra);
+      if (p.codigoRegra) set.add(p.codigoRegra);
     });
     return set;
   }, [origensHook.origemSelecionada, poderesHook.poderesEscolhidos]);

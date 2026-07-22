@@ -193,13 +193,13 @@ export const StatusPanel: React.FC = () => {
             <input
               type="number"
               value={(() => {
-                const bonusDeslocRegra12 = regrasAutomaticasAtivas.has(12) ? 3 : 0;
-                return deslocM + bonusDeslocRegra12;
+                const bonusDesloc = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0);
+                return deslocM + bonusDesloc;
               })()}
               onChange={(e) => {
-                const bonusDeslocRegra12 = regrasAutomaticasAtivas.has(12) ? 3 : 0;
+                const bonusDesloc = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0);
                 const totalM = Number(e.target.value);
-                const m = totalM - bonusDeslocRegra12;
+                const m = totalM - bonusDesloc;
                 setDeslocM(m);
                 setDeslocQ(Math.floor(m / 1.5));
               }}
@@ -209,13 +209,13 @@ export const StatusPanel: React.FC = () => {
             <input
               type="number"
               value={(() => {
-                const bonusDeslocRegra12 = regrasAutomaticasAtivas.has(12) ? 3 : 0;
-                const bonusDeslocQ = Math.floor(bonusDeslocRegra12 / 1.5);
+                const bonusDesloc = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0);
+                const bonusDeslocQ = Math.floor(bonusDesloc / 1.5);
                 return deslocQ + bonusDeslocQ;
               })()}
               onChange={(e) => {
-                const bonusDeslocRegra12 = regrasAutomaticasAtivas.has(12) ? 3 : 0;
-                const bonusDeslocQ = Math.floor(bonusDeslocRegra12 / 1.5);
+                const bonusDesloc = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0);
+                const bonusDeslocQ = Math.floor(bonusDesloc / 1.5);
                 const totalQ = Number(e.target.value);
                 const q = totalQ - bonusDeslocQ;
                 setDeslocQ(q);

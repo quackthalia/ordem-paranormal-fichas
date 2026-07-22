@@ -167,23 +167,25 @@ function DefesaPanel() {
                 type="number"
                 onKeyDown={bloquearLetras}
                 value={(() => {
-                  // REGRA 4 e 12: +2 na defesa
-                  const defOutrosBonusRegra = (regrasAutomaticasAtivas.has(4) || regrasAutomaticasAtivas.has(12)) ? 2 : 0;
-                  // REGRA 21
+                  const defOutrosBonusRegra = (regrasAutomaticasAtivas.has(4) ? 2 : 0) + (regrasAutomaticasAtivas.has(12) ? 2 : 0);
                   const temProtecaoPesada = protecoes.some(p => p.toLowerCase().includes('pesada'));
                   const bonusRegra21 = (regrasAutomaticasAtivas.has(21) && temProtecaoPesada) ? 2 : 0;
+                  const temProtecaoLeve = protecoes.some(p => p.toLowerCase().includes('leve'));
+                  const bonusRegra25 = (regrasAutomaticasAtivas.has(25) && temProtecaoLeve) ? 2 : 0;
                   
-                  return defOutros + defOutrosBonusRegra + bonusRegra21 || '';
+                  return defOutros + defOutrosBonusRegra + bonusRegra21 + bonusRegra25 || '';
                 })()}
                 placeholder="0"
                 title="Outros bônus de defesa"
                 onChange={e => {
                   const valDigitado = Math.max(0, Number(e.target.value));
-                  const defOutrosBonusRegra = (regrasAutomaticasAtivas.has(4) || regrasAutomaticasAtivas.has(12)) ? 2 : 0;
+                  const defOutrosBonusRegra = (regrasAutomaticasAtivas.has(4) ? 2 : 0) + (regrasAutomaticasAtivas.has(12) ? 2 : 0);
                   const temProtecaoPesada = protecoes.some(p => p.toLowerCase().includes('pesada'));
                   const bonusRegra21 = (regrasAutomaticasAtivas.has(21) && temProtecaoPesada) ? 2 : 0;
+                  const temProtecaoLeve = protecoes.some(p => p.toLowerCase().includes('leve'));
+                  const bonusRegra25 = (regrasAutomaticasAtivas.has(25) && temProtecaoLeve) ? 2 : 0;
                   
-                  setDefOutros(Math.max(0, valDigitado - defOutrosBonusRegra - bonusRegra21));
+                  setDefOutros(Math.max(0, valDigitado - defOutrosBonusRegra - bonusRegra21 - bonusRegra25));
                 }}
                 className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-red-600"
               />
@@ -285,13 +287,21 @@ function ProtecoesPanel() {
 
   // REGRA 17: Adiciona "Armas Pesadas" em Proficiências
   const proficienciasExtras = [];
+  // REGRA 17: Armas Pesadas
   if (regrasAutomaticasAtivas.has(17)) {
     proficienciasExtras.push('Armas Pesadas');
   }
-
-  // REGRA 20: Adiciona "Proteções Pesadas" em Proficiências
+  // REGRA 20: Proteções Pesadas
   if (regrasAutomaticasAtivas.has(20)) {
     proficienciasExtras.push('Proteções Pesadas');
+  }
+  // REGRA 27: Armas Táticas (de fogo)
+  if (regrasAutomaticasAtivas.has(27)) {
+    proficienciasExtras.push('Armas Táticas (de fogo)');
+  }
+  // REGRA 28: Armas Táticas (corpo a corpo e de disparo)
+  if (regrasAutomaticasAtivas.has(28)) {
+    proficienciasExtras.push('Armas Táticas (corpo a corpo e de disparo)');
   }
 
   // REGRA 21: Se "Proteção Pesada" (ou similar) estiver em Proteções, +2 Defesa e +2 Resistências Físicas
@@ -381,6 +391,8 @@ function BadgeBlock({
         const ordemCustomizada: Record<string, number> = {
           'armas simples': 1,
           'armas táticas': 2,
+          'armas táticas (de fogo)': 2,
+          'armas táticas (corpo a corpo e de disparo)': 2,
           'armas pesadas': 3,
           'proteções leves': 4,
           'proteções pesadas': 5

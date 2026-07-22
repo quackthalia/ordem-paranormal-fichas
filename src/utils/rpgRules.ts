@@ -54,18 +54,32 @@ export function calcularStatusBase(
   // Se a origem/poder possui a Regra 1, a sanidade inicial é reduzida pela metade.
   const redSanidade = temRegra(1) ? 0.5 : 1;
 
-  if (classe === 'Combatente') {
-    pvMax = (20 + atributos.VIG) + ((nivel - 1) * (4 + atributos.VIG));
-    peMax = (2 + atributos.PRE) + ((nivel - 1) * (2 + atributos.PRE));
-    sanMax = Math.floor(12 * redSanidade) + ((nivel - 1) * 3);
-  } else if (classe === 'Especialista') {
-    pvMax = (16 + atributos.VIG) + ((nivel - 1) * (3 + atributos.VIG));
-    peMax = (3 + atributos.PRE) + ((nivel - 1) * (3 + atributos.PRE));
-    sanMax = Math.floor(16 * redSanidade) + ((nivel - 1) * 4);
-  } else if (classe === 'Ocultista') {
-    pvMax = (12 + atributos.VIG) + ((nivel - 1) * (2 + atributos.VIG));
-    peMax = (4 + atributos.PRE) + ((nivel - 1) * (4 + atributos.PRE));
-    sanMax = Math.floor(20 * redSanidade) + ((nivel - 1) * 5);
+  if (temRegra(26)) {
+    pvMax = (24 + atributos.VIG) + ((nivel - 1) * (6 + atributos.VIG));
+    if (classe === 'Combatente') {
+      peMax = (2 + atributos.PRE) + ((nivel - 1) * (2 + atributos.PRE));
+      sanMax = Math.floor(12 * redSanidade) + ((nivel - 1) * 3);
+    } else if (classe === 'Especialista') {
+      peMax = (3 + atributos.PRE) + ((nivel - 1) * (3 + atributos.PRE));
+      sanMax = Math.floor(16 * redSanidade) + ((nivel - 1) * 4);
+    } else if (classe === 'Ocultista') {
+      peMax = (4 + atributos.PRE) + ((nivel - 1) * (4 + atributos.PRE));
+      sanMax = Math.floor(20 * redSanidade) + ((nivel - 1) * 5);
+    }
+  } else {
+    if (classe === 'Combatente') {
+      pvMax = (20 + atributos.VIG) + ((nivel - 1) * (4 + atributos.VIG));
+      peMax = (2 + atributos.PRE) + ((nivel - 1) * (2 + atributos.PRE));
+      sanMax = Math.floor(12 * redSanidade) + ((nivel - 1) * 3);
+    } else if (classe === 'Especialista') {
+      pvMax = (16 + atributos.VIG) + ((nivel - 1) * (3 + atributos.VIG));
+      peMax = (3 + atributos.PRE) + ((nivel - 1) * (3 + atributos.PRE));
+      sanMax = Math.floor(16 * redSanidade) + ((nivel - 1) * 4);
+    } else if (classe === 'Ocultista') {
+      pvMax = (12 + atributos.VIG) + ((nivel - 1) * (2 + atributos.VIG));
+      peMax = (4 + atributos.PRE) + ((nivel - 1) * (4 + atributos.PRE));
+      sanMax = Math.floor(20 * redSanidade) + ((nivel - 1) * 5);
+    }
   }
 
   // Regra 2: +1 PV por nível de NEX
@@ -89,6 +103,11 @@ export function calcularStatusBase(
   // Regra 7: +1 de Sanidade para cada 5% de NEX (ou seja, +1 por nível)
   if (temRegra(7)) {
     sanMax += nivel;
+  }
+
+  // Regra 24: +1 PE por nível de NEX
+  if (temRegra(24)) {
+    peMax += nivel;
   }
 
   // Regra 14: Diminui os PE iniciais em 1/3 (fica com 2/3)

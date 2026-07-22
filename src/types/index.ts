@@ -93,6 +93,7 @@ export interface PoderSlot {
   afinidade?: string;
   elemento?: string;
   categoria?: 'utilidade' | 'combate' | 'gerais' | 'paranormais' | 'trilha';
+  codigoRegra?: number | null;
 }
 
 export interface PoderesEscolhidos {

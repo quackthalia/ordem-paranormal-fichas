@@ -87,8 +87,8 @@ function PoderCard({
   }
 
   // DEBUG PARA PRE REQUISITO SANGUE 2
-  if (poder.Nome.includes("Anatomia Insana") || poder.Nome.includes("Sangue Fervente")) {
-    console.log("DEBUG PODER:", poder.Nome, "Pre_Codigo:", poder.Pre_Codigo, "Val:", val);
+  if (poder.Nome.includes("Anatomia Insana") || poder.Nome.includes("Sangue Fervente") || poder.Nome === "Proteção Pesada") {
+    console.log("DEBUG PODER:", poder.Nome, "Pre_Codigo:", poder.Pre_Codigo, "PreReqs:", poder.PreRequisitos, "NEX no Contexto:", contextoPrereq?.nex, "Val:", val);
   }
 
   const bloqueado = !val.atende;

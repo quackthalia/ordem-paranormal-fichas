@@ -88,6 +88,10 @@ interface RPGContextType {
   setDeslocM: React.Dispatch<React.SetStateAction<number>>;
   deslocQ: number;
   setDeslocQ: React.Dispatch<React.SetStateAction<number>>;
+  bonusDadosCondicionais: string;
+  setBonusDadosCondicionais: React.Dispatch<React.SetStateAction<string>>;
+  bonusDadosAtivos: string;
+  setBonusDadosAtivos: React.Dispatch<React.SetStateAction<string>>;
   regras: Record<string, boolean>;
   toggleRegra: (nome: string) => void;
   nivel: number;
@@ -148,6 +152,8 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const [skillCombatente2, setSkillCombatente2] = useState('');
   const [deslocM, setDeslocM] = useState(9);
   const [deslocQ, setDeslocQ] = useState(6);
+  const [bonusDadosCondicionais, setBonusDadosCondicionais] = useState('');
+  const [bonusDadosAtivos, setBonusDadosAtivos] = useState('');
   const [regras, setRegras] = useState<Record<string, boolean>>({});
   const [nivel, setNivel] = useState(1);
 
@@ -334,7 +340,15 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   // DEFESA
   // ============================================================
   const defOutrosBonusRegra4 = regrasAutomaticasAtivas.has(4) ? 2 : 0;
-  const defesaTotal = 10 + atributos.AGI + bonusAtributos.AGI + defEquip + defOutros + defOutrosBonusRegra4;
+  const defOutrosBonusRegra12 = regrasAutomaticasAtivas.has(12) ? 2 : 0;
+  
+  const temProtecaoPesada = protecoes.some(p => p.toLowerCase().includes('pesada'));
+  const defOutrosBonusRegra21 = (regrasAutomaticasAtivas.has(21) && temProtecaoPesada) ? 2 : 0;
+  
+  const temProtecaoLeve = protecoes.some(p => p.toLowerCase().includes('leve'));
+  const defOutrosBonusRegra25 = (regrasAutomaticasAtivas.has(25) && temProtecaoLeve) ? 2 : 0;
+
+  const defesaTotal = 10 + atributos.AGI + bonusAtributos.AGI + defEquip + defOutros + defOutrosBonusRegra4 + defOutrosBonusRegra12 + defOutrosBonusRegra21 + defOutrosBonusRegra25;
 
   // ============================================================
   // UTILITÁRIOS
@@ -364,8 +378,8 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   // Calcula status reais
   const { pvMax, peMax, sanMax, peTurno } = useMemo(() => {
     if (!classe) return { pvMax: 0, peMax: 0, sanMax: 0, peTurno: 0 };
-    return calcularStatusBase(classe, atributos, nivel, origensHook.origemSelecionada?.Codigo_Regra);
-  }, [classe, atributos, nivel, origensHook.origemSelecionada?.Codigo_Regra]);
+    return calcularStatusBase(classe, atributos, nivel, regrasAutomaticasAtivas);
+  }, [classe, atributos, nivel, regrasAutomaticasAtivas]);
 
   const value: RPGContextType = {
     telaAtual, setTelaAtual,
@@ -400,6 +414,8 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     skillCombatente2, setSkillCombatente2,
     deslocM, setDeslocM,
     deslocQ, setDeslocQ,
+    bonusDadosCondicionais, setBonusDadosCondicionais,
+    bonusDadosAtivos, setBonusDadosAtivos,
     regras, toggleRegra,
     nivel, setNivel,
     rituaisHook,

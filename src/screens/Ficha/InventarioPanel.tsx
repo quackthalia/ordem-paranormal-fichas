@@ -3,7 +3,7 @@ import { useRPG } from '../../context/RPGContext';
 import type { Patente, LimiteCredito } from '../../hooks/useInventario';
 
 export function InventarioPanel() {
-  const { inventarioHook, atributos } = useRPG();
+  const { inventarioHook, atributos, regrasAutomaticasAtivas } = useRPG();
   const {
     prestigio, setPrestigio,
     patente, setPatenteManual,
@@ -11,7 +11,7 @@ export function InventarioPanel() {
     limitesItens, setLimiteItemCategoria
   } = inventarioHook;
 
-  const cargaMaxima = 5 + (atributos.FOR * 5);
+  const cargaMaxima = 5 + (atributos.FOR * 5) + (regrasAutomaticasAtivas.has(23) ? 5 : 0);
   const cargaAtual = 0; // Por enquanto hardcoded
   const noInventario = [0, 0, 0, 0]; // Por enquanto hardcoded
 

@@ -222,13 +222,20 @@ function ProtecoesPanel() {
     sentidos, setSentidos,
     imunidades, setImunidades,
     vulnerabilidades, setVulnerabilidades,
+    origensHook, atributos
   } = useRPG();
   const [mostrarOutros, setMostrarOutros] = React.useState(false);
+
+  // REGRA 5: Resistência Mental +INT
+  const resistenciasExtras: string[] = [];
+  if (origensHook.origemSelecionada?.Codigo_Regra === 5) {
+    resistenciasExtras.push(`Mental ${atributos.INT}`);
+  }
 
   return (
     <div className="mt-6 flex w-full flex-col gap-5">
       <BadgeBlock titulo="Proteção" itens={protecoes} setItens={setProtecoes} />
-      <BadgeBlock titulo="Resistências" itens={resistencias} setItens={setResistencias} />
+      <BadgeBlock titulo="Resistências" itens={resistencias} setItens={setResistencias} itensExtras={resistenciasExtras} />
       <BadgeBlock titulo="Proficiências" itens={proficiencias} setItens={setProficiencias} />
       
       <button 
@@ -269,10 +276,12 @@ function BadgeBlock({
   titulo,
   itens,
   setItens,
+  itensExtras = []
 }: {
   titulo: string;
   itens: string[];
   setItens: React.Dispatch<React.SetStateAction<string[]>>;
+  itensExtras?: string[];
 }) {
   const [inputValue, setInputValue] = React.useState('');
 
@@ -294,8 +303,17 @@ function BadgeBlock({
           className="flex-1 border-b border-zinc-800 bg-transparent py-1 text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700"
         />
       </div>
-      {itens.length > 0 && (
+      {(itens.length > 0 || itensExtras.length > 0) && (
         <div className="flex flex-wrap gap-2 pl-[154px]">
+          {itensExtras.map((item, i) => (
+            <div
+              key={`extra-${i}`}
+              className="flex items-center gap-1.5 rounded border border-red-900/50 bg-red-950/20 px-2 py-1 text-sm font-bold text-red-400 max-w-full"
+              title="Fornecido por uma Regra"
+            >
+              <span className="break-all">{item}</span>
+            </div>
+          ))}
           {itens.map((item, i) => (
             <div
               key={i}

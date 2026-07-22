@@ -274,8 +274,8 @@ function ProtecoesPanel() {
   }
 
   // REGRA 18 e 19: Resistência 10 (ou 20) ao elemento escolhido
-  // O menu de escolha será exibido logo antes da lista de resistências
-  const { elementoRegra18, setElementoRegra18 } = useRPG();
+  const elementoRegra18 = Object.values(poderesHook.poderesEscolhidos || {}).find(p => p.codigoRegra === 18)?.elemento;
+
   if (regrasAutomaticasAtivas.has(18) && elementoRegra18) {
     const valorResistencia = regrasAutomaticasAtivas.has(19) ? 20 : 10;
     resistenciasExtras.push(`${elementoRegra18} ${valorResistencia}`);
@@ -306,25 +306,6 @@ function ProtecoesPanel() {
   return (
     <div className="mt-6 flex w-full flex-col gap-5">
       <BadgeBlock titulo="Proteção" itens={protecoes} setItens={setProtecoes} />
-
-      {/* Regra 18: Seletor de Elemento */}
-      {regrasAutomaticasAtivas.has(18) && (
-        <div className="flex flex-col gap-1 -mt-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Escolha o Elemento (Regra 18):</span>
-          <select 
-            value={elementoRegra18 || ''} 
-            onChange={e => setElementoRegra18(e.target.value)}
-            className="w-full rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm font-bold text-zinc-300 outline-none hover:border-red-900 focus:border-red-600 focus:bg-black"
-          >
-            <option value="" disabled>Selecione um elemento...</option>
-            <option value="Conhecimento">Conhecimento</option>
-            <option value="Energia">Energia</option>
-            <option value="Morte">Morte</option>
-            <option value="Sangue">Sangue</option>
-            <option value="Medo">Medo</option>
-          </select>
-        </div>
-      )}
 
       <BadgeBlock titulo="Resistências" itens={resistencias} setItens={setResistencias} itensExtras={resistenciasExtras} />
       <BadgeBlock titulo="Proficiências" itens={proficiencias} setItens={setProficiencias} itensExtras={proficienciasExtras} />

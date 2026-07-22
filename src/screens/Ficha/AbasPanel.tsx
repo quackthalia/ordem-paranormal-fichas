@@ -197,7 +197,10 @@ export const AbasPanel: React.FC = () => {
         const keyNum = parseInt(key, 10);
         if (!isNaN(keyNum) && keyNum >= 1000) return; // Ignora slots específicos da Progressão NEX
         
-        const nomeBase = p.nome.toLowerCase().startsWith('aprender ritual') ? 'aprender ritual' : p.nome.toLowerCase().trim();
+        const baseNomeStr = p.nome.toLowerCase().trim();
+        const isAprenderRitual = baseNomeStr.startsWith('aprender ritual');
+        const isResistir = baseNomeStr.startsWith('resistir a ');
+        const nomeBase = isAprenderRitual ? 'aprender ritual' : (isResistir ? 'resistir a <elemento>' : baseNomeStr);
         if (poderesParanormaisMap.has(nomeBase)) {
           delete novosPoderes[key as unknown as number];
           changed = true;
@@ -233,7 +236,10 @@ export const AbasPanel: React.FC = () => {
     const afinidadesAdquiridas: Record<string, string | number> = {};
 
     Object.entries(poderesEscolhidos).forEach(([key, p]) => {
-      const nomeBase = p.nome.toLowerCase().startsWith('aprender ritual') ? 'aprender ritual' : p.nome.toLowerCase().trim();
+      const baseNomeStr = p.nome.toLowerCase().trim();
+      const isAprenderRitual = baseNomeStr.startsWith('aprender ritual');
+      const isResistir = baseNomeStr.startsWith('resistir a ');
+      const nomeBase = isAprenderRitual ? 'aprender ritual' : (isResistir ? 'resistir a <elemento>' : baseNomeStr);
       const pp = poderesParanormaisMap.get(nomeBase);
       contagemPoderes[nomeBase] = (contagemPoderes[nomeBase] || 0) + 1;
       
@@ -361,10 +367,11 @@ export const AbasPanel: React.FC = () => {
         const escolhido = poderesEscolhidos[nivelPatamar];
         if (escolhido) {
           const isAprenderRitual = escolhido.nome.toLowerCase().startsWith('aprender ritual (');
-          const nomePoderBase = isAprenderRitual ? 'aprender ritual' : escolhido.nome.toLowerCase();
+          const isResistir = escolhido.nome.toLowerCase().startsWith('resistir a ');
+          const nomePoderBase = isAprenderRitual ? 'aprender ritual' : (isResistir ? 'resistir a <elemento>' : escolhido.nome.toLowerCase().trim());
           const pp = poderesParanormaisMap.get(nomePoderBase);
           
-          let elementoDoPoder = pp?.Elemento;
+          let elementoDoPoder = escolhido.elemento || pp?.Elemento;
           if (isAprenderRitual) {
             const ra = rituaisHook.rituaisAprendidos?.find(r => r.origem === `poder_57_${nivel}`);
             if (ra) {
@@ -420,10 +427,11 @@ export const AbasPanel: React.FC = () => {
         const escolhido = poderesEscolhidos[nivelPatamar];
         if (escolhido) {
           const isAprenderRitual = escolhido.nome.toLowerCase().startsWith('aprender ritual (');
-          const nomePoderBase = isAprenderRitual ? 'aprender ritual' : escolhido.nome.toLowerCase();
+          const isResistir = escolhido.nome.toLowerCase().startsWith('resistir a ');
+          const nomePoderBase = isAprenderRitual ? 'aprender ritual' : (isResistir ? 'resistir a <elemento>' : escolhido.nome.toLowerCase().trim());
           const pp = poderesParanormaisMap.get(nomePoderBase);
           
-          let elementoDoPoder = pp?.Elemento;
+          let elementoDoPoder = escolhido.elemento || pp?.Elemento;
           if (isAprenderRitual) {
             const ra = rituaisHook.rituaisAprendidos?.find(r => r.origem === `poder_57_${nivel}`);
             if (ra) {
@@ -477,10 +485,11 @@ export const AbasPanel: React.FC = () => {
       if (String(key).startsWith('extra_') && key !== 'extra_regra1') {
         const escolhido = poderesEscolhidos[key];
         const isAprenderRitual = escolhido.nome.toLowerCase().startsWith('aprender ritual (');
-        const nomePoderBase = isAprenderRitual ? 'aprender ritual' : escolhido.nome.toLowerCase();
+        const isResistir = escolhido.nome.toLowerCase().startsWith('resistir a ');
+        const nomePoderBase = isAprenderRitual ? 'aprender ritual' : (isResistir ? 'resistir a <elemento>' : escolhido.nome.toLowerCase().trim());
         const pp = poderesParanormaisMap.get(nomePoderBase);
         
-        let elementoDoPoder = pp?.Elemento;
+        let elementoDoPoder = escolhido.elemento || pp?.Elemento;
         if (isAprenderRitual) {
           const ra = rituaisHook.rituaisAprendidos?.find(r => r.origem === `poder_57_${key}`);
           if (ra) {
@@ -531,10 +540,11 @@ export const AbasPanel: React.FC = () => {
       const escolhido = poderesEscolhidos[chave];
       if (escolhido) {
         const isAprenderRitual = escolhido.nome.toLowerCase().startsWith('aprender ritual (');
-        const nomePoderBase = isAprenderRitual ? 'aprender ritual' : escolhido.nome.toLowerCase();
+        const isResistir = escolhido.nome.toLowerCase().startsWith('resistir a ');
+        const nomePoderBase = isAprenderRitual ? 'aprender ritual' : (isResistir ? 'resistir a <elemento>' : escolhido.nome.toLowerCase().trim());
         const pp = poderesParanormaisMap.get(nomePoderBase);
         
-        let elementoDoPoder = pp?.Elemento;
+        let elementoDoPoder = escolhido.elemento || pp?.Elemento;
         if (isAprenderRitual) {
           const ra = rituaisHook.rituaisAprendidos?.find(r => r.origem === `poder_57_${chave}`);
           if (ra) {
@@ -936,7 +946,8 @@ export const AbasPanel: React.FC = () => {
                                         const escolhido = poderesEscolhidos[nivel as any];
                                         if (escolhido) {
                                           const nomePoder = escolhido.nome.toLowerCase();
-                                          const baseName = nomePoder.startsWith('aprender ritual (') ? 'aprender ritual' : nomePoder;
+                                          const isResistir = nomePoder.startsWith('resistir a ');
+                                          const baseName = nomePoder.startsWith('aprender ritual (') ? 'aprender ritual' : (isResistir ? 'resistir a <elemento>' : nomePoder);
                                           const isParanormal = poderesParanormaisMap.has(baseName) || baseName === 'aprender ritual';
                                           
                                           if (isParanormal) {
@@ -1566,7 +1577,8 @@ export const AbasPanel: React.FC = () => {
               const key = isNaN(chaveNum) ? chave : chaveNum;
               const poderAtual = poderesEscolhidos[key];
               if (poderAtual) {
-                const baseName = poderAtual.nome.toLowerCase().startsWith('aprender ritual (') ? 'aprender ritual' : poderAtual.nome.toLowerCase();
+                const baseNameStr = poderAtual.nome.toLowerCase().trim();
+                const baseName = baseNameStr.startsWith('aprender ritual (') ? 'aprender ritual' : (baseNameStr.startsWith('resistir a ') ? 'resistir a <elemento>' : baseNameStr);
                 const ppBase = poderesParanormais.find(p => p.Nome.toLowerCase() === baseName);
                 if (ppBase) {
                   poderesHook.escolherPoder(key as number, {

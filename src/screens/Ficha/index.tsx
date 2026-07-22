@@ -167,15 +167,16 @@ function DefesaPanel() {
                 type="number"
                 onKeyDown={bloquearLetras}
                 value={(() => {
-                  const bonus = origensHook.origemSelecionada?.Codigo_Regra === 4 ? 2 : 0;
-                  return defOutros + bonus || '';
+                  // REGRA 4 e 12: +2 na defesa
+                  const defOutrosBonusRegra = (origensHook.origemSelecionada?.Codigo_Regra === 4 || origensHook.origemSelecionada?.Codigo_Regra === 12) ? 2 : 0;
+                  return defOutros + defOutrosBonusRegra || '';
                 })()}
                 placeholder="0"
                 title="Outros bônus de defesa"
                 onChange={e => {
                   const valDigitado = Math.max(0, Number(e.target.value));
-                  const bonus = origensHook.origemSelecionada?.Codigo_Regra === 4 ? 2 : 0;
-                  setDefOutros(Math.max(0, valDigitado - bonus));
+                  const defOutrosBonusRegra = (origensHook.origemSelecionada?.Codigo_Regra === 4 || origensHook.origemSelecionada?.Codigo_Regra === 12) ? 2 : 0;
+                  setDefOutros(Math.max(0, valDigitado - defOutrosBonusRegra));
                 }}
                 className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-red-600"
               />

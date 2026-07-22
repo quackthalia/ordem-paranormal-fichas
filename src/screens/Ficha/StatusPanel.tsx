@@ -18,6 +18,7 @@ export const StatusPanel: React.FC = () => {
     afinidadeEscolhida, setAfinidadeEscolhida,
     afinidadeAtiva,
     poderesHook,
+    origensHook,
   } = useRPG();
 
   const regraNexExperiencia = regras['nex_experiencia'];
@@ -190,9 +191,14 @@ export const StatusPanel: React.FC = () => {
           <div className="flex h-9 items-center justify-center rounded border border-zinc-600 px-2.5 text-base font-bold text-zinc-100">
             <input
               type="number"
-              value={deslocM}
+              value={(() => {
+                const bonusDeslocRegra12 = origensHook.origemSelecionada?.Codigo_Regra === 12 ? 3 : 0;
+                return deslocM + bonusDeslocRegra12;
+              })()}
               onChange={(e) => {
-                const m = Number(e.target.value);
+                const bonusDeslocRegra12 = origensHook.origemSelecionada?.Codigo_Regra === 12 ? 3 : 0;
+                const totalM = Number(e.target.value);
+                const m = totalM - bonusDeslocRegra12;
                 setDeslocM(m);
                 setDeslocQ(Math.floor(m / 1.5));
               }}
@@ -201,9 +207,16 @@ export const StatusPanel: React.FC = () => {
             <span className="text-sm text-zinc-400">m /</span>
             <input
               type="number"
-              value={deslocQ}
+              value={(() => {
+                const bonusDeslocRegra12 = origensHook.origemSelecionada?.Codigo_Regra === 12 ? 3 : 0;
+                const bonusDeslocQ = Math.floor(bonusDeslocRegra12 / 1.5);
+                return deslocQ + bonusDeslocQ;
+              })()}
               onChange={(e) => {
-                const q = Number(e.target.value);
+                const bonusDeslocRegra12 = origensHook.origemSelecionada?.Codigo_Regra === 12 ? 3 : 0;
+                const bonusDeslocQ = Math.floor(bonusDeslocRegra12 / 1.5);
+                const totalQ = Number(e.target.value);
+                const q = totalQ - bonusDeslocQ;
                 setDeslocQ(q);
                 setDeslocM(q * 1.5);
               }}

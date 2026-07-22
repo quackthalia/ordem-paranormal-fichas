@@ -19,10 +19,10 @@ export function InventarioPanel() {
   const creditosDisponiveis: LimiteCredito[] = ['Baixo', 'Médio', 'Alto', 'Ilimitado'];
 
   return (
-    <div className="flex flex-col gap-5 p-2 font-sans text-zinc-300 w-full">
+    <div className="flex flex-col gap-5 p-4 font-sans text-zinc-300 w-full">
       
       {/* LINHA 1: Prestígio e Patente */}
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+      <div className="flex items-center gap-8">
         <div className="flex items-center gap-3">
           <label className="text-sm font-bold uppercase tracking-wider text-zinc-400">Pontos de Prestígio</label>
           <input
@@ -48,8 +48,8 @@ export function InventarioPanel() {
       </div>
 
       {/* LINHA 2: Limites de Itens */}
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-        <label className="text-sm font-bold uppercase tracking-wider text-zinc-400 w-auto min-w-[140px] text-left sm:text-right">Limite de Itens</label>
+      <div className="flex items-center gap-4">
+        <label className="text-sm font-bold uppercase tracking-wider text-zinc-400 w-32">Limite de Itens</label>
         <div className="flex gap-2">
           {limitesItens.map((limite, index) => (
             <input
@@ -65,8 +65,8 @@ export function InventarioPanel() {
       </div>
 
       {/* LINHA 3: No Inventário */}
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-        <label className="text-sm font-bold uppercase tracking-wider text-zinc-400 w-auto min-w-[140px] text-left sm:text-right">No Inventário</label>
+      <div className="flex items-center gap-4">
+        <label className="text-sm font-bold uppercase tracking-wider text-zinc-400 w-32">No Inventário</label>
         <div className="flex gap-2">
           {noInventario.map((qtd, index) => (
             <div
@@ -80,9 +80,9 @@ export function InventarioPanel() {
       </div>
 
       {/* LINHA 4: Limite de Crédito e Carga Máxima */}
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+      <div className="flex items-center gap-8">
         <div className="flex items-center gap-3">
-          <label className="text-sm font-bold uppercase tracking-wider text-zinc-400 w-auto min-w-[140px] text-left sm:text-right">Limite de Crédito</label>
+          <label className="text-sm font-bold uppercase tracking-wider text-zinc-400 w-32">Limite de Crédito</label>
           <select
             value={credito}
             onChange={(e) => setCreditoOverride(e.target.value as LimiteCredito)}

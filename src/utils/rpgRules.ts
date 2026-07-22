@@ -79,6 +79,11 @@ export function calcularStatusBase(
     peTurno += 1;
   }
 
+  // Regra 7: +1 de Sanidade para cada 5% de NEX (ou seja, +1 por nível)
+  if (codigoRegra === 7) {
+    sanMax += nivel;
+  }
+
   return { pvMax, peMax, sanMax, peTurno };
 }
 

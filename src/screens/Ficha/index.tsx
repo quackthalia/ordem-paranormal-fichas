@@ -227,9 +227,13 @@ function ProtecoesPanel() {
   const [mostrarOutros, setMostrarOutros] = React.useState(false);
 
   // REGRA 5: Resistência Mental +INT
-  const resistenciasExtras: string[] = [];
-  if (origensHook.origemSelecionada?.Codigo_Regra === 5) {
+  const codigoRegra = origensHook.origemSelecionada?.Codigo_Regra;
+  const resistenciasExtras = [];
+  if (codigoRegra === 5) {
     resistenciasExtras.push(`Mental ${atributos.INT}`);
+  }
+  if (codigoRegra === 9) {
+    resistenciasExtras.push('Dano 2');
   }
 
   return (

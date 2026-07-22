@@ -177,7 +177,7 @@ function DefesaPanel() {
                   const bonus = origensHook.origemSelecionada?.Codigo_Regra === 4 ? 2 : 0;
                   setDefOutros(Math.max(0, valDigitado - bonus));
                 }}
-                className={`w-10 border-b bg-transparent text-center font-bold outline-none focus:border-red-600 ${origensHook.origemSelecionada?.Codigo_Regra === 4 ? 'text-red-400 border-red-900/50' : 'border-zinc-600 text-zinc-100'}`}
+                className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-red-600"
               />
               <span className="absolute top-full text-[9px] uppercase tracking-wider text-zinc-500 mt-0.5">Outros</span>
             </div>

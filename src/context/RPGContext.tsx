@@ -319,7 +319,8 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   // ============================================================
   // DEFESA
   // ============================================================
-  const defesaTotal = 10 + atributos.AGI + bonusAtributos.AGI + defEquip + defOutros;
+  const defOutrosBonusRegra4 = origensHook.origemSelecionada?.Codigo_Regra === 4 ? 2 : 0;
+  const defesaTotal = 10 + atributos.AGI + bonusAtributos.AGI + defEquip + defOutros + defOutrosBonusRegra4;
 
   // ============================================================
   // UTILITÁRIOS

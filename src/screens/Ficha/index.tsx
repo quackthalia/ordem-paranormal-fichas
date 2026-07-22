@@ -113,7 +113,7 @@ function AtributosFicha() {
 // COMPONENTE INTERNO: DEFESA
 // ============================================================
 function DefesaPanel() {
-  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras, periciasHook, atributos } = useRPG();
+  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras, periciasHook, atributos, origensHook } = useRPG();
 
   const [bloqueio, setBloqueio] = React.useState(0);
   const [esquiva, setEsquiva] = React.useState(0);
@@ -166,11 +166,18 @@ function DefesaPanel() {
               <input
                 type="number"
                 onKeyDown={bloquearLetras}
-                value={defOutros || ''}
+                value={(() => {
+                  const bonus = origensHook.origemSelecionada?.Codigo_Regra === 4 ? 2 : 0;
+                  return defOutros + bonus || '';
+                })()}
                 placeholder="0"
                 title="Outros bônus de defesa"
-                onChange={e => setDefOutros(Math.max(0, Number(e.target.value)))}
-                className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-red-600"
+                onChange={e => {
+                  const valDigitado = Math.max(0, Number(e.target.value));
+                  const bonus = origensHook.origemSelecionada?.Codigo_Regra === 4 ? 2 : 0;
+                  setDefOutros(Math.max(0, valDigitado - bonus));
+                }}
+                className={`w-10 border-b bg-transparent text-center font-bold outline-none focus:border-red-600 ${origensHook.origemSelecionada?.Codigo_Regra === 4 ? 'text-red-400 border-red-900/50' : 'border-zinc-600 text-zinc-100'}`}
               />
               <span className="absolute top-full text-[9px] uppercase tracking-wider text-zinc-500 mt-0.5">Outros</span>
             </div>

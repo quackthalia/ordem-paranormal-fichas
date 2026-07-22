@@ -89,6 +89,11 @@ export function calcularStatusBase(
     sanMax += nivel;
   }
 
+  // Regra 14: Diminui os PE iniciais em 1/3 (fica com 2/3)
+  if (codigoRegra === 14) {
+    peMax = Math.floor(peMax * (2 / 3));
+  }
+
   return { pvMax, peMax, sanMax, peTurno };
 }
 
@@ -146,18 +151,26 @@ export function obterLimiteCirculos(nex: number): LimiteCirculos {
 export function calcularPD(
   classe: ClasseRPG,
   atributos: Atributos,
-  nivel: number
+  nivel: number,
+  codigoRegra?: number | null
 ): number {
   const pre = atributos.PRE;
+  let pd = 0;
 
   if (classe === 'Combatente') {
-    return (6 + pre) + ((nivel - 1) * (3 + pre));
+    pd = (6 + pre) + ((nivel - 1) * (3 + pre));
   } else if (classe === 'Especialista') {
-    return (8 + pre) + ((nivel - 1) * (4 + pre));
+    pd = (8 + pre) + ((nivel - 1) * (4 + pre));
   } else if (classe === 'Ocultista') {
-    return (10 + pre) + ((nivel - 1) * (5 + pre));
+    pd = (10 + pre) + ((nivel - 1) * (5 + pre));
   }
-  return 0;
+
+  // Regra 14: Diminui os PE (e PD) iniciais em 1/3 (fica com 2/3)
+  if (codigoRegra === 14) {
+    pd = Math.floor(pd * (2 / 3));
+  }
+
+  return pd;
 }
 
 /** Limites de perícias por classe/nex */

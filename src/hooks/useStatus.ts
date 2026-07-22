@@ -78,7 +78,7 @@ export function useStatus(
   const calcMaxSan = Math.max(0, baseStatus.sanMax - paranormalPenalty);
   const peTurno = baseStatus.peTurno;
 
-  const calcMaxPd = Math.max(0, calcularPD(classe, atributos, nivel) - paranormalPenalty);
+  const calcMaxPd = Math.max(0, calcularPD(classe, atributos, nivel, codigoRegra) - paranormalPenalty);
 
   // Efeito de sincronização (mesma lógica do original, mas sem -1)
   useEffect(() => {

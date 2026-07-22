@@ -223,7 +223,7 @@ function ProtecoesPanel() {
     sentidos, setSentidos,
     imunidades, setImunidades,
     vulnerabilidades, setVulnerabilidades,
-    origensHook, atributos, poderesHook, rituaisHook
+    origensHook, atributos, poderesHook, rituaisHook, periciasHook
   } = useRPG();
   const [mostrarOutros, setMostrarOutros] = React.useState(false);
 
@@ -253,6 +253,16 @@ function ProtecoesPanel() {
     });
     const rdMental = 2 + Math.floor(qtdSangue / 2);
     resistenciasExtras.push(`Mental ${rdMental}`);
+  }
+
+  // REGRA 15: Resistência Mental igual a metade de Intimidação (Treino + Outros), arredondado pra cima
+  if (codigoRegra === 15) {
+    const intimida = periciasHook.pericias['Intimidação'];
+    if (intimida) {
+      const bonus = intimida.treino + intimida.outros;
+      const rdMental = Math.ceil(bonus / 2);
+      resistenciasExtras.push(`Mental ${rdMental}`);
+    }
   }
 
   return (

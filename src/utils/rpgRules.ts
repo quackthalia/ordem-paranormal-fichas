@@ -66,6 +66,11 @@ export function calcularStatusBase(
     sanMax = Math.floor(20 * redSanidade) + ((nivel - 1) * 5);
   }
 
+  // Regra 2: +1 PV por nível de NEX
+  if (codigoRegra === 2) {
+    pvMax += nivel;
+  }
+
   return { pvMax, peMax, sanMax, peTurno: nivel };
 }
 

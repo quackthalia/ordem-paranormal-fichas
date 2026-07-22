@@ -394,36 +394,36 @@ function BadgeBlock({
           className="flex-1 border-b border-zinc-800 bg-transparent py-1 text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700"
         />
       </div>
-      {(itens.length > 0 || itensExtras.length > 0) && (
-        <div className="flex flex-wrap gap-2 pl-[154px]">
-          {[...itensExtras].sort((a, b) => a.localeCompare(b)).map((item, i) => (
-            <div
-              key={`extra-${i}`}
-              className="flex items-center gap-1.5 rounded border bg-zinc-900 px-2 py-1 text-sm text-zinc-100 max-w-full"
-              style={{ borderColor: obterCorBadge(item) }}
-              title="Fornecido por uma Regra (não pode ser apagado, mas você pode adicionar outros selos para somar)"
-            >
-              <span className="break-all">{item}</span>
-            </div>
-          ))}
-          {itens.map((item, index) => ({ item, index })).sort((a, b) => a.item.localeCompare(b.item)).map(({ item, index }) => (
-            <div
-              key={index}
-              className="flex items-center gap-1.5 rounded border bg-zinc-900 px-2 py-1 text-sm text-zinc-100 max-w-full"
-              style={{ borderColor: obterCorBadge(item) }}
-            >
-              <span className="break-all">{item}</span>
-              <button
-                onClick={() => setItens(itens.filter((_, j) => j !== index))}
-                className="px-0.5 text-zinc-500 transition hover:text-red-500"
-                title="Remover"
+      {(itens.length > 0 || itensExtras.length > 0) && (() => {
+        const todosItens = [
+          ...itensExtras.map((text, i) => ({ text, isExtra: true, originalIndex: i, id: `extra-${i}` })),
+          ...itens.map((text, i) => ({ text, isExtra: false, originalIndex: i, id: `normal-${i}` }))
+        ].sort((a, b) => a.text.localeCompare(b.text));
+
+        return (
+          <div className="flex flex-wrap gap-2 pl-[154px]">
+            {todosItens.map(item => (
+              <div
+                key={item.id}
+                className="flex items-center gap-1.5 rounded border bg-zinc-900 px-2 py-1 text-sm text-zinc-100 max-w-full"
+                style={{ borderColor: obterCorBadge(item.text) }}
+                title={item.isExtra ? "Fornecido por uma Regra (não pode ser apagado)" : undefined}
               >
-                ✕
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+                <span className="break-all">{item.text}</span>
+                {!item.isExtra && (
+                  <button
+                    onClick={() => setItens(itens.filter((_, j) => j !== item.originalIndex))}
+                    className="px-0.5 text-zinc-500 transition hover:text-red-500"
+                    title="Remover"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        );
+      })()}
     </div>
   );
 }

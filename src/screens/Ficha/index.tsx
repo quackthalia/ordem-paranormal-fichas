@@ -308,8 +308,9 @@ function BadgeBlock({
           {itensExtras.map((item, i) => (
             <div
               key={`extra-${i}`}
-              className="flex items-center gap-1.5 rounded border border-red-900/50 bg-red-950/20 px-2 py-1 text-sm font-bold text-red-400 max-w-full"
-              title="Fornecido por uma Regra"
+              className="flex items-center gap-1.5 rounded border bg-zinc-900 px-2 py-1 text-sm text-zinc-100 max-w-full"
+              style={{ borderColor: obterCorBadge(item) }}
+              title="Fornecido por uma Regra (não pode ser apagado, mas você pode adicionar outros selos para somar)"
             >
               <span className="break-all">{item}</span>
             </div>

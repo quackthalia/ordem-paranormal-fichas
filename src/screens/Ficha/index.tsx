@@ -395,10 +395,23 @@ function BadgeBlock({
         />
       </div>
       {(itens.length > 0 || itensExtras.length > 0) && (() => {
+        const ordemCustomizada: Record<string, number> = {
+          'armas simples': 1,
+          'armas táticas': 2,
+          'armas pesadas': 3,
+          'proteções leves': 4,
+          'proteções pesadas': 5
+        };
+
         const todosItens = [
           ...itensExtras.map((text, i) => ({ text, isExtra: true, originalIndex: i, id: `extra-${i}` })),
           ...itens.map((text, i) => ({ text, isExtra: false, originalIndex: i, id: `normal-${i}` }))
-        ].sort((a, b) => a.text.localeCompare(b.text));
+        ].sort((a, b) => {
+          const pesoA = ordemCustomizada[a.text.toLowerCase()] || 99;
+          const pesoB = ordemCustomizada[b.text.toLowerCase()] || 99;
+          if (pesoA !== pesoB) return pesoA - pesoB;
+          return a.text.localeCompare(b.text);
+        });
 
         return (
           <div className="flex flex-wrap gap-2 pl-[154px]">

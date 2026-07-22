@@ -1031,8 +1031,17 @@ export const AbasPanel: React.FC = () => {
             }
           }
 
+          // 2.5 Calcular slot de Origem (Regra 16)
+          const slotsOrigemPendentesList: { chave?: string, index: number, nex: number, maxCirculo: number, isOcultista: boolean, isOrigem?: boolean }[] = [];
+          if (origensHook.origemSelecionada?.Codigo_Regra === 16) {
+            const pego = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'origem_16');
+            if (!pego) {
+              slotsOrigemPendentesList.push({ chave: 'origem_16', index: 999, nex: 0, maxCirculo: 1, isOcultista: false, isOrigem: true });
+            }
+          }
+
           // 3. Desbloqueio Cronológico por Círculo
-          const allRitualSlots = [...slotsPoderPendentesList, ...slotsOcultistaPendentesList];
+          const allRitualSlots = [...slotsPoderPendentesList, ...slotsOcultistaPendentesList, ...slotsOrigemPendentesList];
           const sortedSlots = allRitualSlots.sort((a, b) => {
              if (a.nex !== b.nex) return a.nex - b.nex;
              if (a.isOcultista && !b.isOcultista) return -1;
@@ -1151,13 +1160,14 @@ export const AbasPanel: React.FC = () => {
                           );
                         } else {
                           const chave = (slot as any).chave;
-                          const isExtra = chave.startsWith('extra_');
-                          const nivelNum = isExtra ? nex : parseInt(chave, 10);
-                          const labelNex = regras['nex_experiencia'] ? `Poder Nível ${calcularNivel(nivelNum)}` : `Poder NEX ${nivelNum}%`;
+                          const isOrigemSlot = (slot as any).isOrigem;
+                          const isExtra = chave?.startsWith('extra_');
+                          const nivelNum = isOrigemSlot ? 0 : (isExtra ? nex : parseInt(chave || '0', 10));
+                          const labelNex = isOrigemSlot ? 'Poder da Origem' : (regras['nex_experiencia'] ? `Poder Nível ${calcularNivel(nivelNum)}` : `Poder NEX ${nivelNum}%`);
                           return (
                             <div
                               key={`vazio_poder_${chave}_${idx}`}
-                              onClick={() => setEscolhendoRitualPlaceholder({ origem: `poder_57_${chave}`, nex: isExtra ? nex : nivelNum })}
+                              onClick={() => setEscolhendoRitualPlaceholder({ origem: isOrigemSlot ? chave : `poder_57_${chave}`, nex: isOrigemSlot ? 0 : (isExtra ? nex : nivelNum) })}
                               className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-red-800 hover:bg-zinc-900/80"
                               style={{ borderLeftStyle: 'solid' }}
                             >

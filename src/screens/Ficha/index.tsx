@@ -265,11 +265,44 @@ function ProtecoesPanel() {
     }
   }
 
+  // REGRA 18: Resistência 10 ao elemento escolhido
+  // O menu de escolha será exibido logo antes da lista de resistências
+  const { elementoRegra18, setElementoRegra18 } = useRPG();
+  if (codigoRegra === 18 && elementoRegra18) {
+    resistenciasExtras.push(`${elementoRegra18} 10`);
+  }
+
+  // REGRA 17: Adiciona "Armas Pesadas" em Proficiências
+  const proficienciasExtras = [];
+  if (codigoRegra === 17) {
+    proficienciasExtras.push('Armas Pesadas');
+  }
+
   return (
     <div className="mt-6 flex w-full flex-col gap-5">
       <BadgeBlock titulo="Proteção" itens={protecoes} setItens={setProtecoes} />
+
+      {/* Regra 18: Seletor de Elemento */}
+      {codigoRegra === 18 && (
+        <div className="flex flex-col gap-1 -mt-2">
+          <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Escolha o Elemento (Regra 18):</span>
+          <select 
+            value={elementoRegra18 || ''} 
+            onChange={e => setElementoRegra18(e.target.value)}
+            className="w-full rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm font-bold text-zinc-300 outline-none hover:border-red-900 focus:border-red-600 focus:bg-black"
+          >
+            <option value="" disabled>Selecione um elemento...</option>
+            <option value="Conhecimento">Conhecimento</option>
+            <option value="Energia">Energia</option>
+            <option value="Morte">Morte</option>
+            <option value="Sangue">Sangue</option>
+            <option value="Medo">Medo</option>
+          </select>
+        </div>
+      )}
+
       <BadgeBlock titulo="Resistências" itens={resistencias} setItens={setResistencias} itensExtras={resistenciasExtras} />
-      <BadgeBlock titulo="Proficiências" itens={proficiencias} setItens={setProficiencias} />
+      <BadgeBlock titulo="Proficiências" itens={proficiencias} setItens={setProficiencias} itensExtras={proficienciasExtras} />
       
       <button 
         onClick={() => setMostrarOutros(!mostrarOutros)}

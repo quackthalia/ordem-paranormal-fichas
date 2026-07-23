@@ -100,7 +100,7 @@ export const ModalRituaisExtra: React.FC<ModalRituaisExtraProps> = ({
   const elementos = ['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo'];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
       <div className="flex h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50" onClick={e => e.stopPropagation()}>
         
         {/* Header */}

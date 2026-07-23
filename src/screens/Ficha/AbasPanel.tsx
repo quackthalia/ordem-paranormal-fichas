@@ -21,6 +21,8 @@ import {
 import { ModalPoderes } from '../../components/ModalPoderes';
 import { ToolbarFormato } from '../../components/ToolbarFormato';
 import { ModalPoderesExtra } from '../../components/ModalPoderesExtra';
+import { ModalPoderOutraClasse } from '../../components/ModalPoderOutraClasse';
+import { ModalPoderOutraOrigem } from '../../components/ModalPoderOutraOrigem';
 import { ProgressaoNEXPanel } from './ProgressaoNEXPanel';
 import { InventarioPanel } from './InventarioPanel';
 // ═══════════════════════════════════════════════════════════════
@@ -162,6 +164,8 @@ export const AbasPanel: React.FC = () => {
   const [modalVersatilidadeAberto, setModalVersatilidadeAberto] = React.useState(false);
   const [modalExtraAberto, setModalExtraAberto] = React.useState(false);
   const [modalRituaisExtraAberto, setModalRituaisExtraAberto] = React.useState(false);
+  const [modalPoderOutraClasseAberto, setModalPoderOutraClasseAberto] = React.useState(false);
+  const [modalPoderOutraOrigemAberto, setModalPoderOutraOrigemAberto] = React.useState(false);
   const [filtroRituais, setFiltroRituais] = React.useState('');
   const [editandoTrilha, setEditandoTrilha] = React.useState(false);
   const [editandoVersatilidade, setEditandoVersatilidade] = React.useState(false);
@@ -176,8 +180,17 @@ export const AbasPanel: React.FC = () => {
     const handler = (e: any) => {
       setEscolhendoRitualPlaceholder({ origem: `poder_57_${e.detail.nex}`, nex: e.detail.nex });
     };
+    const handleAbrirModalOutraClasse = () => setModalPoderOutraClasseAberto(true);
+    const handleAbrirModalOutraOrigem = () => setModalPoderOutraOrigemAberto(true);
+
     window.addEventListener('abrirModalRituais', handler);
-    return () => window.removeEventListener('abrirModalRituais', handler);
+    window.addEventListener('abrirModalOutraClasse', handleAbrirModalOutraClasse);
+    window.addEventListener('abrirModalOutraOrigem', handleAbrirModalOutraOrigem);
+    return () => {
+      window.removeEventListener('abrirModalRituais', handler);
+      window.removeEventListener('abrirModalOutraClasse', handleAbrirModalOutraClasse);
+      window.removeEventListener('abrirModalOutraOrigem', handleAbrirModalOutraOrigem);
+    };
   }, []);
 
   const poderesParanormaisMap = React.useMemo(() => {
@@ -268,6 +281,16 @@ export const AbasPanel: React.FC = () => {
         subPoder: null,
         categoria: 'origem',
       });
+    }
+
+    // Regra 32 (Flashback) logo abaixo da origem
+    if (regrasAutomaticasAtivas.has(32)) {
+      const usouRegra32 = poderesEscolhidos['extra_regra32'];
+      if (usouRegra32) {
+         lista.push({ id: 'extra_regra32', nome: usouRegra32.nome, descricao: usouRegra32.descricao, tipo: 'Flashback', categoria: 'origem', fonte: usouRegra32.fonte, preRequisitos: usouRegra32.preRequisitos, elemento: usouRegra32.elemento, afinidade: usouRegra32.afinidade });
+      } else {
+         lista.push({ id: 'escolha_extra_regra32', nome: 'Escolher Poder de Outra Origem', descricao: 'Clique no "+" para abrir a lista e selecionar seu poder de origem.', tipo: 'Flashback', isSlotVazio: true, nexDoSlot: 0, categoria: 'origem' });
+      }
     }
 
     // 1.1 Poder Extra da Origem (Regra 1)
@@ -484,7 +507,7 @@ export const AbasPanel: React.FC = () => {
 
     // 5. Poderes Extras
     Object.keys(poderesEscolhidos).forEach(key => {
-      if (String(key).startsWith('extra_') && key !== 'extra_regra1') {
+      if (String(key).startsWith('extra_') && key !== 'extra_regra1' && key !== 'extra_regra31' && key !== 'extra_regra32') {
         const escolhido = poderesEscolhidos[key];
         const isAprenderRitual = escolhido.nome.toLowerCase().startsWith('aprender ritual (');
         const isResistir = escolhido.nome.toLowerCase().startsWith('resistir a ');
@@ -594,17 +617,32 @@ export const AbasPanel: React.FC = () => {
           });
         }
       }
-    });
+      });
+
+      // --- REGRAS 31 e 32 (Poderes Extras) ---
+      if (regrasAutomaticasAtivas.has(31)) {
+        const usouRegra31 = poderesEscolhidos['extra_regra31'];
+        if (usouRegra31) {
+           lista.push({ id: 'extra_regra31', nome: usouRegra31.nome, descricao: usouRegra31.descricao, tipo: 'Especialista Diletante', categoria: 'gerais', fonte: usouRegra31.fonte, preRequisitos: usouRegra31.preRequisitos, elemento: usouRegra31.elemento, afinidade: usouRegra31.afinidade });
+        } else {
+           lista.push({ id: 'escolha_extra_regra31', nome: 'Escolher Poder de Outra Classe', descricao: 'Clique no "+" para abrir a lista e selecionar seu poder extra.', tipo: 'Especialista Diletante', isSlotVazio: true, nexDoSlot: 0, categoria: 'gerais' });
+        }
+      }
+
+
+
     // Desbloqueio Cronológico: Separado por Combate e Utilidade/Trilha
     const slotsVazios = lista.filter(h => h.isSlotVazio && h.nexDoSlot !== undefined);
     if (slotsVazios.length > 0) {
       const vaziosCombate = slotsVazios.filter(h => h.categoria === 'combate');
       const vaziosUtilidade = slotsVazios.filter(h => h.categoria === 'utilidade');
       const vaziosTrilha = slotsVazios.filter(h => h.categoria === 'trilha');
+      const vaziosGerais = slotsVazios.filter(h => h.categoria === 'gerais');
       
       const menorNexCombate = vaziosCombate.length > 0 ? Math.min(...vaziosCombate.map(h => h.nexDoSlot!)) : Infinity;
       const menorNexUtilidade = vaziosUtilidade.length > 0 ? Math.min(...vaziosUtilidade.map(h => h.nexDoSlot!)) : Infinity;
       const menorNexTrilha = vaziosTrilha.length > 0 ? Math.min(...vaziosTrilha.map(h => h.nexDoSlot!)) : Infinity;
+      const menorNexGerais = vaziosGerais.length > 0 ? Math.min(...vaziosGerais.map(h => h.nexDoSlot!)) : Infinity;
       
       lista = lista.filter(h => {
         if (h.isSlotVazio && h.nexDoSlot !== undefined) {
@@ -614,6 +652,8 @@ export const AbasPanel: React.FC = () => {
             return h.nexDoSlot <= menorNexUtilidade;
           } else if (h.categoria === 'trilha') {
             return h.nexDoSlot <= menorNexTrilha;
+          } else if (h.categoria === 'gerais') {
+            return h.nexDoSlot <= menorNexGerais;
           }
         }
         return true;
@@ -621,7 +661,7 @@ export const AbasPanel: React.FC = () => {
     }
 
     return lista;
-  }, [classe, nex, nivel, origemSelecionada, poderClasse, poderesClasse, poderesEscolhidos, poderesParanormaisMap, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras, trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada]);
+  }, [classe, nex, nivel, origemSelecionada, poderClasse, poderesClasse, poderesEscolhidos, poderesParanormaisMap, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras, trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, regrasAutomaticasAtivas]);
 
   const habilidadesFiltradas = listaHabilidades.filter(hab =>
     hab.nome.toLowerCase().includes(filtroHabilidades.toLowerCase())
@@ -715,6 +755,10 @@ export const AbasPanel: React.FC = () => {
                                   setTipoModalPoderes('utilidade');
                                   setAbaModalPoderes('paranormais');
                                   setNexModalAberto('extra_regra1');
+                                } else if (hab.id === 'escolha_extra_regra31') {
+                                  setModalPoderOutraClasseAberto(true);
+                                } else if (hab.id === 'escolha_extra_regra32') {
+                                  setModalPoderOutraOrigemAberto(true);
                                 } else {
                                   const tipo = hab.id.includes('combate') ? 'combate' : 'utilidade';
                                   setTipoModalPoderes(tipo);
@@ -1214,7 +1258,20 @@ export const AbasPanel: React.FC = () => {
                         const corTextoElemento = obterCorTexto(elementoEscolhido);
 
                         // Valores dinâmicos baseados na versão
-                        const pe = ritual.customProps?.[versao]?.PE_Ritual || obterValorVersao(ritual.PE_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                        const peOriginal = ritual.customProps?.[versao]?.PE_Ritual || obterValorVersao(ritual.PE_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                        let peValor = parseInt(String(peOriginal).replace(/\D+/g, ''), 10);
+                        if (!isNaN(peValor)) {
+                          if (regrasAutomaticasAtivas.has(34)) {
+                            const temDesconto34 = Object.values(poderesEscolhidos).some(p => p.codigoRegra === 34 && p.elemento === elementoEscolhido);
+                            if (temDesconto34) peValor -= 1;
+                          }
+                          if (regrasAutomaticasAtivas.has(35)) {
+                            const desconto35 = Object.values(poderesEscolhidos).filter(p => p.codigoRegra === 35 && p.elemento === (ritual.customNome || ritual.Nome_Ritual)).length;
+                            peValor -= desconto35;
+                          }
+                          peValor = Math.max(0, peValor);
+                        }
+                        const pe = isNaN(peValor) ? peOriginal : String(peOriginal).replace(/\d+/, peValor.toString());
                         const alcance = ritual.customProps?.[versao]?.Alcance_Ritual || obterValorVersao(ritual.Alcance_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
                         const area = ritual.customProps?.[versao]?.Area_Ritual || obterValorVersao(ritual.Area_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
                         const alvo = ritual.customProps?.[versao]?.Alvo_Ritual || obterValorVersao(ritual.Alvo_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
@@ -1730,6 +1787,14 @@ export const AbasPanel: React.FC = () => {
           const nomePericia = periciaId ? periciasHook.nomesPericias[periciaId] : undefined;
           poderesHook.escolherPoderExtra(poder, elemento, nomePericia);
         }}
+      />
+      <ModalPoderOutraClasse
+        isOpen={modalPoderOutraClasseAberto}
+        onClose={() => setModalPoderOutraClasseAberto(false)}
+      />
+      <ModalPoderOutraOrigem
+        isOpen={modalPoderOutraOrigemAberto}
+        onClose={() => setModalPoderOutraOrigemAberto(false)}
       />
     </div>
   );

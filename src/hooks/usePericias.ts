@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { supabase } from '../services/supabase';
 import type { PericiasMap, AtributoKey, ClasseRPG, Atributos } from '../types';
 import { calcularLimitesPericias } from '../utils/rpgRules';
@@ -11,6 +11,10 @@ interface UsePericiasReturn {
   handleMudarPericia: (nome: string, campo: 'treino' | 'outros' | 'atributo', valor: number | AtributoKey) => void;
   limites: { maxTreinadas: number; maxUpgrades: number };
   totais: { totalTreinadasUsadas: number; totalUpgradesGastos: number };
+  periciasGratis: string[];
+  regrasAtivas: boolean;
+  jaTinhaProfissao33: boolean;
+  debugRegra33: { avaliou: boolean, evalJaTinha: boolean };
 }
 
 export function usePericias(
@@ -18,16 +22,43 @@ export function usePericias(
   nex: number,
   atributos: Atributos,
   regrasAtivas: boolean, // true = regras aplicadas, false = livre
-  periciasGratis: string[],
+  periciasGratisBase: string[],
   codigoPerRegra?: number | null,
-  veteranasGratis: string[] = []
+  veteranasGratis: string[] = [],
+  regrasAutomaticasAtivas?: Set<number>
 ): UsePericiasReturn {
   const [pericias, setPericias] = useState<PericiasMap>({});
   const [nomesPericias, setNomesPericias] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [gratisAplicadas, setGratisAplicadas] = useState<string[]>([]);
-  const [veteranasAplicadas, setVeteranasAplicadas] = useState<string[]>([]);
+  const [jaTinhaProfissao33, setJaTinhaProfissao33] = useState<boolean>(false);
+  const [avaliouRegra33, setAvaliouRegra33] = useState<boolean>(false);
+
+  // Sincroniza a avaliação no momento em que a regra muda (Deriving State during Render)
+  const temAgora = regrasAutomaticasAtivas?.has(33);
+
+  if (temAgora && !avaliouRegra33) {
+    // Só avalia quando as perícias terminarem de carregar do DB
+    if (pericias['Profissão'] && Object.keys(pericias).length > 0) {
+      const valorTreino = pericias['Profissão'].treino;
+      const jaTinha = valorTreino >= 5 || periciasGratisBase.includes('Profissão');
+      
+      setJaTinhaProfissao33(jaTinha);
+      setAvaliouRegra33(true); // Isso aborta o render atual e reinicia com o valor novo
+    }
+  } else if (!temAgora && avaliouRegra33) {
+    setJaTinhaProfissao33(false);
+    setAvaliouRegra33(false);
+  }
+
+  const periciasGratis = useMemo(() => {
+    const gratis = [...periciasGratisBase];
+    // Se a regra 33 está ativa e ele NÃO tinha a perícia antes, dá de graça
+    if (regrasAutomaticasAtivas?.has(33) && !jaTinhaProfissao33) {
+      gratis.push('Profissão');
+    }
+    return gratis;
+  }, [periciasGratisBase, regrasAutomaticasAtivas, jaTinhaProfissao33]);
 
   // Busca as perícias do banco
   useEffect(() => {
@@ -68,9 +99,6 @@ export function usePericias(
 
         setPericias(objetoPericias);
         setNomesPericias(mapaNomes);
-        // Força a re-aplicação das perícias grátis após o carregamento
-        setGratisAplicadas([]);
-        setVeteranasAplicadas([]);
       }
 
       setLoading(false);
@@ -80,15 +108,44 @@ export function usePericias(
     return () => { cancelled = true; };
   }, []);
 
-  // Aplica treino 5 automaticamente nas perícias grátis (classe/origem)
-  // e treino 10 nas veteranas grátis
-  if (gratisAplicadas !== periciasGratis || veteranasAplicadas !== veteranasGratis) {
-    setGratisAplicadas(periciasGratis);
-    setVeteranasAplicadas(veteranasGratis);
+  const gratisRef = useRef<string[]>([]);
+  const veteranasRef = useRef<string[]>([]);
+
+  useEffect(() => {
+    if (Object.keys(pericias).length === 0) return; // Aguarda carregar
+
+    const velhasGratis = gratisRef.current;
+    const velhasVeteranas = veteranasRef.current;
+
+    // Checa se houve mudança real nas listas (comparação de conteúdo)
+    const mudouGratis = velhasGratis.length !== periciasGratis.length || !velhasGratis.every((v, i) => v === periciasGratis[i]);
+    const mudouVeteranas = velhasVeteranas.length !== veteranasGratis.length || !velhasVeteranas.every((v, i) => v === veteranasGratis[i]);
+
+    if (!mudouGratis && !mudouVeteranas) return;
+
+    gratisRef.current = periciasGratis;
+    veteranasRef.current = veteranasGratis;
+
     setPericias(prev => {
       let mudou = false;
       const novo = { ...prev };
       
+      // Destreina as que saíram da lista de grátis
+      velhasGratis.forEach(nome => {
+        if (!periciasGratis.includes(nome) && novo[nome] && novo[nome].treino > 0) {
+          novo[nome] = { ...novo[nome], treino: 0 };
+          mudou = true;
+        }
+      });
+
+      // Destreina as veteranas que saíram da lista
+      velhasVeteranas.forEach(nome => {
+        if (!veteranasGratis.includes(nome) && novo[nome] && novo[nome].treino > 0) {
+          novo[nome] = { ...novo[nome], treino: 0 };
+          mudou = true;
+        }
+      });
+
       periciasGratis.forEach(nome => {
         if (novo[nome] && novo[nome].treino < 5) {
           novo[nome] = { ...novo[nome], treino: 5 };
@@ -105,7 +162,7 @@ export function usePericias(
 
       return mudou ? novo : prev;
     });
-  }
+  }, [periciasGratis, veteranasGratis, pericias]);
 
   const limites = useMemo(() => {
     const lim = calcularLimitesPericias(classe, nex, atributos);
@@ -191,5 +248,17 @@ export function usePericias(
     [regrasAtivas, periciasGratis, nex, limites]
   );
 
-  return { pericias, nomesPericias, loading, error, handleMudarPericia, limites, totais };
+  return { 
+    pericias, 
+    nomesPericias, 
+    loading, 
+    error, 
+    handleMudarPericia, 
+    limites, 
+    totais,
+    periciasGratis,
+    regrasAtivas,
+    jaTinhaProfissao33,
+    debugRegra33: { avaliou: avaliouRegra33, evalJaTinha: jaTinhaProfissao33 }
+  };
 }

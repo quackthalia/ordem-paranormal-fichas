@@ -191,10 +191,10 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const regrasAutomaticasAtivas = useMemo(() => {
     const set = new Set<number>();
     if (origensHook.origemSelecionada?.Codigo_Regra) {
-      set.add(origensHook.origemSelecionada.Codigo_Regra);
+      set.add(Number(origensHook.origemSelecionada.Codigo_Regra));
     }
     Object.values(poderesHook.poderesEscolhidos).forEach(p => {
-      if (p.codigoRegra) set.add(p.codigoRegra);
+      if (p.codigoRegra) set.add(Number(p.codigoRegra));
     });
     return set;
   }, [origensHook.origemSelecionada, poderesHook.poderesEscolhidos]);
@@ -300,7 +300,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     return vet;
   }, [origensHook.origemSelecionada]);
 
-  const periciasHook = usePericias(classe, nex, atributos, regrasAtivas, periciasGratis, origensHook.origemSelecionada?.Codigo_Per_Regra, veteranasGratis);
+  const periciasHook = usePericias(classe, nex, atributos, regrasAtivas, periciasGratis, origensHook.origemSelecionada?.Codigo_Per_Regra, veteranasGratis, regrasAutomaticasAtivas);
 
   // ============================================================
   // LÓGICA DE ATRIBUTOS

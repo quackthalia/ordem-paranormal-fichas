@@ -101,15 +101,16 @@ export const PericiasTable: React.FC = () => {
           </h4>
           <div className="flex flex-col p-3 gap-3">
             <div className="flex flex-col gap-1">
-              <label className="text-xs uppercase text-zinc-500 font-bold ml-1">Condicionais</label>
+              <label className="text-xs uppercase text-zinc-500 font-bold ml-1 mb-1">Condicionais</label>
               {regrasAutomaticasAtivas.has(30) && (
-                <div className="mb-1 text-xs text-red-300 bg-red-950/30 px-2 py-1 rounded border border-red-900/50">
-                  * +2d20 em Diplomacia, Enganação e Intuição no primeiro teste social que fizer num ambiente
+                <div className="mb-1 text-xs text-zinc-300 px-2 py-1 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start">
+                  <span className="text-red-500 font-bold mt-[-1px]">•</span>
+                  <span>+2d20 em Diplomacia, Enganação e Intuição no primeiro teste social que fizer num ambiente</span>
                 </div>
               )}
               <textarea
-                className="w-full bg-transparent text-zinc-300 text-sm p-2 outline-none border border-transparent hover:border-zinc-800 focus:border-red-900 rounded resize-none min-h-[60px]"
-                placeholder="Você não possui nenhum bônus condicional registrado..."
+                className="w-full bg-transparent text-zinc-300 text-sm p-2 outline-none border border-transparent hover:border-zinc-800 focus:border-red-900 rounded resize-none min-h-[32px]"
+                placeholder={regrasAutomaticasAtivas.has(30) ? "" : "Você não possui nenhum bônus condicional registrado..."}
                 value={bonusDadosCondicionais}
                 onChange={(e) => setBonusDadosCondicionais(e.target.value)}
               />
@@ -119,9 +120,15 @@ export const PericiasTable: React.FC = () => {
             
             <div className="flex flex-col gap-1">
               <label className="text-xs uppercase text-zinc-500 font-bold ml-1">Sempre Ativos</label>
+              {regrasAutomaticasAtivas.has(33) && periciasHook.jaTinhaProfissao33 && (
+                <div className="mb-1 text-xs text-zinc-300 px-2 py-1 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start">
+                  <span className="text-red-500 font-bold mt-[-1px]">•</span>
+                  <span>+1d20 em testes de Profissão (Faz-Tudo)</span>
+                </div>
+              )}
               <textarea
-                className="w-full bg-transparent text-zinc-300 text-sm p-2 outline-none border border-transparent hover:border-zinc-800 focus:border-red-900 rounded resize-none min-h-[60px]"
-                placeholder="Você não possui nenhum bônus sempre ativo registrado..."
+                className="w-full bg-transparent text-zinc-300 text-sm p-2 outline-none border border-transparent hover:border-zinc-800 focus:border-red-900 rounded resize-none min-h-[32px]"
+                placeholder={(regrasAutomaticasAtivas.has(33)) ? "" : "Você não possui nenhum bônus sempre ativo registrado..."}
                 value={bonusDadosAtivos}
                 onChange={(e) => setBonusDadosAtivos(e.target.value)}
               />
@@ -261,7 +268,7 @@ export const PericiasTable: React.FC = () => {
             <h4 className="mb-4 text-xl font-display uppercase tracking-widest text-red-500">{periciaAberta.nome}</h4>
             <div 
               className="max-h-[60vh] overflow-y-auto custom-scrollbar text-sm text-zinc-300 leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: formatarTexto(periciaAberta.descricao) }}
+              dangerouslySetInnerHTML={{ __html: formatarDescricaoHTML(periciaAberta.descricao) }}
             />
           </div>
         </div>

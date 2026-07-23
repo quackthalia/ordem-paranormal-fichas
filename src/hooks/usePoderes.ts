@@ -201,14 +201,14 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
     }));
   }, []);
 
-  const escolherPoderExtra = useCallback((poder: Poder | PoderParanormal, elementoEscolhido?: string, periciaEscolhida?: string) => {
+  const escolherPoderExtra = useCallback((poder: Poder | PoderParanormal, elementoEscolhido?: string, periciaEscolhida?: string, customId?: string) => {
     const pp = poder as PoderParanormal;
     const isParanormal = 'Elemento' in pp || 'Afinidade' in pp;
     const isTrilha = (poder as Poder).Tipo?.toLowerCase() === 'trilha';
     const catFinal: 'utilidade' | 'combate' | 'gerais' | 'paranormais' | 'trilha' = 
       isParanormal ? 'paranormais' : (isTrilha ? 'trilha' : ((poder as Poder).Tipo?.toLowerCase() === 'geral' ? 'gerais' : 'utilidade'));
 
-    const uniqueId = `extra_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
+    const uniqueId = customId || `extra_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
     
     let nomeFinal = poder.Nome;
     if (elementoEscolhido) {

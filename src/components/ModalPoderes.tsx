@@ -93,8 +93,13 @@ function PoderCard({
 
   const bloqueado = !val.atende;
 
-  const precisaEscolherElemento = poder.Nome.toLowerCase().includes('elemento') || (poder.Descricao && poder.Descricao.toLowerCase().includes('escolha um elemento'));
+  const precisaEscolherElemento = poder.Nome.toLowerCase().includes('elemento') || (poder.Descricao && poder.Descricao.toLowerCase().includes('escolha um elemento')) || poder.Codigo_Regra === 34 || poder.Codigo_Regra === 36;
   const [escolhendoElemento, setEscolhendoElemento] = useState(false);
+
+  const precisaEscolherRitual = poder.Codigo_Regra === 35;
+  const [escolhendoRitual, setEscolhendoRitual] = useState(false);
+  // Reutilizamos rituaisAprendidos vindos do contexto para montar as opções
+  const rituaisAprendidos = contextoPrereq?.rituaisAprendidos || [];
 
   const precisaEscolherPericia = poder.Nome.toLowerCase().includes('perícia') || (poder.Descricao && poder.Descricao.toLowerCase().includes('escolha uma perícia'));
   const [escolhendoPericia, setEscolhendoPericia] = useState(false);
@@ -187,6 +192,35 @@ function PoderCard({
                 ✕
               </button>
             </div>
+          ) : escolhendoRitual ? (
+            <div className="flex gap-1 items-center bg-zinc-950 p-1 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
+              <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline">Ritual:</span>
+              <select
+                className="bg-zinc-900 border border-zinc-700 text-xs text-zinc-300 rounded px-1 outline-none py-1 max-w-[140px]"
+                onChange={(e) => {
+                  const nomeRitual = e.target.value;
+                  if (nomeRitual) {
+                    setEscolhendoRitual(false);
+                    // Passamos o nome do ritual como "elemento" para o escolherPoderExtra interceptar
+                    onEscolher(nomeRitual, undefined);
+                  }
+                }}
+                defaultValue=""
+              >
+                <option value="" disabled>Escolher...</option>
+                {rituaisAprendidos.map((r, i) => (
+                  <option key={i} value={r.customNome || r.nome}>
+                    {r.customNome || r.nome}
+                  </option>
+                ))}
+              </select>
+              <button
+                onClick={(e) => { e.stopPropagation(); setEscolhendoRitual(false); }}
+                className="ml-1 rounded px-1 py-0.5 text-[0.6rem] font-bold text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 transition"
+              >
+                ✕
+              </button>
+            </div>
           ) : (
             <button
               disabled={bloqueado}
@@ -197,6 +231,8 @@ function PoderCard({
                   setEscolhendoElemento(true);
                 } else if (precisaEscolherPericia) {
                   setEscolhendoPericia(true);
+                } else if (precisaEscolherRitual) {
+                  setEscolhendoRitual(true);
                 } else {
                   onEscolher(); 
                 }
@@ -606,6 +642,10 @@ export const ModalPoderes: React.FC = () => {
 
                   if (poder.Nome.toLowerCase() === 'aprender ritual') {
                     window.dispatchEvent(new CustomEvent('abrirModalRituais', { detail: { nex: nexEscolhido } }));
+                  } else if (poder.Nome.toLowerCase() === 'especialista diletante' || poder.Codigo_Regra === 31 || poder.codigo_regra === 31) {
+                    window.dispatchEvent(new Event('abrirModalOutraClasse'));
+                  } else if (poder.Nome.toLowerCase().includes('flashback') || poder.Codigo_Regra === 32 || poder.codigo_regra === 32) {
+                    window.dispatchEvent(new Event('abrirModalOutraOrigem'));
                   }
                 }}
               />

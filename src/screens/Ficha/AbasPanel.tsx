@@ -428,7 +428,7 @@ export const AbasPanel: React.FC = () => {
           }
           const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
           const tipoLabel = categoria === 'paranormais' ? `Transcender ${nivelPatamar}%` : nivelLabel;
-          const afinidadeDoPoder = pp?.Afinidade;
+          const afinidadeDoPoder = escolhido.afinidade || pp?.Afinidade;
           const nomeBaseCheck = escolhido.nome.toLowerCase().trim();
           const afinidadeAtiva = afinidadeDoPoder ? contagemPoderes[nomeBaseCheck] >= 2 : false;
           const adqKey = afinidadesAdquiridas[nomeBaseCheck];
@@ -488,7 +488,7 @@ export const AbasPanel: React.FC = () => {
           }
           const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
           const tipoLabel = categoria === 'paranormais' ? `Transcender ${nivelPatamar}%` : nivelLabel;
-          const afinidadeDoPoder = pp?.Afinidade;
+          const afinidadeDoPoder = escolhido.afinidade || pp?.Afinidade;
           const nomeBaseCheck = escolhido.nome.toLowerCase().trim();
           const afinidadeAtiva = afinidadeDoPoder ? contagemPoderes[nomeBaseCheck] >= 2 : false;
           const adqKey = afinidadesAdquiridas[nomeBaseCheck];
@@ -545,7 +545,7 @@ export const AbasPanel: React.FC = () => {
           categoria = 'utilidade';
         }
         const tipoLabel = categoria === 'paranormais' ? `Transcender Extra` : `Extra`;
-        const afinidadeDoPoder = pp?.Afinidade;
+        const afinidadeDoPoder = escolhido.afinidade || pp?.Afinidade;
         const nomeBaseCheck = escolhido.nome.toLowerCase().trim();
         const afinidadeAtiva = afinidadeDoPoder ? contagemPoderes[nomeBaseCheck] >= 2 : false;
         const adqKey = afinidadesAdquiridas[nomeBaseCheck];
@@ -593,7 +593,7 @@ export const AbasPanel: React.FC = () => {
 
         const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
         const tipoLabel = `Transcender ${nivelPatamar}%`;
-        const afinidadeDoPoder = pp?.Afinidade;
+        const afinidadeDoPoder = escolhido.afinidade || pp?.Afinidade;
         const nomeBaseCheck = escolhido.nome.toLowerCase().trim();
         const afinidadeAtiva = afinidadeDoPoder ? contagemPoderes[nomeBaseCheck] >= 2 : false;
         

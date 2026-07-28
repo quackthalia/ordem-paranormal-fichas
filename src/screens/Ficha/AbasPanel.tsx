@@ -152,7 +152,7 @@ export const AbasPanel: React.FC = () => {
     rituaisExpandidos, setRituaisExpandidos,
     versaoRitual, setVersaoRitual,
     elementoRitual, setElementoRitual,
-    status, trilhasHook,
+    status, trilhasHook, periciasHook,
   } = useRPG();
 
   const [escolhendoRitualPlaceholder, setEscolhendoRitualPlaceholder] = React.useState<{ origem: string, nex?: number } | null>(null);

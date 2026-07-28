@@ -148,7 +148,7 @@ export function usePericias(
     // Regras de treinamento/bônus para quem já tinha
     const regrasTreino = [40, 41, 44, 45];
     // Regras de bônus fixo
-    const regrasBonusFixo = [46, 47, 49, 50, 52];
+    const regrasBonusFixo = [46, 47, 49, 50, 52, 55];
     
     if (regrasTreino.some(r => regrasAutomaticasAtivas?.has(r)) || regrasBonusFixo.some(r => regrasAutomaticasAtivas?.has(r))) {
       todosPoderesComRegra.forEach(poder => {
@@ -197,6 +197,13 @@ export function usePericias(
         // Regra 44 sempre dá +INT em Intuição, independentemente da perícia do poder
         if (codigoRegra === 44) {
           bonus['Intuição'] = (bonus['Intuição'] || 0) + atributos.INT;
+        }
+        
+        // Regra 55: +5 passivo em Diplomacia, Intimidação e Intuição
+        if (codigoRegra === 55) {
+          bonus['Diplomacia'] = (bonus['Diplomacia'] || 0) + 5;
+          bonus['Intimidação'] = (bonus['Intimidação'] || 0) + 5;
+          bonus['Intuição'] = (bonus['Intuição'] || 0) + 5;
         }
       });
     }

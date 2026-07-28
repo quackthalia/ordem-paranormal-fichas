@@ -80,6 +80,8 @@ interface RPGContextType {
   setNomeEditando: React.Dispatch<React.SetStateAction<string>>;
   descricaoEditando: string;
   setDescricaoEditando: React.Dispatch<React.SetStateAction<string>>;
+  afinidadeEditando: string;
+  setAfinidadeEditando: React.Dispatch<React.SetStateAction<string>>;
   skillCombatente1: string;
   setSkillCombatente1: React.Dispatch<React.SetStateAction<string>>;
   skillCombatente2: string;
@@ -151,6 +153,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const [nexPoderEditando, setNexPoderEditando] = useState<number | string | null>(null);
   const [nomeEditando, setNomeEditando] = useState('');
   const [descricaoEditando, setDescricaoEditando] = useState('');
+  const [afinidadeEditando, setAfinidadeEditando] = useState('');
   const [skillCombatente1, setSkillCombatente1] = useState('');
   const [skillCombatente2, setSkillCombatente2] = useState('');
   const [deslocM, setDeslocM] = useState(9);
@@ -455,6 +458,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     nexPoderEditando, setNexPoderEditando,
     nomeEditando, setNomeEditando,
     descricaoEditando, setDescricaoEditando,
+    afinidadeEditando, setAfinidadeEditando,
     skillCombatente1, setSkillCombatente1,
     skillCombatente2, setSkillCombatente2,
     deslocM, setDeslocM,

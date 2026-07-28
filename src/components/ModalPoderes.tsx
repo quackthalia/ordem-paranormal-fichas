@@ -428,24 +428,6 @@ export const ModalPoderes: React.FC = () => {
           </div>
 
           <div className="flex flex-col gap-1.5 text-left">
-            <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Afinidade</label>
-            <div>
-              <ToolbarFormato editorRef={afinidadeRef as any} />
-              <div
-                ref={(el) => {
-                  afinidadeRef.current = el;
-                  if (el && !el.dataset.initialized) {
-                    el.innerHTML = afinidadeEditando;
-                    el.dataset.initialized = 'true';
-                  }
-                }}
-                contentEditable
-                className="min-h-24 overflow-y-auto rounded-b border border-zinc-700 bg-zinc-950 p-3 text-left text-sm leading-relaxed text-zinc-100 outline-none focus:border-red-700"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-1.5 text-left">
             <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Descrição</label>
             <div>
               <ToolbarFormato editorRef={editorRef as any} />
@@ -459,6 +441,24 @@ export const ModalPoderes: React.FC = () => {
                 }}
                 contentEditable
                 className="min-h-36 overflow-y-auto rounded-b border border-zinc-700 bg-zinc-950 p-3 text-left text-sm leading-relaxed text-zinc-100 outline-none focus:border-red-700"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1.5 text-left">
+            <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Afinidade</label>
+            <div>
+              <ToolbarFormato editorRef={afinidadeRef as any} />
+              <div
+                ref={(el) => {
+                  afinidadeRef.current = el;
+                  if (el && !el.dataset.initialized) {
+                    el.innerHTML = afinidadeEditando;
+                    el.dataset.initialized = 'true';
+                  }
+                }}
+                contentEditable
+                className="min-h-24 overflow-y-auto rounded-b border border-zinc-700 bg-zinc-950 p-3 text-left text-sm leading-relaxed text-zinc-100 outline-none focus:border-red-700"
               />
             </div>
           </div>

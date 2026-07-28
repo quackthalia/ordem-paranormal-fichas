@@ -144,7 +144,7 @@ export const AbasPanel: React.FC = () => {
     filtroHabilidades, setFiltroHabilidades,
     habilidadesExpandidas, setHabilidadesExpandidas,
     setNexModalAberto,
-    setNexPoderEditando, setNomeEditando, setDescricaoEditando,
+    setNexPoderEditando, setNomeEditando, setDescricaoEditando, setAfinidadeEditando,
     setAbaModalPoderes,
     setTipoModalPoderes,
     regras,
@@ -1043,9 +1043,9 @@ export const AbasPanel: React.FC = () => {
                                   </div>
                                 )}
 
-                                {hab.id.startsWith('escolha_nex_') && (
+                                {(!hab.isSlotVazio && (hab.id.startsWith('escolha_nex_') || hab.id.startsWith('escolha_extra_'))) && (
                                   <div className="mt-4 flex gap-2.5">
-                                    <button onClick={(e) => { e.stopPropagation(); const nivel = extrairKeyDoId(hab.id); if (nivel !== null) { setNexPoderEditando(nivel); setNomeEditando(hab.nome); setDescricaoEditando(hab.descricao); } }}
+                                    <button onClick={(e) => { e.stopPropagation(); const nivel = extrairKeyDoId(hab.id); if (nivel !== null) { setNexPoderEditando(nivel); setNomeEditando(hab.nome); setDescricaoEditando(hab.descricao); setAfinidadeEditando(hab.afinidade || ''); } }}
                                       className="flex-1 rounded border border-zinc-700 bg-zinc-800 p-2 text-xs font-bold text-zinc-200 transition hover:bg-zinc-700"
                                     >Editar</button>
                                     <button onClick={(e) => { 

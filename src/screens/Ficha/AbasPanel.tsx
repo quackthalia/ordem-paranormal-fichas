@@ -183,7 +183,16 @@ export const AbasPanel: React.FC = () => {
     const handler = (e: any) => {
       setEscolhendoRitualPlaceholder({ origem: `poder_57_${e.detail.nex}`, nex: e.detail.nex });
     };
-    const handleAbrirModalOutraClasse = () => setModalPoderOutraClasseAberto(true);
+    const handleAbrirModalOutraClasse = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail && customEvent.detail.nex !== undefined) {
+        const nexSlot = Number(customEvent.detail.nex);
+        if (!isNaN(nexSlot)) {
+          setCategoriaDiletante(nexSlot % 2 !== 0 ? 'combate' : 'utilidade');
+        }
+      }
+      setModalPoderOutraClasseAberto(true);
+    };
     const handleAbrirModalOutraOrigem = () => setModalPoderOutraOrigemAberto(true);
 
     window.addEventListener('abrirModalRituais', handler);
@@ -800,16 +809,13 @@ export const AbasPanel: React.FC = () => {
                                   Object.entries(poderesEscolhidos).forEach(([key, p]) => {
                                     if (p.codigoRegra === 31) {
                                       const nexSlot = parseInt(key);
-                                      console.log("Found Especialista Diletante in slot:", key, "Parsed NEX:", nexSlot);
                                       if (!isNaN(nexSlot)) {
                                         cat = (nexSlot % 2 !== 0) ? 'combate' : 'utilidade';
                                       } else {
                                         cat = p.categoria as any;
                                       }
-                                      console.log("Calculated category for slot:", cat);
                                     }
                                   });
-                                  console.log("Setting ModalPoderOutraClasse with category:", cat);
                                   setCategoriaDiletante(cat);
                                   setModalPoderOutraClasseAberto(true);
                                 } else if (hab.id === 'escolha_extra_regra32') {

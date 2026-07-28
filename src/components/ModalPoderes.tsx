@@ -601,7 +601,7 @@ export const ModalPoderes: React.FC = () => {
                     setNexModalAberto(null);
                   } else if (poder.Nome.toLowerCase() === 'especialista diletante' || poder.Codigo_Regra === 31 || (poder as any).codigo_regra === 31) {
                     escolherPoder(nexEscolhido, poder, categoria, elem, nomePericia);
-                    window.dispatchEvent(new Event('abrirModalOutraClasse'));
+                    window.dispatchEvent(new CustomEvent('abrirModalOutraClasse', { detail: { nex: nexEscolhido } }));
                     setNexModalAberto(null);
                   } else if (poder.Nome.toLowerCase().includes('flashback') || poder.Codigo_Regra === 32 || (poder as any).codigo_regra === 32) {
                     escolherPoder(nexEscolhido, poder, categoria, elem, nomePericia);

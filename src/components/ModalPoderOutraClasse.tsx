@@ -75,15 +75,10 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
       return classeNormalizada === (abaAtiva || classesParaBuscar[0]).toLowerCase();
     });
 
-    console.log("ModalPoderOutraClasse rendering. categoriaPermitida:", categoriaPermitida);
-    console.log("Powers before filtering:", filtrados.length);
-
     if (categoriaPermitida === 'combate') {
       filtrados = filtrados.filter(p => p.Tipo?.toLowerCase().trim() === 'combate' || p.Tipo?.toLowerCase().trim() === 'varia');
-      console.log("Filtered for combate. Result:", filtrados.length);
     } else if (categoriaPermitida === 'utilidade') {
       filtrados = filtrados.filter(p => p.Tipo?.toLowerCase().trim() === 'utilidade' || p.Tipo?.toLowerCase().trim() === 'varia');
-      console.log("Filtered for utilidade. Result:", filtrados.length);
     }
 
     // Ordenar por nome
@@ -143,7 +138,7 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
                   <div className="flex justify-between items-center p-4 cursor-pointer hover:bg-zinc-700/50 transition" onClick={() => setExpandidos(prev => prev.includes(poder.codigo_poder) ? prev.filter(id => id !== poder.codigo_poder) : [...prev, poder.codigo_poder])}>
                     <div className="flex flex-col gap-1">
                       <span className="font-bold text-zinc-200">{poder.Nome}</span>
-                      <span className="text-[10px] uppercase tracking-wider text-zinc-500">{poder.Codigo_Poder === 179 ? 'Combatente' : poder.Codigo_Poder === 181 ? 'Especialista' : 'Ocultista'}</span>
+                      <span className="text-[10px] uppercase tracking-wider text-zinc-500">{poder.Tipo || poder.Classe}</span>
                     </div>
                     <div className="flex items-center gap-4">
                       {!alreadyHas && escolhendoElementoId === poder.codigo_poder ? (

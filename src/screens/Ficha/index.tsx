@@ -245,9 +245,19 @@ function ProtecoesPanel() {
   if (regrasAutomaticasAtivas.has(5) && atributosFinais.INT > 0) {
     resistenciasExtras.push(`Mental ${atributosFinais.INT}`);
   }
-  // REGRA 9: Dano 2
+  // REGRA 9 e 60: Resistência a Dano
+  let danoResist = 0;
   if (regrasAutomaticasAtivas.has(9)) {
-    resistenciasExtras.push('Dano 2');
+    danoResist += 2;
+  }
+  if (regrasAutomaticasAtivas.has(60)) {
+    const machucado = status.pvAtual !== null && status.pvMax > 0 && status.pvAtual <= Math.floor(status.pvMax / 2);
+    if (machucado) {
+      danoResist += 5;
+    }
+  }
+  if (danoResist > 0) {
+    resistenciasExtras.push(`Dano ${danoResist}`);
   }
 
   // REGRA 11: Resistência Mental 2 + (+1 pra cada 2 poderes/rituais de Sangue)
@@ -341,6 +351,11 @@ function ProtecoesPanel() {
   // REGRA 56: Visão no Escuro
   if (regrasAutomaticasAtivas.has(56)) {
     sentidosExtras.push('Visão no Escuro');
+  }
+  // REGRA 59: Visão no Escuro e Faro
+  if (regrasAutomaticasAtivas.has(59)) {
+    if (!sentidosExtras.includes('Visão no Escuro')) sentidosExtras.push('Visão no Escuro');
+    sentidosExtras.push('Faro');
   }
 
   return (

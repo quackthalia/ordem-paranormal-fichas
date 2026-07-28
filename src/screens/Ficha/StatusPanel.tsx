@@ -251,31 +251,36 @@ export const StatusPanel: React.FC = () => {
           setTempMax={setPvTempMax}
         />
 
-        {/* UI Regra 53 (Sangue Fervente) */}
+        {/* UI Regra 53 (Sangue Ruim) */}
         {regrasAutomaticasAtivas.has(53) && pvAtual !== null && pvAtual <= Math.floor(pvMax / 2) && (
-          <div className="mt-2 flex flex-col items-center gap-2 rounded border border-red-900 bg-red-950/40 p-3">
-            <span className="text-xs font-bold text-red-400 uppercase tracking-wider text-center">
+          <div className="mt-2 flex flex-col items-center gap-2.5 rounded-lg border border-red-900/50 bg-zinc-900/80 p-3 shadow-[0_0_10px_rgba(153,27,27,0.1)]">
+            <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest text-center">
               Sangue Fervente (Machucado)
             </span>
             {!escolhaRegra53 ? (
-              <div className="flex gap-3">
+              <div className="flex w-full gap-2">
                 <button
                   onClick={() => setEscolhaRegra53('FOR')}
-                  className="rounded bg-red-900 px-3 py-1.5 text-xs font-bold text-zinc-100 hover:bg-red-800 transition"
+                  className="flex-1 rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs font-bold text-zinc-400 transition hover:border-red-900 hover:text-red-500 hover:bg-red-950/20"
                 >
                   + FORÇA
                 </button>
                 <button
                   onClick={() => setEscolhaRegra53('AGI')}
-                  className="rounded bg-red-900 px-3 py-1.5 text-xs font-bold text-zinc-100 hover:bg-red-800 transition"
+                  className="flex-1 rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs font-bold text-zinc-400 transition hover:border-red-900 hover:text-red-500 hover:bg-red-950/20"
                 >
                   + AGILIDADE
                 </button>
               </div>
             ) : (
-              <span className="text-sm font-bold text-red-300">
-                +{regrasAutomaticasAtivas.has(54) ? 2 : 1} {escolhaRegra53 === 'FOR' ? 'Força' : 'Agilidade'}
-              </span>
+              <div className="flex w-full items-center justify-between rounded-md border border-red-900/30 bg-red-950/20 px-4 py-2">
+                <span className="text-xs font-bold text-red-400 uppercase tracking-wider">
+                  Bônus Ativo:
+                </span>
+                <span className="text-sm font-bold text-red-500">
+                  +{regrasAutomaticasAtivas.has(54) ? 2 : 1} {escolhaRegra53 === 'FOR' ? 'Força' : 'Agilidade'}
+                </span>
+              </div>
             )}
           </div>
         )}

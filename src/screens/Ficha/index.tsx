@@ -75,7 +75,7 @@ export const FichaScreen: React.FC = () => {
 // COMPONENTE INTERNO: ATRIBUTOS NA FICHA
 // ============================================================
 function AtributosFicha() {
-  const { atributos, setAtributos, bonusAtributos, setBonusAtributos, bloquearLetras } = useRPG();
+  const { atributos, setAtributos, bonusAtributos, setBonusAtributos, bloquearLetras, atributosFinais } = useRPG();
 
   return (
     <div className="mb-8 flex flex-wrap justify-center gap-5">
@@ -99,9 +99,12 @@ function AtributosFicha() {
           <input
             type="number"
             onKeyDown={bloquearLetras}
-            value={atributos[nome]}
-            onChange={(e) => setAtributos({ ...atributos, [nome]: Number(e.target.value) })}
-            className="-mt-0.5 w-full bg-transparent text-center text-2xl font-bold text-zinc-100 outline-none"
+            value={atributosFinais[nome]}
+            onChange={(e) => {
+              const diferenca = atributosFinais[nome] - atributos[nome];
+              setAtributos({ ...atributos, [nome]: Number(e.target.value) - diferenca });
+            }}
+            className={`-mt-0.5 w-full bg-transparent text-center text-2xl font-bold outline-none ${atributosFinais[nome] > (atributos[nome] + bonusAtributos[nome]) ? 'text-red-500' : 'text-zinc-100'}`}
           />
         </div>
       ))}

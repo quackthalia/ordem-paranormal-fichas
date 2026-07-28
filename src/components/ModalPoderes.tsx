@@ -267,6 +267,7 @@ export const ModalPoderes: React.FC = () => {
     nexPoderEditando, setNexPoderEditando,
     nomeEditando, setNomeEditando,
     descricaoEditando,
+    afinidadeEditando,
     atributos,
     bonusAtributos,
     afinidadeEscolhida,
@@ -317,7 +318,6 @@ export const ModalPoderes: React.FC = () => {
   const afinidadeRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [subAbaElemento, setSubAbaElemento] = useState<string | null>(null);
-  const [afinidadeEditando, setAfinidadeEditando] = useState('');
   const [busca, setBusca] = useState('');
   
   const [ritualModalAbertoPara, setRitualModalAbertoPara] = useState<{

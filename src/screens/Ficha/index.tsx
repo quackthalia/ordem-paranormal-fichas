@@ -235,7 +235,7 @@ function ProtecoesPanel() {
     sentidos, setSentidos,
     imunidades, setImunidades,
     vulnerabilidades, setVulnerabilidades,
-    regrasAutomaticasAtivas, atributosFinais, poderesHook, rituaisHook, periciasHook
+    regrasAutomaticasAtivas, atributosFinais, poderesHook, rituaisHook, periciasHook, status
   } = useRPG();
   const [mostrarOutros, setMostrarOutros] = React.useState(false);
 

@@ -65,9 +65,11 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
 
   const { nex, atributos, periciasHook, trilhasHook, poderesHook, rituaisHook, origensHook } = useRPG();
   const contextoPrereq = useMemo(() => {
-    const poderesArray: { nome: string; elemento?: string }[] = Object.values(poderesHook.poderesEscolhidos).map(p => ({
+    const poderesArray: { nome: string; elemento?: string; codigoRegra?: number | null; periciaEscolhidaNome?: string }[] = Object.values(poderesHook.poderesEscolhidos).map(p => ({
       nome: p.nome.toLowerCase(),
-      elemento: p.elemento
+      elemento: p.elemento,
+      codigoRegra: p.codigoRegra,
+      periciaEscolhidaNome: p.periciaEscolhidaNome
     }));
     
     if (poderesHook.poderClasse) {

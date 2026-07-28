@@ -5,7 +5,12 @@ export interface ContextoPreRequisitos {
   nex: number;
   pericias: PericiasMap;
   nomesPericias: Record<number, string>;
-  poderes: { nome: string; elemento?: string }[];
+  poderes: { 
+    nome: string; 
+    elemento?: string; 
+    codigoRegra?: number | null; 
+    periciaEscolhidaNome?: string; 
+  }[];
   origem?: string;
   grupo_origem?: number | null;
   rituaisAprendidos?: import('../types').RitualAprendido[];

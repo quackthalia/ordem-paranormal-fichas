@@ -20,6 +20,7 @@ export const StatusPanel: React.FC = () => {
     poderesHook,
     origensHook,
     regrasAutomaticasAtivas,
+    escolhaRegra53, setEscolhaRegra53,
   } = useRPG();
 
   const regraNexExperiencia = regras['nex_experiencia'];
@@ -193,11 +194,11 @@ export const StatusPanel: React.FC = () => {
             <input
               type="number"
               value={(() => {
-                const bonusDesloc = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0);
+                const bonusDesloc = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0) + (regrasAutomaticasAtivas.has(41) ? 3 : 0);
                 return deslocM + bonusDesloc;
               })()}
               onChange={(e) => {
-                const bonusDesloc = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0);
+                const bonusDesloc = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0) + (regrasAutomaticasAtivas.has(41) ? 3 : 0);
                 const totalM = Number(e.target.value);
                 const m = totalM - bonusDesloc;
                 setDeslocM(m);
@@ -209,12 +210,12 @@ export const StatusPanel: React.FC = () => {
             <input
               type="number"
               value={(() => {
-                const bonusDesloc = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0);
+                const bonusDesloc = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0) + (regrasAutomaticasAtivas.has(41) ? 3 : 0);
                 const bonusDeslocQ = Math.floor(bonusDesloc / 1.5);
                 return deslocQ + bonusDeslocQ;
               })()}
               onChange={(e) => {
-                const bonusDesloc = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0);
+                const bonusDesloc = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0) + (regrasAutomaticasAtivas.has(41) ? 3 : 0);
                 const bonusDeslocQ = Math.floor(bonusDesloc / 1.5);
                 const totalQ = Number(e.target.value);
                 const q = totalQ - bonusDeslocQ;
@@ -249,6 +250,35 @@ export const StatusPanel: React.FC = () => {
           tempMax={pvTempMax}
           setTempMax={setPvTempMax}
         />
+
+        {/* UI Regra 53 (Sangue Fervente) */}
+        {regrasAutomaticasAtivas.has(53) && pvAtual !== null && pvAtual <= Math.floor(pvMax / 2) && (
+          <div className="mt-2 flex flex-col items-center gap-2 rounded border border-red-900 bg-red-950/40 p-3">
+            <span className="text-xs font-bold text-red-400 uppercase tracking-wider text-center">
+              Sangue Fervente (Machucado)
+            </span>
+            {!escolhaRegra53 ? (
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setEscolhaRegra53('FOR')}
+                  className="rounded bg-red-900 px-3 py-1.5 text-xs font-bold text-zinc-100 hover:bg-red-800 transition"
+                >
+                  + FORÇA
+                </button>
+                <button
+                  onClick={() => setEscolhaRegra53('AGI')}
+                  className="rounded bg-red-900 px-3 py-1.5 text-xs font-bold text-zinc-100 hover:bg-red-800 transition"
+                >
+                  + AGILIDADE
+                </button>
+              </div>
+            ) : (
+              <span className="text-sm font-bold text-red-300">
+                +{regrasAutomaticasAtivas.has(54) ? 2 : 1} {escolhaRegra53 === 'FOR' ? 'Força' : 'Agilidade'}
+              </span>
+            )}
+          </div>
+        )}
 
         {/* SANIDADE — não tem temporário */}
         {!regraSemSanidade && (

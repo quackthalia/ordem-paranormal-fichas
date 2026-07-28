@@ -41,6 +41,7 @@ export interface Poder {
   Fonte: string;
   Pre_Codigo?: number | null;
   Codigo_Regra?: number | null;
+  Pericia_Poder?: number | null;
 }
 
 export interface PoderParanormal {
@@ -55,6 +56,8 @@ export interface PoderParanormal {
   PreRequisitosAfinidade?: string;
   Pre_Codigo_Afinidade?: number | null;
   Codigo_Regra?: number | null;
+  Codigo_Regra_Afinidade?: number | null;
+  Pericia_Poder?: number | null;
 }
 
 export interface GrupoOrigem {
@@ -94,6 +97,8 @@ export interface PoderSlot {
   elemento?: string;
   categoria?: 'utilidade' | 'combate' | 'gerais' | 'paranormais' | 'trilha';
   codigoRegra?: number | null;
+  periciaPoder?: number | null;
+  periciaEscolhidaNome?: string;
 }
 
 export interface PoderesEscolhidos {

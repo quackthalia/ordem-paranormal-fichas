@@ -3,6 +3,7 @@ import { useRPG } from '../context/RPGContext';
 import { usePoderesFiltrados } from '../hooks/usePoderes';
 import { InputOtimizado } from './InputOtimizado';
 import { ToolbarFormato } from './ToolbarFormato';
+import { ModalEscolherRitualAprendido } from './ModalEscolherRitualAprendido';
 import type { AbaModalPoderes, Poder } from '../types';
 import { verificarPreRequisitos, formatarTextoPreRequisitos } from '../utils/preRequisitos';
 import type { ContextoPreRequisitos } from '../utils/preRequisitos';
@@ -59,7 +60,7 @@ function PoderCard({
   onEscolher,
   contextoPrereq,
 }: {
-  poder: { codigo_poder: number; Nome: string; Descricao: string; PreRequisitos: string; Fonte: string; Pre_Codigo?: number | null; Tipo?: string; Classe?: string | null; };
+  poder: { codigo_poder: number; Nome: string; Descricao: string; PreRequisitos: string; Fonte: string; Pre_Codigo?: number | null; Tipo?: string; Classe?: string | null; Codigo_Regra?: number; };
   ehParanormal: boolean;
   paranormalData?: {
     Elemento?: string;
@@ -86,20 +87,20 @@ function PoderCard({
     }
   }
 
-  // DEBUG PARA PRE REQUISITO SANGUE 2
-  if (poder.Nome.includes("Anatomia Insana") || poder.Nome.includes("Sangue Fervente") || poder.Nome === "Proteção Pesada") {
-    console.log("DEBUG PODER:", poder.Nome, "Pre_Codigo:", poder.Pre_Codigo, "PreReqs:", poder.PreRequisitos, "NEX no Contexto:", contextoPrereq?.nex, "Val:", val);
-  }
-
-  const bloqueado = !val.atende;
+  const precisaEscolherRitual = poder.Codigo_Regra === 35;
+  const rituaisAprendidos = contextoPrereq?.rituaisAprendidos || [];
+  
+  // Mapeamos os IDs aprendidos para seus respectivos nomes!
+  const rituaisAprendidosNomes = rituaisAprendidos.map(ra => {
+    const r = (contextoPrereq?.rituais || []).find((rt: any) => rt.Codigo_Ritual === ra.codigo_ritual);
+    return ra.customNome || (r ? r.Nome_Ritual : String(ra.codigo_ritual));
+  });
 
   const precisaEscolherElemento = poder.Nome.toLowerCase().includes('elemento') || (poder.Descricao && poder.Descricao.toLowerCase().includes('escolha um elemento')) || poder.Codigo_Regra === 34 || poder.Codigo_Regra === 36;
   const [escolhendoElemento, setEscolhendoElemento] = useState(false);
 
-  const precisaEscolherRitual = poder.Codigo_Regra === 35;
-  const [escolhendoRitual, setEscolhendoRitual] = useState(false);
-  // Reutilizamos rituaisAprendidos vindos do contexto para montar as opções
-  const rituaisAprendidos = contextoPrereq?.rituaisAprendidos || [];
+  const bloqueado = !val.atende || (precisaEscolherRitual && rituaisAprendidos.length === 0);
+  const blockMotivo = !val.atende ? val.motivo : (precisaEscolherRitual && rituaisAprendidos.length === 0) ? 'Você não possui nenhum ritual aprendido.' : '';
 
   const precisaEscolherPericia = poder.Nome.toLowerCase().includes('perícia') || (poder.Descricao && poder.Descricao.toLowerCase().includes('escolha uma perícia'));
   const [escolhendoPericia, setEscolhendoPericia] = useState(false);
@@ -172,15 +173,18 @@ function PoderCard({
                 <option value="" disabled>Escolher...</option>
                 {periciasDisponiveis.map(p => {
                   const valPericia = contextoPrereq ? verificarPreRequisitos(poder as Poder, contextoPrereq, undefined, p.id) : { atende: true };
+                  const isFocoEmPericia = (poder as any).Codigo_Regra === 42;
+                  const jaFocou = isFocoEmPericia && contextoPrereq ? Object.values(contextoPrereq.poderes).some(pe => pe.codigoRegra === 42 && pe.periciaEscolhidaNome === p.nome) : false;
+                  const isDisabled = !valPericia.atende || jaFocou;
                   return (
                     <option 
                       key={p.id} 
                       value={p.id} 
-                      disabled={!valPericia.atende}
-                      style={{ color: !valPericia.atende ? '#52525b' : '#e4e4e7', backgroundColor: !valPericia.atende ? '#18181b' : '#27272a' }}
-                      className={!valPericia.atende ? "italic" : ""}
+                      disabled={isDisabled}
+                      style={{ color: isDisabled ? '#52525b' : '#e4e4e7', backgroundColor: isDisabled ? '#18181b' : '#27272a' }}
+                      className={isDisabled ? "italic" : ""}
                     >
-                      {p.nome}
+                      {p.nome} {jaFocou ? "(Já Escolhido)" : ""}
                     </option>
                   );
                 })}
@@ -192,56 +196,21 @@ function PoderCard({
                 ✕
               </button>
             </div>
-          ) : escolhendoRitual ? (
-            <div className="flex gap-1 items-center bg-zinc-950 p-1 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
-              <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline">Ritual:</span>
-              <select
-                className="bg-zinc-900 border border-zinc-700 text-xs text-zinc-300 rounded px-1 outline-none py-1 max-w-[140px]"
-                onChange={(e) => {
-                  const nomeRitual = e.target.value;
-                  if (nomeRitual) {
-                    setEscolhendoRitual(false);
-                    // Passamos o nome do ritual como "elemento" para o escolherPoderExtra interceptar
-                    onEscolher(nomeRitual, undefined);
-                  }
-                }}
-                defaultValue=""
-              >
-                <option value="" disabled>Escolher...</option>
-                {rituaisAprendidos.map((r, i) => (
-                  <option key={i} value={r.customNome || r.nome}>
-                    {r.customNome || r.nome}
-                  </option>
-                ))}
-              </select>
-              <button
-                onClick={(e) => { e.stopPropagation(); setEscolhendoRitual(false); }}
-                className="ml-1 rounded px-1 py-0.5 text-[0.6rem] font-bold text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 transition"
-              >
-                ✕
-              </button>
-            </div>
           ) : (
             <button
               disabled={bloqueado}
-              title={val.motivo || ''}
+              title={blockMotivo || ''}
               onClick={(e) => { 
                 e.stopPropagation(); 
                 if (precisaEscolherElemento) {
                   setEscolhendoElemento(true);
                 } else if (precisaEscolherPericia) {
                   setEscolhendoPericia(true);
-                } else if (precisaEscolherRitual) {
-                  setEscolhendoRitual(true);
                 } else {
                   onEscolher(); 
                 }
               }}
-              className={`rounded px-3.5 py-1.5 text-xs font-bold uppercase transition ${
-                bloqueado 
-                  ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
-                  : 'bg-red-700 text-zinc-100 hover:bg-red-600'
-              }`}
+              className={`rounded px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider transition ${bloqueado ? 'bg-zinc-800 text-zinc-600' : 'bg-red-900 text-red-100 hover:bg-red-800'}`}
             >
               Escolher
             </button>
@@ -270,8 +239,6 @@ function PoderCard({
               <strong>Pré-requisitos:</strong> {contextoPrereq ? formatarTextoPreRequisitos(poder.PreRequisitos, contextoPrereq.nomesPericias) : poder.PreRequisitos}
             </div>
           )}
-
-
 
           {ehParanormal && paranormalData?.PreRequisitosAfinidade && (
             <div className="mt-2 inline-block rounded bg-purple-400/5 px-3 py-2 text-xs italic text-purple-400">
@@ -313,9 +280,11 @@ export const ModalPoderes: React.FC = () => {
   } = useRPG();
 
   const contextoPrereq = useMemo(() => {
-    const poderesArray: { nome: string; elemento?: string }[] = Object.values(poderesHook.poderesEscolhidos).map(p => ({
+    const poderesArray: { nome: string; elemento?: string; codigoRegra?: number | null; periciaEscolhidaNome?: string }[] = Object.values(poderesHook.poderesEscolhidos).map(p => ({
       nome: p.nome.toLowerCase(),
-      elemento: p.elemento
+      elemento: p.elemento,
+      codigoRegra: p.codigoRegra,
+      periciaEscolhidaNome: p.periciaEscolhidaNome
     }));
     
     if (poderesHook.poderClasse) {
@@ -329,8 +298,6 @@ export const ModalPoderes: React.FC = () => {
       if (nex >= 65 && t.Nome_Habilidade_65) poderesArray.push({ nome: t.Nome_Habilidade_65.toLowerCase() });
       if (nex >= 99 && t.Nome_Habilidade_99) poderesArray.push({ nome: t.Nome_Habilidade_99.toLowerCase() });
     }
-
-    console.log("PODERES NO CONTEXTO:", poderesArray);
 
     return {
       atributos,
@@ -351,6 +318,11 @@ export const ModalPoderes: React.FC = () => {
   const [subAbaElemento, setSubAbaElemento] = useState<string | null>(null);
   const [afinidadeEditando, setAfinidadeEditando] = useState('');
   const [busca, setBusca] = useState('');
+  
+  const [ritualModalAbertoPara, setRitualModalAbertoPara] = useState<{
+    poder: Poder;
+    categoria: 'utilidade' | 'combate' | 'gerais' | 'paranormais' | 'trilha';
+  } | null>(null);
 
   const scrollPositions = useRef<Record<string, number>>({
     classe: 0, combate: 0, gerais: 0, paranormais: 0,
@@ -374,7 +346,6 @@ export const ModalPoderes: React.FC = () => {
     afinidadeAtiva
   );
 
-  // Filtro por elemento
   const listaFiltrada = useMemo(() => {
     let filtrada = listaFiltradaBase.filter((poder: any) => {
       if (abaModalPoderes === 'paranormais') {
@@ -409,7 +380,6 @@ export const ModalPoderes: React.FC = () => {
   const ehCombate = nexModalAberto !== null && PATAMARES_COMBATE.includes(nexModalAberto);
 
   const abasDisponiveis = useMemo((): [AbaModalPoderes, string][] => {
-    // Se for um slot de Transcender, só pode pegar poder paranormal
     if ((nexModalAberto !== null && typeof nexModalAberto === 'number' && nexModalAberto > 1000) || nexModalAberto === 'extra_regra1') {
       return [['paranormais', 'Poderes Paranormais']];
     }
@@ -418,7 +388,6 @@ export const ModalPoderes: React.FC = () => {
       ['gerais', 'Poderes Gerais'],
     ];
     
-    // Se a regra nex_experiencia NÃO estiver ativa, permite poderes paranormais nos slots normais
     if (!regras['nex_experiencia']) {
       base.push(['paranormais', 'Poderes Paranormais']);
     }
@@ -428,7 +397,6 @@ export const ModalPoderes: React.FC = () => {
   }, [ehCombate, regras, nexModalAberto]);
 
   useEffect(() => {
-    // Se a aba atual não estiver nas abas disponíveis, força para a primeira aba disponível
     if (!abasDisponiveis.some(([aba]) => aba === abaModalPoderes)) {
       setAbaModalPoderes(abasDisponiveis[0][0]);
     }
@@ -441,9 +409,6 @@ export const ModalPoderes: React.FC = () => {
     setAbaModalPoderes(aba);
   }, [abaModalPoderes, setAbaModalPoderes]);
 
-  // ================================================================
-  // EDITOR INLINE
-  // ================================================================
   if (nexPoderEditando !== null) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-5">
@@ -510,13 +475,9 @@ export const ModalPoderes: React.FC = () => {
     );
   }
 
-  // ================================================================
-  // MODAL PRINCIPAL
-  // ================================================================
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-5">
       <div className="flex h-[75vh] w-full max-w-3xl flex-col rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50">
-        {/* CABEÇALHO */}
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-950 rounded-t-lg">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-display m-0 text-lg uppercase tracking-wide text-zinc-100">
@@ -538,7 +499,6 @@ export const ModalPoderes: React.FC = () => {
           />
         </div>
 
-        {/* ABAS PRINCIPAIS */}
         <div className="flex border-b border-zinc-800 bg-zinc-950">
           {abasDisponiveis.map(([aba, rotulo]) => (
             <button
@@ -555,7 +515,6 @@ export const ModalPoderes: React.FC = () => {
           ))}
         </div>
 
-        {/* SUB-ABAS DE ELEMENTO */}
         {abaModalPoderes === 'paranormais' && (
           <div className="flex flex-wrap gap-1 border-b border-zinc-800 bg-zinc-950/80 px-3 py-2">
             <button
@@ -591,15 +550,12 @@ export const ModalPoderes: React.FC = () => {
           </div>
         )}
 
-        {/* LISTA DE PODERES */}
         <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-5">
           {listaFiltrada.map((poder: any) => {
             const estaExpandido = poderesModalExpandidos.includes(poder.codigo_poder);
             const pp = (poderesParanormais || []).find(
               (p: { Nome: string }) => p.Nome === poder.Nome
             );
-
-            console.log('🔍 Renderizando poder:', poder.Nome, 'PreRequisitosAfinidade:', pp?.PreRequisitosAfinidade);
 
             return (
               <PoderCard
@@ -613,6 +569,7 @@ export const ModalPoderes: React.FC = () => {
                   Pre_Codigo: poder.Pre_Codigo,
                   Tipo: poder.Tipo,
                   Classe: poder.Classe,
+                  Codigo_Regra: poder.Codigo_Regra,
                 }}
                 contextoPrereq={contextoPrereq}
                 ehParanormal={!!pp}
@@ -631,21 +588,30 @@ export const ModalPoderes: React.FC = () => {
                   );
                 }}
                 onEscolher={(elem, periciaId) => {
-                  let categoria: 'utilidade' | 'combate' | 'gerais' = 'utilidade';
+                  let categoria: 'utilidade' | 'combate' | 'gerais' | 'paranormais' | 'trilha' = 'utilidade';
                   if (abaModalPoderes === 'combate') categoria = 'combate';
                   else if (abaModalPoderes === 'gerais') categoria = 'gerais';
                   
                   const nexEscolhido = nexModalAberto!;
                   const nomePericia = periciaId ? contextoPrereq.nomesPericias[periciaId] : undefined;
-                  escolherPoder(nexEscolhido, poder, categoria, elem, nomePericia);
-                  setNexModalAberto(null);
 
                   if (poder.Nome.toLowerCase() === 'aprender ritual') {
+                    escolherPoder(nexEscolhido, poder, categoria, elem, nomePericia);
                     window.dispatchEvent(new CustomEvent('abrirModalRituais', { detail: { nex: nexEscolhido } }));
-                  } else if (poder.Nome.toLowerCase() === 'especialista diletante' || poder.Codigo_Regra === 31 || poder.codigo_regra === 31) {
+                    setNexModalAberto(null);
+                  } else if (poder.Nome.toLowerCase() === 'especialista diletante' || poder.Codigo_Regra === 31 || (poder as any).codigo_regra === 31) {
+                    escolherPoder(nexEscolhido, poder, categoria, elem, nomePericia);
                     window.dispatchEvent(new Event('abrirModalOutraClasse'));
-                  } else if (poder.Nome.toLowerCase().includes('flashback') || poder.Codigo_Regra === 32 || poder.codigo_regra === 32) {
+                    setNexModalAberto(null);
+                  } else if (poder.Nome.toLowerCase().includes('flashback') || poder.Codigo_Regra === 32 || (poder as any).codigo_regra === 32) {
+                    escolherPoder(nexEscolhido, poder, categoria, elem, nomePericia);
                     window.dispatchEvent(new Event('abrirModalOutraOrigem'));
+                    setNexModalAberto(null);
+                  } else if (poder.Codigo_Regra === 35) {
+                    setRitualModalAbertoPara({ poder, categoria });
+                  } else {
+                    escolherPoder(nexEscolhido, poder, categoria, elem, nomePericia);
+                    setNexModalAberto(null);
                   }
                 }}
               />
@@ -659,6 +625,24 @@ export const ModalPoderes: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Modal de Escolher Ritual Aprendido */}
+      {ritualModalAbertoPara && (
+        <ModalEscolherRitualAprendido
+          isOpen={true}
+          onClose={() => setRitualModalAbertoPara(null)}
+          onSelect={(ritualNome) => {
+            const nexEscolhido = nexModalAberto!;
+            escolherPoder(nexEscolhido, ritualModalAbertoPara.poder, ritualModalAbertoPara.categoria, ritualNome, undefined);
+            setRitualModalAbertoPara(null);
+            setNexModalAberto(null);
+          }}
+          rituaisNomes={(contextoPrereq?.rituaisAprendidos || []).map((ra: any) => {
+            const r = (contextoPrereq?.rituais || []).find((rt: any) => rt.Codigo_Ritual === ra.codigo_ritual);
+            return ra.customNome || (r ? r.Nome_Ritual : String(ra.codigo_ritual));
+          })}
+        />
+      )}
     </div>
   );
 };

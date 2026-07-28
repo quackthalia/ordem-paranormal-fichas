@@ -93,18 +93,20 @@ export function ModalTrilhas({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-5">
       <div
         ref={ref}
-        className="flex h-full max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-950 shadow-2xl shadow-black/50"
+        className="flex w-full max-w-2xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50"
+        style={{ height: '85vh' }}
       >
-        {/* Cabeçalho */}
-        {/* CABEÇALHO */}
-        <div className="flex flex-col border-b border-zinc-800 bg-zinc-950/50 p-5 pb-4">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-display m-0 text-lg uppercase tracking-wide text-zinc-100">
-              {modoVersatilidade ? 'Selecionar Versatilidade' : 'Selecionar Trilha'} <span className="text-red-500">({modoVersatilidade ? 'NEX 50%' : 'NEX 10%'})</span>
-            </h2>
+        <div className="flex flex-col border-b border-zinc-800 bg-zinc-950 px-6 py-4 gap-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="font-display text-lg uppercase tracking-wider text-zinc-100">
+                {modoVersatilidade ? 'Selecionar Versatilidade' : 'Selecionar Trilha'} <span className="text-red-500">({modoVersatilidade ? 'NEX 50%' : 'NEX 10%'})</span>
+              </h2>
+              <p className="mt-1 text-xs text-zinc-500">Selecione uma opção da lista abaixo.</p>
+            </div>
             <button
               onClick={onClose}
-              className="text-zinc-500 hover:text-red-500 transition"
+              className="text-zinc-500 transition hover:text-red-400"
             >
               ✕
             </button>
@@ -114,12 +116,12 @@ export function ModalTrilhas({
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             placeholder="Buscar trilha..."
-            className="w-full rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700"
+            className="w-full rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700"
           />
         </div>
 
         {/* Abas */}
-        <div className="flex flex-wrap gap-1 border-b-2 border-red-900/30 bg-zinc-900/50 px-3 pt-3">
+        <div className="flex flex-wrap gap-1 border-b border-zinc-800 bg-zinc-900/50 px-6 pt-3">
           <button
             onClick={() => setAbaAtual('classe')}
             className={`min-w-[70px] flex-1 rounded-t px-1 py-2.5 text-xs font-bold uppercase tracking-wider transition ${
@@ -156,38 +158,38 @@ export function ModalTrilhas({
             const nexLevels = [10, 40, 65, 99];
 
             return (
-              <div key={trilha.Codigo_Trilha} className="mb-3 overflow-hidden rounded-r border-l-4 border-indigo-700 bg-zinc-950/60">
+              <div key={trilha.Codigo_Trilha} className="mb-4 rounded border border-zinc-700 bg-zinc-800/50 overflow-hidden">
                 <div
                   onClick={() => toggleTrilhaExpandida(trilha.Codigo_Trilha)}
-                  className="flex cursor-pointer items-center justify-between gap-3 bg-zinc-900/80 px-4 py-3 transition hover:bg-zinc-800/80"
+                  className="bg-zinc-800/80 px-4 py-3 border-b border-zinc-700/50 flex cursor-pointer justify-between items-center transition hover:bg-zinc-700/50"
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-zinc-100">{trilha.Nome_Trilha}</span>
-                    <span className="text-[10px] uppercase text-zinc-500">
+                  <div className="flex items-center gap-3">
+                    <span className="font-bold text-zinc-200 uppercase tracking-wider text-sm">{trilha.Nome_Trilha}</span>
+                    <span className="text-[10px] uppercase text-zinc-500 tracking-wider">
                       ({nomePericia(trilha.Perícia_Trilha)})
                     </span>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-4">
                     <button
                       onClick={(e) => { e.stopPropagation(); handleEscolher(trilha); }}
-                      className="rounded bg-red-700 px-3.5 py-1.5 text-xs font-bold uppercase text-zinc-100 transition hover:bg-red-600"
+                      className="rounded px-3 py-1.5 text-[0.7rem] font-bold uppercase tracking-wider transition bg-red-900 text-red-100 hover:bg-red-800"
                     >
                       Escolher
                     </button>
-                    <span className="w-5 text-center text-zinc-600">
+                    <span className="text-zinc-600 text-xs">
                       {estaExpandida ? '▲' : '▼'}
                     </span>
                   </div>
                 </div>
 
                 {estaExpandida && (
-                  <div className="p-4 text-sm text-zinc-400">
+                  <div className="p-3 flex flex-col gap-2">
                     <div
-                      className="mb-4 text-zinc-300"
+                      className="mb-2 px-1 text-sm text-zinc-400 leading-relaxed"
                       dangerouslySetInnerHTML={{ __html: formatarDescricao(trilha.Descricao_Trilha) }}
                     />
 
-                    <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-indigo-400 border-b border-zinc-800 pb-1">
+                    <h4 className="mb-2 text-[10px] font-bold uppercase tracking-wider text-red-500 border-b border-zinc-800/50 pb-1">
                       Habilidades da Trilha
                     </h4>
 
@@ -205,23 +207,30 @@ export function ModalTrilhas({
                       const isHabExpanded = habilidadesExpandidas.includes(uniqueHabId);
 
                       return (
-                        <div key={nexLvl} className="mb-2 overflow-hidden rounded border border-zinc-800 bg-zinc-900/50">
+                        <div key={nexLvl} className="rounded border border-zinc-700 bg-zinc-900/50 overflow-hidden transition">
                           <div
                             onClick={() => toggleHabilidade(uniqueHabId)}
-                            className="flex cursor-pointer items-center justify-between px-3 py-2 transition hover:bg-zinc-800"
+                            className="flex cursor-pointer justify-between items-center p-3 hover:bg-zinc-700/30 transition"
                           >
-                            <span className="font-bold text-zinc-200 text-xs">
-                              {regras['nex_experiencia'] ? `Nível ${calcularNivel(nexLvl)}` : `NEX ${nexLvl}%`} - <span className="text-zinc-400">{nomeHab}</span>
-                            </span>
-                            <span className="text-xs text-zinc-600">
-                              {isHabExpanded ? '▲' : '▼'}
-                            </span>
+                            <div className="flex items-center gap-2">
+                              <span className="inline-block rounded bg-red-900/40 px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight text-red-200">
+                                {regras['nex_experiencia'] ? `Nível ${calcularNivel(nexLvl)}` : `NEX ${nexLvl}%`}
+                              </span>
+                              <span className="font-bold text-zinc-100 text-sm">{nomeHab}</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className="text-xs text-zinc-600">
+                                {isHabExpanded ? '▲' : '▼'}
+                              </span>
+                            </div>
                           </div>
                           {isHabExpanded && (
-                            <div
-                              className="px-3 pb-3 pt-1 text-xs text-zinc-400"
-                              dangerouslySetInnerHTML={{ __html: formatarDescricao(descHab) }}
-                            />
+                            <div className="px-5 py-4 border-t border-zinc-800/50 bg-zinc-950/30">
+                              <div
+                                className="text-sm leading-relaxed text-zinc-400"
+                                dangerouslySetInnerHTML={{ __html: formatarDescricao(descHab) }}
+                              />
+                            </div>
                           )}
                         </div>
                       );

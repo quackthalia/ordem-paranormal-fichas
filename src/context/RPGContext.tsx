@@ -116,6 +116,9 @@ interface RPGContextType {
   elementoRegra18: string | null;
   setElementoRegra18: React.Dispatch<React.SetStateAction<string | null>>;
   regrasAutomaticasAtivas: Set<number>;
+  escolhaRegra53: 'FOR' | 'AGI' | null;
+  setEscolhaRegra53: React.Dispatch<React.SetStateAction<'FOR' | 'AGI' | null>>;
+  atributosFinais: Atributos;
 }
 
 const RPGContext = createContext<RPGContextType | null>(null);
@@ -166,6 +169,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const [progressaoNexRecusados, setProgressaoNexRecusados] = useState<number[]>([]);
   const [progressaoNexEditados, setProgressaoNexEditados] = useState<Record<number, string>>({});
   const [elementoRegra18, setElementoRegra18] = useState<string | null>(null);
+  const [escolhaRegra53, setEscolhaRegra53] = useState<'FOR' | 'AGI' | null>(null);
 
   const toggleRegra = useCallback((nome: string) => {
     setRegras(prev => {
@@ -242,7 +246,37 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     return Object.entries(poderesHook.poderesEscolhidos).filter(([key, p]) => p.categoria === 'paranormais' && key !== 'extra_regra1').length;
   }, [poderesHook.poderesEscolhidos]);
 
-  const status = useStatus(classe, nex, nivel, atributos, quantidadePoderesParanormais, regrasAutomaticasAtivas);
+  // Sincroniza o nível com o NEX caso a regra 'nex_experiencia' não esteja ativa
+  React.useEffect(() => {
+    if (!regras['nex_experiencia']) {
+      setNivel(Math.min(20, Math.max(1, Math.ceil(nex / 5))));
+    }
+  }, [nex, regras]);
+
+  const atributosBaseComBonus = useMemo(() => {
+    const obj = { ...atributos };
+    (Object.keys(obj) as AtributoKey[]).forEach(k => {
+      obj[k] += bonusAtributos[k];
+    });
+    return obj;
+  }, [atributos, bonusAtributos]);
+
+  const status = useStatus(classe, nex, nivel, atributosBaseComBonus, quantidadePoderesParanormais, regrasAutomaticasAtivas);
+
+  const atributosFinais = useMemo(() => {
+    const obj = { ...atributosBaseComBonus };
+    const machucado = status.pvAtual !== null && status.pvMax > 0 && status.pvAtual <= Math.floor(status.pvMax / 2);
+    if (machucado && regrasAutomaticasAtivas.has(53) && escolhaRegra53) {
+      obj[escolhaRegra53] += regrasAutomaticasAtivas.has(54) ? 2 : 1;
+    }
+    
+    // Clear choice if not machucado anymore
+    if (!machucado && escolhaRegra53) {
+       setEscolhaRegra53(null);
+    }
+    
+    return obj;
+  }, [atributosBaseComBonus, status.pvAtual, status.pvMax, regrasAutomaticasAtivas, escolhaRegra53]);
 
   const afinidadeAtiva = useMemo(() => {
     if (!afinidadeEscolhida) return false;
@@ -300,7 +334,18 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     return vet;
   }, [origensHook.origemSelecionada]);
 
-  const periciasHook = usePericias(classe, nex, atributos, regrasAtivas, periciasGratis, origensHook.origemSelecionada?.Codigo_Per_Regra, veteranasGratis, regrasAutomaticasAtivas);
+  const periciasHook = usePericias(
+    classe, 
+    nex, 
+    atributosFinais, 
+    regrasAtivas, 
+    periciasGratis, 
+    origensHook.origemSelecionada?.Codigo_Per_Regra, 
+    veteranasGratis, 
+    regrasAutomaticasAtivas, 
+    poderesHook.poderesEscolhidos,
+    origensHook.origemSelecionada
+  );
 
   // ============================================================
   // LÓGICA DE ATRIBUTOS
@@ -378,8 +423,8 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   // Calcula status reais
   const { pvMax, peMax, sanMax, peTurno } = useMemo(() => {
     if (!classe) return { pvMax: 0, peMax: 0, sanMax: 0, peTurno: 0 };
-    return calcularStatusBase(classe, atributos, nivel, regrasAutomaticasAtivas);
-  }, [classe, atributos, nivel, regrasAutomaticasAtivas]);
+    return calcularStatusBase(classe, atributosFinais, nivel, regrasAutomaticasAtivas);
+  }, [classe, atributosFinais, nivel, regrasAutomaticasAtivas]);
 
   const value: RPGContextType = {
     telaAtual, setTelaAtual,
@@ -428,6 +473,8 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     progressaoNexEditados, setProgressaoNexEditados,
     elementoRegra18, setElementoRegra18,
     regrasAutomaticasAtivas,
+    escolhaRegra53, setEscolhaRegra53,
+    atributosFinais
   };
 
   return <RPGContext.Provider value={value}>{children}</RPGContext.Provider>;

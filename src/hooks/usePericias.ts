@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { supabase } from '../services/supabase';
-import type { PericiasMap, AtributoKey, ClasseRPG, Atributos } from '../types';
+import type { PericiasMap, AtributoKey, ClasseRPG, Atributos, PoderesEscolhidos, Origem } from '../types';
 import { calcularLimitesPericias } from '../utils/rpgRules';
 
 interface UsePericiasReturn {
@@ -15,6 +15,7 @@ interface UsePericiasReturn {
   regrasAtivas: boolean;
   jaTinhaProfissao33: boolean;
   debugRegra33: { avaliou: boolean, evalJaTinha: boolean };
+  bonusRegra40: Record<string, number>;
 }
 
 export function usePericias(
@@ -25,7 +26,9 @@ export function usePericias(
   periciasGratisBase: string[],
   codigoPerRegra?: number | null,
   veteranasGratis: string[] = [],
-  regrasAutomaticasAtivas?: Set<number>
+  regrasAutomaticasAtivas?: Set<number>,
+  poderesEscolhidos?: PoderesEscolhidos,
+  origemSelecionada?: Origem | null
 ): UsePericiasReturn {
   const [pericias, setPericias] = useState<PericiasMap>({});
   const [nomesPericias, setNomesPericias] = useState<Record<number, string>>({});
@@ -33,6 +36,9 @@ export function usePericias(
   const [error, setError] = useState<string | null>(null);
   const [jaTinhaProfissao33, setJaTinhaProfissao33] = useState<boolean>(false);
   const [avaliouRegra33, setAvaliouRegra33] = useState<boolean>(false);
+
+  const [jaTinhaPericiaPoder, setJaTinhaPericiaPoder] = useState<Record<string, boolean>>({});
+  const [avaliouPericiaPoder, setAvaliouPericiaPoder] = useState<Record<string, boolean>>({});
 
   // Sincroniza a avaliação no momento em que a regra muda (Deriving State during Render)
   const temAgora = regrasAutomaticasAtivas?.has(33);
@@ -51,14 +57,151 @@ export function usePericias(
     setAvaliouRegra33(false);
   }
 
+  const todosPoderesComRegra = useMemo(() => {
+    const lista: { idSlot: string, codigoRegra: number, periciaPoder?: number | null, periciaEscolhidaNome?: string }[] = [];
+    if (origemSelecionada?.Codigo_Regra) {
+      lista.push({
+        idSlot: 'origem_poder',
+        codigoRegra: origemSelecionada.Codigo_Regra,
+        periciaPoder: origemSelecionada.Pericia_Poder
+      });
+    }
+    if (poderesEscolhidos) {
+      Object.entries(poderesEscolhidos).forEach(([key, p]) => {
+        if (p.codigoRegra) {
+          lista.push({ idSlot: key, codigoRegra: p.codigoRegra, periciaPoder: p.periciaPoder, periciaEscolhidaNome: p.periciaEscolhidaNome });
+        }
+      });
+    }
+    return lista;
+  }, [origemSelecionada, poderesEscolhidos]);
+
+  // Avaliação dinâmica baseada nos poderes escolhidos e origem
+  if (todosPoderesComRegra.length > 0 && Object.keys(pericias).length > 0) {
+    let mudouPoder = false;
+    const novoAvaliou = { ...avaliouPericiaPoder };
+    const novoJaTinha = { ...jaTinhaPericiaPoder };
+
+    todosPoderesComRegra.forEach(poder => {
+      const { idSlot } = poder;
+      const eRegraTreino = [40, 41, 44, 45].includes(poder.codigoRegra);
+      if (eRegraTreino && poder.periciaPoder) {
+        if (!avaliouPericiaPoder[idSlot]) {
+          const nomePericiaRegra = nomesPericias[poder.periciaPoder];
+          if (nomePericiaRegra && pericias[nomePericiaRegra]) {
+            const valorTreino = pericias[nomePericiaRegra].treino;
+            const jaTinha = valorTreino >= 5 || periciasGratisBase.includes(nomePericiaRegra);
+            novoJaTinha[idSlot] = jaTinha;
+            novoAvaliou[idSlot] = true;
+            mudouPoder = true;
+          }
+        }
+      }
+    });
+
+    // Limpeza de poderes removidos
+    Object.keys(avaliouPericiaPoder).forEach(idSlot => {
+      if (!todosPoderesComRegra.some(p => p.idSlot === idSlot)) {
+        delete novoAvaliou[idSlot];
+        delete novoJaTinha[idSlot];
+        mudouPoder = true;
+      }
+    });
+
+    if (mudouPoder) {
+      setJaTinhaPericiaPoder(novoJaTinha);
+      setAvaliouPericiaPoder(novoAvaliou);
+    }
+  }
+
   const periciasGratis = useMemo(() => {
     const gratis = [...periciasGratisBase];
     // Se a regra 33 está ativa e ele NÃO tinha a perícia antes, dá de graça
     if (regrasAutomaticasAtivas?.has(33) && !jaTinhaProfissao33) {
       gratis.push('Profissão');
     }
+    
+    
+    // Regras 40, 41, 44 e 45 dão treinamento na perícia do poder se o usuário não era treinado
+    const regrasTreino = [40, 41, 44, 45];
+    if (regrasTreino.some(r => regrasAutomaticasAtivas?.has(r))) {
+      todosPoderesComRegra.forEach(poder => {
+        const { idSlot } = poder;
+        if (regrasTreino.includes(poder.codigoRegra) && poder.periciaPoder) {
+          if (avaliouPericiaPoder[idSlot] && !jaTinhaPericiaPoder[idSlot]) {
+            const nome = nomesPericias[poder.periciaPoder];
+            if (nome && !gratis.includes(nome)) gratis.push(nome);
+          }
+        }
+      });
+    }
+
     return gratis;
-  }, [periciasGratisBase, regrasAutomaticasAtivas, jaTinhaProfissao33]);
+  }, [periciasGratisBase, regrasAutomaticasAtivas, jaTinhaProfissao33, todosPoderesComRegra, nomesPericias, avaliouPericiaPoder, jaTinhaPericiaPoder]);
+
+  // Bônus passivo para quem já tinha a perícia (Regras 40, 41, 44, 45) e Bônus de INT (Regra 44)
+  // Regra 46 (+2 fixo na perícia do poder)
+  // Regra 47 (+3 fixo na perícia do poder)
+  const bonusRegra40 = useMemo(() => {
+    const bonus: Record<string, number> = {};
+    
+    // Regras de treinamento/bônus para quem já tinha
+    const regrasTreino = [40, 41, 44, 45];
+    // Regras de bônus fixo
+    const regrasBonusFixo = [46, 47, 49, 50, 52];
+    
+    if (regrasTreino.some(r => regrasAutomaticasAtivas?.has(r)) || regrasBonusFixo.some(r => regrasAutomaticasAtivas?.has(r))) {
+      todosPoderesComRegra.forEach(poder => {
+        const { idSlot, codigoRegra, periciaPoder, periciaEscolhidaNome } = poder;
+        
+        let idPericiaReal = periciaPoder || Number(periciaEscolhidaNome);
+        
+        // Regra 52: Sangue de Ferro (Afinidade) dá +5 em Fortitude, mas o DB não tem a coluna Pericia_Poder
+        if (codigoRegra === 52) {
+          idPericiaReal = 10; // 10 é o ID de Fortitude
+        }
+        
+        if (idPericiaReal) {
+          const nome = nomesPericias[idPericiaReal];
+          if (nome) {
+            let valorBonus = 0;
+            
+            // Regras 40, 41, 44, 45
+            if (regrasTreino.includes(codigoRegra)) {
+              if (avaliouPericiaPoder[idSlot] && jaTinhaPericiaPoder[idSlot]) {
+                valorBonus += 2;
+              }
+            }
+            
+            // Regra 46, 49 e 50 (+2 passivo)
+            if (codigoRegra === 46 || codigoRegra === 49 || codigoRegra === 50) {
+              valorBonus += 2;
+            }
+            
+            // Regra 47 (+3 passivo)
+            if (codigoRegra === 47) {
+              valorBonus += 3;
+            }
+            
+            // Regra 52 (+5 passivo em Fortitude)
+            if (codigoRegra === 52 && nome === 'Fortitude') {
+              valorBonus += 5;
+            }
+            
+            if (valorBonus > 0) {
+              bonus[nome] = (bonus[nome] || 0) + valorBonus;
+            }
+          }
+        }
+        
+        // Regra 44 sempre dá +INT em Intuição, independentemente da perícia do poder
+        if (codigoRegra === 44) {
+          bonus['Intuição'] = (bonus['Intuição'] || 0) + atributos.INT;
+        }
+      });
+    }
+    return bonus;
+  }, [todosPoderesComRegra, regrasAutomaticasAtivas, nomesPericias, avaliouPericiaPoder, jaTinhaPericiaPoder, atributos.INT]);
 
   // Busca as perícias do banco
   useEffect(() => {
@@ -248,8 +391,22 @@ export function usePericias(
     [regrasAtivas, periciasGratis, nex, limites]
   );
 
+  const periciasComBonus = useMemo(() => {
+    if (Object.keys(bonusRegra40).length === 0) return pericias;
+    const novas = { ...pericias };
+    Object.entries(bonusRegra40).forEach(([nome, bonus]) => {
+      if (novas[nome]) {
+        novas[nome] = {
+          ...novas[nome],
+          outros: (novas[nome].outros || 0) + bonus
+        };
+      }
+    });
+    return novas;
+  }, [pericias, bonusRegra40]);
+
   return { 
-    pericias, 
+    pericias: periciasComBonus, 
     nomesPericias, 
     loading, 
     error, 
@@ -259,6 +416,7 @@ export function usePericias(
     periciasGratis,
     regrasAtivas,
     jaTinhaProfissao33,
-    debugRegra33: { avaliou: avaliouRegra33, evalJaTinha: jaTinhaProfissao33 }
+    debugRegra33: { avaliou: avaliouRegra33, evalJaTinha: jaTinhaProfissao33 },
+    bonusRegra40
   };
 }

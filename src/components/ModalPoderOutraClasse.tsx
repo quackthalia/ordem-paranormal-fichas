@@ -5,6 +5,7 @@ import type { Poder } from '../types';
 import { supabase } from '../services/supabase';
 import { verificarPreRequisitos, formatarTextoPreRequisitos } from '../utils/preRequisitos';
 import type { ContextoPreRequisitos } from '../utils/preRequisitos';
+import { ModalEscolherRitualAprendido } from './ModalEscolherRitualAprendido';
 
 function formatarDescricao(texto: string): string {
   if (!texto) return '';
@@ -21,7 +22,7 @@ function formatarDescricao(texto: string): string {
   return resultado;
 }
 
-export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
+export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => void; categoriaPermitida?: 'combate' | 'utilidade' | 'gerais' }> = ({ isOpen, onClose, categoriaPermitida }) => {
   const { classe, nex, atributos, periciasHook, poderesHook } = useRPG();
   const [poderes, setPoderes] = useState<Poder[]>([]);
   const [filtro, setFiltro] = useState('');
@@ -35,9 +36,11 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
 
 
   const contextoPrereq: ContextoPreRequisitos = useMemo(() => {
-    const poderesArray: { nome: string; elemento?: string }[] = Object.values(poderesHook.poderesEscolhidos).map(p => ({
+    const poderesArray: { nome: string; elemento?: string; codigoRegra?: number | null; periciaEscolhidaNome?: string }[] = Object.values(poderesHook.poderesEscolhidos).map(p => ({
       nome: p.nome.toLowerCase(),
-      elemento: p.elemento
+      elemento: p.elemento,
+      codigoRegra: p.codigoRegra,
+      periciaEscolhidaNome: p.periciaEscolhidaNome
     }));
     
     return {
@@ -45,9 +48,10 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
       nex,
       pericias: periciasHook.pericias,
       nomesPericias: periciasHook.nomesPericias,
-      poderes: poderesArray
+      poderes: poderesArray,
+      rituaisAprendidos: poderesHook.rituaisAprendidos
     };
-  }, [atributos, nex, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos]);
+  }, [atributos, nex, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, poderesHook.rituaisAprendidos]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -66,15 +70,26 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
       setAbaAtiva(classesParaBuscar[0]);
     }
 
-    const filtrados = poderesHook.listaPoderesUtilidade.filter(p => {
+    let filtrados = poderesHook.listaPoderesUtilidade.filter(p => {
       const classeNormalizada = p.Classe?.toLowerCase() || '';
       return classeNormalizada === (abaAtiva || classesParaBuscar[0]).toLowerCase();
     });
 
+    console.log("ModalPoderOutraClasse rendering. categoriaPermitida:", categoriaPermitida);
+    console.log("Powers before filtering:", filtrados.length);
+
+    if (categoriaPermitida === 'combate') {
+      filtrados = filtrados.filter(p => p.Tipo?.toLowerCase().trim() === 'combate' || p.Tipo?.toLowerCase().trim() === 'varia');
+      console.log("Filtered for combate. Result:", filtrados.length);
+    } else if (categoriaPermitida === 'utilidade') {
+      filtrados = filtrados.filter(p => p.Tipo?.toLowerCase().trim() === 'utilidade' || p.Tipo?.toLowerCase().trim() === 'varia');
+      console.log("Filtered for utilidade. Result:", filtrados.length);
+    }
+
     // Ordenar por nome
     filtrados.sort((a, b) => a.Nome.localeCompare(b.Nome));
     setPoderes(filtrados);
-  }, [isOpen, classe, poderesHook.listaPoderesUtilidade, abaAtiva]);
+  }, [isOpen, classe, poderesHook.listaPoderesUtilidade, abaAtiva, categoriaPermitida]);
 
   if (!isOpen) return null;
 
@@ -86,7 +101,7 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
   const poderesFiltrados = poderes.filter(p => p.Nome.toLowerCase().includes(filtro.toLowerCase()));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onClick={onClose}>
       <div className="flex h-[85vh] w-[90vw] max-w-4xl flex-col rounded-xl border border-zinc-700 bg-zinc-900 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-950 rounded-t-lg">
           <div className="flex items-center justify-between mb-4">
@@ -114,11 +129,14 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
               const req = verificarPreRequisitos(poder as Poder, contextoPrereq);
               const isExpanded = expandidos.includes(poder.codigo_poder);
               const alreadyHas = Object.values(poderesHook.poderesEscolhidos).some(p => p.nome === poder.Nome);
-              const blocked = !req.atende || alreadyHas;
-
+              
               const precisaEscolherElemento = poder.Nome.toLowerCase().includes('elemento') || (poder.Descricao && poder.Descricao.toLowerCase().includes('escolha um elemento')) || poder.Codigo_Regra === 34 || poder.Codigo_Regra === 36;
               const precisaEscolherRitual = poder.Codigo_Regra === 35;
               const precisaEscolherPericia = poder.Nome.toLowerCase().includes('perícia') || (poder.Descricao && poder.Descricao.toLowerCase().includes('escolha uma perícia'));
+
+              const rituaisAprendidos = contextoPrereq?.rituaisAprendidos || [];
+              const bloqRitual = precisaEscolherRitual && rituaisAprendidos.length === 0;
+              const blocked = !req.atende || alreadyHas || bloqRitual;
 
               return (
                 <div key={poder.codigo_poder} className="rounded border border-zinc-700 bg-zinc-800/50 overflow-hidden">
@@ -153,31 +171,10 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
                           })}
                           <button onClick={(e) => { e.stopPropagation(); setEscolhendoElementoId(null); }} className="ml-1 rounded px-1 py-0.5 text-[0.6rem] font-bold text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 transition">✕</button>
                         </div>
-                      ) : !alreadyHas && escolhendoRitualId === poder.codigo_poder ? (
-                        <div className="flex gap-1 items-center bg-zinc-950 p-1 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
-                          <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline">Ritual:</span>
-                          <select
-                            className="bg-zinc-900 border border-zinc-700 text-xs text-zinc-300 rounded px-1 outline-none py-1 max-w-[140px]"
-                            onChange={(e) => {
-                              const nomeRitual = e.target.value;
-                              if (nomeRitual) {
-                                setEscolhendoRitualId(null);
-                                poderesHook.escolherPoderExtra(poder, nomeRitual, undefined, 'extra_regra31');
-                                onClose();
-                              }
-                            }}
-                            defaultValue=""
-                          >
-                            <option value="" disabled>Escolher...</option>
-                            {(contextoPrereq?.rituaisAprendidos || []).map((r, i) => (
-                              <option key={i} value={r.customNome || r.nome}>{r.customNome || r.nome}</option>
-                            ))}
-                          </select>
-                          <button onClick={(e) => { e.stopPropagation(); setEscolhendoRitualId(null); }} className="ml-1 rounded px-1 py-0.5 text-[0.6rem] font-bold text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 transition">✕</button>
-                        </div>
                       ) : !alreadyHas && (
                         <button
                           disabled={blocked}
+                          title={bloqRitual ? "Você não possui nenhum ritual aprendido." : ""}
                           onClick={(e) => {
                             e.stopPropagation();
                             if (!blocked) {
@@ -190,7 +187,7 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
                               }
                             }
                           }}
-                          className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider rounded transition ${blocked ? 'bg-zinc-800 text-zinc-600' : 'bg-red-700 text-white hover:bg-red-600'}`}
+                          className={`rounded-md px-4 py-2 text-xs font-bold uppercase tracking-wider transition ${blocked ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed' : 'bg-red-700 hover:bg-red-600 text-zinc-100'}`}
                         >
                           Escolher
                         </button>
@@ -212,6 +209,25 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
           </div>
         </div>
       </div>
+
+      {escolhendoRitualId && (
+        <ModalEscolherRitualAprendido
+          isOpen={true}
+          onClose={() => setEscolhendoRitualId(null)}
+          onSelect={(ritualNome) => {
+            const poder = poderesFiltrados.find(p => p.codigo_poder === escolhendoRitualId);
+            if (poder) {
+              poderesHook.escolherPoderExtra(poder, ritualNome, undefined, 'extra_regra31');
+            }
+            setEscolhendoRitualId(null);
+            onClose();
+          }}
+          rituaisNomes={(contextoPrereq?.rituaisAprendidos || []).map((ra: any) => {
+            const r = (contextoPrereq?.rituais || []).find((rt: any) => rt.Codigo_Ritual === ra.codigo_ritual);
+            return ra.customNome || (r ? r.Nome_Ritual : String(ra.codigo_ritual));
+          })}
+        />
+      )}
     </div>
   );
 }

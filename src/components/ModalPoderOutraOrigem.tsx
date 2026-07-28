@@ -3,6 +3,7 @@ import { useRPG } from '../context/RPGContext';
 import { InputOtimizado } from './InputOtimizado';
 import { supabase } from '../services/supabase';
 import type { Origem } from '../types';
+import { ModalEscolherRitualAprendido } from './ModalEscolherRitualAprendido';
 
 function formatarDescricao(texto: string): string {
   if (!texto) return '';
@@ -20,7 +21,7 @@ function formatarDescricao(texto: string): string {
 }
 
 export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
-  const { poderesHook, origensHook } = useRPG();
+  const { poderesHook, origensHook, contextoPrereq } = useRPG();
   const [origens, setOrigens] = useState<Origem[]>([]);
   const [filtro, setFiltro] = useState('');
   const [expandidos, setExpandidos] = useState<number[]>([]);
@@ -71,6 +72,9 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
               const precisaEscolherRitual = origem.Codigo_Regra === 35;
               const precisaEscolherPericia = origem.Nome_Poder.toLowerCase().includes('perícia') || (origem.Descricao_Poder && origem.Descricao_Poder.toLowerCase().includes('escolha uma perícia'));
 
+              const rituaisAprendidos = contextoPrereq?.rituaisAprendidos || [];
+              const bloqRitual = precisaEscolherRitual && rituaisAprendidos.length === 0;
+
               return (
                 <div key={origem.Codigo_Origem} className="overflow-hidden rounded-md border border-zinc-800 bg-zinc-900 transition hover:border-zinc-700">
                   <div className="flex justify-between items-center bg-zinc-900/50 p-4">
@@ -99,30 +103,10 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
                           ))}
                           <button onClick={(e) => { e.stopPropagation(); setEscolhendoElementoId(null); }} className="ml-1 rounded px-1 py-0.5 text-[0.6rem] font-bold text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 transition">✕</button>
                         </div>
-                      ) : !alreadyHas && escolhendoRitualId === origem.Codigo_Origem ? (
-                        <div className="flex gap-1 items-center bg-zinc-950 p-1 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
-                          <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline">Ritual:</span>
-                          <select
-                            className="bg-zinc-900 border border-zinc-700 text-xs text-zinc-300 rounded px-1 outline-none py-1 max-w-[140px]"
-                            onChange={(e) => {
-                              const nomeRitual = e.target.value;
-                              if (nomeRitual) {
-                                setEscolhendoRitualId(null);
-                                poderesHook.escolherPoderExtra({ Id_Poder: -origem.Codigo_Origem, Codigo_Poder: -1, Nome: origem.Nome_Poder, Descricao: origem.Descricao_Poder, Fonte: origem.Fonte, Tipo: 'Geral', Codigo_Regra: origem.Codigo_Regra } as any, nomeRitual, undefined, 'extra_regra32');
-                                onClose();
-                              }
-                            }}
-                            defaultValue=""
-                          >
-                            <option value="" disabled>Escolher...</option>
-                            {(contextoPrereq?.rituaisAprendidos || []).map((r, i) => (
-                              <option key={i} value={r.customNome || r.nome}>{r.customNome || r.nome}</option>
-                            ))}
-                          </select>
-                          <button onClick={(e) => { e.stopPropagation(); setEscolhendoRitualId(null); }} className="ml-1 rounded px-1 py-0.5 text-[0.6rem] font-bold text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 transition">✕</button>
-                        </div>
                       ) : !alreadyHas && (
                         <button
+                          disabled={bloqRitual}
+                          title={bloqRitual ? "Você não possui nenhum ritual aprendido." : ""}
                           onClick={(e) => {
                             e.stopPropagation();
                             if (precisaEscolherElemento) setEscolhendoElementoId(origem.Codigo_Origem);
@@ -142,7 +126,7 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
                               onClose();
                             }
                           }}
-                          className={`rounded-md px-4 py-2 text-xs font-bold uppercase tracking-wider text-zinc-100 transition bg-red-700 hover:bg-red-600`}
+                          className={`rounded-md px-4 py-2 text-xs font-bold uppercase tracking-wider transition ${bloqRitual ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed' : 'bg-red-700 hover:bg-red-600 text-zinc-100'}`}
                         >
                           Escolher
                         </button>
@@ -163,6 +147,25 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
           </div>
         </div>
       </div>
+
+      {escolhendoRitualId && (
+        <ModalEscolherRitualAprendido
+          isOpen={true}
+          onClose={() => setEscolhendoRitualId(null)}
+          onSelect={(ritualNome) => {
+            const origem = origensFiltradas.find(o => o.Codigo_Origem === escolhendoRitualId);
+            if (origem) {
+              poderesHook.escolherPoderExtra({ Id_Poder: -origem.Codigo_Origem, Codigo_Poder: -1, Nome: origem.Nome_Poder, Descricao: origem.Descricao_Poder, Fonte: origem.Fonte, Tipo: 'Geral', Codigo_Regra: origem.Codigo_Regra } as any, ritualNome, undefined, 'extra_regra32');
+            }
+            setEscolhendoRitualId(null);
+            onClose();
+          }}
+          rituaisNomes={(contextoPrereq?.rituaisAprendidos || []).map((ra: any) => {
+            const r = (contextoPrereq?.rituais || []).find((rt: any) => rt.Codigo_Ritual === ra.codigo_ritual);
+            return ra.customNome || (r ? r.Nome_Ritual : String(ra.codigo_ritual));
+          })}
+        />
+      )}
     </div>
   );
 }

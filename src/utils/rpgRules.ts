@@ -82,9 +82,14 @@ export function calcularStatusBase(
     }
   }
 
-  // Regra 2: +1 PV por nível de NEX
-  if (temRegra(2)) {
+  // Regra 2, 49: +1 PV por nível de NEX
+  if (temRegra(2) || temRegra(49)) {
     pvMax += nivel;
+  }
+
+  // Regra 51: +2 PV por nível de NEX
+  if (temRegra(51)) {
+    pvMax += (nivel * 2);
   }
 
   // Regra 10: +5 PV fixos
@@ -100,6 +105,11 @@ export function calcularStatusBase(
     peTurno += 1;
   }
 
+  // Regra 50: +1 PE em níveis pares (2, 4, 6...)
+  if (temRegra(50)) {
+    peMax += Math.floor(nivel / 2);
+  }
+
   // Regra 7: +1 de Sanidade para cada 5% de NEX (ou seja, +1 por nível)
   if (temRegra(7)) {
     sanMax += nivel;
@@ -108,6 +118,11 @@ export function calcularStatusBase(
   // Regra 24: +1 PE por nível de NEX
   if (temRegra(24)) {
     peMax += nivel;
+  }
+
+  // Regra 45: +3 PE fixos
+  if (temRegra(45)) {
+    peMax += 3;
   }
 
   // Regra 14: Diminui os PE iniciais em 1/3 (fica com 2/3)

@@ -113,7 +113,7 @@ function AtributosFicha() {
 // COMPONENTE INTERNO: DEFESA
 // ============================================================
 function DefesaPanel() {
-  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras, periciasHook, atributos, regrasAutomaticasAtivas, protecoes } = useRPG();
+  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras, periciasHook, atributosFinais, regrasAutomaticasAtivas, protecoes } = useRPG();
 
   const [bloqueio, setBloqueio] = React.useState(0);
   const [esquiva, setEsquiva] = React.useState(0);
@@ -134,10 +134,10 @@ function DefesaPanel() {
     // Reflexos
     const nomeReflexos = nomesPericias[23];
     if (nomeReflexos && pericias[nomeReflexos] && !esquivaOverride.current) {
-      const total = 10 + atributos.AGI + pericias[nomeReflexos].treino + pericias[nomeReflexos].outros;
+      const total = 10 + atributosFinais.AGI + pericias[nomeReflexos].treino + pericias[nomeReflexos].outros;
       setEsquiva(total);
     }
-  }, [periciasHook, atributos]);
+  }, [periciasHook, atributosFinais]);
 
   return (
     <div className="mt-8 flex flex-wrap items-center justify-between gap-5 rounded-lg border border-zinc-800 bg-zinc-900/60 p-5">
@@ -232,15 +232,15 @@ function ProtecoesPanel() {
     sentidos, setSentidos,
     imunidades, setImunidades,
     vulnerabilidades, setVulnerabilidades,
-    regrasAutomaticasAtivas, atributos, poderesHook, rituaisHook, periciasHook
+    regrasAutomaticasAtivas, atributosFinais, poderesHook, rituaisHook, periciasHook
   } = useRPG();
   const [mostrarOutros, setMostrarOutros] = React.useState(false);
 
   const resistenciasExtras = [];
   
   // REGRA 5: Resistência Mental +INT
-  if (regrasAutomaticasAtivas.has(5)) {
-    resistenciasExtras.push(`Mental ${atributos.INT}`);
+  if (regrasAutomaticasAtivas.has(5) && atributosFinais.INT > 0) {
+    resistenciasExtras.push(`Mental ${atributosFinais.INT}`);
   }
   // REGRA 9: Dano 2
   if (regrasAutomaticasAtivas.has(9)) {
@@ -303,8 +303,11 @@ function ProtecoesPanel() {
   if (regrasAutomaticasAtivas.has(28)) {
     proficienciasExtras.push('Armas Táticas (corpo a corpo e de disparo)');
   }
+  // REGRA 38: Proteções Leves
+  if (regrasAutomaticasAtivas.has(38)) {
+    proficienciasExtras.push('Proteções Leves');
+  }
 
-  // REGRA 21: Se "Proteção Pesada" (ou similar) estiver em Proteções, +2 Defesa e +2 Resistências Físicas
   const temProtecaoPesada = protecoes.some(p => p.toLowerCase().includes('pesada'));
   let bonusDefesaRegra21 = 0;
   if (regrasAutomaticasAtivas.has(21) && temProtecaoPesada) {
@@ -313,6 +316,22 @@ function ProtecoesPanel() {
     resistenciasExtras.push('Corte 2');
     resistenciasExtras.push('Impacto 2');
     resistenciasExtras.push('Perfuração 2');
+  }
+
+  const imunidadesExtras = [...imunidades];
+  // REGRA 46: Imunidades extras Frio e Calor
+  if (regrasAutomaticasAtivas.has(46)) {
+    if (!imunidadesExtras.includes('Frio')) imunidadesExtras.push('Frio');
+    if (!imunidadesExtras.includes('Calor')) imunidadesExtras.push('Calor');
+  }
+  // REGRA 48: Imunidade a Desprevenido
+  if (regrasAutomaticasAtivas.has(48)) {
+    if (!imunidadesExtras.includes('Desprevenido')) imunidadesExtras.push('Desprevenido');
+  }
+  // REGRA 52: Imunidade a Venenos e Doenças
+  if (regrasAutomaticasAtivas.has(52)) {
+    if (!imunidadesExtras.includes('Venenos')) imunidadesExtras.push('Venenos');
+    if (!imunidadesExtras.includes('Doenças')) imunidadesExtras.push('Doenças');
   }
 
   return (
@@ -345,7 +364,7 @@ function ProtecoesPanel() {
       {mostrarOutros && (
         <div className="flex flex-col gap-5">
           <BadgeBlock titulo="Vulnerabilidades" itens={vulnerabilidades} setItens={setVulnerabilidades} />
-          <BadgeBlock titulo="Imunidades" itens={imunidades} setItens={setImunidades} />
+          <BadgeBlock titulo="Imunidades" itens={imunidades} setItens={setImunidades} itensExtras={imunidadesExtras} />
           <BadgeBlock titulo="Sentidos" itens={sentidos} setItens={setSentidos} />
         </div>
       )}

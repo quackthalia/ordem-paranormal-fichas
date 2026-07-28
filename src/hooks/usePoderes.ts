@@ -38,6 +38,7 @@ function normalizarPoder(item: Record<string, unknown>): Poder {
     Fonte: String(primeiro('Fonte', 'fonte') ?? ''),
     Pre_Codigo: primeiro('Pre_Codigo', 'pre_codigo') ? Number(primeiro('Pre_Codigo', 'pre_codigo')) : null,
     Codigo_Regra: primeiro('Codigo_Regra', 'codigo_regra') ? Number(primeiro('Codigo_Regra', 'codigo_regra')) : null,
+    Pericia_Poder: primeiro('Pericia_Poder', 'pericia_poder') ? Number(primeiro('Pericia_Poder', 'pericia_poder')) : null,
   };
 }
 
@@ -70,11 +71,17 @@ function normalizarPoderParanormal(item: Record<string, unknown>): PoderParanorm
     Pre_Codigo: primeiro('Pre_Regra', 'pre_regra', 'Pre_Codigo_Poder_Paranormal', 'pre_codigo_poder_paranormal', 'Pre_Codigo', 'pre_codigo') 
       ? Number(primeiro('Pre_Regra', 'pre_regra', 'Pre_Codigo_Poder_Paranormal', 'pre_codigo_poder_paranormal', 'Pre_Codigo', 'pre_codigo')) 
       : null,
-    Pre_Codigo_Afinidade: primeiro('Pre_Regra_Afinidade', 'pre_regra_afinidade', 'Codigo_Regra_Afinidade', 'codigo_regra_afinidade')
-      ? Number(primeiro('Pre_Regra_Afinidade', 'pre_regra_afinidade', 'Codigo_Regra_Afinidade', 'codigo_regra_afinidade'))
+    Pre_Codigo_Afinidade: primeiro('Pre_Regra_Afinidade', 'pre_regra_afinidade', 'Pre_Codigo_Afinidade', 'pre_codigo_afinidade')
+      ? Number(primeiro('Pre_Regra_Afinidade', 'pre_regra_afinidade', 'Pre_Codigo_Afinidade', 'pre_codigo_afinidade'))
+      : null,
+    Codigo_Regra_Afinidade: primeiro('Codigo_Regra_Afinidade', 'codigo_regra_afinidade')
+      ? Number(primeiro('Codigo_Regra_Afinidade', 'codigo_regra_afinidade'))
       : null,
     Codigo_Regra: primeiro('Codigo_Regra_Poder_Paranormal', 'codigo_regra_poder_paranormal', 'Codigo_Regra', 'codigo_regra') 
       ? Number(primeiro('Codigo_Regra_Poder_Paranormal', 'codigo_regra_poder_paranormal', 'Codigo_Regra', 'codigo_regra')) 
+      : null,
+    Pericia_Poder: primeiro('Pericia_Poder_Paranormal', 'pericia_poder_paranormal', 'Pericia_Poder', 'pericia_poder')
+      ? Number(primeiro('Pericia_Poder_Paranormal', 'pericia_poder_paranormal', 'Pericia_Poder', 'pericia_poder'))
       : null,
   };
 }
@@ -186,19 +193,28 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
       }
     }
 
-    setPoderesEscolhidos(prev => ({
-      ...prev,
-      [nex]: {
-        nome: nomeFinal,
-        descricao: poder.Descricao,
-        preRequisitos: poder.PreRequisitos,
-        fonte: (poder as Poder).Fonte || (poder as any).fonte || pp.Fonte || '',
-        afinidade: pp.Afinidade || '',
-        elemento: elementoEscolhido || pp.Elemento || undefined,
-        categoria: catFinal,
-        codigoRegra: poder.Codigo_Regra,
-      },
-    }));
+    let isAfinidade = false;
+    setPoderesEscolhidos(prev => {
+      isAfinidade = Object.values(prev).some(p => p.nome === nomeFinal);
+      const regraAplicada = isAfinidade && pp.Codigo_Regra_Afinidade ? pp.Codigo_Regra_Afinidade : poder.Codigo_Regra;
+      
+      return {
+        ...prev,
+        [nex]: {
+          nome: nomeFinal,
+          descricao: poder.Descricao,
+          preRequisitos: poder.PreRequisitos,
+          fonte: (poder as Poder).Fonte || (poder as any).fonte || pp.Fonte || '',
+          afinidade: pp.Afinidade || '',
+          elemento: elementoEscolhido || pp.Elemento || undefined,
+          categoria: catFinal,
+          codigoRegra: regraAplicada,
+          periciaPoder: (poder as Poder).Pericia_Poder || pp.Pericia_Poder || null,
+          periciaEscolhidaNome: periciaEscolhida || undefined,
+          isAfinidade
+        },
+      };
+    });
   }, []);
 
   const escolherPoderExtra = useCallback((poder: Poder | PoderParanormal, elementoEscolhido?: string, periciaEscolhida?: string, customId?: string) => {
@@ -227,19 +243,28 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
       }
     }
 
-    setPoderesEscolhidos(prev => ({
-      ...prev,
-      [uniqueId]: {
-        nome: nomeFinal,
-        descricao: poder.Descricao,
-        preRequisitos: poder.PreRequisitos,
-        fonte: (poder as Poder).Fonte || (poder as any).fonte || pp.Fonte || '',
-        afinidade: pp.Afinidade || '',
-        elemento: elementoEscolhido || pp.Elemento || undefined,
-        categoria: catFinal,
-        codigoRegra: poder.Codigo_Regra,
-      },
-    }));
+    let isAfinidade = false;
+    setPoderesEscolhidos(prev => {
+      isAfinidade = Object.values(prev).some(p => p.nome === nomeFinal);
+      const regraAplicada = isAfinidade && pp.Codigo_Regra_Afinidade ? pp.Codigo_Regra_Afinidade : poder.Codigo_Regra;
+      
+      return {
+        ...prev,
+        [uniqueId]: {
+          nome: nomeFinal,
+          descricao: poder.Descricao,
+          preRequisitos: poder.PreRequisitos,
+          fonte: (poder as Poder).Fonte || (poder as any).fonte || pp.Fonte || '',
+          afinidade: pp.Afinidade || '',
+          elemento: elementoEscolhido || pp.Elemento || undefined,
+          categoria: catFinal,
+          codigoRegra: regraAplicada,
+          periciaPoder: (poder as Poder).Pericia_Poder || pp.Pericia_Poder || null,
+          periciaEscolhidaNome: periciaEscolhida || undefined,
+          isAfinidade
+        },
+      };
+    });
 
     if (poder.Nome.toLowerCase() === 'aprender ritual') {
       window.dispatchEvent(new CustomEvent('abrirModalRituais', { detail: { nex: uniqueId } }));
@@ -335,8 +360,10 @@ export function usePoderesFiltrados(
 
         let show = false;
         if (!tipoPoder) return false;
-        if (abaModal === 'classe' || abaModal === 'combate') {
-          show = classePoder === classe?.toLowerCase();
+        if (abaModal === 'classe') {
+          show = classePoder === classe?.toLowerCase() && (tipoPoder === 'utilidade' || tipoPoder === 'varia');
+        } else if (abaModal === 'combate') {
+          show = classePoder === classe?.toLowerCase() && (tipoPoder === 'combate' || tipoPoder === 'varia');
         } else if (abaModal === 'gerais') {
           show = tipoPoder === 'geral' || classePoder === 'geral' || classePoder === 'todos';
         }

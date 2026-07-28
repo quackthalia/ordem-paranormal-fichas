@@ -23,6 +23,7 @@ import { ToolbarFormato } from '../../components/ToolbarFormato';
 import { ModalPoderesExtra } from '../../components/ModalPoderesExtra';
 import { ModalPoderOutraClasse } from '../../components/ModalPoderOutraClasse';
 import { ModalPoderOutraOrigem } from '../../components/ModalPoderOutraOrigem';
+import { ModalHabilidadeTrilhaExtra } from '../../components/ModalHabilidadeTrilhaExtra';
 import { ProgressaoNEXPanel } from './ProgressaoNEXPanel';
 import { InventarioPanel } from './InventarioPanel';
 // ═══════════════════════════════════════════════════════════════
@@ -166,6 +167,8 @@ export const AbasPanel: React.FC = () => {
   const [modalRituaisExtraAberto, setModalRituaisExtraAberto] = React.useState(false);
   const [modalPoderOutraClasseAberto, setModalPoderOutraClasseAberto] = React.useState(false);
   const [modalPoderOutraOrigemAberto, setModalPoderOutraOrigemAberto] = React.useState(false);
+  const [categoriaDiletante, setCategoriaDiletante] = React.useState<'combate' | 'utilidade' | 'gerais'>('gerais');
+  const [modalTrilhaExtraAberto, setModalTrilhaExtraAberto] = React.useState(false);
   const [filtroRituais, setFiltroRituais] = React.useState('');
   const [editandoTrilha, setEditandoTrilha] = React.useState(false);
   const [editandoVersatilidade, setEditandoVersatilidade] = React.useState(false);
@@ -507,7 +510,7 @@ export const AbasPanel: React.FC = () => {
 
     // 5. Poderes Extras
     Object.keys(poderesEscolhidos).forEach(key => {
-      if (String(key).startsWith('extra_') && key !== 'extra_regra1' && key !== 'extra_regra31' && key !== 'extra_regra32') {
+      if (String(key).startsWith('extra_') && key !== 'extra_regra1' && key !== 'extra_regra31' && key !== 'extra_regra32' && key !== 'extra_regra37' && key !== 'extra_regra39') {
         const escolhido = poderesEscolhidos[key];
         const isAprenderRitual = escolhido.nome.toLowerCase().startsWith('aprender ritual (');
         const isResistir = escolhido.nome.toLowerCase().startsWith('resistir a ');
@@ -621,11 +624,44 @@ export const AbasPanel: React.FC = () => {
 
       // --- REGRAS 31 e 32 (Poderes Extras) ---
       if (regrasAutomaticasAtivas.has(31)) {
+        let diletanteCat: 'combate' | 'utilidade' | 'gerais' = 'gerais';
+        Object.entries(poderesEscolhidos).forEach(([key, p]) => {
+          if (p.codigoRegra === 31) {
+            const nexSlot = parseInt(key);
+            if (!isNaN(nexSlot)) {
+              diletanteCat = (nexSlot % 2 !== 0) ? 'combate' : 'utilidade';
+            } else {
+              diletanteCat = p.categoria as any;
+            }
+          }
+        });
+
         const usouRegra31 = poderesEscolhidos['extra_regra31'];
         if (usouRegra31) {
-           lista.push({ id: 'extra_regra31', nome: usouRegra31.nome, descricao: usouRegra31.descricao, tipo: 'Especialista Diletante', categoria: 'gerais', fonte: usouRegra31.fonte, preRequisitos: usouRegra31.preRequisitos, elemento: usouRegra31.elemento, afinidade: usouRegra31.afinidade });
+           lista.push({ id: 'extra_regra31', nome: usouRegra31.nome, descricao: usouRegra31.descricao, tipo: 'Especialista Diletante', categoria: diletanteCat, fonte: usouRegra31.fonte, preRequisitos: usouRegra31.preRequisitos, elemento: usouRegra31.elemento, afinidade: usouRegra31.afinidade });
         } else {
-           lista.push({ id: 'escolha_extra_regra31', nome: 'Escolher Poder de Outra Classe', descricao: 'Clique no "+" para abrir a lista e selecionar seu poder extra.', tipo: 'Especialista Diletante', isSlotVazio: true, nexDoSlot: 0, categoria: 'gerais' });
+           lista.push({ id: 'escolha_extra_regra31', nome: 'Escolher Poder de Outra Classe', descricao: 'Clique no "+" para abrir a lista e selecionar seu poder extra.', tipo: 'Especialista Diletante', isSlotVazio: true, nexDoSlot: 0, categoria: diletanteCat });
+        }
+      }
+
+      // --- REGRAS 37 e 39 (Poderes Extras) ---
+      if (regrasAutomaticasAtivas.has(37)) {
+        const extraKey = 'extra_regra37';
+        const usouRegra37 = poderesEscolhidos[extraKey];
+        if (usouRegra37) {
+           lista.push({ id: extraKey, nome: usouRegra37.nome, descricao: usouRegra37.descricao, tipo: 'Dominar Habilidade Ritualística', categoria: 'trilha', fonte: usouRegra37.fonte, preRequisitos: usouRegra37.preRequisitos, elemento: usouRegra37.elemento, afinidade: usouRegra37.afinidade });
+        } else {
+           lista.push({ id: `escolha_${extraKey}`, nome: 'Escolher Poder de Trilha', descricao: 'Clique no "+" para abrir a lista e selecionar sua habilidade ritualística.', tipo: 'Dominar Habilidade Ritualística', isSlotVazio: true, nexDoSlot: 0, categoria: 'trilha' });
+        }
+      }
+
+      if (regrasAutomaticasAtivas.has(39)) {
+        const extraKey = 'extra_regra39';
+        const usouRegra39 = poderesEscolhidos[extraKey];
+        if (usouRegra39) {
+           lista.push({ id: extraKey, nome: usouRegra39.nome, descricao: usouRegra39.descricao, tipo: 'Poder Paranormal Extra', categoria: 'paranormais', fonte: usouRegra39.fonte, preRequisitos: usouRegra39.preRequisitos, elemento: usouRegra39.elemento, afinidade: usouRegra39.afinidade });
+        } else {
+           lista.push({ id: `escolha_${extraKey}`, nome: 'Escolher Poder Paranormal', descricao: 'Clique no "+" para abrir a lista e selecionar seu poder paranormal extra.', tipo: 'Poder Paranormal Extra', isSlotVazio: true, nexDoSlot: 0, categoria: 'paranormais' });
         }
       }
 
@@ -634,10 +670,10 @@ export const AbasPanel: React.FC = () => {
     // Desbloqueio Cronológico: Separado por Combate e Utilidade/Trilha
     const slotsVazios = lista.filter(h => h.isSlotVazio && h.nexDoSlot !== undefined);
     if (slotsVazios.length > 0) {
-      const vaziosCombate = slotsVazios.filter(h => h.categoria === 'combate');
-      const vaziosUtilidade = slotsVazios.filter(h => h.categoria === 'utilidade');
-      const vaziosTrilha = slotsVazios.filter(h => h.categoria === 'trilha');
-      const vaziosGerais = slotsVazios.filter(h => h.categoria === 'gerais');
+      const vaziosCombate = slotsVazios.filter(h => h.categoria === 'combate' && !String(h.id).includes('_extra_'));
+      const vaziosUtilidade = slotsVazios.filter(h => h.categoria === 'utilidade' && !String(h.id).includes('_extra_'));
+      const vaziosTrilha = slotsVazios.filter(h => h.categoria === 'trilha' && !String(h.id).includes('_extra_'));
+      const vaziosGerais = slotsVazios.filter(h => h.categoria === 'gerais' && !String(h.id).includes('_extra_'));
       
       const menorNexCombate = vaziosCombate.length > 0 ? Math.min(...vaziosCombate.map(h => h.nexDoSlot!)) : Infinity;
       const menorNexUtilidade = vaziosUtilidade.length > 0 ? Math.min(...vaziosUtilidade.map(h => h.nexDoSlot!)) : Infinity;
@@ -646,6 +682,8 @@ export const AbasPanel: React.FC = () => {
       
       lista = lista.filter(h => {
         if (h.isSlotVazio && h.nexDoSlot !== undefined) {
+          if (String(h.id).includes('_extra_')) return true;
+
           if (h.categoria === 'combate') {
             return h.nexDoSlot <= menorNexCombate;
           } else if (h.categoria === 'utilidade') {
@@ -745,7 +783,9 @@ export const AbasPanel: React.FC = () => {
                             <div
                               key={hab.id}
                               onClick={() => {
-                                if (hab.categoria === 'trilha') {
+                                if (hab.id === 'escolha_extra_regra37') {
+                                  setModalTrilhaExtraAberto(true);
+                                } else if (hab.categoria === 'trilha') {
                                   if (hab.id === 'escolha_versatilidade') {
                                     setModalVersatilidadeAberto(true);
                                   } else {
@@ -756,9 +796,26 @@ export const AbasPanel: React.FC = () => {
                                   setAbaModalPoderes('paranormais');
                                   setNexModalAberto('extra_regra1');
                                 } else if (hab.id === 'escolha_extra_regra31') {
+                                  let cat: 'combate' | 'utilidade' | 'gerais' = 'gerais';
+                                  Object.entries(poderesEscolhidos).forEach(([key, p]) => {
+                                    if (p.codigoRegra === 31) {
+                                      const nexSlot = parseInt(key);
+                                      console.log("Found Especialista Diletante in slot:", key, "Parsed NEX:", nexSlot);
+                                      if (!isNaN(nexSlot)) {
+                                        cat = (nexSlot % 2 !== 0) ? 'combate' : 'utilidade';
+                                      } else {
+                                        cat = p.categoria as any;
+                                      }
+                                      console.log("Calculated category for slot:", cat);
+                                    }
+                                  });
+                                  console.log("Setting ModalPoderOutraClasse with category:", cat);
+                                  setCategoriaDiletante(cat);
                                   setModalPoderOutraClasseAberto(true);
                                 } else if (hab.id === 'escolha_extra_regra32') {
                                   setModalPoderOutraOrigemAberto(true);
+                                } else if (hab.id === 'escolha_extra_regra39') {
+                                  setNexModalAberto('extra_regra39');
                                 } else {
                                   const tipo = hab.id.includes('combate') ? 'combate' : 'utilidade';
                                   setTipoModalPoderes(tipo);
@@ -1269,7 +1326,7 @@ export const AbasPanel: React.FC = () => {
                             const desconto35 = Object.values(poderesEscolhidos).filter(p => p.codigoRegra === 35 && p.elemento === (ritual.customNome || ritual.Nome_Ritual)).length;
                             peValor -= desconto35;
                           }
-                          peValor = Math.max(0, peValor);
+                          peValor = Math.max(1, peValor);
                         }
                         const pe = isNaN(peValor) ? peOriginal : String(peOriginal).replace(/\d+/, peValor.toString());
                         const alcance = ritual.customProps?.[versao]?.Alcance_Ritual || obterValorVersao(ritual.Alcance_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
@@ -1777,6 +1834,38 @@ export const AbasPanel: React.FC = () => {
       {editandoVersatilidade && (
         <ModalEditarTrilha onClose={() => setEditandoVersatilidade(false)} isVersatilidade={true} />
       )}
+      {modalTrilhaExtraAberto && (
+        <ModalHabilidadeTrilhaExtra
+          isOpen={true}
+          onClose={() => setModalTrilhaExtraAberto(false)}
+          nexAtual={effectiveNex}
+          onSelect={(habilidade) => {
+            poderesHook.escolherPoderExtra(
+              {
+                Codigo_Poder: -1,
+                Nome: habilidade.nome,
+                Descricao: habilidade.descricao,
+                Tipo: habilidade.tipo,
+                PreRequisitos: habilidade.preRequisitos,
+                Fonte: habilidade.fonte,
+                Codigo_Regra: null,
+                Elemento: null,
+                Afinidade: null,
+                Custo: null,
+                Acao: null,
+                Alcance: null,
+                Alvo_Area: null,
+                Duracao: null,
+                Poder_Substituido: null
+              } as any,
+              undefined,
+              undefined,
+              'extra_regra37'
+            );
+            setModalTrilhaExtraAberto(false);
+          }}
+        />
+      )}
       <ModalPoderesExtra
         isOpen={modalExtraAberto}
         onClose={() => setModalExtraAberto(false)}
@@ -1791,6 +1880,7 @@ export const AbasPanel: React.FC = () => {
       <ModalPoderOutraClasse
         isOpen={modalPoderOutraClasseAberto}
         onClose={() => setModalPoderOutraClasseAberto(false)}
+        categoriaPermitida={categoriaDiletante}
       />
       <ModalPoderOutraOrigem
         isOpen={modalPoderOutraOrigemAberto}

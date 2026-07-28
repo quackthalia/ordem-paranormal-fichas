@@ -87,8 +87,8 @@ export function calcularStatusBase(
     pvMax += nivel;
   }
 
-  // Regra 51: +2 PV por nível de NEX
-  if (temRegra(51)) {
+  // Regra 51 e 52: +2 PV por nível de NEX (Sangue de Ferro base e Afinidade)
+  if (temRegra(51) || temRegra(52)) {
     pvMax += (nivel * 2);
   }
 

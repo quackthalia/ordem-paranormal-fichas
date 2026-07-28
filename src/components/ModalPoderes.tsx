@@ -300,9 +300,18 @@ export const ModalPoderes: React.FC = () => {
       if (nex >= 99 && t.Nome_Habilidade_99) poderesArray.push({ nome: t.Nome_Habilidade_99.toLowerCase() });
     }
 
+    let nexContexto = nex;
+    if (typeof nexModalAberto === 'number') {
+      if (regras['nex_experiencia'] && nexModalAberto <= 20 && nexModalAberto > 0) {
+        nexContexto = nexModalAberto === 20 ? 99 : nexModalAberto * 5;
+      } else {
+        nexContexto = nexModalAberto;
+      }
+    }
+
     return {
       atributos,
-      nex: typeof nexModalAberto === 'number' ? nexModalAberto : nex,
+      nex: nexContexto,
       pericias: periciasHook.pericias,
       nomesPericias: periciasHook.nomesPericias,
       poderes: poderesArray,

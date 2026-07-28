@@ -671,13 +671,18 @@ export function verificarPreRequisitos(
     }
 
     case 46: {
-      // Conhecimento 1, NEX 45% e treinado em 18.
-      const qtdConh = contexto.poderes.filter(p => p.elemento === 'Conhecimento').length;
+      // Conhecimento 1, NEX 45% e treinado em 18 (Ocultismo).
+      const qtdConh = contexto.poderes.filter(p => p.elemento?.toLowerCase().trim() === 'conhecimento').length;
       if (qtdConh < 1) return { atende: false, motivo: '1 Poder de Conhecimento' };
       if (contexto.nex < 45) return { atende: false, motivo: 'NEX 45%' };
+      
       const codigos = extrairCodigosPericias(textoLower);
       if (codigos.length > 0) {
         const res = verificarPericia([codigos[0]]);
+        if (!res.atende) return res;
+      } else if (textoLower.includes('ocultismo')) {
+        // Se não conseguiu extrair código mas tem ocultismo explícito
+        const res = verificarPericia([18]);
         if (!res.atende) return res;
       }
       return { atende: true };

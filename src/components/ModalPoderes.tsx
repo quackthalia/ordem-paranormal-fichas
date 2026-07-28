@@ -314,6 +314,7 @@ export const ModalPoderes: React.FC = () => {
   }, [atributos, nex, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, trilhasHook.trilhaSelecionada, rituaisHook.rituaisAprendidos, rituaisHook.rituais, origensHook.origemSelecionada, regras]);
 
   const editorRef = useRef<HTMLDivElement>(null);
+  const afinidadeRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [subAbaElemento, setSubAbaElemento] = useState<string | null>(null);
   const [afinidadeEditando, setAfinidadeEditando] = useState('');
@@ -411,8 +412,8 @@ export const ModalPoderes: React.FC = () => {
 
   if (nexPoderEditando !== null) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-5">
-        <div className="flex w-full max-w-2xl flex-col gap-4 rounded-lg border border-zinc-700 bg-zinc-900 p-6 shadow-2xl shadow-black/50">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-5" onClick={() => setNexPoderEditando(null)}>
+        <div className="flex w-full max-w-2xl flex-col gap-4 rounded-lg border border-zinc-700 bg-zinc-900 p-6 shadow-2xl shadow-black/50" onClick={e => e.stopPropagation()}>
           <h3 className="font-display border-b border-zinc-800 pb-2.5 text-left text-lg uppercase tracking-wide text-zinc-100">
             Editar Poder <span className="text-red-500">({typeof nexPoderEditando === 'number' ? `NEX ${nexPoderEditando}%` : 'Poder Extra'})</span>
           </h3>
@@ -428,14 +429,24 @@ export const ModalPoderes: React.FC = () => {
 
           <div className="flex flex-col gap-1.5 text-left">
             <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Afinidade</label>
-            <InputOtimizado
-              value={afinidadeEditando}
-              onChange={setAfinidadeEditando}
-              className="rounded border border-zinc-700 bg-zinc-950 p-2.5 text-zinc-100 outline-none focus:border-red-700"
-            />
+            <div>
+              <ToolbarFormato editorRef={afinidadeRef as any} />
+              <div
+                ref={(el) => {
+                  afinidadeRef.current = el;
+                  if (el && !el.dataset.initialized) {
+                    el.innerHTML = afinidadeEditando;
+                    el.dataset.initialized = 'true';
+                  }
+                }}
+                contentEditable
+                className="min-h-24 overflow-y-auto rounded-b border border-zinc-700 bg-zinc-950 p-3 text-left text-sm leading-relaxed text-zinc-100 outline-none focus:border-red-700"
+              />
+            </div>
           </div>
 
           <div className="flex flex-col gap-1.5 text-left">
+            <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Descrição</label>
             <div>
               <ToolbarFormato editorRef={editorRef as any} />
               <div
@@ -462,7 +473,8 @@ export const ModalPoderes: React.FC = () => {
             <button
               onClick={() => {
                 const texto = editorRef.current?.innerHTML || '';
-                editarPoder(nexPoderEditando, nomeEditando, texto, afinidadeEditando);
+                const textoAfinidade = afinidadeRef.current?.innerHTML || '';
+                editarPoder(nexPoderEditando, nomeEditando, texto, textoAfinidade);
                 setNexPoderEditando(null);
               }}
               className="rounded bg-red-700 px-4 py-2 text-sm font-bold text-zinc-100 transition hover:bg-red-600"

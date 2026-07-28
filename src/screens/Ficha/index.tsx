@@ -260,6 +260,12 @@ function ProtecoesPanel() {
     resistenciasExtras.push(`Dano ${danoResist}`);
   }
 
+  // REGRA 63 e 64: Resistência a Morte
+  if (regrasAutomaticasAtivas.has(63)) {
+    const valorMorte = regrasAutomaticasAtivas.has(64) ? 10 : 5;
+    resistenciasExtras.push(`Morte ${valorMorte}`);
+  }
+
   // REGRA 11: Resistência Mental 2 + (+1 pra cada 2 poderes/rituais de Sangue)
   if (regrasAutomaticasAtivas.has(11)) {
     let qtdSangue = 0;

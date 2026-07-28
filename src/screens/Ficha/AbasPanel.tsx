@@ -1171,8 +1171,27 @@ export const AbasPanel: React.FC = () => {
             }
           }
 
+          // 2.7 Calcular slots de Regra 62
+          const slotsRegra62PendentesList: { chave?: string, index: number, nex: number, maxCirculo: number, isOcultista: boolean, isRegra62?: boolean }[] = [];
+          if (regrasAutomaticasAtivas.has(62)) {
+            const int = atributos['INT'] || 0;
+            if (int > 0) {
+              let maxC = 1;
+              if (rituaisHook.rituaisAprendidos) {
+                for (const r of rituaisHook.rituaisAprendidos) {
+                  const base = rituaisHook.rituais.find(br => br.Codigo_Ritual === r.codigo_ritual);
+                  if (base && base.Circulo_Ritual > maxC) maxC = base.Circulo_Ritual;
+                }
+              }
+              for (let i = 1; i <= int; i++) {
+                const pego = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === `regra_62_${i}`);
+                if (!pego) slotsRegra62PendentesList.push({ chave: `regra_62_${i}`, index: 910 + i, nex, maxCirculo: maxC, isOcultista: false, isRegra62: true });
+              }
+            }
+          }
+
           // 3. Desbloqueio Cronológico por Círculo
-          const allRitualSlots = [...slotsPoderPendentesList, ...slotsOcultistaPendentesList, ...slotsOrigemPendentesList, ...slotsRegra61PendentesList];
+          const allRitualSlots = [...slotsPoderPendentesList, ...slotsOcultistaPendentesList, ...slotsOrigemPendentesList, ...slotsRegra61PendentesList, ...slotsRegra62PendentesList];
           const sortedSlots = allRitualSlots.sort((a, b) => {
              if (a.nex !== b.nex) return a.nex - b.nex;
              if (a.isOcultista && !b.isOcultista) return -1;
@@ -1293,14 +1312,15 @@ export const AbasPanel: React.FC = () => {
                           const chave = (slot as any).chave;
                           const isOrigemSlot = (slot as any).isOrigem;
                           const isRegra61 = (slot as any).isRegra61;
+                          const isRegra62 = (slot as any).isRegra62;
                           const isExtra = chave?.startsWith('extra_');
                           const nivelNum = isOrigemSlot ? 0 : (isExtra ? nex : parseInt(chave || '0', 10));
-                          const nivelParaLabel = isRegra61 ? (slot as any).nex : nivelNum;
-                          const labelNex = isOrigemSlot ? 'Poder da Origem' : (isRegra61 ? `Recompensa Racional (${regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelParaLabel)}` : `NEX ${nivelParaLabel}%`})` : (regras['nex_experiencia'] ? `Poder Nível ${calcularNivel(nivelParaLabel)}` : `Poder NEX ${nivelParaLabel}%`));
+                          const nivelParaLabel = (isRegra61 || isRegra62) ? (slot as any).nex : nivelNum;
+                          const labelNex = isOrigemSlot ? 'Poder da Origem' : (isRegra61 ? `Recompensa Racional (${regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelParaLabel)}` : `NEX ${nivelParaLabel}%`})` : (isRegra62 ? `Recompensa Racional, Afinidade (${regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelParaLabel)}` : `NEX ${nivelParaLabel}%`})` : (regras['nex_experiencia'] ? `Poder Nível ${calcularNivel(nivelParaLabel)}` : `Poder NEX ${nivelParaLabel}%`)));
                           return (
                             <div
                               key={`vazio_poder_${chave}_${idx}`}
-                              onClick={() => setEscolhendoRitualPlaceholder({ origem: isOrigemSlot || isRegra61 ? chave : `poder_57_${chave}`, nex: isOrigemSlot || isRegra61 ? 0 : (isExtra ? nex : nivelNum) })}
+                              onClick={() => setEscolhendoRitualPlaceholder({ origem: isOrigemSlot || isRegra61 || isRegra62 ? chave : `poder_57_${chave}`, nex: isOrigemSlot || isRegra61 || isRegra62 ? 0 : (isExtra ? nex : nivelNum) })}
                               className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-red-800 hover:bg-zinc-900/80"
                               style={{ borderLeftStyle: 'solid' }}
                             >

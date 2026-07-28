@@ -148,7 +148,7 @@ export function usePericias(
     // Regras de treinamento/bônus para quem já tinha
     const regrasTreino = [40, 41, 44, 45];
     // Regras de bônus fixo
-    const regrasBonusFixo = [46, 47, 49, 50, 52, 55];
+    const regrasBonusFixo = [46, 47, 49, 50, 52, 55, 56, 57, 58];
     
     if (regrasTreino.some(r => regrasAutomaticasAtivas?.has(r)) || regrasBonusFixo.some(r => regrasAutomaticasAtivas?.has(r))) {
       todosPoderesComRegra.forEach(poder => {
@@ -204,6 +204,21 @@ export function usePericias(
           bonus['Diplomacia'] = (bonus['Diplomacia'] || 0) + 5;
           bonus['Intimidação'] = (bonus['Intimidação'] || 0) + 5;
           bonus['Intuição'] = (bonus['Intuição'] || 0) + 5;
+        }
+
+        // Regra 56: +5 passivo em Percepção
+        if (codigoRegra === 56) {
+          bonus['Percepção'] = (bonus['Percepção'] || 0) + 5;
+        }
+
+        // Regra 57: +5 passivo em Furtividade
+        if (codigoRegra === 57) {
+          bonus['Furtividade'] = (bonus['Furtividade'] || 0) + 5;
+        }
+
+        // Regra 58: +10 passivo em Furtividade
+        if (codigoRegra === 58) {
+          bonus['Furtividade'] = (bonus['Furtividade'] || 0) + 10;
         }
       });
     }

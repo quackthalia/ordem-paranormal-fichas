@@ -337,6 +337,12 @@ function ProtecoesPanel() {
     if (!imunidadesExtras.includes('Doenças')) imunidadesExtras.push('Doenças');
   }
 
+  const sentidosExtras = [];
+  // REGRA 56: Visão no Escuro
+  if (regrasAutomaticasAtivas.has(56)) {
+    sentidosExtras.push('Visão no Escuro');
+  }
+
   return (
     <div className="mt-6 flex w-full flex-col gap-5">
       <BadgeBlock titulo="Proteção" itens={protecoes} setItens={setProtecoes} />
@@ -368,7 +374,7 @@ function ProtecoesPanel() {
         <div className="flex flex-col gap-5">
           <BadgeBlock titulo="Vulnerabilidades" itens={vulnerabilidades} setItens={setVulnerabilidades} />
           <BadgeBlock titulo="Imunidades" itens={imunidades} setItens={setImunidades} itensExtras={imunidadesExtras} />
-          <BadgeBlock titulo="Sentidos" itens={sentidos} setItens={setSentidos} />
+          <BadgeBlock titulo="Sentidos" itens={sentidos} setItens={setSentidos} itensExtras={sentidosExtras} />
         </div>
       )}
     </div>

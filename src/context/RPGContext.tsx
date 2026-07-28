@@ -245,9 +245,17 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     rituaisAprendidosRef.current = current;
   }, [rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras]);
 
-  const quantidadePoderesParanormais = useMemo(() => {
-    return Object.entries(poderesHook.poderesEscolhidos).filter(([key, p]) => p.categoria === 'paranormais' && key !== 'extra_regra1').length;
-  }, [poderesHook.poderesEscolhidos]);
+  const paranormalPenalty = useMemo(() => {
+    const qtd = Object.entries(poderesHook.poderesEscolhidos).filter(([key, p]) => p.categoria === 'paranormais' && key !== 'extra_regra1').length;
+    if (qtd === 0 || !classe) return 0;
+    
+    let perda = 0;
+    if (classe === 'Especialista') perda = 4;
+    else if (classe === 'Combatente') perda = 3;
+    else if (classe === 'Ocultista') perda = 5;
+    
+    return qtd * perda;
+  }, [poderesHook.poderesEscolhidos, classe]);
 
   // Sincroniza o nível com o NEX caso a regra 'nex_experiencia' não esteja ativa
   React.useEffect(() => {
@@ -264,7 +272,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     return obj;
   }, [atributos, bonusAtributos]);
 
-  const status = useStatus(classe, nex, nivel, atributosBaseComBonus, quantidadePoderesParanormais, regrasAutomaticasAtivas);
+  const status = useStatus(classe, nex, nivel, atributosBaseComBonus, paranormalPenalty, regrasAutomaticasAtivas);
 
   const atributosFinais = useMemo(() => {
     const obj = { ...atributosBaseComBonus };

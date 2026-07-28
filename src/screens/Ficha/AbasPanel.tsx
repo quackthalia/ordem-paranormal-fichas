@@ -1059,16 +1059,7 @@ export const AbasPanel: React.FC = () => {
                                           const baseName = nomePoder.startsWith('aprender ritual (') ? 'aprender ritual' : (isResistir ? 'resistir a <elemento>' : nomePoder);
                                           const isParanormal = poderesParanormaisMap.has(baseName) || baseName === 'aprender ritual';
                                           
-                                          if (isParanormal) {
-                                            const perda = sanidadePorNivel(classe);
-                                            if (regras['sem_sanidade']) {
-                                              status.setPdMax(prev => prev + perda);
-                                              status.setPdAtual(prev => (prev ?? status.pdMax) + perda);
-                                            } else {
-                                              status.setSanMax(prev => prev + perda);
-                                              status.setSanAtual(prev => (prev ?? status.sanMax) + perda);
-                                            }
-                                          }
+                                          // A penalidade de sanidade é atualizada automaticamente pelo useStatus
 
                                           if (baseName === 'aprender ritual') {
                                             const ra = rituaisHook.rituaisAprendidos.find(r => r.origem === `poder_57_${nivel}` || r.origem === `poder_57_combate_${nivel}`);

@@ -165,10 +165,16 @@ export const PericiasTable: React.FC = () => {
                     </div>
                   </>
                 )}
+                {trilhasHook.trilhaSelecionada?.nome_pericia && (
+                  <div className="text-xs text-zinc-300 px-2 py-1 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start">
+                    <span className="text-red-500 font-bold mt-[-1px]">•</span>
+                    <span>+1d20 em testes de {trilhasHook.trilhaSelecionada.nome_pericia} (Apenas se já era treinado antes de adquirir a Trilha)</span>
+                  </div>
+                )}
               </div>
               <textarea
                 className="w-full bg-transparent text-zinc-300 text-sm p-2 outline-none border border-transparent hover:border-zinc-800 focus:border-red-900 rounded resize-none min-h-[32px]"
-                placeholder={(regrasAutomaticasAtivas.has(33) || regrasAutomaticasAtivas.has(42) || regrasAutomaticasAtivas.has(65)) ? "" : "Você não possui nenhum bônus sempre ativo registrado..."}
+                placeholder={(regrasAutomaticasAtivas.has(33) || regrasAutomaticasAtivas.has(42) || regrasAutomaticasAtivas.has(65) || !!trilhasHook.trilhaSelecionada?.nome_pericia) ? "" : "Você não possui nenhum bônus sempre ativo registrado..."}
                 value={bonusDadosAtivos}
                 onChange={(e) => setBonusDadosAtivos(e.target.value)}
               />

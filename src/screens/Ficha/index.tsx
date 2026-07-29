@@ -329,12 +329,23 @@ function ProtecoesPanel() {
 
   const temProtecaoPesada = protecoes.some(p => p.toLowerCase().includes('pesada'));
   let bonusDefesaRegra21 = 0;
+  let bonusResistenciaFisica = 0;
+
   if (regrasAutomaticasAtivas.has(21) && temProtecaoPesada) {
     bonusDefesaRegra21 = 2;
-    resistenciasExtras.push('Balístico 2');
-    resistenciasExtras.push('Corte 2');
-    resistenciasExtras.push('Impacto 2');
-    resistenciasExtras.push('Perfuração 2');
+    bonusResistenciaFisica += 2;
+  }
+  
+  // REGRA 65: Resistência Física +7
+  if (regrasAutomaticasAtivas.has(65)) {
+    bonusResistenciaFisica += 7;
+  }
+
+  if (bonusResistenciaFisica > 0) {
+    resistenciasExtras.push(`Balístico ${bonusResistenciaFisica}`);
+    resistenciasExtras.push(`Corte ${bonusResistenciaFisica}`);
+    resistenciasExtras.push(`Impacto ${bonusResistenciaFisica}`);
+    resistenciasExtras.push(`Perfuração ${bonusResistenciaFisica}`);
   }
 
   const imunidadesExtras = [...imunidades];

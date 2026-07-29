@@ -168,7 +168,7 @@ export const PericiasTable: React.FC = () => {
                 {trilhasHook.trilhaSelecionada?.nome_pericia && (
                   <div className="text-xs text-zinc-300 px-2 py-1 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start">
                     <span className="text-red-500 font-bold mt-[-1px]">•</span>
-                    <span>+1d20 em testes de {trilhasHook.trilhaSelecionada.nome_pericia}</span>
+                    <span>+1d20 em testes de {trilhasHook.trilhaSelecionada.nome_pericia} (Trilha {trilhasHook.trilhaSelecionada.Nome_Trilha})</span>
                   </div>
                 )}
               </div>

@@ -21,7 +21,7 @@ export const PericiasTable: React.FC = () => {
   const { 
     periciasHook, regrasAtivas, setRegrasAtivas, regrasAutomaticasAtivas, protecoes,
     bonusDadosCondicionais, setBonusDadosCondicionais, bonusDadosAtivos, setBonusDadosAtivos,
-    poderesHook
+    poderesHook, trilhasHook
   } = useRPG();
   const { pericias, handleMudarPericia, limites, totais } = periciasHook;
 

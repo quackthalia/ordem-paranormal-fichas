@@ -125,7 +125,7 @@ export const PericiasTable: React.FC = () => {
               </div>
               <textarea
                 className="w-full bg-transparent text-zinc-300 text-sm p-2 outline-none border border-transparent hover:border-zinc-800 focus:border-red-900 rounded resize-none min-h-[32px]"
-                placeholder={regrasAutomaticasAtivas.has(30) ? "" : "Você não possui nenhum bônus condicional registrado..."}
+                placeholder={(regrasAutomaticasAtivas.has(30) || regrasAutomaticasAtivas.has(65)) ? "" : "Você não possui nenhum bônus condicional registrado..."}
                 value={bonusDadosCondicionais}
                 onChange={(e) => setBonusDadosCondicionais(e.target.value)}
               />
@@ -168,7 +168,7 @@ export const PericiasTable: React.FC = () => {
               </div>
               <textarea
                 className="w-full bg-transparent text-zinc-300 text-sm p-2 outline-none border border-transparent hover:border-zinc-800 focus:border-red-900 rounded resize-none min-h-[32px]"
-                placeholder={(regrasAutomaticasAtivas.has(33) || regrasAutomaticasAtivas.has(42)) ? "" : "Você não possui nenhum bônus sempre ativo registrado..."}
+                placeholder={(regrasAutomaticasAtivas.has(33) || regrasAutomaticasAtivas.has(42) || regrasAutomaticasAtivas.has(65)) ? "" : "Você não possui nenhum bônus sempre ativo registrado..."}
                 value={bonusDadosAtivos}
                 onChange={(e) => setBonusDadosAtivos(e.target.value)}
               />

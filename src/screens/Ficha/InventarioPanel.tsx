@@ -98,7 +98,7 @@ export function InventarioPanel() {
   });
 
   return (
-    <div className="flex flex-col gap-2 p-2 font-sans text-zinc-300 w-full">
+    <div className="flex flex-col h-full overflow-hidden gap-2 p-2 font-sans text-zinc-300 w-full">
       {/* LINHA 1: Prestígio e Patente */}
       <div className="flex items-center gap-8">
         <div className="flex items-center gap-3">
@@ -235,7 +235,7 @@ export function InventarioPanel() {
         </div>
 
         {/* Corpo principal: Lista */}
-        <div className="flex-1 flex flex-col gap-2 min-w-0">
+        <div className="flex-1 flex flex-col gap-2 min-w-0 overflow-y-auto pr-2 custom-scrollbar">
           {(categoriaFiltro === 'Armas' || categoriaFiltro === 'Geral') && (
             <>
             {categoriaFiltro === 'Geral' && armasExibidas.length > 0 && (

@@ -144,26 +144,28 @@ export function InventarioPanel() {
       {/* Seção de Inventário */}
       <div className="flex flex-col gap-3 mt-2">
         {/* Abas de Categoria */}
-        <div className="flex gap-2 mb-4 border-b border-zinc-800 pb-3 overflow-x-auto">
+        <div className="flex gap-2 mb-4 border-b border-zinc-800 pb-2 overflow-x-auto">
           <button
             onClick={() => setCategoriaFiltro('Geral')}
-            className={`px-4 py-2 rounded font-bold text-sm transition flex items-center gap-2 ${
+            title="Geral"
+            className={`w-12 h-12 flex items-center justify-center rounded-t text-2xl transition border-b-2 ${
               categoriaFiltro === 'Geral' 
-                ? 'bg-red-900/40 text-red-400 border border-red-800/50' 
-                : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900 border border-transparent'
+                ? 'bg-zinc-900 text-red-400 border-b-red-500' 
+                : 'text-zinc-600 hover:text-zinc-300 hover:bg-zinc-900/50 border-b-transparent'
             }`}
           >
-            <span className="text-lg">🎒</span> Geral
+            🎒
           </button>
           <button
             onClick={() => setCategoriaFiltro('Armas')}
-            className={`px-4 py-2 rounded font-bold text-sm transition flex items-center gap-2 ${
+            title="Armas"
+            className={`w-12 h-12 flex items-center justify-center rounded-t text-2xl transition border-b-2 ${
               categoriaFiltro === 'Armas' 
-                ? 'bg-red-900/40 text-red-400 border border-red-800/50' 
-                : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900 border border-transparent'
+                ? 'bg-zinc-900 text-red-400 border-b-red-500' 
+                : 'text-zinc-600 hover:text-zinc-300 hover:bg-zinc-900/50 border-b-transparent'
             }`}
           >
-            <span className="text-lg">⚔️</span> Armas
+            ⚔️
           </button>
         </div>
 
@@ -188,8 +190,11 @@ export function InventarioPanel() {
 
         {/* Corpo principal: Lista */}
         <div className="flex-1 flex flex-col gap-2 min-w-0">
-          {categoriaFiltro === 'Armas' && (
+          {(categoriaFiltro === 'Armas' || categoriaFiltro === 'Geral') && (
             <>
+            {categoriaFiltro === 'Geral' && armasExibidas.length > 0 && (
+              <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-1 mt-2 border-b border-zinc-800 pb-1">Armas</h3>
+            )}
             {armasExibidas.map((item: ArmaInventario) => {
               const { id, arma } = item;
               const isExpanded = expandidos[id];
@@ -278,10 +283,14 @@ export function InventarioPanel() {
             {categoriaFiltro === 'Armas' && armasExibidas.length === 0 && (
               <p className="text-center text-zinc-600 text-sm py-4">Nenhuma arma no inventário.</p>
             )}
+            
+            {categoriaFiltro === 'Geral' && armasExibidas.length === 0 && (
+              <p className="text-center text-zinc-600 text-sm py-4">Inventário vazio.</p>
+            )}
             </>
           )}
 
-          {categoriaFiltro !== 'Armas' && (
+          {categoriaFiltro !== 'Armas' && categoriaFiltro !== 'Geral' && (
             <p className="text-center text-zinc-600 text-sm py-8">Esta categoria ainda não possui itens implementados.</p>
           )}
         </div>

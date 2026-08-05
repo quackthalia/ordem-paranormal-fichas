@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../services/supabase';
-import { Arma, ArmaInventario } from '../types';
+import type { Arma, ArmaInventario } from '../types';
 
 export function useArmas() {
   const [armas, setArmas] = useState<Arma[]>([]);

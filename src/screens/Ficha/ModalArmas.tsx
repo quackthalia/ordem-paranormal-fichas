@@ -90,34 +90,32 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
             const isExpanded = expandidos.includes(arma.Codigo_Arma);
             const critico = formatarCritico(arma.Critico_Arma, arma.Multiplicador_Arma);
             return (
-              <div key={arma.Codigo_Arma} className="overflow-hidden rounded border-l-4 border-l-red-700 bg-zinc-950/60 transition hover:bg-zinc-900/60">
+              <div key={arma.Codigo_Arma} className="overflow-hidden rounded border border-zinc-800 border-l-4 border-l-red-700 bg-zinc-950/60 transition hover:bg-zinc-900/60">
                 {/* Bloco fechado */}
                 <div
-                  className="flex cursor-pointer items-center justify-between gap-2 px-3 py-2"
+                  className="flex cursor-pointer items-center justify-between gap-3 p-3"
                   onClick={() => toggleExpandir(arma.Codigo_Arma)}
                 >
-                  <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center rounded bg-red-900/40 text-red-300 px-2 py-0.5 uppercase tracking-wider leading-tight">
-                        <span className="text-[10px] font-bold">{arma.Dano_Arma}</span>
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <span className="font-bold text-sm text-zinc-100 truncate">{arma.Nome_Item}</span>
+                    
+                    {arma['Agil?'] && (
+                      <span className="relative group cursor-help flex-shrink-0" title="Ágil">
+                        <span className="text-xs text-yellow-400">⚡</span>
                       </span>
-                      <span className="text-sm font-bold text-zinc-100">{arma.Nome_Item}</span>
-                      
-                      {arma['Agil?'] && (
-                        <span className="relative group cursor-help flex-shrink-0" title="Ágil">
-                          <span className="text-xs text-yellow-400">⚡</span>
-                        </span>
-                      )}
-                      {arma['Automatica?'] && (
-                        <span className="relative group cursor-help flex-shrink-0" title="Automática">
-                          <span className="text-xs text-blue-400">🔄</span>
-                        </span>
-                      )}
-                    </div>
+                    )}
+                    {arma['Automatica?'] && (
+                      <span className="relative group cursor-help flex-shrink-0" title="Automática">
+                        <span className="text-xs text-blue-400">🔄</span>
+                      </span>
+                    )}
                   </div>
                   
-                  <div className="flex items-center gap-3">
-                    <span className="text-zinc-400 text-xs font-bold bg-zinc-900 px-2 py-1 rounded">
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    <span className="text-red-400 text-xs font-bold border border-red-900/50 bg-red-900/20 px-2 py-0.5 rounded">
+                      Dano: {arma.Dano_Arma}
+                    </span>
+                    <span className="text-zinc-300 text-xs font-bold border border-zinc-800 bg-zinc-900 px-2 py-0.5 rounded">
                       Crítico: {critico}
                     </span>
                     <button
@@ -126,11 +124,11 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                         armasHook.adicionarArma(arma);
                         onFechar();
                       }}
-                      className="rounded bg-red-700 px-3 py-1 text-xs font-bold uppercase text-zinc-100 transition hover:bg-red-600"
+                      className="rounded bg-red-700 px-2 py-1 text-[10px] font-bold uppercase text-zinc-100 transition hover:bg-red-600"
                     >
                       Adicionar
                     </button>
-                    <span className="w-4 text-center text-zinc-600 text-xs">{isExpanded ? '▲' : '▼'}</span>
+                    <span className="w-4 text-center text-zinc-600 text-[10px]">{isExpanded ? '▲' : '▼'}</span>
                   </div>
                 </div>
                 

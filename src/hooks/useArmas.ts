@@ -32,17 +32,17 @@ export function useArmas() {
   };
 
   const cargaArmas = useMemo(() => {
-    return armasInventario.reduce((acc, item) => acc + (item.arma['Espaços_Item'] || 0), 0);
+    return armasInventario.reduce((acc, item) => acc + (Number(item.arma['Espaços_Item']) || 0), 0);
   }, [armasInventario]);
 
   const contagemPorCategoria = useMemo(() => {
     let counts = [0, 0, 0, 0];
     armasInventario.forEach(item => {
-      const cat = item.arma.Categoria_Item;
-      if (cat === '0') counts[0]++;
-      else if (cat === 'I') counts[1]++;
-      else if (cat === 'II') counts[2]++;
-      else if (cat === 'III') counts[3]++;
+      const cat = String(item.arma.Categoria_Item).trim();
+      if (cat === 'I') counts[0]++;
+      else if (cat === 'II') counts[1]++;
+      else if (cat === 'III') counts[2]++;
+      else if (cat === 'IV') counts[3]++;
     });
     return counts;
   }, [armasInventario]);

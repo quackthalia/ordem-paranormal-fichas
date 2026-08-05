@@ -313,7 +313,7 @@ function SortableArmaItem({
   } = useSortable({ id });
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Translate.toString(transform),
     transition,
     zIndex: isDragging ? 10 : 1,
     opacity: isDragging ? 0.9 : 1,

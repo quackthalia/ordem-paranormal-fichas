@@ -284,7 +284,6 @@ export function InventarioPanel() {
           {categoriaFiltro !== 'Armas' && (
             <p className="text-center text-zinc-600 text-sm py-8">Esta categoria ainda não possui itens implementados.</p>
           )}
-          </div>
         </div>
       </div>
 

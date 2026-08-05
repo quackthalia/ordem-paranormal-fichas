@@ -23,11 +23,16 @@ import type { Modifier } from '@dnd-kit/core';
 import { ModalMunicoes } from './ModalMunicoes';
 import { ModalEditarArma } from '../../components/ModalEditarArma';
 
-const restrictToTopAndVerticalAxis: Modifier = ({ transform, activeNodeRect, containerNodeRect }) => {
-  if (!activeNodeRect || !containerNodeRect) {
+const restrictToTopAndVerticalAxis: Modifier = ({ transform, activeNodeRect }) => {
+  if (!activeNodeRect) {
     return { ...transform, x: 0 };
   }
-  const minY = containerNodeRect.top - activeNodeRect.top;
+  const scrollContainer = document.getElementById('inventario-scroll-container');
+  let minY = -activeNodeRect.top; // Fallback para o topo da janela
+  if (scrollContainer) {
+    const scrollRect = scrollContainer.getBoundingClientRect();
+    minY = scrollRect.top - activeNodeRect.top;
+  }
   return {
     ...transform,
     x: 0,
@@ -341,7 +346,7 @@ export function InventarioPanel() {
         </div>
 
         {/* Corpo principal: Lista */}
-        <div className="flex-1 flex flex-col gap-2 min-h-0 overflow-y-auto pr-2 custom-scrollbar">
+        <div id="inventario-scroll-container" className="flex-1 flex flex-col gap-2 min-h-0 overflow-y-auto pr-2 custom-scrollbar">
           <DndContext 
             sensors={sensores}
             collisionDetection={closestCenter}

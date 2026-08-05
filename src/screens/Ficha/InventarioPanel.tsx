@@ -11,7 +11,6 @@ import {
   useSensor,
   useSensors
 } from '@dnd-kit/core';
-import type { DragEndEvent } from '@dnd-kit/core';
 import {
   SortableContext,
   sortableKeyboardCoordinates,
@@ -73,7 +72,7 @@ export function InventarioPanel() {
     })
   );
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = (event: any) => {
     const { active, over } = event;
     
     if (over && active.id !== over.id) {

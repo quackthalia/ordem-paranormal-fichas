@@ -125,19 +125,37 @@ export function InventarioPanel() {
     const { active, over } = event;
     
     if (over && active.id !== over.id) {
-      if (active.data?.current?.type === 'municao') {
-        // reordenar munição
-        const oldIndex = (municoesHook?.municoesInventario || []).findIndex(x => x.id === active.id);
-        const newIndex = (municoesHook?.municoesInventario || []).findIndex(x => x.id === over.id);
-        if (oldIndex !== -1 && newIndex !== -1 && municoesHook?.reordenarMunicoes) {
-          municoesHook.reordenarMunicoes(oldIndex, newIndex);
+      const isMunicao = active.data?.current?.type === 'municao';
+      const isArmaOver = over.data?.current?.type === 'arma';
+      const isMunicaoOver = over.data?.current?.type === 'municao';
+
+      if (isMunicao) {
+        if (isArmaOver) {
+          // Tenta acoplar
+          const armaObj = armasHook?.armasInventario.find(a => a.id === over.id);
+          const minv = municoesHook?.municoesInventario.find(m => m.id === active.id);
+          if (armaObj && minv) {
+            const compativeis = municoesHook?.getMunicoesCompativeis(armaObj.arma.Nome_Item, armaObj.arma.Categoria_Item) || [];
+            if (compativeis.some(c => c.Nome_Item === minv.municao.Nome_Item)) {
+              armasHook?.acoplarMunicao(armaObj.id, minv.id);
+            }
+          }
+        } else if (isMunicaoOver) {
+          // reordenar munição
+          const oldIndex = (municoesHook?.municoesInventario || []).findIndex(x => x.id === active.id);
+          const newIndex = (municoesHook?.municoesInventario || []).findIndex(x => x.id === over.id);
+          if (oldIndex !== -1 && newIndex !== -1 && municoesHook?.reordenarMunicoes) {
+            municoesHook.reordenarMunicoes(oldIndex, newIndex);
+          }
         }
       } else {
         // reordenar arma
-        const oldIndex = (armasHook?.armasInventario || []).findIndex(x => x.id === active.id);
-        const newIndex = (armasHook?.armasInventario || []).findIndex(x => x.id === over.id);
-        if (oldIndex !== -1 && newIndex !== -1 && armasHook?.reordenarArmas) {
-          armasHook.reordenarArmas(oldIndex, newIndex);
+        if (isArmaOver) {
+          const oldIndex = (armasHook?.armasInventario || []).findIndex(x => x.id === active.id);
+          const newIndex = (armasHook?.armasInventario || []).findIndex(x => x.id === over.id);
+          if (oldIndex !== -1 && newIndex !== -1 && armasHook?.reordenarArmas) {
+            armasHook.reordenarArmas(oldIndex, newIndex);
+          }
         }
       }
     }
@@ -324,19 +342,19 @@ export function InventarioPanel() {
 
         {/* Corpo principal: Lista */}
         <div className="flex-1 flex flex-col gap-2 min-h-0 overflow-y-auto pr-2 custom-scrollbar">
-          {(categoriaFiltro === 'Armas' || categoriaFiltro === 'Geral') && (
-            <>
-            {categoriaFiltro === 'Geral' && armasExibidas.length > 0 && (
-              <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-1 mt-2 border-b border-zinc-800 pb-1">Armas</h3>
-            )}
-            
-            <DndContext 
-              sensors={sensores}
-              collisionDetection={closestCenter}
-              modifiers={[restrictToTopAndVerticalAxis]}
-              onDragStart={handleDragStart}
-              onDragEnd={handleDragEnd}
-            >
+          <DndContext 
+            sensors={sensores}
+            collisionDetection={closestCenter}
+            modifiers={[restrictToTopAndVerticalAxis]}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
+            {(categoriaFiltro === 'Armas' || categoriaFiltro === 'Geral') && (
+              <>
+              {categoriaFiltro === 'Geral' && armasExibidas.length > 0 && (
+                <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-1 mt-2 border-b border-zinc-800 pb-1">Armas</h3>
+              )}
+              
               <SortableContext 
                 items={armasExibidas.map(a => a.id)}
                 strategy={verticalListSortingStrategy}
@@ -353,20 +371,18 @@ export function InventarioPanel() {
                   />
                 ))}
               </SortableContext>
-            </DndContext>
-            
-            {categoriaFiltro === 'Armas' && armasExibidas.length === 0 && (
-              <p className="text-center text-zinc-600 text-sm py-4">Nenhuma arma no inventário.</p>
-            )}
-            
-            {categoriaFiltro === 'Geral' && armasExibidas.length === 0 && municoesSoltas.length === 0 && (
-              <p className="text-center text-zinc-600 text-sm py-4">Inventário vazio.</p>
-            )}
+              
+              {categoriaFiltro === 'Armas' && armasExibidas.length === 0 && (
+                <p className="text-center text-zinc-600 text-sm py-4">Nenhuma arma no inventário.</p>
+              )}
+              
+              {categoriaFiltro === 'Geral' && armasExibidas.length === 0 && municoesSoltas.length === 0 && (
+                <p className="text-center text-zinc-600 text-sm py-4">Inventário vazio.</p>
+              )}
 
-            {categoriaFiltro === 'Geral' && municoesSoltas.length > 0 && (
-              <>
-                <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-1 mt-2 border-b border-zinc-800 pb-1">Munições Soltas</h3>
-                <DndContext sensors={sensores} collisionDetection={closestCenter} modifiers={[restrictToTopAndVerticalAxis]} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+              {categoriaFiltro === 'Geral' && municoesSoltas.length > 0 && (
+                <>
+                  <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-1 mt-2 border-b border-zinc-800 pb-1">Munições Soltas</h3>
                   <SortableContext items={municoesSoltas.map(m => m.id)} strategy={verticalListSortingStrategy}>
                     {municoesSoltas.map(item => (
                       <SortableMunicaoItem 
@@ -379,15 +395,13 @@ export function InventarioPanel() {
                       />
                     ))}
                   </SortableContext>
-                </DndContext>
+                </>
+              )}
               </>
             )}
-            </>
-          )}
 
-          {categoriaFiltro === 'Munições' && (
-            <>
-              <DndContext sensors={sensores} collisionDetection={closestCenter} modifiers={[restrictToTopAndVerticalAxis]} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+            {categoriaFiltro === 'Munições' && (
+              <>
                 <SortableContext items={municoesGeral.map(m => m.id)} strategy={verticalListSortingStrategy}>
                   {municoesGeral.map(item => (
                     <SortableMunicaoItem 
@@ -400,13 +414,13 @@ export function InventarioPanel() {
                     />
                   ))}
                 </SortableContext>
-              </DndContext>
 
-              {municoesGeral.length === 0 && (
-                <p className="text-center text-zinc-600 text-sm py-4">Nenhuma munição no inventário.</p>
-              )}
-            </>
-          )}
+                {municoesGeral.length === 0 && (
+                  <p className="text-center text-zinc-600 text-sm py-4">Nenhuma munição no inventário.</p>
+                )}
+              </>
+            )}
+          </DndContext>
 
           {categoriaFiltro !== 'Armas' && categoriaFiltro !== 'Geral' && (
             <p className="text-center text-zinc-600 text-sm py-8">Esta categoria ainda não possui itens implementados.</p>
@@ -469,7 +483,7 @@ function SortableArmaItem({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id });
+  } = useSortable({ id, data: { type: 'arma' } });
 
   const { municoesHook, armasHook } = useRPG();
 

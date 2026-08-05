@@ -455,7 +455,7 @@ export function InventarioPanel() {
             </DragOverlay>
           </DndContext>
 
-          {categoriaFiltro !== 'Armas' && categoriaFiltro !== 'Geral' && (
+          {categoriaFiltro !== 'Armas' && categoriaFiltro !== 'Geral' && categoriaFiltro !== 'Munições' && (
             <p className="text-center text-zinc-600 text-sm py-8">Esta categoria ainda não possui itens implementados.</p>
           )}
         </div>

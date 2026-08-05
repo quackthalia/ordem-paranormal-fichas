@@ -235,7 +235,7 @@ export function InventarioPanel() {
         </div>
 
         {/* Corpo principal: Lista */}
-        <div className="flex-1 flex flex-col gap-2 min-w-0 overflow-y-auto pr-2 custom-scrollbar">
+        <div className="flex-1 flex flex-col gap-2 min-h-0 overflow-y-auto pr-2 custom-scrollbar">
           {(categoriaFiltro === 'Armas' || categoriaFiltro === 'Geral') && (
             <>
             {categoriaFiltro === 'Geral' && armasExibidas.length > 0 && (

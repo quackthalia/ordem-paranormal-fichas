@@ -372,6 +372,7 @@ export function InventarioPanel() {
                         isExpanded={!!expandidos[item.id]}
                         toggleExpandir={toggleExpandir}
                         removerMunicao={municoesHook?.removerMunicao || (() => {})} 
+                        armaAcopladaNome={armasHook?.armasInventario.find(a => a.municoesAcopladas?.includes(item.id))?.arma.Nome_Item}
                       />
                     ))}
                   </SortableContext>
@@ -392,6 +393,7 @@ export function InventarioPanel() {
                       isExpanded={!!expandidos[item.id]}
                       toggleExpandir={toggleExpandir}
                       removerMunicao={municoesHook?.removerMunicao || (() => {})} 
+                      armaAcopladaNome={armasHook?.armasInventario.find(a => a.municoesAcopladas?.includes(item.id))?.arma.Nome_Item}
                     />
                   ))}
                 </SortableContext>
@@ -607,7 +609,10 @@ function SortableArmaItem({
                 title="Remover Munição"
                 className="text-zinc-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition px-2"
               >
-                ✖
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
               </button>
             </div>
           ))}
@@ -621,12 +626,14 @@ function SortableMunicaoItem({
   item,
   isExpanded,
   toggleExpandir,
-  removerMunicao
+  removerMunicao,
+  armaAcopladaNome
 }: {
   item: any; // MunicaoInventario
   isExpanded: boolean;
   toggleExpandir: (id: string) => void;
   removerMunicao: (id: string) => void;
+  armaAcopladaNome?: string;
 }) {
   const { id, municao } = item;
   const {
@@ -671,7 +678,13 @@ function SortableMunicaoItem({
         >
           <div className="flex flex-col gap-1 min-w-0">
             <span className="font-bold text-zinc-100 text-sm truncate">{municao.Nome_Item}</span>
-            <span className="text-xs text-zinc-500">{municao.Tipo_Arma}</span>
+            <span className="text-xs text-zinc-500 truncate">
+              {armaAcopladaNome ? (
+                <>Em: <span className="font-bold text-zinc-400">{armaAcopladaNome}</span></>
+              ) : (
+                municao.Tipo_Arma
+              )}
+            </span>
           </div>
           
           <div className="flex items-center gap-3 flex-shrink-0">

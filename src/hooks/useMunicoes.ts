@@ -12,7 +12,7 @@ export function useMunicoes() {
     async function carregar() {
       setLoading(true);
       setError(null);
-      const { data, error } = await supabase.from('Municoes').select('*');
+      const { data, error } = await supabase.from('Munições').select('*');
       if (error) {
         setError(error.message);
       } else if (data) {

@@ -65,6 +65,18 @@ export function useArmas() {
     }));
   };
 
+  const editarArma = (idArma: string, novosDados: Partial<Arma>) => {
+    setArmasInventario(prev => prev.map(item => {
+      if (item.id === idArma) {
+        return {
+          ...item,
+          arma: { ...item.arma, ...novosDados }
+        };
+      }
+      return item;
+    }));
+  };
+
   const cargaArmas = useMemo(() => {
     return armasInventario.reduce((acc, item) => {
       let esp = item.arma['Espaços_Item'];
@@ -93,6 +105,7 @@ export function useArmas() {
     reordenarArmas,
     acoplarMunicao,
     desacoplarMunicao,
+    editarArma,
     cargaArmas,
     contagemPorCategoria,
     loading, error };

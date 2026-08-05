@@ -21,6 +21,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { restrictToWindowEdges, restrictToVerticalAxis, restrictToParentElement } from '@dnd-kit/modifiers';
 import type { Modifier } from '@dnd-kit/core';
 import { ModalMunicoes } from './ModalMunicoes';
+import { ModalEditarArma } from '../../components/ModalEditarArma';
 
 const restrictToTopAndVerticalAxis: Modifier = ({ transform, activeNodeRect, containerNodeRect }) => {
   if (!activeNodeRect || !containerNodeRect) {
@@ -51,6 +52,7 @@ export function InventarioPanel() {
   const [municaoFiltroCategoria, setMunicaoFiltroCategoria] = useState<string | undefined>(undefined);
   const [municaoTargetArmaId, setMunicaoTargetArmaId] = useState<string | undefined>(undefined);
   const [expandidos, setExpandidos] = useState<Record<string, boolean>>({});
+  const [armaEditandoId, setArmaEditandoId] = useState<string | null>(null);
 
   const { municoesHook } = useRPG();
 
@@ -347,6 +349,7 @@ export function InventarioPanel() {
                     toggleExpandir={toggleExpandir}
                     stringDT={calcularDT(item.arma.dt_item)}
                     removerArma={armasHook?.removerArma || (() => {})}
+                    onEditar={() => setArmaEditandoId(item.id)}
                   />
                 ))}
               </SortableContext>
@@ -429,6 +432,16 @@ export function InventarioPanel() {
           }}
         />
       )}
+
+      {armaEditandoId && (
+        <ModalEditarArma
+          armaInventario={armasHook?.armasInventario.find(a => a.id === armaEditandoId)!}
+          onSave={(novosDados) => {
+            armasHook?.editarArma(armaEditandoId, novosDados);
+          }}
+          onClose={() => setArmaEditandoId(null)}
+        />
+      )}
     </div>
   );
 }
@@ -438,13 +451,15 @@ function SortableArmaItem({
   isExpanded,
   toggleExpandir,
   stringDT,
-  removerArma
+  removerArma,
+  onEditar
 }: {
   item: ArmaInventario;
   isExpanded: boolean;
   toggleExpandir: (id: string) => void;
   stringDT: string | null;
   removerArma: (id: string) => void;
+  onEditar?: () => void;
 }) {
   const { id, arma } = item;
   const {
@@ -546,15 +561,26 @@ function SortableArmaItem({
           </div>
           
           <div className="flex justify-between items-center mt-3 pt-3 border-t border-zinc-800/50">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                removerArma(id);
-              }}
-              className="rounded bg-red-900/40 border border-red-800/50 px-3 py-1 text-xs font-bold uppercase text-red-400 transition hover:bg-red-800 hover:text-red-100"
-            >
-              Remover Arma
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEditar?.();
+                }}
+                className="rounded bg-zinc-800 border border-zinc-700 px-3 py-1 text-xs font-bold uppercase tracking-wider text-zinc-300 transition hover:bg-zinc-700 hover:text-zinc-100"
+              >
+                Editar Arma
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removerArma(id);
+                }}
+                className="rounded bg-red-900/40 border border-red-800/50 px-3 py-1 text-xs font-bold uppercase text-red-400 transition hover:bg-red-800 hover:text-red-100"
+              >
+                Remover Arma
+              </button>
+            </div>
 
             {(() => {
               const compativeis = municoesHook?.getMunicoesCompativeis(arma.Nome_Item, arma.Categoria_Item) || [];

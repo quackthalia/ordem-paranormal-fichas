@@ -59,7 +59,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             placeholder="Buscar arma pelo nome..."
-            className="w-full rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700"
+            className="w-full rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700"
           />
         </div>
 
@@ -84,21 +84,21 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
         </div>
 
         {/* Lista de armas */}
-        <div className="flex-1 overflow-y-auto p-5">
-          <div className="flex flex-col gap-3">
+        <div className="flex-1 overflow-y-auto p-4">
+          <div className="flex flex-col gap-2">
           {armasFiltradas.map((arma: Arma) => {
             const isExpanded = expandidos.includes(arma.Codigo_Arma);
             const critico = formatarCritico(arma.Critico_Arma, arma.Multiplicador_Arma);
             return (
-              <div key={arma.Codigo_Arma} className="overflow-hidden rounded-r border-l-4 border-l-purple-700 bg-zinc-950/60 transition hover:bg-zinc-900/60">
+              <div key={arma.Codigo_Arma} className="overflow-hidden rounded border-l-4 border-l-red-700 bg-zinc-950/60 transition hover:bg-zinc-900/60">
                 {/* Bloco fechado */}
                 <div
-                  className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3"
+                  className="flex cursor-pointer items-center justify-between gap-2 px-3 py-2"
                   onClick={() => toggleExpandir(arma.Codigo_Arma)}
                 >
                   <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-2.5">
-                      <span className="inline-flex items-center gap-1.5 rounded bg-purple-900/40 text-purple-300 px-2 py-0.5 uppercase tracking-wider leading-tight">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center rounded bg-red-900/40 text-red-300 px-2 py-0.5 uppercase tracking-wider leading-tight">
                         <span className="text-[10px] font-bold">{arma.Dano_Arma}</span>
                       </span>
                       <span className="text-sm font-bold text-zinc-100">{arma.Nome_Item}</span>
@@ -116,7 +116,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3">
                     <span className="text-zinc-400 text-xs font-bold bg-zinc-900 px-2 py-1 rounded">
                       Crítico: {critico}
                     </span>
@@ -126,17 +126,17 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                         armasHook.adicionarArma(arma);
                         onFechar();
                       }}
-                      className="rounded bg-red-700 px-4 py-1.5 text-xs font-bold uppercase text-zinc-100 transition hover:bg-red-600"
+                      className="rounded bg-red-700 px-3 py-1 text-xs font-bold uppercase text-zinc-100 transition hover:bg-red-600"
                     >
                       Adicionar
                     </button>
-                    <span className="w-5 text-center text-zinc-600">{isExpanded ? '▲' : '▼'}</span>
+                    <span className="w-4 text-center text-zinc-600 text-xs">{isExpanded ? '▲' : '▼'}</span>
                   </div>
                 </div>
                 
                 {/* Bloco expandido */}
                 {isExpanded && (
-                  <div className="border-t border-zinc-800 px-4 py-4 text-xs flex flex-col gap-2 bg-zinc-950/80">
+                  <div className="border-t border-zinc-800 px-3 py-3 text-xs flex flex-col gap-2 bg-zinc-950/80">
                     <div>
                       <span className="font-bold text-zinc-200">{arma.Proficiencia}</span>
                       <span className="text-zinc-600"> — </span>
@@ -144,11 +144,11 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                       <span className="text-zinc-600"> — </span>
                       <span className="italic text-zinc-400">{arma.Empunhadura_Arma}</span>
                     </div>
-                    <div className="flex flex-wrap gap-4 text-zinc-300">
-                      <span><span className="text-purple-400 font-bold">Categoria:</span> {arma.Categoria_Item}</span>
-                      {arma.Alcance_Item && <span><span className="text-purple-400 font-bold">Alcance:</span> {arma.Alcance_Item}</span>}
-                      <span><span className="text-purple-400 font-bold">Tipo:</span> {arma.Tipo_Dano_Arma}</span>
-                      <span><span className="text-purple-400 font-bold">Espaços:</span> {arma['Espaços_Item']}</span>
+                    <div className="flex flex-col gap-1 text-zinc-300">
+                      <span><span className="text-red-400 font-bold">Categoria:</span> {arma.Categoria_Item}</span>
+                      {arma.Alcance_Item && <span><span className="text-red-400 font-bold">Alcance:</span> {arma.Alcance_Item}</span>}
+                      <span><span className="text-red-400 font-bold">Tipo:</span> {arma.Tipo_Dano_Arma}</span>
+                      <span><span className="text-red-400 font-bold">Espaços:</span> {arma['Espaços_Item']}</span>
                     </div>
                     
                     <div className="flex flex-col gap-1 mt-1">

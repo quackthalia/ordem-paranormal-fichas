@@ -41,6 +41,30 @@ export function useArmas() {
     });
   };
 
+  const acoplarMunicao = (idArma: string, idMunicao: string) => {
+    setArmasInventario(prev => prev.map(item => {
+      if (item.id === idArma) {
+        return {
+          ...item,
+          municoesAcopladas: [...(item.municoesAcopladas || []), idMunicao]
+        };
+      }
+      return item;
+    }));
+  };
+
+  const desacoplarMunicao = (idArma: string, idMunicao: string) => {
+    setArmasInventario(prev => prev.map(item => {
+      if (item.id === idArma && item.municoesAcopladas) {
+        return {
+          ...item,
+          municoesAcopladas: item.municoesAcopladas.filter(m => m !== idMunicao)
+        };
+      }
+      return item;
+    }));
+  };
+
   const cargaArmas = useMemo(() => {
     return armasInventario.reduce((acc, item) => {
       let esp = item.arma['Espaços_Item'];
@@ -64,5 +88,12 @@ export function useArmas() {
     return counts;
   }, [armasInventario]);
 
-  return { armas, armasInventario, adicionarArma, removerArma, reordenarArmas, cargaArmas, contagemPorCategoria, loading, error };
+  return { armas, armasInventario,    adicionarArma,
+    removerArma,
+    reordenarArmas,
+    acoplarMunicao,
+    desacoplarMunicao,
+    cargaArmas,
+    contagemPorCategoria,
+    loading, error };
 }

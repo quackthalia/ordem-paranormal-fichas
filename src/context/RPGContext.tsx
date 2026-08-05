@@ -16,6 +16,7 @@ import { useRituais } from '../hooks/useRituais';
 import { useTrilhas } from '../hooks/useTrilhas';
 import { useInventario } from '../hooks/useInventario';
 import { useArmas } from '../hooks/useArmas';
+import { useMunicoes } from '../hooks/useMunicoes';
 import { capMaximoAtributo, pontosIniciaisPorNex, calcularStatusBase } from '../utils/rpgRules';
 
 // ============================================================
@@ -39,6 +40,7 @@ interface RPGContextType {
   poderesHook: ReturnType<typeof usePoderes>;
   inventarioHook: ReturnType<typeof useInventario>;
   armasHook: ReturnType<typeof useArmas>;
+  municoesHook: ReturnType<typeof useMunicoes>;
   abaDireita: AbaDireita;
   setAbaDireita: React.Dispatch<React.SetStateAction<AbaDireita>>;
   abaModalPoderes: AbaModalPoderes;
@@ -195,6 +197,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const origensHook = useOrigem();
   const inventarioHook = useInventario(origensHook.origemSelecionada?.Codigo_Regra);
   const armasHook = useArmas();
+  const municoesHook = useMunicoes();
   const rituaisHook = useRituais();
 
   // Computa o conjunto de regras automáticas ativas
@@ -447,7 +450,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     atributos, setAtributos,
     bonusAtributos, setBonusAtributos,
     pontosRestantes, alterarAtributo,
-    status, periciasHook, poderesHook, origensHook, trilhasHook, rituaisHook, inventarioHook, armasHook,
+    status, periciasHook, poderesHook, origensHook, trilhasHook, rituaisHook, inventarioHook, armasHook, municoesHook,
     abaDireita, setAbaDireita,
     abaModalPoderes, setAbaModalPoderes,
     tipoModalPoderes, setTipoModalPoderes,

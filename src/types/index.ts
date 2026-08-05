@@ -186,4 +186,22 @@ export interface Arma {
 export interface ArmaInventario {
   id: string;
   arma: Arma;
+  municoesAcopladas?: string[]; // IDs das munições (MunicaoInventario.id) acopladas a esta arma
+}
+
+// ============================================================
+// INVENTÁRIO — MUNIÇÕES
+// ============================================================
+export interface Municao {
+  Codigo_Municao: number;
+  Nome_Item: string;
+  Descricao_Item: string;
+  Tipo_Arma: string;
+  Categoria_Item: string;
+  'Espaços_Item': number;
+}
+
+export interface MunicaoInventario {
+  id: string;
+  municao: Municao;
 }

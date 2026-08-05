@@ -86,6 +86,18 @@ export function useMunicoes() {
     });
   }, []);
 
+  const contagemPorCategoria = useMemo(() => {
+    let counts = [0, 0, 0, 0];
+    municoesInventario.forEach(item => {
+      const cat = String(item.municao.Categoria_Item).trim();
+      if (cat === 'I') counts[0]++;
+      else if (cat === 'II') counts[1]++;
+      else if (cat === 'III') counts[2]++;
+      else if (cat === 'IV') counts[3]++;
+    });
+    return counts;
+  }, [municoesInventario]);
+
   return {
     municoes,
     municoesInventario,
@@ -94,6 +106,7 @@ export function useMunicoes() {
     removerMunicao,
     reordenarMunicoes,
     cargaMunicoes,
+    contagemPorCategoria,
     getMunicoesCompativeis,
     loading,
     error,

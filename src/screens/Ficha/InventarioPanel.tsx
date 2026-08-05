@@ -38,9 +38,18 @@ export function InventarioPanel() {
   const [municaoTargetArmaId, setMunicaoTargetArmaId] = useState<string | undefined>(undefined);
   const [expandidos, setExpandidos] = useState<Record<string, boolean>>({});
 
+  const { municoesHook } = useRPG();
+
   const cargaMaxima = 5 + (atributosFinais.FOR * 5) + (regrasAutomaticasAtivas.has(23) ? 5 : 0) + (regrasAutomaticasAtivas.has(43) ? atributosFinais.INT : 0);
-  const cargaAtual = armasHook?.cargaArmas || 0;
-  const noInventario = armasHook?.contagemPorCategoria || [0, 0, 0, 0];
+  
+  const cargaAtual = (armasHook?.cargaArmas || 0) + (municoesHook?.cargaMunicoes || 0);
+  
+  const noInventario = [0, 0, 0, 0];
+  const countArmas = armasHook?.contagemPorCategoria || [0, 0, 0, 0];
+  const countMunicoes = municoesHook?.contagemPorCategoria || [0, 0, 0, 0];
+  for (let i = 0; i < 4; i++) {
+    noInventario[i] = countArmas[i] + countMunicoes[i];
+  }
 
   useEffect(() => {
     (window as any)._inventarioPanelSetters = {
@@ -123,7 +132,6 @@ export function InventarioPanel() {
     return true;
   });
 
-  const { municoesHook } = useRPG();
   const municoesSoltas = (municoesHook?.municoesInventario || []).filter(minv => {
     // É solta se não estiver acoplada a nenhuma arma
     const acoplada = armasHook?.armasInventario.some(a => a.municoesAcopladas?.includes(minv.id));

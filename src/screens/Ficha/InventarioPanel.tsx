@@ -11,6 +11,7 @@ import {
   useSensor,
   useSensors
 } from '@dnd-kit/core';
+import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import {
   SortableContext,
   sortableKeyboardCoordinates,
@@ -71,6 +72,13 @@ export function InventarioPanel() {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
+
+  const handleDragStart = (event: any) => {
+    const { active } = event;
+    if (active && expandidos[active.id]) {
+      setExpandidos(prev => ({ ...prev, [active.id]: false }));
+    }
+  };
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
@@ -237,6 +245,7 @@ export function InventarioPanel() {
             <DndContext 
               sensors={sensores}
               collisionDetection={closestCenter}
+              onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
             >
               <SortableContext 

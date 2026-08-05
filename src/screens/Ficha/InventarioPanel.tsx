@@ -160,8 +160,7 @@ export function InventarioPanel() {
           if (compativeis.some(c => c.Nome_Item === municaoActive.municao.Nome_Item)) {
             armasHook?.acoplarMunicao(armaOver.id, municaoActive.id);
           } else {
-            // Feedback visual ou fallback (se precisar)
-            // Por enquanto só não acopla, mas vamos garantir que o ID está certo
+            alert(`Munição "${municaoActive.municao.Nome_Item}" é incompatível com a arma "${armaOver.arma.Nome_Item}".`);
           }
         } else if (isMunicaoOver) {
           // reordenar munição

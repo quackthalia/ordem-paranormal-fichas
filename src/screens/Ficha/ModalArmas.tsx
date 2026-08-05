@@ -90,7 +90,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
             const isExpanded = expandidos.includes(arma.Codigo_Arma);
             const critico = formatarCritico(arma.Critico_Arma, arma.Multiplicador_Arma);
             return (
-              <div key={arma.Codigo_Arma} className="overflow-hidden rounded border border-zinc-800 border-l-4 border-l-red-700 bg-zinc-950/60 transition hover:bg-zinc-900/60">
+              <div key={arma.Codigo_Arma} className="rounded border border-zinc-800 border-l-4 border-l-red-700 bg-zinc-950/60 transition hover:bg-zinc-900/60">
                 {/* Bloco fechado */}
                 <div
                   className="flex cursor-pointer items-center justify-between gap-3 p-3"

@@ -143,8 +143,32 @@ export function InventarioPanel() {
 
       {/* Seção de Inventário */}
       <div className="flex flex-col gap-3 mt-2">
-        {/* Barra superior de busca e botão adicionar */}
-        <div className="flex gap-2">
+        {/* Abas de Categoria */}
+        <div className="flex gap-2 mb-4 border-b border-zinc-800 pb-3 overflow-x-auto">
+          <button
+            onClick={() => setCategoriaFiltro('Geral')}
+            className={`px-4 py-2 rounded font-bold text-sm transition flex items-center gap-2 ${
+              categoriaFiltro === 'Geral' 
+                ? 'bg-red-900/40 text-red-400 border border-red-800/50' 
+                : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900 border border-transparent'
+            }`}
+          >
+            <span className="text-lg">🎒</span> Geral
+          </button>
+          <button
+            onClick={() => setCategoriaFiltro('Armas')}
+            className={`px-4 py-2 rounded font-bold text-sm transition flex items-center gap-2 ${
+              categoriaFiltro === 'Armas' 
+                ? 'bg-red-900/40 text-red-400 border border-red-800/50' 
+                : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900 border border-transparent'
+            }`}
+          >
+            <span className="text-lg">⚔️</span> Armas
+          </button>
+        </div>
+
+        {/* Filtros e Busca */}
+        <div className="flex gap-2 mb-4">
           <input
             type="text"
             placeholder="Buscar no inventário..."
@@ -162,19 +186,17 @@ export function InventarioPanel() {
           )}
         </div>
 
-        {/* Corpo principal: Lista + Botões Laterais */}
-        <div className="flex items-start flex-1 min-h-[400px]">
-          {/* Lista de itens (esquerda) */}
-          <div className="flex-1 flex flex-col gap-2 min-w-0 pr-4">
-            {categoriaFiltro === 'Armas' && (
-              <>
+        {/* Corpo principal: Lista */}
+        <div className="flex-1 flex flex-col gap-2 min-w-0">
+          {categoriaFiltro === 'Armas' && (
+            <>
             {armasExibidas.map((item: ArmaInventario) => {
               const { id, arma } = item;
               const isExpanded = expandidos[id];
               const stringDT = calcularDT(arma.dt_item);
 
               return (
-                <div key={id} className="overflow-hidden rounded border border-zinc-800 border-l-4 border-l-red-700 bg-zinc-950/60 transition hover:bg-zinc-900/60">
+                <div key={id} className="rounded border border-zinc-800 border-l-4 border-l-red-700 bg-zinc-950/60 transition hover:bg-zinc-900/60">
                   {/* Bloco fechado */}
                   <div
                     className="flex cursor-pointer items-center justify-between gap-3 p-3"
@@ -262,36 +284,6 @@ export function InventarioPanel() {
           {categoriaFiltro !== 'Armas' && (
             <p className="text-center text-zinc-600 text-sm py-8">Esta categoria ainda não possui itens implementados.</p>
           )}
-          </div>
-
-          {/* Sidebar de botões de categoria (direita) em formato de ABAS */}
-          <div className="flex flex-col w-14 shrink-0 border-l border-zinc-800 -mr-2 bg-zinc-950/50 rounded-r-lg overflow-hidden self-stretch">
-            <button
-              onClick={() => setCategoriaFiltro('Geral')}
-              title="Geral"
-              className={`w-full h-14 border-b border-zinc-800 flex items-center justify-center text-2xl transition ${
-                categoriaFiltro === 'Geral' 
-                  ? 'bg-zinc-900 text-red-400 border-l-2 border-l-red-500' 
-                  : 'bg-transparent text-zinc-600 hover:text-zinc-300 hover:bg-zinc-900/50 border-l-2 border-l-transparent'
-              }`}
-            >
-              🎒
-            </button>
-            <button
-              onClick={() => setCategoriaFiltro('Armas')}
-              title="Armas"
-              className={`w-full h-14 border-b border-zinc-800 flex items-center justify-center text-2xl transition ${
-                categoriaFiltro === 'Armas' 
-                  ? 'bg-zinc-900 text-red-400 border-l-2 border-l-red-500' 
-                  : 'bg-transparent text-zinc-600 hover:text-zinc-300 hover:bg-zinc-900/50 border-l-2 border-l-transparent'
-              }`}
-            >
-              🗡️
-            </button>
-            {/* Espaços para categorias futuras */}
-            <button className="w-full h-14 border-b border-zinc-800/50 flex items-center justify-center text-2xl text-zinc-700/50 cursor-not-allowed bg-transparent border-l-2 border-l-transparent" title="Equipamentos (Em breve)">👕</button>
-            <button className="w-full h-14 border-b border-zinc-800/50 flex items-center justify-center text-2xl text-zinc-700/50 cursor-not-allowed bg-transparent border-l-2 border-l-transparent" title="Proteções (Em breve)">🛡️</button>
-            <button className="w-full h-14 border-b border-zinc-800/50 flex items-center justify-center text-2xl text-zinc-700/50 cursor-not-allowed bg-transparent border-l-2 border-l-transparent" title="Itens Operacionais (Em breve)">💊</button>
           </div>
         </div>
       </div>

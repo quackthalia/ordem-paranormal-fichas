@@ -97,43 +97,48 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                   onClick={() => toggleExpandir(arma.Codigo_Arma)}
                 >
                   <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-sm text-zinc-100 truncate">{arma.Nome_Item}</span>
-                      
-                      {arma['Agil?'] && (
-                        <span className="relative group cursor-help flex-shrink-0" title="Ágil">
-                          <span className="text-xs text-yellow-400">⚡</span>
-                        </span>
-                      )}
-                      {arma['Automatica?'] && (
-                        <span className="relative group cursor-help flex-shrink-0" title="Automática">
-                          <span className="text-xs text-blue-400">🔄</span>
-                        </span>
-                      )}
-                    </div>
+                    <span className="font-bold text-sm text-zinc-100 truncate">{arma.Nome_Item}</span>
                     
-                    <div className="flex items-center gap-2">
-                      <span className="text-red-400 text-[10px] font-bold uppercase tracking-wider border border-red-900/50 bg-red-900/20 px-1.5 py-0.5 rounded">
-                        Dado: {arma.Dano_Arma}
+                    <div className="flex items-center gap-4 text-xs text-zinc-300">
+                      <span>
+                        <span className="font-bold text-red-400">Dado:</span> {arma.Dano_Arma}
                       </span>
-                      <span className="text-zinc-400 text-[10px] font-bold uppercase tracking-wider border border-zinc-800 bg-zinc-900 px-1.5 py-0.5 rounded">
-                        Crítico: {critico}
-                      </span>
+                      {critico && (
+                        <span>
+                          <span className="font-bold text-zinc-400">Crítico:</span> {critico}
+                        </span>
+                      )}
                     </div>
                   </div>
                   
                   <div className="flex items-center gap-3 flex-shrink-0">
+                    {arma['Agil?'] && (
+                      <span className="relative group cursor-help" title="Ágil">
+                        <span className="text-sm text-yellow-400">⚡</span>
+                        <span className="absolute bottom-full right-0 mb-2 hidden group-hover:block w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
+                          Permite que você aplique sua Agilidade em vez de sua Força em testes de ataque e rolagens de dano.
+                        </span>
+                      </span>
+                    )}
+                    {arma['Automatica?'] && (
+                      <span className="relative group cursor-help" title="Automática">
+                        <span className="text-sm text-blue-400">🔄</span>
+                        <span className="absolute bottom-full right-0 mb-2 hidden group-hover:block w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
+                          Pode disparar tiros únicos ou rajadas (-1d20 no ataque, +1 dado de dano).
+                        </span>
+                      </span>
+                    )}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         armasHook.adicionarArma(arma);
                         onFechar();
                       }}
-                      className="rounded bg-red-700 px-2 py-1 text-[10px] font-bold uppercase text-zinc-100 transition hover:bg-red-600"
+                      className="rounded bg-red-700 px-3 py-1.5 text-xs font-bold uppercase text-zinc-100 transition hover:bg-red-600"
                     >
                       Adicionar
                     </button>
-                    <span className="w-4 text-center text-zinc-600 text-[10px]">{isExpanded ? '▲' : '▼'}</span>
+                    <span className="w-5 text-center text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
                   </div>
                 </div>
                 
@@ -147,7 +152,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                       <span className="text-zinc-600"> — </span>
                       <span className="italic text-zinc-400">{arma.Empunhadura_Arma}</span>
                     </div>
-                    <div className="flex flex-col gap-1 text-zinc-300">
+                    <div className="flex flex-col gap-1 text-xs text-zinc-300">
                       <span><span className="text-red-400 font-bold">Categoria:</span> {arma.Categoria_Item}</span>
                       {arma.Alcance_Item && <span><span className="text-red-400 font-bold">Alcance:</span> {arma.Alcance_Item}</span>}
                       <span><span className="text-red-400 font-bold">Tipo:</span> {arma.Tipo_Dano_Arma}</span>
@@ -155,13 +160,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                     </div>
                     
                     <div className="flex flex-col gap-1 mt-1">
-                      {arma['Agil?'] && (
-                        <p className="text-zinc-500 leading-relaxed"><span className="text-yellow-400">⚡ Ágil:</span> Permite que você aplique sua Agilidade em vez de sua Força em testes de ataque e rolagens de dano realizadas com ela.</p>
-                      )}
-                      {arma['Automatica?'] && (
-                        <p className="text-zinc-500 leading-relaxed"><span className="text-blue-400">🔄 Automática:</span> Pode disparar tiros únicos ou rajadas. Na rajada, você sofre -1d20 no ataque, mas causa 1 dado de dano adicional.</p>
-                      )}
-                      <p className="text-zinc-500 mt-1 leading-relaxed">{arma.Descricao_Item}</p>
+                      <p className="text-zinc-400 text-xs leading-relaxed">{arma.Descricao_Item}</p>
                     </div>
                   </div>
                 )}

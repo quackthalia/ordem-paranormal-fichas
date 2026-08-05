@@ -24,15 +24,32 @@ export function useArmas() {
   }, []);
 
   const adicionarArma = (arma: Arma) => {
-    setArmasInventario(prev => [...prev, { id: crypto.randomUUID(), arma }]);
+    const newId = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
+    setArmasInventario(prev => [...prev, { id: newId, arma }]);
   };
 
   const removerArma = (id: string) => {
     setArmasInventario(prev => prev.filter(item => item.id !== id));
   };
 
+  const reordenarArmas = (oldIndex: number, newIndex: number) => {
+    setArmasInventario(prev => {
+      const result = Array.from(prev);
+      const [removed] = result.splice(oldIndex, 1);
+      result.splice(newIndex, 0, removed);
+      return result;
+    });
+  };
+
   const cargaArmas = useMemo(() => {
-    return armasInventario.reduce((acc, item) => acc + (Number(item.arma['Espaços_Item']) || 0), 0);
+    return armasInventario.reduce((acc, item) => {
+      let esp = item.arma['Espaços_Item'];
+      if (typeof esp === 'string') {
+        esp = esp.replace(',', '.').replace(/[^0-9.-]+/g, '');
+      }
+      const val = Number(esp);
+      return acc + (isNaN(val) ? 0 : val);
+    }, 0);
   }, [armasInventario]);
 
   const contagemPorCategoria = useMemo(() => {
@@ -47,5 +64,5 @@ export function useArmas() {
     return counts;
   }, [armasInventario]);
 
-  return { armas, armasInventario, adicionarArma, removerArma, cargaArmas, contagemPorCategoria, loading, error };
+  return { armas, armasInventario, adicionarArma, removerArma, reordenarArmas, cargaArmas, contagemPorCategoria, loading, error };
 }

@@ -595,34 +595,49 @@ function SortableMunicaoItem({
 
   const style = {
     transform: CSS.Translate.toString(transform),
-    transition: transition ? transition.replace('transform', 'transform, background-color, border-color') : undefined,
+    transition,
+    zIndex: isDragging ? 10 : 1,
+    opacity: isDragging ? 0.9 : 1,
   };
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`
-        rounded border shadow-sm transition-colors flex flex-col overflow-hidden
-        ${isDragging ? 'bg-zinc-800/80 border-red-500/50 scale-[1.02] z-50' : 'bg-zinc-900 border-zinc-700/50 hover:border-zinc-600'}
-      `}
+      className={`rounded border border-l-4 border-l-orange-600 transition-colors ${isDragging ? 'border-red-500 bg-zinc-900 shadow-xl scale-[1.02]' : 'border-zinc-800 bg-zinc-950/60 hover:bg-zinc-900/60'}`}
     >
-      <div className="flex items-center justify-between p-3 cursor-grab active:cursor-grabbing" {...attributes} {...listeners}>
-        <div className="flex flex-col gap-1 min-w-0">
-          <span className="font-bold text-zinc-100 text-sm truncate">{municao.Nome_Item}</span>
-          <span className="text-xs text-zinc-500">{municao.Tipo_Arma}</span>
+      <div className="flex items-center gap-1 p-3">
+        {/* Drag handle */}
+        <div
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing text-zinc-600 hover:text-zinc-300 p-2 flex-shrink-0 flex items-center justify-center rounded hover:bg-zinc-800"
+          title="Arrastar para reordenar"
+        >
+          <svg width="14" height="20" viewBox="0 0 14 20" fill="currentColor">
+            <path d="M4 2a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm0 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm0 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm10-16a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm0 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm0 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" />
+          </svg>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-zinc-400 font-bold uppercase">Espaços: <span className="text-red-400">{municao['Espaços_Item']}</span></span>
-          <button
-            onPointerDown={(e) => {
-              e.stopPropagation();
-              removerMunicao(id);
-            }}
-            className="text-red-500 hover:text-red-400 opacity-50 hover:opacity-100 transition p-1"
-          >
-            ✖
-          </button>
+
+        <div className="flex-1 flex items-center justify-between min-w-0 pr-2">
+          <div className="flex flex-col gap-1 min-w-0">
+            <span className="font-bold text-zinc-100 text-sm truncate">{municao.Nome_Item}</span>
+            <span className="text-xs text-zinc-500">{municao.Tipo_Arma}</span>
+          </div>
+          
+          <div className="flex items-center gap-4 flex-shrink-0">
+            <span className="text-xs text-zinc-400 font-bold uppercase">Espaços: <span className="text-red-400">{municao['Espaços_Item']}</span></span>
+            <button
+              onPointerDown={(e) => {
+                e.stopPropagation();
+                removerMunicao(id);
+              }}
+              className="text-zinc-600 hover:text-red-500 transition p-1"
+              title="Remover Munição"
+            >
+              ✖
+            </button>
+          </div>
         </div>
       </div>
     </div>

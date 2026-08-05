@@ -163,9 +163,9 @@ export function InventarioPanel() {
         </div>
 
         {/* Corpo principal: Lista + Botões Laterais */}
-        <div className="flex gap-3 items-start">
+        <div className="flex items-start flex-1 min-h-[400px]">
           {/* Lista de itens (esquerda) */}
-          <div className="flex-1 flex flex-col gap-2 min-w-0">
+          <div className="flex-1 flex flex-col gap-2 min-w-0 pr-4">
             {categoriaFiltro === 'Armas' && (
               <>
             {armasExibidas.map((item: ArmaInventario) => {
@@ -254,26 +254,34 @@ export function InventarioPanel() {
           )}
           </div>
 
-          {/* Sidebar de botões de categoria (direita) */}
-          <div className="flex flex-col gap-2 shrink-0">
+          {/* Sidebar de botões de categoria (direita) em formato de ABAS */}
+          <div className="flex flex-col w-14 shrink-0 border-l border-zinc-800 -mr-2 bg-zinc-950/50 rounded-r-lg overflow-hidden self-stretch">
             <button
               onClick={() => setCategoriaFiltro('Geral')}
               title="Geral"
-              className={`w-12 h-12 rounded border flex items-center justify-center text-xl transition ${categoriaFiltro === 'Geral' ? 'border-purple-500 bg-purple-900/20 text-purple-400' : 'border-zinc-700 bg-zinc-900 text-zinc-500 hover:text-zinc-300'}`}
+              className={`w-full h-14 border-b border-zinc-800 flex items-center justify-center text-2xl transition ${
+                categoriaFiltro === 'Geral' 
+                  ? 'bg-zinc-900 text-purple-400 border-l-2 border-l-purple-500' 
+                  : 'bg-transparent text-zinc-600 hover:text-zinc-300 hover:bg-zinc-900/50 border-l-2 border-l-transparent'
+              }`}
             >
               🎒
             </button>
             <button
               onClick={() => setCategoriaFiltro('Armas')}
               title="Armas"
-              className={`w-12 h-12 rounded border flex items-center justify-center text-xl transition ${categoriaFiltro === 'Armas' ? 'border-purple-500 bg-purple-900/20 text-purple-400' : 'border-zinc-700 bg-zinc-900 text-zinc-500 hover:text-zinc-300'}`}
+              className={`w-full h-14 border-b border-zinc-800 flex items-center justify-center text-2xl transition ${
+                categoriaFiltro === 'Armas' 
+                  ? 'bg-zinc-900 text-purple-400 border-l-2 border-l-purple-500' 
+                  : 'bg-transparent text-zinc-600 hover:text-zinc-300 hover:bg-zinc-900/50 border-l-2 border-l-transparent'
+              }`}
             >
               🗡️
             </button>
             {/* Espaços para categorias futuras */}
-            <button className="w-12 h-12 rounded border border-zinc-800 bg-zinc-950 text-zinc-700 flex items-center justify-center text-xl cursor-not-allowed" title="Equipamentos (Em breve)">👕</button>
-            <button className="w-12 h-12 rounded border border-zinc-800 bg-zinc-950 text-zinc-700 flex items-center justify-center text-xl cursor-not-allowed" title="Proteções (Em breve)">🛡️</button>
-            <button className="w-12 h-12 rounded border border-zinc-800 bg-zinc-950 text-zinc-700 flex items-center justify-center text-xl cursor-not-allowed" title="Itens Operacionais (Em breve)">💊</button>
+            <button className="w-full h-14 border-b border-zinc-800/50 flex items-center justify-center text-2xl text-zinc-700/50 cursor-not-allowed bg-transparent border-l-2 border-l-transparent" title="Equipamentos (Em breve)">👕</button>
+            <button className="w-full h-14 border-b border-zinc-800/50 flex items-center justify-center text-2xl text-zinc-700/50 cursor-not-allowed bg-transparent border-l-2 border-l-transparent" title="Proteções (Em breve)">🛡️</button>
+            <button className="w-full h-14 border-b border-zinc-800/50 flex items-center justify-center text-2xl text-zinc-700/50 cursor-not-allowed bg-transparent border-l-2 border-l-transparent" title="Itens Operacionais (Em breve)">💊</button>
           </div>
         </div>
       </div>

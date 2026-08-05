@@ -56,21 +56,29 @@ export function useMunicoes() {
       const nomeLimpo = removeAcentos(armaNome.toLowerCase());
       const catLimpo = removeAcentos(armaCategoria.toLowerCase());
 
-      // Lidar com a exceção pedida: Combustível (Lança-Chamas) também serve para Lança Nitrogênio (ou Lança-Hidrogênio, caso tenha sido erro de digitação)
-      if ((nomeLimpo === 'lanca nitrogenio' || nomeLimpo === 'lanca hidrogenio') && tipoLimpo.includes('lanca chamas')) {
+      // Separa os tipos de arma suportados (ex: "Fuzil / Metralhadora" -> ["fuzil", "metralhadora"])
+      const allowedTypes = tipoLimpo.split(/[\/,]+/).map(t => t.trim()).filter(Boolean);
+
+      // Lidar com a exceção pedida: Combustível (Lança-Chamas) também serve para Lança Nitrogênio (ou Lança-Hidrogênio)
+      if ((nomeLimpo === 'lanca nitrogenio' || nomeLimpo === 'lanca hidrogenio') && allowedTypes.includes('lanca chamas')) {
         return true;
       }
 
-      // Usa \b (word boundary) para evitar que "metralhadora" dê match em "submetralhadora"
-      try {
-        const nomeRegex = new RegExp(`\\b${escapeRegExp(nomeLimpo)}\\b`, 'i');
-        if (nomeRegex.test(tipoLimpo)) return true;
+      for (const allowed of allowedTypes) {
+        if (!allowed) continue;
+        try {
+          // A munição suporta "Fuzil". A arma se chama "Fuzil de Caça"? Então é compatível!
+          const allowedRegex = new RegExp(`\\b${escapeRegExp(allowed)}\\b`, 'i');
+          if (allowedRegex.test(nomeLimpo)) return true;
+          if (allowedRegex.test(catLimpo)) return true;
 
-        const catRegex = new RegExp(`\\b${escapeRegExp(catLimpo)}\\b`, 'i');
-        if (catRegex.test(tipoLimpo)) return true;
-      } catch (e) {
-        // Fallback caso a regex falhe
-        if (tipoLimpo.includes(nomeLimpo) || tipoLimpo.includes(catLimpo)) return true;
+          // O caso inverso: O nome da arma é exatamente um dos tipos da munição
+          const nomeRegex = new RegExp(`\\b${escapeRegExp(nomeLimpo)}\\b`, 'i');
+          if (nomeRegex.test(allowed)) return true;
+        } catch (e) {
+          // Fallback
+          if (nomeLimpo.includes(allowed) || allowed.includes(nomeLimpo)) return true;
+        }
       }
       
       return false;

@@ -49,15 +49,15 @@ export function useMunicoes() {
     return municoes.filter(m => {
       const tipoMunicao = (m.Tipo_Arma || '').toLowerCase();
       
-      const removeAcentos = (str: string) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/-/g, ' ');
+      const removeAcentos = (str: string) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/-/g, ' ').trim();
       const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
       const tipoLimpo = removeAcentos(tipoMunicao);
       const nomeLimpo = removeAcentos(armaNome.toLowerCase());
       const catLimpo = removeAcentos(armaCategoria.toLowerCase());
 
-      // Lidar com a exceção pedida: Combustível (Lança-Chamas) também serve para Lança Nitrogênio
-      if (nomeLimpo === 'lanca nitrogenio' && tipoLimpo.includes('lanca chamas')) {
+      // Lidar com a exceção pedida: Combustível (Lança-Chamas) também serve para Lança Nitrogênio (ou Lança-Hidrogênio, caso tenha sido erro de digitação)
+      if ((nomeLimpo === 'lanca nitrogenio' || nomeLimpo === 'lanca hidrogenio') && tipoLimpo.includes('lanca chamas')) {
         return true;
       }
 

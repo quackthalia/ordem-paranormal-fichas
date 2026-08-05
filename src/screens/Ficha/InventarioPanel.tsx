@@ -554,31 +554,37 @@ function SortableArmaItem({
               Remover Arma
             </button>
 
-            {arma.Capacidade_Municao !== null && arma.Capacidade_Municao > 0 && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  const compativeis = municoesHook?.getMunicoesCompativeis(arma.Nome_Item, arma.Categoria_Item) || [];
-                  if (compativeis.length === 1) {
-                    const idM = municoesHook?.adicionarMunicao(compativeis[0]);
-                    if (idM) armasHook?.acoplarMunicao(id, idM);
-                  } else {
-                    // Múltiplas compatíveis, precisa abrir o modal
-                    const invPanelSetters = (window as any)._inventarioPanelSetters;
-                    if (invPanelSetters) {
-                      invPanelSetters.setMunicaoTargetArmaId(id);
-                      invPanelSetters.setMunicaoFiltroNome(arma.Nome_Item);
-                      invPanelSetters.setMunicaoFiltroCategoria(arma.Categoria_Item);
-                      invPanelSetters.setModalMunicoesAberto(true);
+            {(() => {
+              const compativeis = municoesHook?.getMunicoesCompativeis(arma.Nome_Item, arma.Categoria_Item) || [];
+              const precisaMunicao = (arma.Capacidade_Municao !== null && arma.Capacidade_Municao > 0) || compativeis.length > 0;
+              
+              if (!precisaMunicao) return null;
+
+              return (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (compativeis.length === 1) {
+                      const idM = municoesHook?.adicionarMunicao(compativeis[0]);
+                      if (idM) armasHook?.acoplarMunicao(id, idM);
+                    } else {
+                      // Múltiplas compatíveis, precisa abrir o modal
+                      const invPanelSetters = (window as any)._inventarioPanelSetters;
+                      if (invPanelSetters) {
+                        invPanelSetters.setMunicaoTargetArmaId(id);
+                        invPanelSetters.setMunicaoFiltroNome(arma.Nome_Item);
+                        invPanelSetters.setMunicaoFiltroCategoria(arma.Categoria_Item);
+                        invPanelSetters.setModalMunicoesAberto(true);
+                      }
                     }
-                  }
-                }}
-                title="Adicionar Munição"
-                className="w-7 h-7 flex items-center justify-center rounded-full bg-zinc-800 border border-zinc-700 text-zinc-300 font-bold hover:bg-zinc-700 hover:text-white transition"
-              >
-                +
-              </button>
-            )}
+                  }}
+                  title="Adicionar Munição"
+                  className="w-7 h-7 flex items-center justify-center rounded-full bg-zinc-800 border border-zinc-700 text-zinc-300 font-bold hover:bg-zinc-700 hover:text-white transition"
+                >
+                  +
+                </button>
+              );
+            })()}
           </div>
         </div>
       )}

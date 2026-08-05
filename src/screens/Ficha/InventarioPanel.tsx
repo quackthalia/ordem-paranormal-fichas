@@ -142,44 +142,32 @@ export function InventarioPanel() {
       <div className="h-px bg-zinc-800 my-2" />
 
       {/* Seção de Inventário */}
-      <div className="flex flex-col gap-4 mt-2">
-        <div className="flex items-center gap-4">
-          <div className="flex bg-zinc-900 rounded p-1">
+      <div className="flex flex-col gap-3 mt-2">
+        {/* Barra superior de busca e botão adicionar */}
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Buscar no inventário..."
+            value={buscaItem}
+            onChange={(e) => setBuscaItem(e.target.value)}
+            className="flex-1 bg-zinc-900 border border-zinc-800 rounded px-3 py-1.5 text-sm text-zinc-100 outline-none focus:border-purple-500"
+          />
+          {categoriaFiltro === 'Armas' && (
             <button
-              onClick={() => setCategoriaFiltro('Geral')}
-              className={`px-4 py-1 rounded text-sm font-bold transition ${categoriaFiltro === 'Geral' ? 'bg-purple-600 text-white' : 'text-zinc-400 hover:text-zinc-200'}`}
+              onClick={() => setModalArmasAberto(true)}
+              className="bg-green-700 hover:bg-green-600 text-white px-4 py-1.5 rounded font-bold text-sm transition"
             >
-              Geral
+              + Adicionar
             </button>
-            <button
-              onClick={() => setCategoriaFiltro('Armas')}
-              className={`px-4 py-1 rounded text-sm font-bold transition ${categoriaFiltro === 'Armas' ? 'bg-purple-600 text-white' : 'text-zinc-400 hover:text-zinc-200'}`}
-            >
-              Armas
-            </button>
-          </div>
-          
-          <div className="flex-1 flex gap-2">
-            <input
-              type="text"
-              placeholder="Buscar no inventário..."
-              value={buscaItem}
-              onChange={(e) => setBuscaItem(e.target.value)}
-              className="flex-1 bg-zinc-900 border border-zinc-800 rounded px-3 py-1.5 text-sm text-zinc-100 outline-none focus:border-purple-500"
-            />
-            {categoriaFiltro === 'Armas' && (
-              <button
-                onClick={() => setModalArmasAberto(true)}
-                className="bg-green-700 hover:bg-green-600 text-white px-4 py-1.5 rounded font-bold text-sm transition"
-              >
-                + Adicionar
-              </button>
-            )}
-          </div>
+          )}
         </div>
 
-        {categoriaFiltro === 'Armas' && (
-          <div className="flex flex-col gap-2">
+        {/* Corpo principal: Lista + Botões Laterais */}
+        <div className="flex gap-3 items-start">
+          {/* Lista de itens (esquerda) */}
+          <div className="flex-1 flex flex-col gap-2 min-w-0">
+            {categoriaFiltro === 'Armas' && (
+              <>
             {armasExibidas.map((item: ArmaInventario) => {
               const { id, arma } = item;
               const isExpanded = expandidos[id];
@@ -254,8 +242,40 @@ export function InventarioPanel() {
                 </div>
               );
             })}
+            
+            {categoriaFiltro === 'Armas' && armasExibidas.length === 0 && (
+              <p className="text-center text-zinc-600 text-sm py-4">Nenhuma arma no inventário.</p>
+            )}
+            </>
+          )}
+
+          {categoriaFiltro !== 'Armas' && (
+            <p className="text-center text-zinc-600 text-sm py-8">Esta categoria ainda não possui itens implementados.</p>
+          )}
           </div>
-        )}
+
+          {/* Sidebar de botões de categoria (direita) */}
+          <div className="flex flex-col gap-2 shrink-0">
+            <button
+              onClick={() => setCategoriaFiltro('Geral')}
+              title="Geral"
+              className={`w-12 h-12 rounded border flex items-center justify-center text-xl transition ${categoriaFiltro === 'Geral' ? 'border-purple-500 bg-purple-900/20 text-purple-400' : 'border-zinc-700 bg-zinc-900 text-zinc-500 hover:text-zinc-300'}`}
+            >
+              🎒
+            </button>
+            <button
+              onClick={() => setCategoriaFiltro('Armas')}
+              title="Armas"
+              className={`w-12 h-12 rounded border flex items-center justify-center text-xl transition ${categoriaFiltro === 'Armas' ? 'border-purple-500 bg-purple-900/20 text-purple-400' : 'border-zinc-700 bg-zinc-900 text-zinc-500 hover:text-zinc-300'}`}
+            >
+              🗡️
+            </button>
+            {/* Espaços para categorias futuras */}
+            <button className="w-12 h-12 rounded border border-zinc-800 bg-zinc-950 text-zinc-700 flex items-center justify-center text-xl cursor-not-allowed" title="Equipamentos (Em breve)">👕</button>
+            <button className="w-12 h-12 rounded border border-zinc-800 bg-zinc-950 text-zinc-700 flex items-center justify-center text-xl cursor-not-allowed" title="Proteções (Em breve)">🛡️</button>
+            <button className="w-12 h-12 rounded border border-zinc-800 bg-zinc-950 text-zinc-700 flex items-center justify-center text-xl cursor-not-allowed" title="Itens Operacionais (Em breve)">💊</button>
+          </div>
+        </div>
       </div>
 
       <ModalArmas

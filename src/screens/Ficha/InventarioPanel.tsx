@@ -143,20 +143,25 @@ export function InventarioPanel() {
     const { active, over } = event;
     
     if (over && active.id !== over.id) {
-      const isMunicao = active.data?.current?.type === 'municao';
-      const isArmaOver = over.data?.current?.type === 'arma';
-      const isMunicaoOver = over.data?.current?.type === 'municao';
+      const armaActive = armasHook?.armasInventario.find(a => a.id === active.id);
+      const municaoActive = municoesHook?.municoesInventario.find(m => m.id === active.id);
+      
+      const armaOver = armasHook?.armasInventario.find(a => a.id === over.id);
+      const municaoOver = municoesHook?.municoesInventario.find(m => m.id === over.id);
+
+      const isMunicao = !!municaoActive;
+      const isArmaOver = !!armaOver;
+      const isMunicaoOver = !!municaoOver;
 
       if (isMunicao) {
-        if (isArmaOver) {
+        if (isArmaOver && armaOver && municaoActive) {
           // Tenta acoplar
-          const armaObj = armasHook?.armasInventario.find(a => a.id === over.id);
-          const minv = municoesHook?.municoesInventario.find(m => m.id === active.id);
-          if (armaObj && minv) {
-            const compativeis = municoesHook?.getMunicoesCompativeis(armaObj.arma.Nome_Item, armaObj.arma.Categoria_Item) || [];
-            if (compativeis.some(c => c.Nome_Item === minv.municao.Nome_Item)) {
-              armasHook?.acoplarMunicao(armaObj.id, minv.id);
-            }
+          const compativeis = municoesHook?.getMunicoesCompativeis(armaOver.arma.Nome_Item, armaOver.arma.Categoria_Item) || [];
+          if (compativeis.some(c => c.Nome_Item === municaoActive.municao.Nome_Item)) {
+            armasHook?.acoplarMunicao(armaOver.id, municaoActive.id);
+          } else {
+            // Feedback visual ou fallback (se precisar)
+            // Por enquanto só não acopla, mas vamos garantir que o ID está certo
           }
         } else if (isMunicaoOver) {
           // reordenar munição
@@ -166,7 +171,7 @@ export function InventarioPanel() {
             municoesHook.reordenarMunicoes(oldIndex, newIndex);
           }
         }
-      } else {
+      } else if (armaActive) {
         // reordenar arma
         if (isArmaOver) {
           const oldIndex = (armasHook?.armasInventario || []).findIndex(x => x.id === active.id);

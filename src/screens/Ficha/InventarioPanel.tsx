@@ -18,6 +18,7 @@ import {
   useSortable
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { restrictToWindowEdges, restrictToVerticalAxis, restrictToParentElement } from '@dnd-kit/modifiers';
 import { ModalMunicoes } from './ModalMunicoes';
 
 export function InventarioPanel() {
@@ -317,6 +318,7 @@ export function InventarioPanel() {
             <DndContext 
               sensors={sensores}
               collisionDetection={closestCenter}
+              modifiers={[restrictToVerticalAxis, restrictToParentElement]}
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
             >
@@ -348,7 +350,7 @@ export function InventarioPanel() {
             {categoriaFiltro === 'Geral' && municoesSoltas.length > 0 && (
               <>
                 <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-1 mt-2 border-b border-zinc-800 pb-1">Munições Soltas</h3>
-                <DndContext sensors={sensores} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+                <DndContext sensors={sensores} collisionDetection={closestCenter} modifiers={[restrictToVerticalAxis, restrictToParentElement]} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                   <SortableContext items={municoesSoltas.map(m => m.id)} strategy={verticalListSortingStrategy}>
                     {municoesSoltas.map(item => (
                       <SortableMunicaoItem 
@@ -368,7 +370,7 @@ export function InventarioPanel() {
 
           {categoriaFiltro === 'Munições' && (
             <>
-              <DndContext sensors={sensores} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+              <DndContext sensors={sensores} collisionDetection={closestCenter} modifiers={[restrictToVerticalAxis, restrictToParentElement]} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                 <SortableContext items={municoesGeral.map(m => m.id)} strategy={verticalListSortingStrategy}>
                   {municoesGeral.map(item => (
                     <SortableMunicaoItem 

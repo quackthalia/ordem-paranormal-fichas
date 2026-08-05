@@ -188,7 +188,7 @@ export function InventarioPanel() {
       <div className="h-px bg-zinc-800 my-2" />
 
       {/* Seção de Inventário */}
-      <div className="flex flex-col gap-3 mt-2">
+      <div className="flex flex-col flex-1 min-h-0 gap-3 mt-2">
         {/* Abas de Categoria */}
         <div className="flex gap-2 mb-4 border-b border-zinc-800 pb-2 overflow-x-auto">
           <button

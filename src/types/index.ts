@@ -158,3 +158,32 @@ export interface Trilha {
 export interface TrilhaSelecionada extends Trilha {
   nome_pericia: string | null;
 }
+
+// ============================================================
+// INVENTÁRIO — ARMAS
+// ============================================================
+export interface Arma {
+  Codigo_Arma: number;
+  Nome_Item: string;
+  Descricao_Item: string;
+  Proficiencia: string;
+  Tipo_Arma: string;
+  Empunhadura_Arma: string;
+  Dano_Arma: string;
+  Critico_Arma: number;
+  Multiplicador_Arma: number;
+  Tipo_Dano_Arma: string;
+  Alcance_Item: string | null;
+  Categoria_Item: string;
+  'Espaços_Item': number;
+  'Agil?': boolean | null;
+  Capacidade_Municao: number | null;
+  dt_item: string | null;
+  'Automatica?': boolean | null;
+  Fonte_Arma: string;
+}
+
+export interface ArmaInventario {
+  id: string;
+  arma: Arma;
+}

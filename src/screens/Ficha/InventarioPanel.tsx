@@ -180,28 +180,33 @@ export function InventarioPanel() {
                     className="flex cursor-pointer items-center justify-between gap-3 p-3"
                     onClick={() => toggleExpandir(id)}
                   >
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <span className="font-bold text-sm text-zinc-100 truncate">{arma.Nome_Item}</span>
+                    <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-sm text-zinc-100 truncate">{arma.Nome_Item}</span>
+                        
+                        {arma['Agil?'] && (
+                          <span className="relative group cursor-help flex-shrink-0" title="Ágil">
+                            <span className="text-xs text-yellow-400">⚡</span>
+                          </span>
+                        )}
+                        {arma['Automatica?'] && (
+                          <span className="relative group cursor-help flex-shrink-0" title="Automática">
+                            <span className="text-xs text-blue-400">🔄</span>
+                          </span>
+                        )}
+                      </div>
                       
-                      {arma['Agil?'] && (
-                        <span className="relative group cursor-help flex-shrink-0" title="Ágil">
-                          <span className="text-xs text-yellow-400">⚡</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-red-400 text-[10px] font-bold uppercase tracking-wider border border-red-900/50 bg-red-900/20 px-1.5 py-0.5 rounded">
+                          Dado: {arma.Dano_Arma}
                         </span>
-                      )}
-                      {arma['Automatica?'] && (
-                        <span className="relative group cursor-help flex-shrink-0" title="Automática">
-                          <span className="text-xs text-blue-400">🔄</span>
+                        <span className="text-zinc-400 text-[10px] font-bold uppercase tracking-wider border border-zinc-800 bg-zinc-900 px-1.5 py-0.5 rounded">
+                          Crítico: {formatarCritico(arma.Critico_Arma, arma.Multiplicador_Arma)}
                         </span>
-                      )}
+                      </div>
                     </div>
                     
                     <div className="flex items-center gap-3 flex-shrink-0">
-                      <span className="text-red-400 text-xs font-bold border border-red-900/50 bg-red-900/20 px-2 py-0.5 rounded">
-                        Dano: {arma.Dano_Arma}
-                      </span>
-                      <span className="text-zinc-300 text-xs font-bold border border-zinc-800 bg-zinc-900 px-2 py-0.5 rounded">
-                        Crítico: {formatarCritico(arma.Critico_Arma, arma.Multiplicador_Arma)}
-                      </span>
                       <span className="w-4 text-center text-zinc-600 text-[10px]">{isExpanded ? '▲' : '▼'}</span>
                     </div>
                   </div>

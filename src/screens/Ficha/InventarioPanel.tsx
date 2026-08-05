@@ -174,67 +174,78 @@ export function InventarioPanel() {
               const stringDT = calcularDT(arma.dt_item);
 
               return (
-                <div key={id} className="bg-zinc-950 border border-zinc-800 rounded p-3 flex flex-col gap-2">
-                  <div className="flex justify-between items-center cursor-pointer" onClick={() => toggleExpandir(id)}>
-                    <div className="flex items-center gap-3">
-                      <span className="text-zinc-500 text-xs w-4 text-center">{(isExpanded ? '▼' : '▶')}</span>
-                      <span className="font-bold text-zinc-100">{arma.Nome_Item}</span>
-                      
-                      <span className="text-purple-400 text-sm font-bold border border-purple-900/50 bg-purple-900/20 px-2 py-0.5 rounded">
-                        Dano: {arma.Dano_Arma}
-                      </span>
-                      <span className="text-zinc-300 text-sm font-bold border border-zinc-800 bg-zinc-900 px-2 py-0.5 rounded">
-                        Crítico: {formatarCritico(arma.Critico_Arma, arma.Multiplicador_Arma)}
-                      </span>
-                      
-                      {arma['Agil?'] && (
-                        <span className="relative group cursor-help ml-1">
-                          ⚡
-                          <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-48 p-2 bg-zinc-800 text-xs text-zinc-300 rounded z-10 text-center shadow-lg pointer-events-none">
-                            Permite que você aplique sua Agilidade em vez de sua Força em testes de ataque e rolagens de dano realizadas com ela.
-                          </span>
+                <div key={id} className="overflow-hidden rounded-r border-l-4 border-l-purple-700 bg-zinc-950/60 transition hover:bg-zinc-900/60">
+                  {/* Bloco fechado */}
+                  <div
+                    className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3"
+                    onClick={() => toggleExpandir(id)}
+                  >
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2.5">
+                        <span className="inline-flex items-center gap-1.5 rounded bg-purple-900/40 text-purple-300 px-2 py-0.5 uppercase tracking-wider leading-tight">
+                          <span className="text-[10px] font-bold">{arma.Dano_Arma}</span>
                         </span>
-                      )}
-                      {arma['Automatica?'] && (
-                        <span className="relative group cursor-help ml-1">
-                          🔄
-                          <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-48 p-2 bg-zinc-800 text-xs text-zinc-300 rounded z-10 text-center shadow-lg pointer-events-none">
-                            Pode disparar tiros únicos, usando a regra normal, ou rajadas. Quando dispara uma rajada, você sofre -1d20 no teste de ataque, mas causa 1 dado de dano adicional do mesmo tipo.
+                        <span className="text-sm font-bold text-zinc-100">{arma.Nome_Item}</span>
+                        
+                        {arma['Agil?'] && (
+                          <span className="relative group cursor-help flex-shrink-0" title="Ágil">
+                            <span className="text-xs text-yellow-400">⚡</span>
                           </span>
-                        </span>
-                      )}
+                        )}
+                        {arma['Automatica?'] && (
+                          <span className="relative group cursor-help flex-shrink-0" title="Automática">
+                            <span className="text-xs text-blue-400">🔄</span>
+                          </span>
+                        )}
+                      </div>
                     </div>
                     
-                    <span className="text-purple-500 mr-2 text-lg">✓</span>
+                    <div className="flex items-center gap-4">
+                      <span className="text-zinc-400 text-xs font-bold bg-zinc-900 px-2 py-1 rounded">
+                        Crítico: {formatarCritico(arma.Critico_Arma, arma.Multiplicador_Arma)}
+                      </span>
+                      <span className="text-purple-500 font-bold">✓</span>
+                      <span className="w-5 text-center text-zinc-600">{isExpanded ? '▲' : '▼'}</span>
+                    </div>
                   </div>
                   
+                  {/* Bloco expandido */}
                   {isExpanded && (
-                    <div className="pt-2 mt-2 border-t border-zinc-800 text-sm flex flex-col gap-2">
+                    <div className="border-t border-zinc-800 px-4 py-4 text-xs flex flex-col gap-2 bg-zinc-950/80">
                       <div>
-                        <span className="font-bold text-zinc-200">{arma.Proficiencia}</span> <span className="text-zinc-500">—</span> <span className="italic text-zinc-400">{arma.Tipo_Arma}</span> <span className="text-zinc-500">—</span> <span className="italic text-zinc-400">{arma.Empunhadura_Arma}</span>
+                        <span className="font-bold text-zinc-200">{arma.Proficiencia}</span>
+                        <span className="text-zinc-600"> — </span>
+                        <span className="italic text-zinc-400">{arma.Tipo_Arma}</span>
+                        <span className="text-zinc-600"> — </span>
+                        <span className="italic text-zinc-400">{arma.Empunhadura_Arma}</span>
                       </div>
-                      <div className="flex gap-4">
-                        <span><span className="text-emerald-400 font-bold">Categoria:</span> <span className="text-zinc-300">{arma.Categoria_Item}</span></span>
-                        {arma.Alcance_Item && <span><span className="text-emerald-400 font-bold">Alcance:</span> <span className="text-zinc-300">{arma.Alcance_Item}</span></span>}
-                        <span><span className="text-emerald-400 font-bold">Tipo:</span> <span className="text-zinc-300">{arma.Tipo_Dano_Arma}</span></span>
-                      </div>
-                      <div className="flex gap-4">
-                        <span><span className="text-emerald-400 font-bold">Espaços:</span> <span className="text-zinc-300">{arma['Espaços_Item']}</span></span>
+                      <div className="flex flex-wrap gap-4 text-zinc-300">
+                        <span><span className="text-purple-400 font-bold">Categoria:</span> {arma.Categoria_Item}</span>
+                        {arma.Alcance_Item && <span><span className="text-purple-400 font-bold">Alcance:</span> {arma.Alcance_Item}</span>}
+                        <span><span className="text-purple-400 font-bold">Tipo:</span> {arma.Tipo_Dano_Arma}</span>
+                        <span><span className="text-purple-400 font-bold">Espaços:</span> {arma['Espaços_Item']}</span>
                         {stringDT && <span><span className="text-purple-400 font-bold">{stringDT}</span></span>}
                       </div>
-                      <div className="text-zinc-400 mt-1">{arma.Descricao_Item}</div>
                       
-                      <div className="flex justify-between mt-2 pt-2 border-t border-zinc-800/50">
+                      <div className="flex flex-col gap-1 mt-1">
+                        {arma['Agil?'] && (
+                          <p className="text-zinc-500 leading-relaxed"><span className="text-yellow-400">⚡ Ágil:</span> Permite que você aplique sua Agilidade em vez de sua Força em testes de ataque e rolagens de dano realizadas com ela.</p>
+                        )}
+                        {arma['Automatica?'] && (
+                          <p className="text-zinc-500 leading-relaxed"><span className="text-blue-400">🔄 Automática:</span> Pode disparar tiros únicos ou rajadas. Na rajada, você sofre -1d20 no ataque, mas causa 1 dado de dano adicional.</p>
+                        )}
+                        <p className="text-zinc-500 mt-1 leading-relaxed">{arma.Descricao_Item}</p>
+                      </div>
+                      
+                      <div className="flex justify-between mt-3 pt-3 border-t border-zinc-800/50">
                         <button
-                          onClick={() => armasHook.removerArma(id)}
-                          className="text-red-500 hover:text-red-400 font-bold text-xs px-2 py-1 border border-red-900/50 hover:bg-red-900/20 rounded transition"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            armasHook.removerArma(id);
+                          }}
+                          className="rounded bg-red-900/40 border border-red-800/50 px-4 py-1.5 text-xs font-bold uppercase text-red-400 transition hover:bg-red-800 hover:text-red-100"
                         >
-                          Remover
-                        </button>
-                        <button
-                          className="text-zinc-400 hover:text-zinc-300 font-bold text-xs px-2 py-1 border border-zinc-700 hover:bg-zinc-800 rounded transition"
-                        >
-                          Editar
+                          Remover Arma
                         </button>
                       </div>
                     </div>

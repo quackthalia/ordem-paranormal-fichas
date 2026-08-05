@@ -343,7 +343,13 @@ export function InventarioPanel() {
                 <DndContext sensors={sensores} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                   <SortableContext items={municoesSoltas.map(m => m.id)} strategy={verticalListSortingStrategy}>
                     {municoesSoltas.map(item => (
-                      <SortableMunicaoItem key={item.id} item={item} removerMunicao={municoesHook?.removerMunicao || (() => {})} />
+                      <SortableMunicaoItem 
+                        key={item.id} 
+                        item={item} 
+                        isExpanded={!!expandidos[item.id]}
+                        toggleExpandir={toggleExpandir}
+                        removerMunicao={municoesHook?.removerMunicao || (() => {})} 
+                      />
                     ))}
                   </SortableContext>
                 </DndContext>
@@ -357,7 +363,13 @@ export function InventarioPanel() {
               <DndContext sensors={sensores} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                 <SortableContext items={municoesGeral.map(m => m.id)} strategy={verticalListSortingStrategy}>
                   {municoesGeral.map(item => (
-                    <SortableMunicaoItem key={item.id} item={item} removerMunicao={municoesHook?.removerMunicao || (() => {})} />
+                    <SortableMunicaoItem 
+                      key={item.id} 
+                      item={item} 
+                      isExpanded={!!expandidos[item.id]}
+                      toggleExpandir={toggleExpandir}
+                      removerMunicao={municoesHook?.removerMunicao || (() => {})} 
+                    />
                   ))}
                 </SortableContext>
               </DndContext>
@@ -578,9 +590,13 @@ function SortableArmaItem({
 
 function SortableMunicaoItem({
   item,
+  isExpanded,
+  toggleExpandir,
   removerMunicao
 }: {
   item: any; // MunicaoInventario
+  isExpanded: boolean;
+  toggleExpandir: (id: string) => void;
   removerMunicao: (id: string) => void;
 }) {
   const { id, municao } = item;
@@ -619,27 +635,47 @@ function SortableMunicaoItem({
           </svg>
         </div>
 
-        <div className="flex-1 flex items-center justify-between min-w-0 pr-2">
+        {/* Clicável para expandir */}
+        <div 
+          className="flex-1 flex items-center justify-between min-w-0 pr-2 cursor-pointer"
+          onClick={() => toggleExpandir(id)}
+        >
           <div className="flex flex-col gap-1 min-w-0">
             <span className="font-bold text-zinc-100 text-sm truncate">{municao.Nome_Item}</span>
             <span className="text-xs text-zinc-500">{municao.Tipo_Arma}</span>
           </div>
           
-          <div className="flex items-center gap-4 flex-shrink-0">
-            <span className="text-xs text-zinc-400 font-bold uppercase">Espaços: <span className="text-red-400">{municao['Espaços_Item']}</span></span>
-            <button
-              onPointerDown={(e) => {
-                e.stopPropagation();
-                removerMunicao(id);
-              }}
-              className="text-zinc-600 hover:text-red-500 transition p-1"
-              title="Remover Munição"
-            >
-              ✖
-            </button>
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <span className="w-5 text-center text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
           </div>
         </div>
       </div>
+
+      {/* Bloco expandido */}
+      {isExpanded && (
+        <div className="border-t border-zinc-800 px-3 py-3 text-xs flex flex-col gap-2 bg-zinc-950/80">
+          <div className="flex flex-col gap-1 text-xs text-zinc-300">
+            <span><span className="text-red-400 font-bold">Categoria:</span> {municao.Categoria_Item}</span>
+            <span><span className="text-red-400 font-bold">Espaços:</span> {municao['Espaços_Item']}</span>
+          </div>
+          
+          <div className="flex flex-col gap-1 mt-1">
+            <p className="text-zinc-400 text-xs leading-relaxed">{municao.Descricao_Item}</p>
+          </div>
+          
+          <div className="flex justify-between mt-3 pt-3 border-t border-zinc-800/50">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                removerMunicao(id);
+              }}
+              className="rounded bg-red-900/40 border border-red-800/50 px-3 py-1 text-xs font-bold uppercase text-red-400 transition hover:bg-red-800 hover:text-red-100"
+            >
+              Remover Munição
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

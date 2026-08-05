@@ -323,7 +323,7 @@ function SortableArmaItem({
     <div
       ref={setNodeRef}
       style={style}
-      className={`rounded border border-l-4 border-l-red-700 transition ${isDragging ? 'border-red-500 bg-zinc-900 shadow-xl scale-[1.02]' : 'border-zinc-800 bg-zinc-950/60 hover:bg-zinc-900/60'}`}
+      className={`rounded border border-l-4 border-l-red-700 transition-colors ${isDragging ? 'border-red-500 bg-zinc-900 shadow-xl scale-[1.02]' : 'border-zinc-800 bg-zinc-950/60 hover:bg-zinc-900/60'}`}
     >
       {/* Bloco fechado */}
       <div className="flex items-center gap-1 p-3">

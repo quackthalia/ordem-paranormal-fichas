@@ -116,7 +116,7 @@ function AtributosFicha() {
 // COMPONENTE INTERNO: DEFESA
 // ============================================================
 function DefesaPanel() {
-  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras, periciasHook, atributosFinais, regrasAutomaticasAtivas, protecoes } = useRPG();
+  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras, periciasHook, atributosFinais, regrasAutomaticasAtivas, protecoes, protecoesHook } = useRPG();
 
   const [bloqueio, setBloqueio] = React.useState(0);
   const [esquiva, setEsquiva] = React.useState(0);
@@ -137,10 +137,10 @@ function DefesaPanel() {
     // Reflexos
     const nomeReflexos = nomesPericias[23];
     if (nomeReflexos && pericias[nomeReflexos] && !esquivaOverride.current) {
-      const total = 10 + atributosFinais.AGI + pericias[nomeReflexos].treino + pericias[nomeReflexos].outros;
+      const total = defesaTotal + pericias[nomeReflexos].treino + pericias[nomeReflexos].outros;
       setEsquiva(total);
     }
-  }, [periciasHook, atributosFinais]);
+  }, [periciasHook, atributosFinais, defesaTotal]);
 
   return (
     <div className="mt-8 flex flex-wrap items-center justify-between gap-5 rounded-lg border border-zinc-800 bg-zinc-900/60 p-5">
@@ -176,7 +176,13 @@ function DefesaPanel() {
                   const temProtecaoLeve = protecoes.some(p => p.toLowerCase().includes('leve'));
                   const bonusRegra25 = (regrasAutomaticasAtivas.has(25) && temProtecaoLeve) ? 2 : 0;
                   
-                  return defOutros + defOutrosBonusRegra + bonusRegra21 + bonusRegra25 || '';
+                  const totalDefesaProtecoes = (protecoesHook?.protecoesInventario || []).reduce((acc, item) => {
+                    const defRaw = String(item.protecao.Defesa_Protecao || '0').replace(/[^0-9.-]+/g, '');
+                    const defVal = Number(defRaw);
+                    return acc + (isNaN(defVal) ? 0 : defVal);
+                  }, 0);
+                  
+                  return defOutros + defOutrosBonusRegra + bonusRegra21 + bonusRegra25 + totalDefesaProtecoes || '';
                 })()}
                 placeholder="0"
                 title="Outros bônus de defesa"
@@ -188,7 +194,13 @@ function DefesaPanel() {
                   const temProtecaoLeve = protecoes.some(p => p.toLowerCase().includes('leve'));
                   const bonusRegra25 = (regrasAutomaticasAtivas.has(25) && temProtecaoLeve) ? 2 : 0;
                   
-                  setDefOutros(Math.max(0, valDigitado - defOutrosBonusRegra - bonusRegra21 - bonusRegra25));
+                  const totalDefesaProtecoes = (protecoesHook?.protecoesInventario || []).reduce((acc, item) => {
+                    const defRaw = String(item.protecao.Defesa_Protecao || '0').replace(/[^0-9.-]+/g, '');
+                    const defVal = Number(defRaw);
+                    return acc + (isNaN(defVal) ? 0 : defVal);
+                  }, 0);
+                  
+                  setDefOutros(Math.max(0, valDigitado - defOutrosBonusRegra - bonusRegra21 - bonusRegra25 - totalDefesaProtecoes));
                 }}
                 className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-red-600"
               />

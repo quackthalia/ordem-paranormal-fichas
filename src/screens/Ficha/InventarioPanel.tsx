@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { useRPG } from '../../context/RPGContext';
 import type { Patente, LimiteCredito } from '../../hooks/useInventario';
 import { ModalArmas, formatarCritico } from './ModalArmas';
-import type { ArmaInventario } from '../../types';
+import type { ArmaInventario, ProtecaoInventario } from '../../types';
+import { ModalProtecoes } from './ModalProtecoes';
+import { ModalEditarProtecao } from '../../components/ModalEditarProtecao';
 import {
   DndContext,
   closestCenter,
@@ -52,26 +54,29 @@ export function InventarioPanel() {
 
   const [modalArmasAberto, setModalArmasAberto] = useState(false);
   const [modalMunicoesAberto, setModalMunicoesAberto] = useState(false);
-  const [categoriaFiltro, setCategoriaFiltro] = useState<'Geral' | 'Armas' | 'Munições'>('Armas');
+  const [modalProtecoesAberto, setModalProtecoesAberto] = useState(false);
+  const [categoriaFiltro, setCategoriaFiltro] = useState<'Geral' | 'Armas' | 'Munições' | 'Proteções'>('Armas');
   const [buscaItem, setBuscaItem] = useState('');
   const [municaoFiltroNome, setMunicaoFiltroNome] = useState<string | undefined>(undefined);
   const [municaoFiltroCategoria, setMunicaoFiltroCategoria] = useState<string | undefined>(undefined);
   const [municaoTargetArmaId, setMunicaoTargetArmaId] = useState<string | undefined>(undefined);
   const [expandidos, setExpandidos] = useState<Record<string, boolean>>({});
   const [armaEditandoId, setArmaEditandoId] = useState<string | null>(null);
-  const [activeDragItem, setActiveDragItem] = useState<{ id: string, type: 'arma' | 'municao', name?: string } | null>(null);
+  const [protecaoEditandoId, setProtecaoEditandoId] = useState<string | null>(null);
+  const [activeDragItem, setActiveDragItem] = useState<{ id: string, type: 'arma' | 'municao' | 'protecao', name?: string } | null>(null);
 
-  const { municoesHook } = useRPG();
+  const { municoesHook, protecoesHook } = useRPG();
 
   const cargaMaxima = 5 + (atributosFinais.FOR * 5) + (regrasAutomaticasAtivas.has(23) ? 5 : 0) + (regrasAutomaticasAtivas.has(43) ? atributosFinais.INT : 0);
   
-  const cargaAtual = (armasHook?.cargaArmas || 0) + (municoesHook?.cargaMunicoes || 0);
+  const cargaAtual = (armasHook?.cargaArmas || 0) + (municoesHook?.cargaMunicoes || 0) + (protecoesHook?.cargaProtecoes || 0);
   
   const noInventario = [0, 0, 0, 0];
   const countArmas = armasHook?.contagemPorCategoria || [0, 0, 0, 0];
   const countMunicoes = municoesHook?.contagemPorCategoria || [0, 0, 0, 0];
+  const countProtecoes = protecoesHook?.contagemPorCategoria || [0, 0, 0, 0];
   for (let i = 0; i < 4; i++) {
-    noInventario[i] = countArmas[i] + countMunicoes[i];
+    noInventario[i] = countArmas[i] + countMunicoes[i] + countProtecoes[i];
   }
 
   useEffect(() => {
@@ -134,6 +139,9 @@ export function InventarioPanel() {
     } else if (type === 'arma') {
       const a = armasHook?.armasInventario.find(x => x.id === active.id);
       if (a) name = a.arma.Nome_Item;
+    } else if (type === 'protecao') {
+      const p = protecoesHook?.protecoesInventario.find(x => x.id === active.id);
+      if (p) name = p.protecao.Nome_Protecao;
     }
     setActiveDragItem({ id: active.id, type, name });
   };
@@ -145,13 +153,17 @@ export function InventarioPanel() {
     if (over && active.id !== over.id) {
       const armaActive = armasHook?.armasInventario.find(a => a.id === active.id);
       const municaoActive = municoesHook?.municoesInventario.find(m => m.id === active.id);
+      const protecaoActive = protecoesHook?.protecoesInventario.find(p => p.id === active.id);
       
       const armaOver = armasHook?.armasInventario.find(a => a.id === over.id);
       const municaoOver = municoesHook?.municoesInventario.find(m => m.id === over.id);
+      const protecaoOver = protecoesHook?.protecoesInventario.find(p => p.id === over.id);
 
       const isMunicao = !!municaoActive;
+      const isProtecao = !!protecaoActive;
       const isArmaOver = !!armaOver;
       const isMunicaoOver = !!municaoOver;
+      const isProtecaoOver = !!protecaoOver;
 
       if (isMunicao) {
         if (isArmaOver && armaOver && municaoActive) {
@@ -168,6 +180,14 @@ export function InventarioPanel() {
           const newIndex = (municoesHook?.municoesInventario || []).findIndex(x => x.id === over.id);
           if (oldIndex !== -1 && newIndex !== -1 && municoesHook?.reordenarMunicoes) {
             municoesHook.reordenarMunicoes(oldIndex, newIndex);
+          }
+        }
+      } else if (isProtecao) {
+        if (isProtecaoOver) {
+          const oldIndex = (protecoesHook?.protecoesInventario || []).findIndex(x => x.id === active.id);
+          const newIndex = (protecoesHook?.protecoesInventario || []).findIndex(x => x.id === over.id);
+          if (oldIndex !== -1 && newIndex !== -1 && protecoesHook?.reordenarProtecoes) {
+            protecoesHook.reordenarProtecoes(oldIndex, newIndex);
           }
         }
       } else if (armaActive) {
@@ -198,6 +218,11 @@ export function InventarioPanel() {
 
   const municoesGeral = (municoesHook?.municoesInventario || []).filter(minv => {
     if (buscaItem && !minv.municao.Nome_Item.toLowerCase().includes(buscaItem.toLowerCase())) return false;
+    return true;
+  });
+
+  const protecoesGeral = (protecoesHook?.protecoesInventario || []).filter(pinv => {
+    if (buscaItem && !pinv.protecao.Nome_Protecao.toLowerCase().includes(buscaItem.toLowerCase())) return false;
     return true;
   });
 
@@ -328,6 +353,17 @@ export function InventarioPanel() {
           >
             🔫
           </button>
+          <button
+            onClick={() => setCategoriaFiltro('Proteções')}
+            title="Proteções"
+            className={`w-12 h-12 flex items-center justify-center rounded-t text-2xl transition border-b-2 ${
+              categoriaFiltro === 'Proteções' 
+                ? 'bg-zinc-900 text-red-400 border-b-red-500' 
+                : 'text-zinc-600 hover:text-zinc-300 hover:bg-zinc-900/50 border-b-transparent'
+            }`}
+          >
+            🛡️
+          </button>
         </div>
 
         {/* Filtros e Busca */}
@@ -355,6 +391,14 @@ export function InventarioPanel() {
                 setMunicaoTargetArmaId(undefined);
                 setModalMunicoesAberto(true);
               }}
+              className="bg-green-700 hover:bg-green-600 text-white px-4 py-1.5 rounded font-bold text-sm transition"
+            >
+              + Adicionar
+            </button>
+          )}
+          {categoriaFiltro === 'Proteções' && (
+            <button
+              onClick={() => setModalProtecoesAberto(true)}
               className="bg-green-700 hover:bg-green-600 text-white px-4 py-1.5 rounded font-bold text-sm transition"
             >
               + Adicionar
@@ -443,11 +487,34 @@ export function InventarioPanel() {
               </>
             )}
 
+            {(categoriaFiltro === 'Proteções' || categoriaFiltro === 'Geral') && (
+              <>
+                {categoriaFiltro === 'Geral' && protecoesGeral.length > 0 && (
+                  <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-1 mt-2 border-b border-zinc-800 pb-1">Proteções</h3>
+                )}
+                <SortableContext items={protecoesGeral.map(p => p.id)} strategy={verticalListSortingStrategy}>
+                  {protecoesGeral.map(item => (
+                    <SortableProtecaoItem
+                      key={item.id}
+                      item={item}
+                      isExpanded={!!expandidos[item.id]}
+                      toggleExpandir={toggleExpandir}
+                      removerProtecao={protecoesHook?.removerProtecao || (() => {})}
+                      onEditar={() => setProtecaoEditandoId(item.id)}
+                    />
+                  ))}
+                </SortableContext>
+                {categoriaFiltro === 'Proteções' && protecoesGeral.length === 0 && (
+                  <p className="text-center text-zinc-600 text-sm py-4">Nenhuma proteção no inventário.</p>
+                )}
+              </>
+            )}
+
             <DragOverlay>
               {activeDragItem ? (
                 <div className="rounded border border-zinc-700 bg-zinc-900 p-3 shadow-2xl opacity-90 cursor-grabbing flex items-center gap-3">
                   <div className="flex h-8 w-8 items-center justify-center rounded bg-zinc-800 text-zinc-400">
-                    {activeDragItem.type === 'municao' ? 'M' : 'A'}
+                    {activeDragItem.type === 'municao' ? 'M' : activeDragItem.type === 'protecao' ? 'P' : 'A'}
                   </div>
                   <span className="font-bold text-zinc-100 text-sm">{activeDragItem.name}</span>
                 </div>
@@ -487,6 +554,21 @@ export function InventarioPanel() {
             armasHook?.editarArma(armaEditandoId, novosDados);
           }}
           onClose={() => setArmaEditandoId(null)}
+        />
+      )}
+
+      <ModalProtecoes
+        aberto={modalProtecoesAberto}
+        onFechar={() => setModalProtecoesAberto(false)}
+      />
+
+      {protecaoEditandoId && (
+        <ModalEditarProtecao
+          protecao={protecoesHook?.protecoesInventario.find(p => p.id === protecaoEditandoId)!}
+          onSave={(id, novosDados) => {
+            protecoesHook?.editarProtecao(id, novosDados);
+          }}
+          onClose={() => setProtecaoEditandoId(null)}
         />
       )}
     </div>
@@ -788,6 +870,99 @@ function SortableMunicaoItem({
             >
               Remover Munição
             </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SortableProtecaoItem({
+  item,
+  isExpanded,
+  toggleExpandir,
+  removerProtecao,
+  onEditar
+}: {
+  item: ProtecaoInventario;
+  isExpanded: boolean;
+  toggleExpandir: (id: string) => void;
+  removerProtecao: (id: string) => void;
+  onEditar?: () => void;
+}) {
+  const { id, protecao } = item;
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id, data: { type: 'protecao' } });
+
+  const style = {
+    transform: CSS.Translate.toString(transform),
+    transition,
+    zIndex: isDragging ? 10 : 1,
+    opacity: isDragging ? 0.9 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`rounded border border-l-4 border-l-blue-700 transition-colors ${
+        isDragging ? 'border-blue-500 bg-zinc-900 shadow-xl scale-[1.02]' : 'border-zinc-800 bg-zinc-950/60 hover:bg-zinc-900/60'
+      }`}
+    >
+      <div className="flex items-center gap-1 p-3">
+        <div
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing text-zinc-600 hover:text-zinc-300 p-2 flex-shrink-0 flex items-center justify-center rounded hover:bg-zinc-800"
+          title="Arrastar para reordenar"
+        >
+          <svg width="14" height="20" viewBox="0 0 14 20" fill="currentColor">
+            <path d="M4 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm6 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-6 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm6 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-6 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm6 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" />
+          </svg>
+        </div>
+
+        <div
+          className="flex-1 flex cursor-pointer items-center justify-between gap-3 min-w-0"
+          onClick={() => toggleExpandir(id)}
+        >
+          <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+            <span className="font-bold text-sm text-zinc-100 truncate">{protecao.Nome_Protecao}</span>
+            <div className="flex items-center gap-4 text-xs text-zinc-300">
+              <span><span className="font-bold text-blue-400">Defesa</span> {String(protecao.Defesa_Protecao).startsWith('+') ? protecao.Defesa_Protecao : `+${protecao.Defesa_Protecao}`}</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <span className="w-5 text-center text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
+          </div>
+        </div>
+      </div>
+
+      {isExpanded && (
+        <div className="border-t border-zinc-800 px-3 py-3 text-xs flex flex-col gap-2 bg-zinc-950/80">
+          <div className="flex flex-col gap-1 text-xs text-zinc-300">
+            <span><span className="text-blue-400 font-bold">Categoria:</span> {protecao.Categoria_Protecao}</span>
+            <span><span className="text-blue-400 font-bold">Espaços:</span> {protecao.Espacos_Protecao}</span>
+          </div>
+          <div className="flex flex-col gap-1 mt-1">
+            <div
+              className="text-zinc-400 text-xs leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: protecao.Descricao_Protecao || '' }}
+            />
+          </div>
+          <div className="flex justify-between items-center mt-3 pt-3 border-t border-zinc-800/50">
+            <div className="flex gap-2">
+              <button
+                onClick={(e) => { e.stopPropagation(); onEditar?.(); }}
+                className="rounded bg-zinc-800 border border-zinc-700 px-3 py-1 text-xs font-bold uppercase tracking-wider text-zinc-300 transition hover:bg-zinc-700 hover:text-zinc-100"
+              >
+                Editar Proteção
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); removerProtecao(id); }}
+                className="rounded bg-red-900/40 border border-red-800/50 px-3 py-1 text-xs font-bold uppercase text-red-400 transition hover:bg-red-800 hover:text-red-100"
+              >
+                Remover Proteção
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -190,6 +190,24 @@ export interface ArmaInventario {
 }
 
 // ============================================================
+// INVENTÁRIO — PROTEÇÕES
+// ============================================================
+export interface Protecao {
+  Codigo_Protecao: number;
+  Proficiencia: string;
+  Nome_Protecao: string;
+  Descricao_Protecao: string;
+  Defesa_Protecao: string | number;
+  Espacos_Protecao: number;
+  Categoria_Protecao: string;
+}
+
+export interface ProtecaoInventario {
+  id: string;
+  protecao: Protecao;
+}
+
+// ============================================================
 // INVENTÁRIO — MUNIÇÕES
 // ============================================================
 export interface Municao {

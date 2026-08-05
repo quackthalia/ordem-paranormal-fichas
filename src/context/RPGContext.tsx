@@ -17,6 +17,7 @@ import { useTrilhas } from '../hooks/useTrilhas';
 import { useInventario } from '../hooks/useInventario';
 import { useArmas } from '../hooks/useArmas';
 import { useMunicoes } from '../hooks/useMunicoes';
+import { useProtecoes } from '../hooks/useProtecoes';
 import { capMaximoAtributo, pontosIniciaisPorNex, calcularStatusBase } from '../utils/rpgRules';
 
 // ============================================================
@@ -41,6 +42,7 @@ interface RPGContextType {
   inventarioHook: ReturnType<typeof useInventario>;
   armasHook: ReturnType<typeof useArmas>;
   municoesHook: ReturnType<typeof useMunicoes>;
+  protecoesHook: ReturnType<typeof useProtecoes>;
   abaDireita: AbaDireita;
   setAbaDireita: React.Dispatch<React.SetStateAction<AbaDireita>>;
   abaModalPoderes: AbaModalPoderes;
@@ -198,6 +200,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const inventarioHook = useInventario(origensHook.origemSelecionada?.Codigo_Regra);
   const armasHook = useArmas();
   const municoesHook = useMunicoes();
+  const protecoesHook = useProtecoes();
   const rituaisHook = useRituais();
 
   // Computa o conjunto de regras automáticas ativas
@@ -410,7 +413,13 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const temProtecaoLeve = protecoes.some(p => p.toLowerCase().includes('leve'));
   const defOutrosBonusRegra25 = (regrasAutomaticasAtivas.has(25) && temProtecaoLeve) ? 2 : 0;
 
-  const defesaTotal = 10 + atributos.AGI + bonusAtributos.AGI + defEquip + defOutros + defOutrosBonusRegra4 + defOutrosBonusRegra12 + defOutrosBonusRegra21 + defOutrosBonusRegra25;
+  const totalDefesaProtecoes = (protecoesHook?.protecoesInventario || []).reduce((acc, item) => {
+    const defRaw = String(item.protecao.Defesa_Protecao || '0').replace(/[^0-9.-]+/g, '');
+    const defVal = Number(defRaw);
+    return acc + (isNaN(defVal) ? 0 : defVal);
+  }, 0);
+
+  const defesaTotal = 10 + atributos.AGI + bonusAtributos.AGI + defEquip + defOutros + defOutrosBonusRegra4 + defOutrosBonusRegra12 + defOutrosBonusRegra21 + defOutrosBonusRegra25 + totalDefesaProtecoes;
 
   // ============================================================
   // UTILITÁRIOS
@@ -450,7 +459,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     atributos, setAtributos,
     bonusAtributos, setBonusAtributos,
     pontosRestantes, alterarAtributo,
-    status, periciasHook, poderesHook, origensHook, trilhasHook, rituaisHook, inventarioHook, armasHook, municoesHook,
+    status, periciasHook, poderesHook, origensHook, trilhasHook, rituaisHook, inventarioHook, armasHook, municoesHook, protecoesHook,
     abaDireita, setAbaDireita,
     abaModalPoderes, setAbaModalPoderes,
     tipoModalPoderes, setTipoModalPoderes,
@@ -481,7 +490,6 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     bonusDadosAtivos, setBonusDadosAtivos,
     regras, toggleRegra,
     nivel, setNivel,
-    rituaisHook,
     rituaisExpandidos, setRituaisExpandidos,
     versaoRitual, setVersaoRitual,
     elementoRitual, setElementoRitual,

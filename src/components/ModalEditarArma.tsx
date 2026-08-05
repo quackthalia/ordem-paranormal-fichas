@@ -57,8 +57,11 @@ export function ModalEditarArma({
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-5">
-      <div className="flex h-full max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-5" onClick={onClose}>
+      <div 
+        className="flex h-full max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50"
+        onClick={e => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-900/50 px-5 py-4">
           <h2 className="font-display text-lg uppercase tracking-wide text-zinc-100">
             Editar Arma

@@ -36,21 +36,27 @@ Criador de fichas de personagem para o RPG **Ordem Paranormal**, feito com React
 
 ```
 src/
-├── components/      # Componentes reutilizáveis (ModalPoderes, InputOtimizado)
+├── components/      # Componentes reutilizáveis (ModalPoderes, ModalArmas, ModalRituais, etc)
 ├── context/         # RPGContext — estado global da ficha
-├── hooks/           # usePericias, usePoderes, useOrigem, useStatus
+├── hooks/           # usePericias, usePoderes, useOrigens, useTrilhas, useRituais, useArmas, useMunicoes, useProtecoes
 ├── screens/         # Telas: Atributos → Origens → Classe → Ficha
-│   └── Ficha/       # Painéis da ficha (Status, Perícias, Abas)
+│   └── Ficha/       # Painéis da ficha (Status, Perícias, Abas, Inventário, etc)
 ├── services/        # Cliente do Supabase
 ├── types/           # Tipos TypeScript compartilhados
-└── utils/           # rpgRules.ts — regras do sistema (PV/SAN/PE, NEX, limites)
+└── utils/           # regras automaticas e cálculos de bônus
 ```
 
-## Fluxo de criação de personagem
+## Funcionalidades e Sistemas
 
-1. **Atributos** — escolhe o NEX inicial e distribui os pontos de atributo
-2. **Origem** — escolhe a origem (perícias treinadas + poder de origem)
-3. **Classe** — Combatente, Especialista ou Ocultista
-4. **Ficha** — ficha completa com status (PV/SAN/PE), defesa, perícias e habilidades
+- **Criação Guiada**: Escolha sequencial de Atributos, Origem e Classe.
+- **Progressão de NEX**: Sistema que acompanha o Nível de Exposição Paranormal do personagem, destravando Habilidades, Poderes e Aumentos de Atributo.
+- **Rituais**: Sistema completo de rituais com filtros por círculo, elemento e custo de PE, considerando Limites de PE por turno.
+- **Trilhas de Classe**: Habilidades exclusivas que o personagem adquire nos NEX apropriados (Combatente, Especialista, Ocultista).
+- **Inventário e Equipamentos**:
+  - Armas, Munições e Proteções integradas com a ficha.
+  - Arrastar e soltar (Drag and Drop) para reordenar inventário e agrupar munições às armas.
+  - Controle de Carga, Limite de Itens, Prestigio, Patentes e Crédito.
+  - Modais detalhados com informações, filtros avançados e buscas dinâmicas.
+- **Status Integrados**: Cálculos automáticos de PV, PE, Sanidade, Defesa Total, Esquiva e Bloqueio baseados nos equipamentos equipados, perícias (Fortitude/Reflexos) e bônus passivos (regras automáticas).
 
-As tabelas `Perícias`, `Origens` e `Poderes` ficam no Supabase.
+As tabelas de `Perícias`, `Origens`, `Poderes`, `PoderesParanormais`, `Rituais`, `Armas`, `Munições`, `Proteções`, `Trilhas` e `RegrasAutomáticas` ficam hospedadas no banco de dados Supabase.

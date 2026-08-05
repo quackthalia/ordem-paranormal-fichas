@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import type { ArmaInventario, Arma } from '../types';
 import { InputOtimizado } from './InputOtimizado';
+import { ToolbarFormato } from './ToolbarFormato';
 
 export function ModalEditarArma({
   armaInventario,
@@ -28,10 +29,12 @@ export function ModalEditarArma({
   const [empunhadura, setEmpunhadura] = useState(arma.Empunhadura_Arma || 'Uma Mão');
   const [tipoDano, setTipoDano] = useState(arma.Tipo_Dano_Arma || 'Corte');
 
+  const editorDesc = useRef<HTMLDivElement | null>(null);
+
   const handleSalvar = () => {
     onSave({
       Nome_Item: nome,
-      Descricao_Item: descricao,
+      Descricao_Item: editorDesc.current?.innerHTML || descricao,
       Dano_Arma: dano,
       Critico_Arma: Number(critico) || 20,
       Multiplicador_Arma: Number(multiplicador) || 2,
@@ -69,9 +72,11 @@ export function ModalEditarArma({
         </div>
 
         <div className="flex-1 overflow-y-auto p-5 custom-scrollbar flex flex-col gap-4">
-          <div className="rounded border border-zinc-800 bg-zinc-950 p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-            
-            <div className="col-span-1 md:col-span-2">
+          
+          <div className="rounded border border-zinc-800 bg-zinc-950 p-4">
+            <h3 className="font-bold text-red-500 mb-2 border-b border-zinc-800 pb-2">Informações da Arma</h3>
+            <div className="flex flex-col gap-2">
+              
               <InputLabel label="Nome da Arma" />
               <InputOtimizado
                 value={nome}
@@ -80,149 +85,162 @@ export function ModalEditarArma({
               />
             </div>
 
-            <div>
-              <InputLabel label="Proficiência" />
-              <select
-                value={proficiencia}
-                onChange={(e) => setProficiencia(e.target.value)}
-                className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
-              >
-                <option value="Armas Simples">Armas Simples</option>
-                <option value="Armas Táticas">Armas Táticas</option>
-                <option value="Armas Pesadas">Armas Pesadas</option>
-                <option value="Armas Exóticas">Armas Exóticas</option>
-              </select>
-            </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                  <InputLabel label="Proficiência" />
+                  <select
+                    value={proficiencia}
+                    onChange={(e) => setProficiencia(e.target.value)}
+                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                  >
+                    <option value="Armas Simples">Armas Simples</option>
+                    <option value="Armas Táticas">Armas Táticas</option>
+                    <option value="Armas Pesadas">Armas Pesadas</option>
+                  </select>
+                </div>
 
-            <div>
-              <InputLabel label="Tipo da Arma" />
-              <select
-                value={tipoArma}
-                onChange={(e) => setTipoArma(e.target.value)}
-                className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
-              >
-                <option value="Corpo a Corpo">Corpo a Corpo</option>
-                <option value="Arma de Disparo">Arma de Disparo</option>
-                <option value="Arma de Fogo">Arma de Fogo</option>
-              </select>
-            </div>
+                <div>
+                  <InputLabel label="Tipo da Arma" />
+                  <select
+                    value={tipoArma}
+                    onChange={(e) => setTipoArma(e.target.value)}
+                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                  >
+                    <option value="Corpo a Corpo">Corpo a Corpo</option>
+                    <option value="Arma de Disparo">Arma de Disparo</option>
+                    <option value="Arma de Fogo">Arma de Fogo</option>
+                    <option value="Arma de Arremesso">Arma de Arremesso</option>
+                  </select>
+                </div>
 
-            <div>
-              <InputLabel label="Empunhadura" />
-              <select
-                value={empunhadura}
-                onChange={(e) => setEmpunhadura(e.target.value)}
-                className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
-              >
-                <option value="Leve">Leve</option>
-                <option value="Uma Mão">Uma Mão</option>
-                <option value="Duas Mãos">Duas Mãos</option>
-                <option value="Uma Mão/Duas Mãos">Uma Mão/Duas Mãos</option>
-              </select>
-            </div>
-
-            <div>
-              <InputLabel label="Tipo de Dano" />
-              <select
-                value={tipoDano}
-                onChange={(e) => setTipoDano(e.target.value)}
-                className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
-              >
-                <option value="Corte">Corte</option>
-                <option value="Perfuração">Perfuração</option>
-                <option value="Impacto">Impacto</option>
-                <option value="Balístico">Balístico</option>
-                <option value="Fogo">Fogo</option>
-                <option value="Frio">Frio</option>
-                <option value="Químico">Químico</option>
-                <option value="Eletricidade">Eletricidade</option>
-                <option value="Morte">Morte</option>
-                <option value="Sangue">Sangue</option>
-                <option value="Energia">Energia</option>
-                <option value="Conhecimento">Conhecimento</option>
-                <option value="Medo">Medo</option>
-              </select>
-            </div>
-
-            <div>
-              <InputLabel label="Dano" />
-              <InputOtimizado
-                value={dano}
-                onChange={setDano}
-                placeholder="Ex: 1d8"
-                className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
-              />
-            </div>
-
-            <div className="flex gap-2">
-              <div className="flex-1">
-                <InputLabel label="Crítico (Margem)" />
-                <InputOtimizado
-                  value={critico}
-                  onChange={setCritico}
-                  placeholder="Ex: 19"
-                  className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
-                />
+                <div>
+                  <InputLabel label="Empunhadura" />
+                  <select
+                    value={empunhadura}
+                    onChange={(e) => setEmpunhadura(e.target.value)}
+                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                  >
+                    <option value="Leve">Leve</option>
+                    <option value="Uma Mão">Uma Mão</option>
+                    <option value="Duas Mãos">Duas Mãos</option>
+                    <option value="Uma Mão/Duas Mãos">Uma Mão/Duas Mãos</option>
+                  </select>
+                </div>
               </div>
-              <div className="flex-1">
-                <InputLabel label="Multiplicador" />
-                <InputOtimizado
-                  value={multiplicador}
-                  onChange={setMultiplicador}
-                  placeholder="Ex: 2"
-                  className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
-                />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                <div>
+                  <InputLabel label="Tipo de Dano" />
+                  <select
+                    value={tipoDano}
+                    onChange={(e) => setTipoDano(e.target.value)}
+                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                  >
+                    <option value="Corte">Corte</option>
+                    <option value="Perfuração">Perfuração</option>
+                    <option value="Impacto">Impacto</option>
+                    <option value="Balístico">Balístico</option>
+                    <option value="Fogo">Fogo</option>
+                    <option value="Frio">Frio</option>
+                    <option value="Químico">Químico</option>
+                    <option value="Eletricidade">Eletricidade</option>
+                    <option value="Morte">Morte</option>
+                    <option value="Sangue">Sangue</option>
+                    <option value="Energia">Energia</option>
+                    <option value="Conhecimento">Conhecimento</option>
+                    <option value="Medo">Medo</option>
+                  </select>
+                </div>
+
+                <div>
+                  <InputLabel label="Dano" />
+                  <InputOtimizado
+                    value={dano}
+                    onChange={setDano}
+                    placeholder="Ex: 1d8"
+                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                  />
+                </div>
+
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <InputLabel label="Crítico (Margem)" />
+                    <InputOtimizado
+                      value={critico}
+                      onChange={setCritico}
+                      placeholder="Ex: 19"
+                      className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <InputLabel label="Multiplicador" />
+                    <InputOtimizado
+                      value={multiplicador}
+                      onChange={setMultiplicador}
+                      placeholder="Ex: 2"
+                      className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <InputLabel label="Alcance" />
+                  <InputOtimizado
+                    value={alcance}
+                    onChange={setAlcance}
+                    placeholder="Ex: Curto, 10m"
+                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                  />
+                </div>
+                
+                <div>
+                  <InputLabel label="DT (Opcional)" />
+                  <InputOtimizado
+                    value={dt}
+                    onChange={setDt}
+                    placeholder="Ex: AGI, FOR, ou DT 20"
+                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                  />
+                </div>
+
+                <div>
+                  <InputLabel label="Categoria" />
+                  <InputOtimizado
+                    value={categoria}
+                    onChange={setCategoria}
+                    placeholder="Ex: I, II, 0"
+                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                  />
+                </div>
+
+                <div>
+                  <InputLabel label="Espaços" />
+                  <InputOtimizado
+                    value={espacos}
+                    onChange={setEspacos}
+                    placeholder="Ex: 1, 2"
+                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div>
-              <InputLabel label="Alcance" />
-              <InputOtimizado
-                value={alcance}
-                onChange={setAlcance}
-                placeholder="Ex: Curto, 10m"
-                className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
-              />
-            </div>
-            
-            <div>
-              <InputLabel label="DT (Opcional)" />
-              <InputOtimizado
-                value={dt}
-                onChange={setDt}
-                placeholder="Ex: AGI, FOR, ou DT 20"
-                className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
-              />
-            </div>
-
-            <div>
-              <InputLabel label="Categoria" />
-              <InputOtimizado
-                value={categoria}
-                onChange={setCategoria}
-                placeholder="Ex: I, II, 0"
-                className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
-              />
-            </div>
-
-            <div>
-              <InputLabel label="Espaços" />
-              <InputOtimizado
-                value={espacos}
-                onChange={setEspacos}
-                placeholder="Ex: 1, 2"
-                className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
-              />
-            </div>
-
-            <div className="col-span-1 md:col-span-2">
+            <div className="mt-2">
               <InputLabel label="Descrição" />
-              <textarea
-                value={descricao}
-                onChange={(e) => setDescricao(e.target.value)}
-                rows={3}
-                className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition resize-y custom-scrollbar"
-              />
+              <div>
+                <ToolbarFormato editorRef={editorDesc as any} />
+                <div
+                  ref={(el) => {
+                    editorDesc.current = el;
+                    if (el && !el.dataset.initialized) {
+                      el.innerHTML = descricao;
+                      el.dataset.initialized = 'true';
+                    }
+                  }}
+                  contentEditable
+                  onBlur={(e) => setDescricao(e.currentTarget.innerHTML)}
+                  className="min-h-[60px] rounded-b border border-zinc-700 bg-zinc-950 p-2.5 text-sm text-zinc-300 outline-none focus:border-red-700"
+                />
+              </div>
             </div>
 
           </div>

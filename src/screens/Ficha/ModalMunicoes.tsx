@@ -25,29 +25,32 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" onClick={onFechar}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" onClick={onFechar}>
       <div 
-        className="w-full max-w-lg rounded-xl border border-zinc-700 bg-zinc-900 shadow-xl overflow-hidden flex flex-col max-h-full"
+        className="flex h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50"
         onClick={e => e.stopPropagation()}
       >
-        <div className="bg-zinc-800 p-4 border-b border-zinc-700 flex justify-between items-center">
-          <h2 className="font-bold text-zinc-100 text-lg uppercase tracking-wider">
-            {armaFiltroNome ? `Munições para ${armaFiltroNome}` : 'Adicionar Munição'}
-          </h2>
-          <button onClick={onFechar} className="text-zinc-400 hover:text-white transition">✖</button>
-        </div>
-
-        <div className="p-4 border-b border-zinc-800 bg-zinc-950/50">
+        <div className="flex flex-col border-b border-zinc-800 p-5 pb-4">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="font-display text-lg uppercase tracking-wide text-zinc-100">
+                {armaFiltroNome ? `MUNIÇÕES PARA ${armaFiltroNome.toUpperCase()}` : 'ADICIONAR MUNIÇÃO'}
+              </h3>
+              <p className="mt-1 text-xs text-zinc-400">Selecione uma munição para adicionar ao inventário.</p>
+            </div>
+            <button onClick={onFechar} className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100">&times;</button>
+          </div>
+          
           <input
             type="text"
             placeholder="Buscar munição..."
             value={busca}
             onChange={e => setBusca(e.target.value)}
-            className="w-full rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-200 outline-none focus:border-red-700 transition"
+            className="w-full rounded border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 outline-none transition focus:border-red-800"
           />
         </div>
 
-        <div className="overflow-y-auto p-4 flex flex-col gap-3 max-h-[60vh] custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-2 flex flex-col gap-2 custom-scrollbar">
           {municoesFiltradas.length === 0 ? (
             <div className="text-center text-zinc-500 italic p-4">Nenhuma munição encontrada.</div>
           ) : (

@@ -47,14 +47,33 @@ export function useMunicoes() {
   // Função utilitária para pegar munições compatíveis com uma arma baseada no Tipo_Arma da munição
   const getMunicoesCompativeis = useCallback((armaNome: string, armaCategoria: string) => {
     return municoes.filter(m => {
-      // O CSV tem Tipo_Arma como "Pistóla / Revólver / Submetralhadora"
-      // Precisamos checar se o nome da arma ou o tipo da arma está na string da munição.
       const tipoMunicao = (m.Tipo_Arma || '').toLowerCase();
-      // "Lança-Chamas" -> "Lança Chamas"
-      const nomeLimpo = armaNome.toLowerCase().replace('-', ' ');
-      const tipoLimpo = tipoMunicao.replace('-', ' ');
       
-      return tipoLimpo.includes(nomeLimpo) || tipoLimpo.includes(armaCategoria.toLowerCase());
+      const removeAcentos = (str: string) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/-/g, ' ');
+      const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+      const tipoLimpo = removeAcentos(tipoMunicao);
+      const nomeLimpo = removeAcentos(armaNome.toLowerCase());
+      const catLimpo = removeAcentos(armaCategoria.toLowerCase());
+
+      // Lidar com a exceção pedida: Combustível (Lança-Chamas) também serve para Lança Nitrogênio
+      if (nomeLimpo === 'lanca nitrogenio' && tipoLimpo.includes('lanca chamas')) {
+        return true;
+      }
+
+      // Usa \b (word boundary) para evitar que "metralhadora" dê match em "submetralhadora"
+      try {
+        const nomeRegex = new RegExp(`\\b${escapeRegExp(nomeLimpo)}\\b`, 'i');
+        if (nomeRegex.test(tipoLimpo)) return true;
+
+        const catRegex = new RegExp(`\\b${escapeRegExp(catLimpo)}\\b`, 'i');
+        if (catRegex.test(tipoLimpo)) return true;
+      } catch (e) {
+        // Fallback caso a regex falhe
+        if (tipoLimpo.includes(nomeLimpo) || tipoLimpo.includes(catLimpo)) return true;
+      }
+      
+      return false;
     });
   }, [municoes]);
 

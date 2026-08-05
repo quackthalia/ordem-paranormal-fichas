@@ -113,17 +113,17 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                   
                   <div className="flex items-center gap-3 flex-shrink-0">
                     {arma['Agil?'] && (
-                      <span className="relative group cursor-help" title="Ágil">
+                      <span className="relative group cursor-help">
                         <span className="text-sm text-yellow-400">⚡</span>
-                        <span className="absolute bottom-full right-0 mb-2 hidden group-hover:block w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
+                        <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 hidden group-hover:block w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
                           Permite que você aplique sua Agilidade em vez de sua Força em testes de ataque e rolagens de dano.
                         </span>
                       </span>
                     )}
                     {arma['Automatica?'] && (
-                      <span className="relative group cursor-help" title="Automática">
+                      <span className="relative group cursor-help">
                         <span className="text-sm text-blue-400">🔄</span>
-                        <span className="absolute bottom-full right-0 mb-2 hidden group-hover:block w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
+                        <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 hidden group-hover:block w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
                           Pode disparar tiros únicos ou rajadas (-1d20 no ataque, +1 dado de dano).
                         </span>
                       </span>

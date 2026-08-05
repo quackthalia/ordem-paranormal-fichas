@@ -9,7 +9,8 @@ import {
   KeyboardSensor,
   PointerSensor,
   useSensor,
-  useSensors
+  useSensors,
+  DragOverlay
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -58,6 +59,7 @@ export function InventarioPanel() {
   const [municaoTargetArmaId, setMunicaoTargetArmaId] = useState<string | undefined>(undefined);
   const [expandidos, setExpandidos] = useState<Record<string, boolean>>({});
   const [armaEditandoId, setArmaEditandoId] = useState<string | null>(null);
+  const [activeDragItem, setActiveDragItem] = useState<{ id: string, type: 'arma' | 'municao', name?: string } | null>(null);
 
   const { municoesHook } = useRPG();
 
@@ -124,9 +126,20 @@ export function InventarioPanel() {
     if (active && expandidos[active.id]) {
       setExpandidos(prev => ({ ...prev, [active.id]: false }));
     }
+    const type = active.data?.current?.type;
+    let name = 'Item';
+    if (type === 'municao') {
+      const m = municoesHook?.municoesInventario.find(x => x.id === active.id);
+      if (m) name = m.municao.Nome_Item;
+    } else if (type === 'arma') {
+      const a = armasHook?.armasInventario.find(x => x.id === active.id);
+      if (a) name = a.arma.Nome_Item;
+    }
+    setActiveDragItem({ id: active.id, type, name });
   };
 
   const handleDragEnd = (event: any) => {
+    setActiveDragItem(null);
     const { active, over } = event;
     
     if (over && active.id !== over.id) {
@@ -425,6 +438,17 @@ export function InventarioPanel() {
                 )}
               </>
             )}
+
+            <DragOverlay>
+              {activeDragItem ? (
+                <div className="rounded border border-zinc-700 bg-zinc-900 p-3 shadow-2xl opacity-90 cursor-grabbing flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded bg-zinc-800 text-zinc-400">
+                    {activeDragItem.type === 'municao' ? 'M' : 'A'}
+                  </div>
+                  <span className="font-bold text-zinc-100 text-sm">{activeDragItem.name}</span>
+                </div>
+              ) : null}
+            </DragOverlay>
           </DndContext>
 
           {categoriaFiltro !== 'Armas' && categoriaFiltro !== 'Geral' && (

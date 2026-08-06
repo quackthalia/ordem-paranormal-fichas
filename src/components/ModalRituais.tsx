@@ -65,6 +65,11 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
   limiteCirculo,
   rituaisAprendidosIds = [],
 }) => {
+  React.useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = 'unset'; };
+  }, []);
+
   const [abaElemento, setAbaElemento] = useState<string | null>(null);
   const [abaCirculo, setAbaCirculo] = useState<number | null>(null);
   

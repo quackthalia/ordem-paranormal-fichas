@@ -1,16 +1,31 @@
+import React from 'react';
 import { useState } from 'react';
 import { useRPG } from '../../context/RPGContext';
 import type { Protecao } from '../../types';
 
+import { formatarTexto } from '../../utils/formatters';
 interface ModalProtecoesProps {
   aberto: boolean;
   onFechar: () => void;
 }
 
 export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
-  const { protecoesHook } = useRPG();
+  React.useEffect(() => {
+    if (aberto) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [aberto]);
+
+  const { protecoesHook, proficiencias } = useRPG();
   const [busca, setBusca] = useState('');
   const [filtro, setFiltro] = useState<string>('Todas');
+  
+  const [mostrarFiltrosAvançados, setMostrarFiltrosAvançados] = useState(false);
+  const [filtroCategoria, setFiltroCategoria] = useState<string>('Todas');
+  
   const [expandidos, setExpandidos] = useState<number[]>([]);
 
   if (!aberto) return null;
@@ -28,8 +43,21 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
   const protecoesFiltradas = (protecoesHook?.protecoes || []).filter((protecao: Protecao) => {
     if (filtro !== 'Todas' && protecao.Proficiencia !== filtro) return false;
     if (busca && !protecao.Nome_Protecao.toLowerCase().includes(busca.toLowerCase())) return false;
+    
+    if (filtroCategoria !== 'Todas') {
+      const cat = String(protecao.Categoria_Protecao).trim().toUpperCase();
+      if (filtroCategoria === '0' && (cat !== '0' && cat !== 'O')) return false;
+      if (filtroCategoria !== '0' && cat !== filtroCategoria) return false;
+    }
+    
     return true;
   });
+  
+  const uniqueCategorias = Array.from(new Set((protecoesHook?.protecoes || []).map(p => {
+    const c = String(p.Categoria_Protecao).trim().toUpperCase();
+    if (c === 'O') return '0';
+    return c;
+  }))).filter(Boolean).sort();
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" onClick={onFechar}>
@@ -46,16 +74,45 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
             </div>
             <button onClick={onFechar} className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100">&times;</button>
           </div>
-          <input
-            type="text"
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-            placeholder="Buscar proteção pelo nome..."
-            className="w-full rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700"
-          />
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar proteção pelo nome..."
+              className="flex-1 rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700"
+            />
+            <button 
+              onClick={() => setMostrarFiltrosAvançados(!mostrarFiltrosAvançados)}
+              className={`rounded border px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition ${
+                mostrarFiltrosAvançados || filtroCategoria !== 'Todas'
+                  ? 'border-red-800 bg-red-900/40 text-red-300'
+                  : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
+              }`}
+            >
+              Filtros
+            </button>
+          </div>
         </div>
 
-        {/* Filtros de proficiência */}
+        {/* Filtros Avançados */}
+        {mostrarFiltrosAvançados && (
+          <div className="flex flex-wrap items-center gap-3 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
+            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Categoria</label>
+              <select 
+                value={filtroCategoria} 
+                onChange={(e) => setFiltroCategoria(e.target.value)}
+                className="w-full rounded border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs text-zinc-300 outline-none"
+              >
+                <option value="Todas">Todas as Categorias</option>
+                {uniqueCategorias.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
+          </div>
+        )}
+
+        {/* Filtros de proficiência originais */}
         <div className="flex flex-wrap gap-1 border-b border-zinc-800 bg-zinc-950/80 px-3 py-2">
           {filtros.map(f => {
             const ativo = filtro === f.valor;
@@ -80,6 +137,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
           <div className="flex flex-col gap-2">
             {protecoesFiltradas.map((protecao: Protecao) => {
               const isExpanded = expandidos.includes(protecao.Codigo_Protecao);
+              const hasProficiencia = proficiencias.includes(protecao.Proficiencia);
               return (
                 <div key={protecao.Codigo_Protecao} className="rounded border border-zinc-800 border-l-4 border-l-blue-700 bg-zinc-950/60 transition hover:bg-zinc-900/60">
                   {/* Bloco fechado */}
@@ -97,6 +155,14 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                     </div>
 
                     <div className="flex items-center gap-3 flex-shrink-0">
+                      {!hasProficiencia && (
+                        <span className="relative group cursor-help">
+                          <span className="text-sm text-red-500">⚠️</span>
+                          <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 hidden group-hover:block w-52 p-2 bg-zinc-800 border border-red-700/50 text-xs text-red-200 rounded z-50 text-center shadow-lg pointer-events-none">
+                            Se você usar uma proteção com a qual não seja proficiente, sofre -2d20 em testes baseados em Força ou Agilidade.
+                          </span>
+                        </span>
+                      )}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();

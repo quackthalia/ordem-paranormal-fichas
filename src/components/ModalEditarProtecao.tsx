@@ -9,6 +9,11 @@ interface ModalEditarProtecaoProps {
 }
 
 export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarProtecaoProps) {
+  React.useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = 'unset'; };
+  }, []);
+
   const [nome, setNome] = useState('');
   const [descricao, setDescricao] = useState('');
   const [proficiencia, setProficiencia] = useState('');

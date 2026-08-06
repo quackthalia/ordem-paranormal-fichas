@@ -25,6 +25,11 @@ export function ModalTrilhas({
   onClose: () => void;
   modoVersatilidade?: boolean;
 }) {
+  React.useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = 'unset'; };
+  }, []);
+
   const { classe, trilhasHook, regras } = useRPG();
   const {
     trilhas,

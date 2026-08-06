@@ -21,7 +21,7 @@ export const PericiasTable: React.FC = () => {
   const { 
     periciasHook, regrasAtivas, setRegrasAtivas, regrasAutomaticasAtivas, protecoes,
     bonusDadosCondicionais, setBonusDadosCondicionais, bonusDadosAtivos, setBonusDadosAtivos,
-    poderesHook, trilhasHook
+    poderesHook, trilhasHook, itensHook
   } = useRPG();
   const { pericias, handleMudarPericia, limites, totais } = periciasHook;
 
@@ -202,7 +202,22 @@ export const PericiasTable: React.FC = () => {
               const bonusRegra8 = (nome === 'Diplomacia' && regrasAutomaticasAtivas.has(8)) ? 2 : 0;
               const bonusRegra13 = (nome === 'Vontade' && regrasAutomaticasAtivas.has(13)) ? 2 : 0;
               const bonusRegra25 = (nome === 'Reflexos' && regrasAutomaticasAtivas.has(25) && temProtecaoLeve) ? 2 : 0;
-              const totalBonus = dadosPericia.treino + dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25;
+              
+              // Bônus de Vestimenta/Utensílio
+              const bonusInventario = itensHook?.itensInventario.reduce((acc, obj) => {
+                const isBonusItem = obj.item.Nome_Item.toLowerCase().includes('vestimenta') || 
+                                    obj.item.Nome_Item.toLowerCase().includes('utensílio') ||
+                                    obj.item.Nome_Item.toLowerCase().includes('utensilio');
+                if (isBonusItem) {
+                  const match = obj.item.Nome_Item.match(/\((.*?)\)/);
+                  if (match && match[1].trim().toLowerCase() === nome.toLowerCase()) {
+                    return acc + 2;
+                  }
+                }
+                return acc;
+              }, 0) || 0;
+
+              const totalBonus = dadosPericia.treino + dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25 + bonusInventario;
               const corTexto = COR_TREINO[dadosPericia.treino] ?? 'text-zinc-400';
               const corBorda = BORDA_TREINO[dadosPericia.treino] ?? 'border-zinc-600';
 
@@ -280,10 +295,10 @@ export const PericiasTable: React.FC = () => {
                     <input
                       type="number"
                       onKeyDown={bloquearLetras}
-                      value={(dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25) === 0 ? '' : (dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25)}
+                      value={(dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25 + bonusInventario) === 0 ? '' : (dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25 + bonusInventario)}
                       placeholder="0"
                       onChange={(e) =>
-                        handleMudarPericia(nome, 'outros', Math.max(0, Number(e.target.value) - bonusRegra8 - bonusRegra13 - bonusRegra25))
+                        handleMudarPericia(nome, 'outros', Math.max(0, Number(e.target.value) - bonusRegra8 - bonusRegra13 - bonusRegra25 - bonusInventario))
                       }
                       className={`w-11 border-b bg-transparent text-center font-bold outline-none ${corTexto} ${corBorda}`}
                     />

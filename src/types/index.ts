@@ -208,6 +208,26 @@ export interface ProtecaoInventario {
 }
 
 // ============================================================
+// INVENTÁRIO — ITENS GERAIS
+// ============================================================
+export interface ItemGeral {
+  Codigo_Item: number;
+  Grupo_Item: string;
+  Nome_Item: string;
+  Desc_Item: string;
+  Categoria_Item: string;
+  Espacos_Itens: number | string;
+  Dt_Item: string | null;
+  Fonte_Item: string;
+}
+
+export interface ItemGeralInventario {
+  id: string;
+  item: ItemGeral;
+}
+
+
+// ============================================================
 // INVENTÁRIO — MUNIÇÕES
 // ============================================================
 export interface Municao {

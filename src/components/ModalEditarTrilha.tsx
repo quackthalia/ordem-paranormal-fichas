@@ -12,6 +12,11 @@ export function ModalEditarTrilha({
   onClose: () => void;
   isVersatilidade?: boolean;
 }) {
+  React.useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = 'unset'; };
+  }, []);
+
   const { trilhasHook, nex, regras } = useRPG();
   const trilhaOriginal = isVersatilidade ? trilhasHook.versatilidadeSelecionada : trilhasHook.trilhaSelecionada;
 

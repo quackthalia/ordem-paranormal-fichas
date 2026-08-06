@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { useRPG } from '../../context/RPGContext';
 import type { Patente, LimiteCredito } from '../../hooks/useInventario';
 import { ModalArmas, formatarCritico } from './ModalArmas';
-import type { ArmaInventario, ProtecaoInventario } from '../../types';
+import type { ArmaInventario, ProtecaoInventario, ItemGeralInventario } from '../../types';
 import { ModalProtecoes } from './ModalProtecoes';
+import { ModalItens } from './ModalItens';
 import { ModalEditarProtecao } from '../../components/ModalEditarProtecao';
+import { ModalEditarItem } from '../../components/ModalEditarItem';
 import {
   DndContext,
   closestCenter,
@@ -26,6 +28,7 @@ import type { Modifier } from '@dnd-kit/core';
 import { ModalMunicoes } from './ModalMunicoes';
 import { ModalEditarArma } from '../../components/ModalEditarArma';
 
+import { formatarTexto } from '../../utils/formatters';
 const restrictToTopAndVerticalAxis: Modifier = ({ transform, activeNodeRect }) => {
   if (!activeNodeRect) {
     return { ...transform, x: 0 };
@@ -43,8 +46,114 @@ const restrictToTopAndVerticalAxis: Modifier = ({ transform, activeNodeRect }) =
   };
 };
 
+
+interface SortableItemGeralProps {
+  item: ItemGeralInventario;
+  isExpanded: boolean;
+  toggleExpandir: (id: string) => void;
+  removerItem: (id: string) => void;
+  stringDT: string | null;
+  onEditar?: () => void;
+}
+
+function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stringDT, onEditar }: SortableItemGeralProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: item.id, data: { type: 'item' } });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 10 : 1,
+    opacity: isDragging ? 0.4 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`rounded border border-l-4 border-l-red-700 transition-colors w-full relative ${isDragging ? 'border-red-500 bg-zinc-900 shadow-xl scale-[1.02]' : 'border-zinc-800 bg-zinc-950/60 hover:bg-zinc-900/60'}`}
+    >
+      <div className="flex items-center gap-1 p-3">
+        {/* Drag handle */}
+        <div
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing text-zinc-600 hover:text-zinc-300 p-2 flex-shrink-0 flex items-center justify-center rounded hover:bg-zinc-800"
+          title="Arrastar para reordenar"
+        >
+          <svg width="14" height="20" viewBox="0 0 14 20" fill="currentColor">
+            <path d="M4 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm6 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-6 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm6 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-6 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm6 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" />
+          </svg>
+        </div>
+        
+        <div 
+          className="flex-1 flex cursor-pointer items-center justify-between gap-3 min-w-0"
+          onClick={() => toggleExpandir(item.id)}
+        >
+          <div className="flex flex-col gap-1 flex-1 min-w-0 justify-center">
+            <span className="font-bold text-sm text-zinc-100 truncate leading-none mt-0.5">{item.item.Nome_Item}</span>
+            {stringDT && (
+              <div className="flex items-center gap-4 text-xs text-zinc-300 mt-0.5">
+                <span><span className="font-bold text-red-400">DT:</span> {stringDT}</span>
+              </div>
+            )}
+          </div>
+          <span className="w-5 text-center text-zinc-500 text-xs flex-shrink-0">{isExpanded ? '▲' : '▼'}</span>
+        </div>
+      </div>
+      
+      {isExpanded && (
+        <div className="border-t border-zinc-800 px-3 py-3 text-xs bg-zinc-950/80 flex flex-col gap-2 relative z-10" onClick={e => e.stopPropagation()}>
+          <div className="flex flex-col gap-1 mt-1">
+            <span><span className="text-red-400 font-bold">Categoria:</span> {item.item.Categoria_Item}</span>
+            <span><span className="text-red-400 font-bold">Espaços:</span> {item.item.Espacos_Itens}</span>
+          </div>
+          <div className="flex flex-col gap-1 mt-1">
+            <p className="text-zinc-400 text-xs leading-relaxed whitespace-pre-wrap">{formatarTexto(item.item.Desc_Item)}</p>
+          </div>
+          {item.item.Fonte_Item && (
+            <div className="mt-2 pt-2 border-t border-zinc-800/50">
+              <span className="text-[10px] uppercase tracking-wider text-zinc-600">Fonte: {item.item.Fonte_Item}</span>
+            </div>
+          )}
+          <div className="flex justify-between items-center mt-3 pt-3 border-t border-zinc-800/50">
+            <div className="flex gap-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removerItem(item.id);
+                }}
+                className="rounded bg-red-900/40 border border-red-800/50 px-3 py-1 text-xs font-bold uppercase text-red-400 transition hover:bg-red-800 hover:text-red-100"
+              >
+                Remover Item
+              </button>
+              {onEditar && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEditar();
+                  }}
+                  className="rounded bg-zinc-800 border border-zinc-700 px-3 py-1 text-xs font-bold uppercase text-zinc-300 transition hover:bg-zinc-700 hover:text-white"
+                >
+                  Editar Item
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function InventarioPanel() {
-  const { inventarioHook, atributosFinais, regrasAutomaticasAtivas, armasHook, status } = useRPG();
+  const { inventarioHook, atributosFinais, regrasAutomaticasAtivas, armasHook, municoesHook, protecoesHook, itensHook, status } = useRPG();
   const {
     prestigio, setPrestigio,
     patente, setPatenteManual,
@@ -55,7 +164,9 @@ export function InventarioPanel() {
   const [modalArmasAberto, setModalArmasAberto] = useState(false);
   const [modalMunicoesAberto, setModalMunicoesAberto] = useState(false);
   const [modalProtecoesAberto, setModalProtecoesAberto] = useState(false);
-  const [categoriaFiltro, setCategoriaFiltro] = useState<'Geral' | 'Armas' | 'Munições' | 'Proteções'>('Armas');
+  const [categoriaFiltro, setCategoriaFiltro] = useState<string>('Armas');
+  const [modalItensAberto, setModalItensAberto] = useState(false);
+  const [abaItensAberta, setAbaItensAberta] = useState<string>('');
   const [buscaItem, setBuscaItem] = useState('');
   const [municaoFiltroNome, setMunicaoFiltroNome] = useState<string | undefined>(undefined);
   const [municaoFiltroCategoria, setMunicaoFiltroCategoria] = useState<string | undefined>(undefined);
@@ -63,20 +174,20 @@ export function InventarioPanel() {
   const [expandidos, setExpandidos] = useState<Record<string, boolean>>({});
   const [armaEditandoId, setArmaEditandoId] = useState<string | null>(null);
   const [protecaoEditandoId, setProtecaoEditandoId] = useState<string | null>(null);
-  const [activeDragItem, setActiveDragItem] = useState<{ id: string, type: 'arma' | 'municao' | 'protecao', name?: string } | null>(null);
-
-  const { municoesHook, protecoesHook } = useRPG();
+  const [itemEditandoId, setItemEditandoId] = useState<string | null>(null);
+  const [activeDragItem, setActiveDragItem] = useState<{ id: string, type: 'arma' | 'municao' | 'protecao' | 'item', name?: string } | null>(null);
 
   const cargaMaxima = 5 + (atributosFinais.FOR * 5) + (regrasAutomaticasAtivas.has(23) ? 5 : 0) + (regrasAutomaticasAtivas.has(43) ? atributosFinais.INT : 0);
   
-  const cargaAtual = (armasHook?.cargaArmas || 0) + (municoesHook?.cargaMunicoes || 0) + (protecoesHook?.cargaProtecoes || 0);
+  const cargaAtual = (armasHook?.cargaArmas || 0) + (municoesHook?.cargaMunicoes || 0) + (protecoesHook?.cargaProtecoes || 0) + (itensHook?.cargaItens || 0);
   
   const noInventario = [0, 0, 0, 0];
   const countArmas = armasHook?.contagemPorCategoria || [0, 0, 0, 0];
   const countMunicoes = municoesHook?.contagemPorCategoria || [0, 0, 0, 0];
   const countProtecoes = protecoesHook?.contagemPorCategoria || [0, 0, 0, 0];
+  const countItens = itensHook?.contagemPorCategoria || [0, 0, 0, 0];
   for (let i = 0; i < 4; i++) {
-    noInventario[i] = countArmas[i] + countMunicoes[i] + countProtecoes[i];
+    noInventario[i] = countArmas[i] + countMunicoes[i] + countProtecoes[i] + countItens[i];
   }
 
   useEffect(() => {
@@ -98,21 +209,36 @@ export function InventarioPanel() {
     setExpandidos(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const calcularDT = (dtItem: string | null) => {
+  const calcularDT = (dtItem: string | null): string | null => {
     if (!dtItem) return null;
-    const parts = dtItem.split(',');
-    if (parts.length !== 2) return null;
-    const pericia = parts[0].trim();
-    const val = parts[1].trim();
+    
+    if (dtItem.includes('/')) {
+      return dtItem.split('/').map(part => calcularDT(part.trim())).join(' / ');
+    }
 
-    let calculado = 0;
-    if (val === 'FOR' || val === 'AGI' || val === 'INT' || val === 'PRE' || val === 'VIG') {
-      calculado = 10 + status.peTurno + (atributosFinais[val as keyof typeof atributosFinais] || 0);
+    let pericia = '';
+    let val = dtItem.trim();
+    
+    if (val.includes(',')) {
+      const parts = val.split(',');
+      val = parts.pop()!.trim();
+      pericia = parts.join(',').trim();
+    }
+
+    let calculado: string | number = 0;
+    const isAtributo = ['FOR', 'AGI', 'INT', 'PRE', 'VIG'].includes(val.toUpperCase());
+    
+    if (isAtributo) {
+      calculado = 10 + status.peTurno + (atributosFinais[val.toUpperCase() as keyof typeof atributosFinais] || 0);
     } else {
-      calculado = Number(val) || 0;
+      const numVal = Number(val);
+      calculado = isNaN(numVal) ? val : numVal;
     }
     
-    return `DT: ${pericia}, ${calculado}`;
+    if (pericia) {
+      return `${pericia} ${calculado}`;
+    }
+    return `${calculado}`;
   };
 
   const sensores = useSensors(
@@ -142,6 +268,9 @@ export function InventarioPanel() {
     } else if (type === 'protecao') {
       const p = protecoesHook?.protecoesInventario.find(x => x.id === active.id);
       if (p) name = p.protecao.Nome_Protecao;
+    } else if (type === 'item') {
+      const i = itensHook?.itensInventario.find(x => x.id === active.id);
+      if (i) name = i.item.Nome_Item;
     }
     setActiveDragItem({ id: active.id, type, name });
   };
@@ -223,6 +352,12 @@ export function InventarioPanel() {
 
   const protecoesGeral = (protecoesHook?.protecoesInventario || []).filter(pinv => {
     if (buscaItem && !pinv.protecao.Nome_Protecao.toLowerCase().includes(buscaItem.toLowerCase())) return false;
+    return true;
+  });
+
+  const itensGeral = (itensHook?.itensInventario || []).filter(iinv => {
+    if (buscaItem && !iinv.item.Nome_Item.toLowerCase().includes(buscaItem.toLowerCase())) return false;
+    if (categoriaFiltro !== 'Geral' && iinv.item.Grupo_Item.trim() !== categoriaFiltro) return false;
     return true;
   });
 
@@ -364,6 +499,61 @@ export function InventarioPanel() {
           >
             🛡️
           </button>
+          <button
+            onClick={() => setCategoriaFiltro('Acessórios')}
+            title="Acessórios"
+            className={`w-12 h-12 flex items-center justify-center rounded-t text-2xl transition border-b-2 ${
+              categoriaFiltro === 'Acessórios' 
+                ? 'bg-zinc-900 text-red-400 border-b-red-500' 
+                : 'text-zinc-600 hover:text-zinc-300 hover:bg-zinc-900/50 border-b-transparent'
+            }`}
+          >
+            🧰
+          </button>
+          <button
+            onClick={() => setCategoriaFiltro('Explosivos')}
+            title="Explosivos"
+            className={`w-12 h-12 flex items-center justify-center rounded-t text-2xl transition border-b-2 ${
+              categoriaFiltro === 'Explosivos' 
+                ? 'bg-zinc-900 text-red-400 border-b-red-500' 
+                : 'text-zinc-600 hover:text-zinc-300 hover:bg-zinc-900/50 border-b-transparent'
+            }`}
+          >
+            💣
+          </button>
+          <button
+            onClick={() => setCategoriaFiltro('Itens Operacionais')}
+            title="Itens Operacionais"
+            className={`w-12 h-12 flex items-center justify-center rounded-t text-2xl transition border-b-2 ${
+              categoriaFiltro === 'Itens Operacionais' 
+                ? 'bg-zinc-900 text-red-400 border-b-red-500' 
+                : 'text-zinc-600 hover:text-zinc-300 hover:bg-zinc-900/50 border-b-transparent'
+            }`}
+          >
+            🔦
+          </button>
+          <button
+            onClick={() => setCategoriaFiltro('Medicamento')}
+            title="Medicamento"
+            className={`w-12 h-12 flex items-center justify-center rounded-t text-2xl transition border-b-2 ${
+              categoriaFiltro === 'Medicamento' 
+                ? 'bg-zinc-900 text-red-400 border-b-red-500' 
+                : 'text-zinc-600 hover:text-zinc-300 hover:bg-zinc-900/50 border-b-transparent'
+            }`}
+          >
+            💊
+          </button>
+          <button
+            onClick={() => setCategoriaFiltro('Itens Paranormais')}
+            title="Itens Paranormais"
+            className={`w-12 h-12 flex items-center justify-center rounded-t text-2xl transition border-b-2 ${
+              categoriaFiltro === 'Itens Paranormais' 
+                ? 'bg-zinc-900 text-red-400 border-b-red-500' 
+                : 'text-zinc-600 hover:text-zinc-300 hover:bg-zinc-900/50 border-b-transparent'
+            }`}
+          >
+            👁️
+          </button>
         </div>
 
         {/* Filtros e Busca */}
@@ -399,6 +589,17 @@ export function InventarioPanel() {
           {categoriaFiltro === 'Proteções' && (
             <button
               onClick={() => setModalProtecoesAberto(true)}
+              className="bg-green-700 hover:bg-green-600 text-white px-4 py-1.5 rounded font-bold text-sm transition"
+            >
+              + Adicionar
+            </button>
+          )}
+          {itensHook?.gruposUnicos.includes(categoriaFiltro) && (
+            <button
+              onClick={() => {
+                setAbaItensAberta(categoriaFiltro);
+                setModalItensAberto(true);
+              }}
               className="bg-green-700 hover:bg-green-600 text-white px-4 py-1.5 rounded font-bold text-sm transition"
             >
               + Adicionar
@@ -510,11 +711,42 @@ export function InventarioPanel() {
               </>
             )}
 
+            {(itensHook?.gruposUnicos.includes(categoriaFiltro) || categoriaFiltro === 'Geral') && (
+              <>
+                {categoriaFiltro === 'Geral' && itensGeral.length > 0 && (
+                  <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-1 mt-2 border-b border-zinc-800 pb-1">Outros Itens</h3>
+                )}
+                <SortableContext items={itensGeral.map(i => i.id)} strategy={verticalListSortingStrategy}>
+                  {itensGeral.map(item => (
+                    <SortableItemGeral 
+                      key={item.id} 
+                      item={item} 
+                      isExpanded={!!expandidos[item.id]}
+                      toggleExpandir={(id) => setExpandidos(prev => ({ ...prev, [id]: !prev[id] }))}
+                      stringDT={calcularDT(item.item.Dt_Item)}
+                      removerItem={itensHook?.removerItem || (() => {})} 
+                      onEditar={() => setItemEditandoId(item.id)}
+                    />
+                  ))}
+                </SortableContext>
+                {itensGeral.length === 0 && categoriaFiltro !== 'Geral' && (
+                  <p className="text-center text-zinc-600 text-sm py-4">
+                    {categoriaFiltro === 'Acessórios' ? 'Nenhum acessório no inventário.' :
+                     categoriaFiltro === 'Explosivos' ? 'Nenhum explosivo no inventário.' :
+                     categoriaFiltro === 'Itens Operacionais' ? 'Nenhum item operacional no inventário.' :
+                     categoriaFiltro === 'Medicamento' ? 'Nenhum medicamento no inventário.' :
+                     categoriaFiltro === 'Itens Paranormais' ? 'Nenhum item paranormal no inventário.' :
+                     `Nenhum item no inventário.`}
+                  </p>
+                )}
+              </>
+            )}
+
             <DragOverlay>
               {activeDragItem ? (
                 <div className="rounded border border-zinc-700 bg-zinc-900 p-3 shadow-2xl opacity-90 cursor-grabbing flex items-center gap-3">
                   <div className="flex h-8 w-8 items-center justify-center rounded bg-zinc-800 text-zinc-400">
-                    {activeDragItem.type === 'municao' ? 'M' : activeDragItem.type === 'protecao' ? 'P' : 'A'}
+                    {activeDragItem.type === 'municao' ? 'M' : activeDragItem.type === 'protecao' ? 'P' : activeDragItem.type === 'item' ? 'I' : 'A'}
                   </div>
                   <span className="font-bold text-zinc-100 text-sm">{activeDragItem.name}</span>
                 </div>
@@ -522,7 +754,7 @@ export function InventarioPanel() {
             </DragOverlay>
           </DndContext>
 
-          {categoriaFiltro !== 'Armas' && categoriaFiltro !== 'Geral' && categoriaFiltro !== 'Munições' && (
+          {categoriaFiltro !== 'Armas' && categoriaFiltro !== 'Geral' && categoriaFiltro !== 'Munições' && categoriaFiltro !== 'Proteções' && !itensHook?.gruposUnicos.includes(categoriaFiltro) && (
             <p className="text-center text-zinc-600 text-sm py-8">Esta categoria ainda não possui itens implementados.</p>
           )}
         </div>
@@ -561,6 +793,11 @@ export function InventarioPanel() {
         aberto={modalProtecoesAberto}
         onFechar={() => setModalProtecoesAberto(false)}
       />
+      <ModalItens
+        aberto={modalItensAberto}
+        onFechar={() => setModalItensAberto(false)}
+        grupoAba={abaItensAberta}
+      />
 
       {protecaoEditandoId && (
         <ModalEditarProtecao
@@ -569,6 +806,16 @@ export function InventarioPanel() {
             protecoesHook?.editarProtecao(id, novosDados);
           }}
           onClose={() => setProtecaoEditandoId(null)}
+        />
+      )}
+
+      {itemEditandoId && (
+        <ModalEditarItem
+          itemInventario={itensHook?.itensInventario.find(i => i.id === itemEditandoId)!}
+          onSave={(novosDados) => {
+            itensHook?.editarItem(itemEditandoId, novosDados);
+          }}
+          onClose={() => setItemEditandoId(null)}
         />
       )}
     </div>
@@ -600,7 +847,8 @@ function SortableArmaItem({
     isDragging,
   } = useSortable({ id, data: { type: 'arma' } });
 
-  const { municoesHook, armasHook } = useRPG();
+  const { municoesHook, armasHook, proficiencias } = useRPG();
+  const hasProficiencia = proficiencias.includes(arma.Proficiencia);
 
   const municoesAcopladasList = (item.municoesAcopladas || []).map(mid => {
     return municoesHook?.municoesInventario.find(m => m.id === mid);
@@ -637,11 +885,12 @@ function SortableArmaItem({
           className="flex-1 flex cursor-pointer items-center justify-between gap-3 min-w-0"
           onClick={() => toggleExpandir(id)}
         >
-          <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-            <span className="font-bold text-sm text-zinc-100 truncate">{arma.Nome_Item}</span>
-            <div className="flex items-center gap-4 text-xs text-zinc-300">
+          <div className="flex flex-col gap-1 flex-1 min-w-0 justify-center">
+            <span className="font-bold text-sm text-zinc-100 truncate leading-none mt-0.5">{arma.Nome_Item}</span>
+            <div className="flex items-center gap-4 text-xs text-zinc-300 mt-0.5">
               <span><span className="font-bold text-red-400">Dado:</span> {arma.Dano_Arma}</span>
               <span><span className="font-bold text-zinc-400">Crítico:</span> {formatarCritico(arma.Critico_Arma, arma.Multiplicador_Arma)}</span>
+              {stringDT && <span><span className="font-bold text-red-400">DT:</span> {stringDT}</span>}
             </div>
           </div>
           
@@ -659,6 +908,14 @@ function SortableArmaItem({
                 <span className="text-sm text-blue-400">🔄</span>
                 <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 hidden group-hover:block w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
                   Pode disparar tiros únicos ou rajadas (-1d20 no ataque, +1 dado de dano).
+                </span>
+              </span>
+            )}
+            {!hasProficiencia && (
+              <span className="relative group cursor-help">
+                <span className="text-sm text-red-500">⚠️</span>
+                <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 hidden group-hover:block w-52 p-2 bg-zinc-800 border border-red-700/50 text-xs text-red-200 rounded z-50 text-center shadow-lg pointer-events-none">
+                  Se você atacar com uma arma com a qual não seja proficiente, sofre -2d20 nos testes de ataque.
                 </span>
               </span>
             )}
@@ -682,12 +939,17 @@ function SortableArmaItem({
             {arma.Alcance_Item && <span><span className="text-red-400 font-bold">Alcance:</span> {arma.Alcance_Item}</span>}
             <span><span className="text-red-400 font-bold">Tipo:</span> {arma.Tipo_Dano_Arma}</span>
             <span><span className="text-red-400 font-bold">Espaços:</span> {arma['Espaços_Item']}</span>
-            {stringDT && <span><span className="text-red-400 font-bold">{stringDT}</span></span>}
           </div>
           
           <div className="flex flex-col gap-1 mt-1">
-            <p className="text-zinc-400 text-xs leading-relaxed">{arma.Descricao_Item}</p>
+            <p className="text-zinc-400 text-xs leading-relaxed whitespace-pre-wrap">{formatarTexto(arma.Descricao_Item)}</p>
           </div>
+          
+          {arma.Fonte_Arma && (
+            <div className="mt-2 pt-2 border-t border-zinc-800/50">
+              <span className="text-[10px] uppercase tracking-wider text-zinc-600">Fonte: {arma.Fonte_Arma}</span>
+            </div>
+          )}
           
           <div className="flex justify-between items-center mt-3 pt-3 border-t border-zinc-800/50">
             <div className="flex gap-2">
@@ -831,9 +1093,9 @@ function SortableMunicaoItem({
           className="flex-1 flex items-center justify-between min-w-0 pr-2 cursor-pointer"
           onClick={() => toggleExpandir(id)}
         >
-          <div className="flex flex-col gap-1 min-w-0">
-            <span className="font-bold text-zinc-100 text-sm truncate">{municao.Nome_Item}</span>
-            <span className="text-xs text-zinc-500 truncate">
+          <div className="flex flex-col gap-1 min-w-0 justify-center">
+            <span className="font-bold text-zinc-100 text-sm truncate leading-none mt-0.5">{municao.Nome_Item}</span>
+            <span className="text-xs text-zinc-500 truncate mt-0.5">
               {armaAcopladaNome ? (
                 <>Em: <span className="font-bold text-zinc-400">{armaAcopladaNome}</span></>
               ) : (
@@ -857,7 +1119,7 @@ function SortableMunicaoItem({
           </div>
           
           <div className="flex flex-col gap-1 mt-1">
-            <p className="text-zinc-400 text-xs leading-relaxed">{municao.Descricao_Item}</p>
+            <p className="text-zinc-400 text-xs leading-relaxed">{formatarTexto(municao.Descricao_Item)}</p>
           </div>
           
           <div className="flex justify-between mt-3 pt-3 border-t border-zinc-800/50">
@@ -892,6 +1154,9 @@ function SortableProtecaoItem({
 }) {
   const { id, protecao } = item;
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id, data: { type: 'protecao' } });
+  
+  const { proficiencias } = useRPG();
+  const hasProficiencia = proficiencias.includes(protecao.Proficiencia);
 
   const style = {
     transform: CSS.Translate.toString(transform),
@@ -924,13 +1189,21 @@ function SortableProtecaoItem({
           className="flex-1 flex cursor-pointer items-center justify-between gap-3 min-w-0"
           onClick={() => toggleExpandir(id)}
         >
-          <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-            <span className="font-bold text-sm text-zinc-100 truncate">{protecao.Nome_Protecao}</span>
-            <div className="flex items-center gap-4 text-xs text-zinc-300">
+          <div className="flex flex-col gap-1 flex-1 min-w-0 justify-center">
+            <span className="font-bold text-sm text-zinc-100 truncate leading-none mt-0.5">{protecao.Nome_Protecao}</span>
+            <div className="flex items-center gap-4 text-xs text-zinc-300 mt-0.5">
               <span><span className="font-bold text-blue-400">Defesa</span> {String(protecao.Defesa_Protecao).startsWith('+') ? protecao.Defesa_Protecao : `+${protecao.Defesa_Protecao}`}</span>
             </div>
           </div>
           <div className="flex items-center gap-3 flex-shrink-0">
+            {!hasProficiencia && (
+              <span className="relative group cursor-help">
+                <span className="text-sm text-red-500">⚠️</span>
+                <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 hidden group-hover:block w-52 p-2 bg-zinc-800 border border-red-700/50 text-xs text-red-200 rounded z-50 text-center shadow-lg pointer-events-none">
+                  Se você usar uma proteção com a qual não seja proficiente, sofre -2d20 em testes baseados em Força ou Agilidade.
+                </span>
+              </span>
+            )}
             <span className="w-5 text-center text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
           </div>
         </div>

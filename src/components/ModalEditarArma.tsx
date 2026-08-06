@@ -12,6 +12,11 @@ export function ModalEditarArma({
   onSave: (novosDados: Partial<Arma>) => void;
   onClose: () => void;
 }) {
+  React.useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = 'unset'; };
+  }, []);
+
   const { arma } = armaInventario;
 
   const [nome, setNome] = useState(arma.Nome_Item || '');

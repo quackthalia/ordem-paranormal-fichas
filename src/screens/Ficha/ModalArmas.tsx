@@ -1,7 +1,9 @@
+import React from 'react';
 import { useState, useMemo } from 'react';
 import { useRPG } from '../../context/RPGContext';
 import type { Arma } from '../../types';
 
+import { formatarTexto } from '../../utils/formatters';
 export function formatarCritico(critico: number, multiplicador: number): string {
   if (critico === 20 && multiplicador === 2) return 'x2';
   if (critico !== 20 && multiplicador === 2) return `${critico}`;
@@ -15,16 +17,62 @@ interface ModalArmasProps {
 }
 
 export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
-  const { armasHook } = useRPG();
+  React.useEffect(() => {
+    if (aberto) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [aberto]);
+
+  const { armasHook, proficiencias, status, atributosFinais } = useRPG();
   const [busca, setBusca] = useState('');
-  const [filtro, setFiltro] = useState<string>('Todas');
+  const [filtro, setFiltro] = useState<string>('Todas'); // Proficiência
+  const [mostrarFiltrosAvançados, setMostrarFiltrosAvançados] = useState(false);
+  const [filtroTipo, setFiltroTipo] = useState<string>('Todos');
+  const [filtroEmpunhadura, setFiltroEmpunhadura] = useState<string>('Todas');
+  const [filtroAlcance, setFiltroAlcance] = useState<string>('Todos');
+  
   const [expandidos, setExpandidos] = useState<number[]>([]);
 
-  if (!aberto) return null;
+  const calcularDT = (dtItem: string | null): string | null => {
+    if (!dtItem) return null;
+    
+    if (dtItem.includes('/')) {
+      return dtItem.split('/').map(part => calcularDT(part.trim())).join(' / ');
+    }
+
+    let pericia = '';
+    let val = dtItem.trim();
+    
+    if (val.includes(',')) {
+      const parts = val.split(',');
+      val = parts.pop()!.trim();
+      pericia = parts.join(',').trim();
+    }
+
+    let calculado: string | number = 0;
+    const isAtributo = ['FOR', 'AGI', 'INT', 'PRE', 'VIG'].includes(val.toUpperCase());
+    
+    if (isAtributo) {
+      calculado = 10 + status.peTurno + (atributosFinais[val.toUpperCase() as keyof typeof atributosFinais] || 0);
+    } else {
+      const numVal = Number(val);
+      calculado = isNaN(numVal) ? val : numVal;
+    }
+    
+    if (pericia) {
+      return `${pericia} ${calculado}`;
+    }
+    return `${calculado}`;
+  };
 
   const toggleExpandir = (id: number) => {
     setExpandidos(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
+
+  if (!aberto) return null;
 
   const filtros = [
     { label: 'Todas', valor: 'Todas' },
@@ -34,10 +82,27 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
   ];
 
   const armasFiltradas = armasHook.armas.filter((arma: Arma) => {
+    // 1. Filtro Proficiência (Simples, Táticas, Pesadas)
     if (filtro !== 'Todas' && arma.Proficiencia !== filtro) return false;
+    
+    // 2. Filtro Busca por nome
     if (busca && !arma.Nome_Item.toLowerCase().includes(busca.toLowerCase())) return false;
+    
+    // 3. Filtros Avançados
+    if (filtroTipo !== 'Todos' && arma.Tipo_Arma !== filtroTipo) return false;
+    if (filtroEmpunhadura !== 'Todas' && arma.Empunhadura_Arma !== filtroEmpunhadura) return false;
+    
+    if (filtroAlcance !== 'Todos') {
+      const alcance = arma.Alcance_Item?.trim().toLowerCase() || '';
+      if (filtroAlcance === 'Corpo a Corpo' && alcance !== '-' && alcance !== '') return false;
+      if (filtroAlcance !== 'Corpo a Corpo' && !alcance.includes(filtroAlcance.toLowerCase())) return false;
+    }
+    
     return true;
   });
+
+  const uniqueTipos = Array.from(new Set(armasHook.armas.map(a => a.Tipo_Arma))).filter(Boolean).sort();
+  const uniqueEmpunhaduras = Array.from(new Set(armasHook.armas.map(a => a.Empunhadura_Arma))).filter(Boolean).sort();
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" onClick={onFechar}>
@@ -54,16 +119,73 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
             </div>
             <button onClick={onFechar} className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100">&times;</button>
           </div>
-          <input
-            type="text"
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-            placeholder="Buscar arma pelo nome..."
-            className="w-full rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700"
-          />
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar arma pelo nome..."
+              className="flex-1 rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700"
+            />
+            <button 
+              onClick={() => setMostrarFiltrosAvançados(!mostrarFiltrosAvançados)}
+              className={`rounded border px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition ${
+                mostrarFiltrosAvançados || filtroTipo !== 'Todos' || filtroEmpunhadura !== 'Todas' || filtroAlcance !== 'Todos'
+                  ? 'border-red-800 bg-red-900/40 text-red-300'
+                  : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
+              }`}
+            >
+              Filtros
+            </button>
+          </div>
         </div>
 
-        {/* Filtros de proficiência */}
+        {/* Filtros Avançados */}
+        {mostrarFiltrosAvançados && (
+          <div className="flex flex-wrap items-center gap-3 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
+            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Tipo de Arma</label>
+              <select 
+                value={filtroTipo} 
+                onChange={(e) => setFiltroTipo(e.target.value)}
+                className="w-full rounded border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs text-zinc-300 outline-none"
+              >
+                <option value="Todos">Todos os Tipos</option>
+                {uniqueTipos.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
+            
+            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Empunhadura</label>
+              <select 
+                value={filtroEmpunhadura} 
+                onChange={(e) => setFiltroEmpunhadura(e.target.value)}
+                className="w-full rounded border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs text-zinc-300 outline-none"
+              >
+                <option value="Todas">Todas as Empunhaduras</option>
+                {uniqueEmpunhaduras.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
+            
+            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Alcance</label>
+              <select 
+                value={filtroAlcance} 
+                onChange={(e) => setFiltroAlcance(e.target.value)}
+                className="w-full rounded border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs text-zinc-300 outline-none"
+              >
+                <option value="Todos">Todos os Alcances</option>
+                <option value="Corpo a Corpo">Corpo a Corpo</option>
+                <option value="Curto">Curto</option>
+                <option value="Médio">Médio</option>
+                <option value="Longo">Longo</option>
+                <option value="Extremo">Extremo</option>
+              </select>
+            </div>
+          </div>
+        )}
+
+        {/* Filtros de proficiência originais */}
         <div className="flex flex-wrap gap-1 border-b border-zinc-800 bg-zinc-950/80 px-3 py-2">
           {filtros.map(f => {
             const ativo = filtro === f.valor;
@@ -89,6 +211,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
           {armasFiltradas.map((arma: Arma) => {
             const isExpanded = expandidos.includes(arma.Codigo_Arma);
             const critico = formatarCritico(arma.Critico_Arma, arma.Multiplicador_Arma);
+            const hasProficiencia = proficiencias.includes(arma.Proficiencia);
             return (
               <div key={arma.Codigo_Arma} className="rounded border border-zinc-800 border-l-4 border-l-red-700 bg-zinc-950/60 transition hover:bg-zinc-900/60">
                 {/* Bloco fechado */}
@@ -108,6 +231,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                           <span className="font-bold text-zinc-400">Crítico:</span> {critico}
                         </span>
                       )}
+                      {arma.dt_item && <span><span className="font-bold text-red-400">DT:</span> {calcularDT(arma.dt_item)}</span>}
                     </div>
                   </div>
                   
@@ -125,6 +249,14 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                         <span className="text-sm text-blue-400">🔄</span>
                         <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 hidden group-hover:block w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
                           Pode disparar tiros únicos ou rajadas (-1d20 no ataque, +1 dado de dano).
+                        </span>
+                      </span>
+                    )}
+                    {!hasProficiencia && (
+                      <span className="relative group cursor-help">
+                        <span className="text-sm text-red-500">⚠️</span>
+                        <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 hidden group-hover:block w-52 p-2 bg-zinc-800 border border-red-700/50 text-xs text-red-200 rounded z-50 text-center shadow-lg pointer-events-none">
+                          Se você atacar com uma arma com a qual não seja proficiente, sofre -2d20 nos testes de ataque.
                         </span>
                       </span>
                     )}
@@ -160,8 +292,13 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                     </div>
                     
                     <div className="flex flex-col gap-1 mt-1">
-                      <p className="text-zinc-400 text-xs leading-relaxed">{arma.Descricao_Item}</p>
+                      <p className="text-zinc-400 text-xs leading-relaxed">{formatarTexto(arma.Descricao_Item)}</p>
                     </div>
+                    {arma.Fonte_Arma && (
+                      <div className="flex justify-between items-center mt-3 pt-3 border-t border-zinc-800/50">
+                        <span className="text-[10px] uppercase tracking-wider text-zinc-600">Fonte: {arma.Fonte_Arma}</span>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

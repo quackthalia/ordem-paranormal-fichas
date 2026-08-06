@@ -258,6 +258,11 @@ function PoderCard({
 }
 
 export const ModalPoderes: React.FC = () => {
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = 'unset'; };
+  }, []);
+
   const {
     nexModalAberto, setNexModalAberto,
     abaModalPoderes, setAbaModalPoderes,

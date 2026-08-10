@@ -33,13 +33,50 @@ export function useProtecoes() {
     setProtecoesInventario(prev => prev.filter(item => item.id !== id));
   }, []);
 
-  const editarProtecao = useCallback((id: string, novosDados: Partial<Protecao>) => {
+  const editarProtecao = useCallback((id: string, novosDados: Partial<Protecao>, novasModificacoes?: number[]) => {
     setProtecoesInventario(prev => prev.map(item => {
       if (item.id === id) {
-        return { ...item, protecao: { ...item.protecao, ...novosDados } };
+        const ret: ProtecaoInventario = { ...item, protecao: { ...item.protecao, ...novosDados } };
+        if (novasModificacoes !== undefined) {
+          ret.modificacoes = novasModificacoes;
+        }
+        return ret;
       }
       return item;
     }));
+  }, []);
+
+  const isEscudo = (p: Protecao) => p.Proficiencia?.toLowerCase().includes('escudo') || p.Nome_Protecao?.toLowerCase().includes('escudo');
+
+  const toggleEquipado = useCallback((id: string) => {
+    setProtecoesInventario(prev => {
+      const alvo = prev.find(i => i.id === id);
+      if (!alvo) return prev;
+
+      const vaEquipar = !alvo.equipado;
+      if (!vaEquipar) {
+        // Desequipar: sempre permite
+        return prev.map(i => i.id === id ? { ...i, equipado: false } : i);
+      }
+
+      // Equipar: verificar restrições
+      const alvoEhEscudo = isEscudo(alvo.protecao);
+
+      return prev.map(i => {
+        if (i.id === id) {
+          return { ...i, equipado: true };
+        }
+        // Desequipar itens conflitantes
+        if (i.equipado) {
+          const iEhEscudo = isEscudo(i.protecao);
+          // Se o alvo é escudo, desequipar outros escudos
+          if (alvoEhEscudo && iEhEscudo) return { ...i, equipado: false };
+          // Se o alvo é armadura (não escudo), desequipar outras armaduras (não escudos)
+          if (!alvoEhEscudo && !iEhEscudo) return { ...i, equipado: false };
+        }
+        return i;
+      });
+    });
   }, []);
 
   const reordenarProtecoes = useCallback((oldIndex: number, newIndex: number) => {
@@ -78,6 +115,7 @@ export function useProtecoes() {
     adicionarProtecao,
     removerProtecao,
     editarProtecao,
+    toggleEquipado,
     reordenarProtecoes,
     cargaProtecoes,
     contagemPorCategoria,

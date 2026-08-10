@@ -19,6 +19,7 @@ import { useArmas } from '../hooks/useArmas';
 import { useMunicoes } from '../hooks/useMunicoes';
 import { useProtecoes } from '../hooks/useProtecoes';
 import { useItens } from '../hooks/useItens';
+import { useModificacoes } from '../hooks/useModificacoes';
 import { capMaximoAtributo, pontosIniciaisPorNex, calcularStatusBase } from '../utils/rpgRules';
 
 // ============================================================
@@ -45,6 +46,7 @@ interface RPGContextType {
   municoesHook: ReturnType<typeof useMunicoes>;
   protecoesHook: ReturnType<typeof useProtecoes>;
   itensHook: ReturnType<typeof useItens>;
+  modificacoesHook: ReturnType<typeof useModificacoes>;
   abaDireita: AbaDireita;
   setAbaDireita: React.Dispatch<React.SetStateAction<AbaDireita>>;
   abaModalPoderes: AbaModalPoderes;
@@ -58,7 +60,11 @@ interface RPGContextType {
   defOutros: number;
   setDefOutros: React.Dispatch<React.SetStateAction<number>>;
   defesaTotal: number;
+  totalDefesaProtecoes: number;
+  bloqueioData: { base: number, bonusVig: boolean };
+  setBloqueioData: React.Dispatch<React.SetStateAction<{ base: number, bonusVig: boolean }>>;
   protecoes: string[];
+  proficienciasTotais: string[];
   sentidos: string[];
   imunidades: string[];
   vulnerabilidades: string[];
@@ -147,6 +153,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const [bonusAtributos, setBonusAtributos] = useState<Atributos>({ FOR: 0, AGI: 0, INT: 0, PRE: 0, VIG: 0 });
   const [defEquip, setDefEquip] = useState(0);
   const [defOutros, setDefOutros] = useState(0);
+  const [bloqueioData, setBloqueioData] = useState({ base: 0, bonusVig: false });
   const [protecoes, setProtecoes] = useState<string[]>([]);
   const [sentidos, setSentidos] = useState<string[]>([]);
   const [imunidades, setImunidades] = useState<string[]>([]);
@@ -204,7 +211,8 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const municoesHook = useMunicoes();
   const protecoesHook = useProtecoes();
   const rituaisHook = useRituais();
-  const itensHook = useItens();
+
+  const modificacoesHook = useModificacoes();
 
   // Computa o conjunto de regras automáticas ativas
   const regrasAutomaticasAtivas = useMemo(() => {
@@ -217,6 +225,8 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     });
     return set;
   }, [origensHook.origemSelecionada, poderesHook.poderesEscolhidos]);
+
+  const itensHook = useItens(regrasAutomaticasAtivas.has(23) ? 3 : 2);
 
   // Sincroniza ganho/perda de NEX pelos Rituais
   const rituaisAprendidosRef = React.useRef(rituaisHook.rituaisAprendidos);
@@ -405,21 +415,41 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   );
 
   // ============================================================
+  // PROFICIÊNCIAS TOTAIS
+  // ============================================================
+  const proficienciasTotais = [...proficiencias];
+  if (regrasAutomaticasAtivas.has(17) && !proficienciasTotais.includes('Armas Pesadas')) proficienciasTotais.push('Armas Pesadas');
+  if (regrasAutomaticasAtivas.has(20) && !proficienciasTotais.includes('Proteções Pesadas')) proficienciasTotais.push('Proteções Pesadas');
+  if (regrasAutomaticasAtivas.has(27) && !proficienciasTotais.includes('Armas Táticas (de fogo)')) proficienciasTotais.push('Armas Táticas (de fogo)');
+  if (regrasAutomaticasAtivas.has(28) && !proficienciasTotais.includes('Armas Táticas (corpo a corpo e de disparo)')) proficienciasTotais.push('Armas Táticas (corpo a corpo e de disparo)');
+  if (regrasAutomaticasAtivas.has(38) && !proficienciasTotais.includes('Proteções Leves')) proficienciasTotais.push('Proteções Leves');
+
+  // ============================================================
   // DEFESA
   // ============================================================
   const defOutrosBonusRegra4 = regrasAutomaticasAtivas.has(4) ? 2 : 0;
   const defOutrosBonusRegra12 = regrasAutomaticasAtivas.has(12) ? 2 : 0;
   
-  const temProtecaoPesada = protecoes.some(p => p.toLowerCase().includes('pesada'));
+  const temProtecaoPesada = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('pesada')) || false;
   const defOutrosBonusRegra21 = (regrasAutomaticasAtivas.has(21) && temProtecaoPesada) ? 2 : 0;
   
-  const temProtecaoLeve = protecoes.some(p => p.toLowerCase().includes('leve'));
+  const temProtecaoLeve = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('leve')) || false;
   const defOutrosBonusRegra25 = (regrasAutomaticasAtivas.has(25) && temProtecaoLeve) ? 2 : 0;
 
   const totalDefesaProtecoes = (protecoesHook?.protecoesInventario || []).reduce((acc, item) => {
+    if (!item.equipado) return acc;
     const defRaw = String(item.protecao.Defesa_Protecao || '0').replace(/[^0-9.-]+/g, '');
-    const defVal = Number(defRaw);
-    return acc + (isNaN(defVal) ? 0 : defVal);
+    let defVal = Number(defRaw);
+    if (isNaN(defVal)) defVal = 0;
+    
+    // Bônus Reforçada
+    const temReforcada = (item.modificacoes || []).some(id => {
+      const m = modificacoesHook?.modificacoes.find(mod => mod.Codigo_Modif === id);
+      return m?.Nome_Modif.trim().toLowerCase() === 'reforçada';
+    });
+    if (temReforcada) defVal += 2;
+    
+    return acc + defVal;
   }, 0);
 
   const defesaTotal = 10 + atributos.AGI + bonusAtributos.AGI + defEquip + defOutros + defOutrosBonusRegra4 + defOutrosBonusRegra12 + defOutrosBonusRegra21 + defOutrosBonusRegra25 + totalDefesaProtecoes;
@@ -462,14 +492,17 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     atributos, setAtributos,
     bonusAtributos, setBonusAtributos,
     pontosRestantes, alterarAtributo,
-    status, periciasHook, poderesHook, origensHook, trilhasHook, rituaisHook, inventarioHook, armasHook, municoesHook, protecoesHook, itensHook,
+    status, periciasHook, poderesHook, origensHook, trilhasHook, rituaisHook, inventarioHook, armasHook, municoesHook, protecoesHook, itensHook, modificacoesHook,
     abaDireita, setAbaDireita,
     abaModalPoderes, setAbaModalPoderes,
     tipoModalPoderes, setTipoModalPoderes,
     defEquip, setDefEquip,
     defOutros, setDefOutros,
     defesaTotal,
+    totalDefesaProtecoes,
+    bloqueioData, setBloqueioData,
     protecoes, setProtecoes,
+    proficienciasTotais,
     sentidos, setSentidos,
     imunidades, setImunidades,
     vulnerabilidades, setVulnerabilidades,

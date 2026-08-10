@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRPG } from '../../context/RPGContext';
 import type { Patente, LimiteCredito } from '../../hooks/useInventario';
 import { ModalArmas, formatarCritico } from './ModalArmas';
-import type { ArmaInventario, ProtecaoInventario, ItemGeralInventario } from '../../types';
+import type { ArmaInventario, ProtecaoInventario, ItemGeralInventario, MunicaoInventario } from '../../types';
 import { ModalProtecoes } from './ModalProtecoes';
 import { ModalItens } from './ModalItens';
 import { ModalEditarProtecao } from '../../components/ModalEditarProtecao';
 import { ModalEditarItem } from '../../components/ModalEditarItem';
+import { ModalEditarMunicao } from '../../components/ModalEditarMunicao';
 import {
   DndContext,
   closestCenter,
@@ -29,6 +30,7 @@ import { ModalMunicoes } from './ModalMunicoes';
 import { ModalEditarArma } from '../../components/ModalEditarArma';
 
 import { formatarTexto } from '../../utils/formatters';
+import { calcularCategoriaFinal } from '../../utils/rpgRules';
 const restrictToTopAndVerticalAxis: Modifier = ({ transform, activeNodeRect }) => {
   if (!activeNodeRect) {
     return { ...transform, x: 0 };
@@ -54,9 +56,38 @@ interface SortableItemGeralProps {
   removerItem: (id: string) => void;
   stringDT: string | null;
   onEditar?: () => void;
+  toggleEquipado: (id: string) => void;
 }
 
-function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stringDT, onEditar }: SortableItemGeralProps) {
+export const calcularEspacosFinais = (espacoBase: number | string, modificacoesIds?: number[], todasModificacoes?: any[], isRegra43Ativa?: boolean) => {
+  let val = Number(String(espacoBase).replace(',', '.').replace(/[^0-9.-]+/g, ''));
+  if (isNaN(val)) val = 0;
+  
+  if (isRegra43Ativa && val === 0.5) {
+     val = 0.25;
+  }
+  
+  if (modificacoesIds && modificacoesIds.length > 0 && todasModificacoes) {
+    let extra = 0;
+    modificacoesIds.forEach(id => {
+       const m = todasModificacoes.find(mod => mod.Codigo_Modif === id);
+       const nome = m?.Nome_Modif.trim().toLowerCase() || '';
+       if (nome === 'discreto' || nome === 'discreta') {
+          extra -= 1;
+       } else if (nome === 'blindada' || nome === 'reforçada') {
+          extra += 1;
+       }
+    });
+    val = Math.max(0, val + extra);
+  }
+  return val;
+};
+
+function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stringDT, onEditar, toggleEquipado }: SortableItemGeralProps) {
+  const { modificacoesHook, regrasAutomaticasAtivas } = useRPG();
+  const [expandirMods, setExpandirMods] = useState(false);
+  const modsAtuais = (item.modificacoes || []).map(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)).filter(Boolean) as any[];
+
   const {
     attributes,
     listeners,
@@ -98,21 +129,72 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
         >
           <div className="flex flex-col gap-1 flex-1 min-w-0 justify-center">
             <span className="font-bold text-sm text-zinc-100 truncate leading-none mt-0.5">{item.item.Nome_Item}</span>
+            {!(item.item.Grupo_Item?.toLowerCase().includes('explosivo') || stringDT) && (
+              <span className="text-xs text-zinc-400 font-medium">Categoria {calcularCategoriaFinal(item.item.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes)}</span>
+            )}
             {stringDT && (
               <div className="flex items-center gap-4 text-xs text-zinc-300 mt-0.5">
                 <span><span className="font-bold text-red-400">DT:</span> {stringDT}</span>
               </div>
             )}
+            {modsAtuais.length > 0 && (
+              <div className="flex items-center mt-1 min-w-0">
+                <span className="text-[11px] text-zinc-400 truncate italic">
+                  {modsAtuais.map(m => m.Nome_Modif).join(' • ')}
+                </span>
+              </div>
+            )}
           </div>
-          <span className="w-5 text-center text-zinc-500 text-xs flex-shrink-0">{isExpanded ? '▲' : '▼'}</span>
+        </div>
+
+        <div className="flex items-center gap-3 flex-shrink-0">
+          {(item.item.Nome_Item.toLowerCase().includes('vestimenta') || item.item.Nome_Item.toLowerCase().includes('amuleto sagrado')) && (
+            <input
+              type="checkbox"
+              checked={!!item.equipado}
+              onPointerDown={(e) => e.stopPropagation()}
+              onChange={() => toggleEquipado(item.id)}
+              className="w-5 h-5 cursor-pointer accent-red-600"
+              title={item.equipado ? "Desequipar" : "Equipar item"}
+            />
+          )}
+          <div onClick={() => toggleExpandir(item.id)} className="w-5 text-center text-zinc-500 text-xs flex-shrink-0 cursor-pointer">{isExpanded ? '▲' : '▼'}</div>
         </div>
       </div>
       
       {isExpanded && (
         <div className="border-t border-zinc-800 px-3 py-3 text-xs bg-zinc-950/80 flex flex-col gap-2 relative z-10" onClick={e => e.stopPropagation()}>
           <div className="flex flex-col gap-1 mt-1">
-            <span><span className="text-red-400 font-bold">Categoria:</span> {item.item.Categoria_Item}</span>
-            <span><span className="text-red-400 font-bold">Espaços:</span> {item.item.Espacos_Itens}</span>
+            <span><span className="text-red-400 font-bold">Categoria:</span> {calcularCategoriaFinal(item.item.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes)}</span>
+            <span><span className="text-red-400 font-bold">Espaços:</span> {calcularEspacosFinais(item.item.Espacos_Itens, item.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas?.has(43))}</span>
+            {modsAtuais.length > 0 && (
+              <div className="mt-2 border border-zinc-800 rounded bg-zinc-900/50 overflow-hidden">
+                <div 
+                  className="px-2 py-1.5 bg-zinc-800/40 flex justify-between items-center cursor-pointer hover:bg-zinc-800/60 transition"
+                  onClick={(e) => { e.stopPropagation(); setExpandirMods(!expandirMods); }}
+                >
+                  <div className="flex flex-wrap gap-1 items-center">
+                    <span className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mr-1">Modificações</span>
+                    {!expandirMods && modsAtuais.map(m => (
+                      <span key={m.Codigo_Modif} className="px-1.5 py-0.5 rounded bg-zinc-800/60 border border-zinc-700/50 text-[10px] font-bold text-zinc-300 truncate max-w-[120px]">
+                        {m.Nome_Modif}
+                      </span>
+                    ))}
+                  </div>
+                  <span className="text-zinc-500 text-[10px] ml-2 flex-shrink-0">{expandirMods ? '▲ Ocultar' : '▼ Expandir'}</span>
+                </div>
+                {expandirMods && (
+                  <div className="p-2 flex flex-col gap-2 max-h-[200px] overflow-y-auto overflow-x-hidden custom-scrollbar">
+                    {modsAtuais.map(m => (
+                      <div key={m.Codigo_Modif} className="flex flex-col gap-0.5 pb-2 border-b border-zinc-800/50 last:border-0 last:pb-0">
+                        <span className="text-xs font-bold text-zinc-200">{m.Nome_Modif}</span>
+                        <p className="text-[11px] text-zinc-400 leading-relaxed whitespace-pre-wrap">{formatarTexto(m.Descricao_Modif || '')}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           <div className="flex flex-col gap-1 mt-1">
             <p className="text-zinc-400 text-xs leading-relaxed whitespace-pre-wrap">{formatarTexto(item.item.Desc_Item)}</p>
@@ -122,29 +204,29 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
               <span className="text-[10px] uppercase tracking-wider text-zinc-600">Fonte: {item.item.Fonte_Item}</span>
             </div>
           )}
-          <div className="flex justify-between items-center mt-3 pt-3 border-t border-zinc-800/50">
-            <div className="flex gap-2">
+          <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-zinc-800/50">
+            {onEditar && item.id !== 'coronhada-virtual' && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEditar();
+                }}
+                className="text-xs px-3 py-1.5 rounded bg-zinc-900 border border-zinc-700 hover:border-yellow-700 hover:bg-yellow-900/20 text-zinc-300 hover:text-yellow-400 transition-colors"
+              >
+                Editar
+              </button>
+            )}
+            {item.id !== 'coronhada-virtual' && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   removerItem(item.id);
                 }}
-                className="rounded bg-red-900/40 border border-red-800/50 px-3 py-1 text-xs font-bold uppercase text-red-400 transition hover:bg-red-800 hover:text-red-100"
+                className="text-xs text-red-500 hover:text-red-400 bg-red-950/30 hover:bg-red-900/50 px-3 py-1.5 rounded border border-red-900/50 transition-colors"
               >
-                Remover Item
+                Remover
               </button>
-              {onEditar && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEditar();
-                  }}
-                  className="rounded bg-zinc-800 border border-zinc-700 px-3 py-1 text-xs font-bold uppercase text-zinc-300 transition hover:bg-zinc-700 hover:text-white"
-                >
-                  Editar Item
-                </button>
-              )}
-            </div>
+            )}
           </div>
         </div>
       )}
@@ -153,7 +235,7 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
 }
 
 export function InventarioPanel() {
-  const { inventarioHook, atributosFinais, regrasAutomaticasAtivas, armasHook, municoesHook, protecoesHook, itensHook, status } = useRPG();
+  const { inventarioHook, atributosFinais, regrasAutomaticasAtivas, armasHook, municoesHook, protecoesHook, itensHook, status, modificacoesHook, proficienciasTotais } = useRPG();
   const {
     prestigio, setPrestigio,
     patente, setPatenteManual,
@@ -174,12 +256,25 @@ export function InventarioPanel() {
   const [expandidos, setExpandidos] = useState<Record<string, boolean>>({});
   const [armaEditandoId, setArmaEditandoId] = useState<string | null>(null);
   const [protecaoEditandoId, setProtecaoEditandoId] = useState<string | null>(null);
-  const [itemEditandoId, setItemEditandoId] = useState<string | null>(null);
+
+  const [editingItem, setEditingItem] = useState<{ id: string, tipo: 'arma' | 'protecao' | 'item' | 'municao' } | null>(null);
   const [activeDragItem, setActiveDragItem] = useState<{ id: string, type: 'arma' | 'municao' | 'protecao' | 'item', name?: string } | null>(null);
+
+  const getArmaParaEditar = () => editingItem?.tipo === 'arma' ? armasHook.armasInventario.find(i => i.id === editingItem.id) : null;
+  const getProtecaoParaEditar = () => editingItem?.tipo === 'protecao' ? protecoesHook.protecoesInventario.find(i => i.id === editingItem.id) : null;
+  const getItemParaEditar = () => editingItem?.tipo === 'item' ? itensHook.itensInventario.find(i => i.id === editingItem.id) : null;
+  const getMunicaoParaEditar = () => editingItem?.tipo === 'municao' ? municoesHook.municoesInventario.find(i => i.id === editingItem.id) : null;
 
   const cargaMaxima = 5 + (atributosFinais.FOR * 5) + (regrasAutomaticasAtivas.has(23) ? 5 : 0) + (regrasAutomaticasAtivas.has(43) ? atributosFinais.INT : 0);
   
-  const cargaAtual = (armasHook?.cargaArmas || 0) + (municoesHook?.cargaMunicoes || 0) + (protecoesHook?.cargaProtecoes || 0) + (itensHook?.cargaItens || 0);
+  const cargaAtual = useMemo(() => {
+    let total = 0;
+    armasHook?.armasInventario.forEach(i => total += calcularEspacosFinais(i.arma['Espaços_Item'], i.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas.has(43)));
+    municoesHook?.municoesInventario.forEach(i => total += calcularEspacosFinais(i.municao['Espaços_Item'], i.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas.has(43)));
+    protecoesHook?.protecoesInventario.forEach(i => total += calcularEspacosFinais(i.protecao.Espacos_Protecao, i.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas.has(43)));
+    itensHook?.itensInventario.forEach(i => total += calcularEspacosFinais(i.item.Espacos_Itens, i.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas.has(43)));
+    return total;
+  }, [armasHook?.armasInventario, municoesHook?.municoesInventario, protecoesHook?.protecoesInventario, itensHook?.itensInventario, modificacoesHook.modificacoes]);
   
   const noInventario = [0, 0, 0, 0];
   const countArmas = armasHook?.contagemPorCategoria || [0, 0, 0, 0];
@@ -209,11 +304,11 @@ export function InventarioPanel() {
     setExpandidos(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const calcularDT = (dtItem: string | null): string | null => {
+  const calcularDT = (dtItem: string | null, isExplosivo: boolean = false): string | null => {
     if (!dtItem) return null;
     
     if (dtItem.includes('/')) {
-      return dtItem.split('/').map(part => calcularDT(part.trim())).join(' / ');
+      return dtItem.split('/').map(part => calcularDT(part.trim(), isExplosivo)).join(' / ');
     }
 
     let pericia = '';
@@ -233,6 +328,10 @@ export function InventarioPanel() {
     } else {
       const numVal = Number(val);
       calculado = isNaN(numVal) ? val : numVal;
+    }
+    
+    if (isExplosivo && regrasAutomaticasAtivas.has(29) && typeof calculado === 'number') {
+      calculado += atributosFinais.INT;
     }
     
     if (pericia) {
@@ -328,11 +427,51 @@ export function InventarioPanel() {
             armasHook.reordenarArmas(oldIndex, newIndex);
           }
         }
+      } else {
+        const itemActive = itensHook?.itensInventario.find(i => i.id === active.id);
+        const itemOver = itensHook?.itensInventario.find(i => i.id === over.id);
+        if (itemActive && itemOver) {
+          const oldIndex = (itensHook?.itensInventario || []).findIndex(x => x.id === active.id);
+          const newIndex = (itensHook?.itensInventario || []).findIndex(x => x.id === over.id);
+          if (oldIndex !== -1 && newIndex !== -1 && itensHook?.reordenarItens) {
+            itensHook.reordenarItens(oldIndex, newIndex);
+          }
+        }
       }
     }
   };
 
-  const armasExibidas = (armasHook?.armasInventario || []).filter((item: ArmaInventario) => {
+  let armasExibidas = [...(armasHook?.armasInventario || [])];
+  
+  const armasDeFogo = armasExibidas.filter(a => a.arma.Tipo_Arma?.toLowerCase().includes('fogo'));
+  if (armasDeFogo.length > 0) {
+    const temDuasMaos = armasDeFogo.some(a => a.arma.Empunhadura_Arma?.toLowerCase().includes('duas'));
+    const danoCoronhada = temDuasMaos ? '1d6' : '1d4';
+    
+    const coronhadaVirtual: ArmaInventario = {
+      id: 'coronhada-virtual',
+      arma: {
+        codigo_arma: -1,
+        Nome_Item: 'Coronhada',
+        Desc_Item: 'Você pode usar uma arma de fogo como uma arma corpo a corpo.',
+        Proficiencia: 'Armas Simples',
+        Tipo_Arma: 'Corpo a Corpo',
+        Empunhadura_Arma: temDuasMaos ? 'Duas Mãos' : 'Uma Mão',
+        Dano_Arma: danoCoronhada,
+        Critico_Arma: 20,
+        Multiplicador_Arma: 2,
+        Tipo_Dano_Arma: 'Impacto',
+        Alcance_Arma: '-',
+        Categoria_Item: '0',
+        Espacos_Item: 0
+      } as any,
+      modificacoes: [],
+      municoesAcopladas: []
+    };
+    armasExibidas.push(coronhadaVirtual);
+  }
+
+  armasExibidas = armasExibidas.filter((item: ArmaInventario) => {
     if (buscaItem && !item.arma.Nome_Item.toLowerCase().includes(buscaItem.toLowerCase())) return false;
     return true;
   });
@@ -632,7 +771,7 @@ export function InventarioPanel() {
                     item={item}
                     isExpanded={!!expandidos[item.id]}
                     toggleExpandir={toggleExpandir}
-                    stringDT={calcularDT(item.arma.dt_item)}
+                    stringDT={calcularDT(item.arma.dt_item, item.arma.Categoria_Item?.toLowerCase().includes('explosivos') || item.arma.Nome_Item?.toLowerCase().includes('explosivo'))}
                     removerArma={armasHook?.removerArma || (() => {})}
                     onEditar={() => setArmaEditandoId(item.id)}
                   />
@@ -643,7 +782,7 @@ export function InventarioPanel() {
                 <p className="text-center text-zinc-600 text-sm py-4">Nenhuma arma no inventário.</p>
               )}
               
-              {categoriaFiltro === 'Geral' && armasExibidas.length === 0 && municoesSoltas.length === 0 && (
+              {categoriaFiltro === 'Geral' && armasExibidas.length === 0 && municoesSoltas.length === 0 && protecoesGeral.length === 0 && itensGeral.length === 0 && (
                 <p className="text-center text-zinc-600 text-sm py-4">Inventário vazio.</p>
               )}
 
@@ -654,11 +793,12 @@ export function InventarioPanel() {
                     {municoesSoltas.map(item => (
                       <SortableMunicaoItem 
                         key={item.id} 
+                        id={item.id}
                         item={item} 
                         isExpanded={!!expandidos[item.id]}
                         toggleExpandir={toggleExpandir}
-                        removerMunicao={municoesHook?.removerMunicao || (() => {})} 
-                        armaAcopladaNome={armasHook?.armasInventario.find(a => a.municoesAcopladas?.includes(item.id))?.arma.Nome_Item}
+                        removerItem={municoesHook?.removerMunicao || (() => {})} 
+                        onEditar={() => setEditingItem({ id: item.id, tipo: 'municao' })}
                       />
                     ))}
                   </SortableContext>
@@ -673,11 +813,12 @@ export function InventarioPanel() {
                   {municoesGeral.map(item => (
                     <SortableMunicaoItem 
                       key={item.id} 
+                      id={item.id}
                       item={item} 
                       isExpanded={!!expandidos[item.id]}
                       toggleExpandir={toggleExpandir}
-                      removerMunicao={municoesHook?.removerMunicao || (() => {})} 
-                      armaAcopladaNome={armasHook?.armasInventario.find(a => a.municoesAcopladas?.includes(item.id))?.arma.Nome_Item}
+                      removerItem={municoesHook?.removerMunicao || (() => {})} 
+                      onEditar={() => setEditingItem({ id: item.id, tipo: 'municao' })}
                     />
                   ))}
                 </SortableContext>
@@ -702,6 +843,7 @@ export function InventarioPanel() {
                       toggleExpandir={toggleExpandir}
                       removerProtecao={protecoesHook?.removerProtecao || (() => {})}
                       onEditar={() => setProtecaoEditandoId(item.id)}
+                      toggleEquipado={protecoesHook?.toggleEquipado || (() => {})}
                     />
                   ))}
                 </SortableContext>
@@ -713,31 +855,57 @@ export function InventarioPanel() {
 
             {(itensHook?.gruposUnicos.includes(categoriaFiltro) || categoriaFiltro === 'Geral') && (
               <>
-                {categoriaFiltro === 'Geral' && itensGeral.length > 0 && (
-                  <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-1 mt-2 border-b border-zinc-800 pb-1">Outros Itens</h3>
-                )}
-                <SortableContext items={itensGeral.map(i => i.id)} strategy={verticalListSortingStrategy}>
-                  {itensGeral.map(item => (
-                    <SortableItemGeral 
-                      key={item.id} 
-                      item={item} 
-                      isExpanded={!!expandidos[item.id]}
-                      toggleExpandir={(id) => setExpandidos(prev => ({ ...prev, [id]: !prev[id] }))}
-                      stringDT={calcularDT(item.item.Dt_Item)}
-                      removerItem={itensHook?.removerItem || (() => {})} 
-                      onEditar={() => setItemEditandoId(item.id)}
-                    />
-                  ))}
-                </SortableContext>
-                {itensGeral.length === 0 && categoriaFiltro !== 'Geral' && (
-                  <p className="text-center text-zinc-600 text-sm py-4">
-                    {categoriaFiltro === 'Acessórios' ? 'Nenhum acessório no inventário.' :
-                     categoriaFiltro === 'Explosivos' ? 'Nenhum explosivo no inventário.' :
-                     categoriaFiltro === 'Itens Operacionais' ? 'Nenhum item operacional no inventário.' :
-                     categoriaFiltro === 'Medicamento' ? 'Nenhum medicamento no inventário.' :
-                     categoriaFiltro === 'Itens Paranormais' ? 'Nenhum item paranormal no inventário.' :
-                     `Nenhum item no inventário.`}
-                  </p>
+                {categoriaFiltro === 'Geral' ? (
+                  Array.from(new Set(itensGeral.map(i => i.item.Grupo_Item.trim()))).sort().map(grupo => {
+                    const itensDoGrupo = itensGeral.filter(i => i.item.Grupo_Item.trim() === grupo);
+                    if (itensDoGrupo.length === 0) return null;
+                    return (
+                      <div key={grupo} className="flex flex-col gap-2">
+                        <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-1 mt-2 border-b border-zinc-800 pb-1">{grupo}</h3>
+                        <SortableContext items={itensDoGrupo.map(i => i.id)} strategy={verticalListSortingStrategy}>
+                          {itensDoGrupo.map(item => (
+                            <SortableItemGeral 
+                              key={item.id} 
+                              item={item} 
+                              isExpanded={!!expandidos[item.id]}
+                              toggleExpandir={(id) => setExpandidos(prev => ({ ...prev, [id]: !prev[id] }))}
+                              stringDT={calcularDT(item.item.Dt_Item, item.item.Grupo_Item?.toLowerCase().includes('explosivos'))}
+                              removerItem={itensHook?.removerItem || (() => {})}
+                              onEditar={() => setEditingItem({ id: item.id, tipo: 'item' })}
+                              toggleEquipado={itensHook?.toggleEquipado || (() => {})}
+                            />
+                          ))}
+                        </SortableContext>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <>
+                    <SortableContext items={itensGeral.map(i => i.id)} strategy={verticalListSortingStrategy}>
+                      {itensGeral.map(item => (
+                        <SortableItemGeral 
+                          key={item.id} 
+                          item={item} 
+                          isExpanded={!!expandidos[item.id]}
+                          toggleExpandir={(id) => setExpandidos(prev => ({ ...prev, [id]: !prev[id] }))}
+                          stringDT={calcularDT(item.item.Dt_Item, item.item.Grupo_Item?.toLowerCase().includes('explosivos'))}
+                          removerItem={itensHook?.removerItem || (() => {})}
+                          onEditar={() => setEditingItem({ id: item.id, tipo: 'item' })}
+                          toggleEquipado={itensHook?.toggleEquipado || (() => {})}
+                        />
+                      ))}
+                    </SortableContext>
+                    {itensGeral.length === 0 && (
+                      <p className="text-center text-zinc-600 text-sm py-4">
+                        {categoriaFiltro === 'Acessórios' ? 'Nenhum acessório no inventário.' :
+                         categoriaFiltro === 'Explosivos' ? 'Nenhum explosivo no inventário.' :
+                         categoriaFiltro === 'Itens Operacionais' ? 'Nenhum item operacional no inventário.' :
+                         categoriaFiltro === 'Medicamento' ? 'Nenhum medicamento no inventário.' :
+                         categoriaFiltro === 'Itens Paranormais' ? 'Nenhum item paranormal no inventário.' :
+                         `Nenhum item no inventário.`}
+                      </p>
+                    )}
+                  </>
                 )}
               </>
             )}
@@ -782,8 +950,8 @@ export function InventarioPanel() {
       {armaEditandoId && (
         <ModalEditarArma
           armaInventario={armasHook?.armasInventario.find(a => a.id === armaEditandoId)!}
-          onSave={(novosDados) => {
-            armasHook?.editarArma(armaEditandoId, novosDados);
+          onSave={(novosDados, modificacoes) => {
+            armasHook?.editarArma(armaEditandoId, novosDados, modificacoes);
           }}
           onClose={() => setArmaEditandoId(null)}
         />
@@ -802,20 +970,32 @@ export function InventarioPanel() {
       {protecaoEditandoId && (
         <ModalEditarProtecao
           protecao={protecoesHook?.protecoesInventario.find(p => p.id === protecaoEditandoId)!}
-          onSave={(id, novosDados) => {
-            protecoesHook?.editarProtecao(id, novosDados);
+          onSave={(id, novosDados, modificacoes) => {
+            protecoesHook?.editarProtecao(id, novosDados, modificacoes);
           }}
           onClose={() => setProtecaoEditandoId(null)}
         />
       )}
 
-      {itemEditandoId && (
+      {editingItem?.tipo === 'item' && getItemParaEditar() && (
         <ModalEditarItem
-          itemInventario={itensHook?.itensInventario.find(i => i.id === itemEditandoId)!}
-          onSave={(novosDados) => {
-            itensHook?.editarItem(itemEditandoId, novosDados);
+          itemInventario={getItemParaEditar()!}
+          onSave={(itemEditado, modificacoes) => {
+            itensHook.editarItem(editingItem.id, itemEditado, modificacoes);
+            setEditingItem(null);
           }}
-          onClose={() => setItemEditandoId(null)}
+          onClose={() => setEditingItem(null)}
+        />
+      )}
+
+      {editingItem?.tipo === 'municao' && getMunicaoParaEditar() && (
+        <ModalEditarMunicao
+          itemInventario={getMunicaoParaEditar()!}
+          onSave={(municaoEditada, modificacoes) => {
+            municoesHook.atualizarMunicao(editingItem.id, { municao: { ...getMunicaoParaEditar()!.municao, ...municaoEditada }, modificacoes });
+            setEditingItem(null);
+          }}
+          onClose={() => setEditingItem(null)}
         />
       )}
     </div>
@@ -847,12 +1027,65 @@ function SortableArmaItem({
     isDragging,
   } = useSortable({ id, data: { type: 'arma' } });
 
-  const { municoesHook, armasHook, proficiencias } = useRPG();
-  const hasProficiencia = proficiencias.includes(arma.Proficiencia);
+  const { municoesHook, armasHook, proficienciasTotais, modificacoesHook, atributosFinais, status, regrasAutomaticasAtivas } = useRPG();
+  const hasProficiencia = proficienciasTotais.includes(arma.Proficiencia);
+  const [expandirMods, setExpandirMods] = useState(false);
+
+  const modsAtuais = (item.modificacoes || []).map(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)).filter(Boolean) as any[];
 
   const municoesAcopladasList = (item.municoesAcopladas || []).map(mid => {
     return municoesHook?.municoesInventario.find(m => m.id === mid);
   }).filter(Boolean) as any[];
+
+  const calcularEstatisticasFinaisArma = () => {
+    let dano = arma.Dano_Arma || '';
+    let espacos = calcularEspacosFinais(arma['Espaços_Item'], item.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas?.has(43));
+    let automatica = !!arma['Automatica?'];
+    let critico = arma.Critico_Arma || 20;
+    let alcance = arma.Alcance_Item || '';
+    let multiplicador = arma.Multiplicador_Arma || 2;
+    let danoSecundario = arma.Dano_Secundario || '';
+
+    // Mods da arma
+    for (const mod of modsAtuais) {
+      const nome = mod.Nome_Modif.trim().toLowerCase();
+      if (nome === 'calibre grosso') {
+        dano = dano.replace(/(\d+)d(\d+)/i, (match, p1, p2) => `${Number(p1) + 1}d${p2}`);
+      }
+
+      if (nome === 'ferrolho automático') {
+        automatica = true;
+      }
+      if (nome === 'mira laser' || nome === 'perigosa') {
+        critico -= 2;
+      }
+      if (nome === 'mira telescópica') {
+        const ord = ['Curto', 'Médio', 'Longo', 'Extremo', 'Ilimitado'];
+        const idx = ord.indexOf(alcance);
+        if (idx !== -1 && idx < ord.length - 1) {
+          alcance = ord[idx + 1];
+        }
+      }
+    }
+
+    // Mods das munições acopladas
+    for (const mun of municoesAcopladasList) {
+      const munMods = (mun.modificacoes || []).map((id: number) => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)).filter(Boolean) as any[];
+      for (const mMod of munMods) {
+        const mNome = mMod.Nome_Modif.trim().toLowerCase();
+        if (mNome === 'dum dum') {
+          multiplicador += 1;
+        }
+        if (mNome === 'explosiva') {
+          danoSecundario = danoSecundario ? `${danoSecundario} + 2d6` : '+2d6';
+        }
+      }
+    }
+
+    return { dano, espacos, automatica, critico, alcance, multiplicador, danoSecundario };
+  };
+
+  const stats = calcularEstatisticasFinaisArma();
 
   const style = {
     transform: CSS.Translate.toString(transform),
@@ -867,9 +1100,7 @@ function SortableArmaItem({
       style={style}
       className={`rounded border border-l-4 border-l-red-700 transition-colors ${isDragging ? 'border-red-500 bg-zinc-900 shadow-xl scale-[1.02]' : 'border-zinc-800 bg-zinc-950/60 hover:bg-zinc-900/60'}`}
     >
-      {/* Bloco fechado */}
       <div className="flex items-center gap-1 p-3">
-        {/* Drag handle */}
         <div
           {...attributes}
           {...listeners}
@@ -887,11 +1118,19 @@ function SortableArmaItem({
         >
           <div className="flex flex-col gap-1 flex-1 min-w-0 justify-center">
             <span className="font-bold text-sm text-zinc-100 truncate leading-none mt-0.5">{arma.Nome_Item}</span>
-            <div className="flex items-center gap-4 text-xs text-zinc-300 mt-0.5">
-              <span><span className="font-bold text-red-400">Dado:</span> {arma.Dano_Arma}</span>
-              <span><span className="font-bold text-zinc-400">Crítico:</span> {formatarCritico(arma.Critico_Arma, arma.Multiplicador_Arma)}</span>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-300 mt-0.5">
+              <span><span className="font-bold text-red-400">Dado:</span> {stats.dano}</span>
+              {stats.danoSecundario && <span><span className="font-bold text-red-400">Secundário:</span> {stats.danoSecundario}</span>}
+              <span><span className="font-bold text-zinc-400">Crítico:</span> {formatarCritico(stats.critico, stats.multiplicador)}</span>
               {stringDT && <span><span className="font-bold text-red-400">DT:</span> {stringDT}</span>}
             </div>
+            {modsAtuais.length > 0 && (
+              <div className="flex items-center mt-1 min-w-0">
+                <span className="text-[11px] text-zinc-400 truncate italic">
+                  {modsAtuais.map(m => m.Nome_Modif).join(' • ')}
+                </span>
+              </div>
+            )}
           </div>
           
           <div className="flex items-center gap-3 flex-shrink-0">
@@ -903,19 +1142,19 @@ function SortableArmaItem({
                 </span>
               </span>
             )}
-            {arma['Automatica?'] && (
+            {stats.automatica && (
               <span className="relative group cursor-help">
                 <span className="text-sm text-blue-400">🔄</span>
                 <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 hidden group-hover:block w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
-                  Pode disparar tiros únicos ou rajadas (-1d20 no ataque, +1 dado de dano).
+                  Pode disparar rajadas. Quando dispara uma rajada, você sofre -1d20 no teste de ataque, mas causa 1 dado de dano adicional do mesmo tipo.
                 </span>
               </span>
             )}
             {!hasProficiencia && (
               <span className="relative group cursor-help">
                 <span className="text-sm text-red-500">⚠️</span>
-                <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 hidden group-hover:block w-52 p-2 bg-zinc-800 border border-red-700/50 text-xs text-red-200 rounded z-50 text-center shadow-lg pointer-events-none">
-                  Se você atacar com uma arma com a qual não seja proficiente, sofre -2d20 nos testes de ataque.
+                <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 hidden group-hover:block w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
+                  Você não possui proficiência com esta arma, recebendo -2d20 em testes de ataque com ela.
                 </span>
               </span>
             )}
@@ -924,143 +1163,99 @@ function SortableArmaItem({
         </div>
       </div>
       
-      {/* Bloco expandido */}
       {isExpanded && (
         <div className="border-t border-zinc-800 px-3 py-3 text-xs flex flex-col gap-2 bg-zinc-950/80">
           <div>
             <span className="font-bold text-zinc-200">{arma.Proficiencia}</span>
             <span className="text-zinc-600"> — </span>
             <span className="italic text-zinc-400">{arma.Tipo_Arma}</span>
-            <span className="text-zinc-600"> — </span>
-            <span className="italic text-zinc-400">{arma.Empunhadura_Arma}</span>
           </div>
           <div className="flex flex-col gap-1 text-xs text-zinc-300">
-            <span><span className="text-red-400 font-bold">Categoria:</span> {arma.Categoria_Item}</span>
-            {arma.Alcance_Item && <span><span className="text-red-400 font-bold">Alcance:</span> {arma.Alcance_Item}</span>}
+            <span><span className="text-red-400 font-bold">Categoria:</span> {calcularCategoriaFinal(arma.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes)}</span>
+            {stats.alcance && <span><span className="text-red-400 font-bold">Alcance:</span> {stats.alcance}</span>}
             <span><span className="text-red-400 font-bold">Tipo:</span> {arma.Tipo_Dano_Arma}</span>
-            <span><span className="text-red-400 font-bold">Espaços:</span> {arma['Espaços_Item']}</span>
+            {stats.danoSecundario && <span><span className="text-red-400 font-bold">Dano Secundário:</span> {stats.danoSecundario}</span>}
+            <span><span className="text-red-400 font-bold">Espaços:</span> {stats.espacos}</span>
+            {modsAtuais.length > 0 && (
+              <div className="mt-2 border border-zinc-800 rounded bg-zinc-900/50 overflow-hidden">
+                <div 
+                  className="px-2 py-1.5 bg-zinc-800/40 flex justify-between items-center cursor-pointer hover:bg-zinc-800/60 transition"
+                  onClick={(e) => { e.stopPropagation(); setExpandirMods(!expandirMods); }}
+                >
+                  <div className="flex flex-wrap gap-1 items-center">
+                    <span className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mr-1">Modificações</span>
+                    {!expandirMods && modsAtuais.map(m => (
+                      <span key={m.Codigo_Modif} className="px-1.5 py-0.5 rounded bg-zinc-800/60 border border-zinc-700/50 text-[10px] font-bold text-zinc-300 truncate max-w-[120px]">
+                        {m.Nome_Modif}
+                      </span>
+                    ))}
+                  </div>
+                  <span className="text-zinc-500 text-[10px] ml-2 flex-shrink-0">{expandirMods ? '▲ Ocultar' : '▼ Expandir'}</span>
+                </div>
+                {expandirMods && (
+                  <div className="p-2 flex flex-col gap-2 max-h-[200px] overflow-y-auto overflow-x-hidden custom-scrollbar">
+                    {modsAtuais.map(m => (
+                      <div key={m.Codigo_Modif} className="flex flex-col gap-0.5 pb-2 border-b border-zinc-800/50 last:border-0 last:pb-0">
+                        <span className="text-xs font-bold text-zinc-200">{m.Nome_Modif}</span>
+                        <p className="text-[11px] text-zinc-400 leading-relaxed whitespace-pre-wrap">{formatarTexto(m.Descricao_Modif || '')}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           
           <div className="flex flex-col gap-1 mt-1">
             <p className="text-zinc-400 text-xs leading-relaxed whitespace-pre-wrap">{formatarTexto(arma.Descricao_Item)}</p>
           </div>
           
-          {arma.Fonte_Arma && (
-            <div className="mt-2 pt-2 border-t border-zinc-800/50">
-              <span className="text-[10px] uppercase tracking-wider text-zinc-600">Fonte: {arma.Fonte_Arma}</span>
-            </div>
-          )}
-          
-          <div className="flex justify-between items-center mt-3 pt-3 border-t border-zinc-800/50">
-            <div className="flex gap-2">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEditar?.();
-                }}
-                className="rounded bg-zinc-800 border border-zinc-700 px-3 py-1 text-xs font-bold uppercase tracking-wider text-zinc-300 transition hover:bg-zinc-700 hover:text-zinc-100"
-              >
-                Editar Arma
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  removerArma(id);
-                }}
-                className="rounded bg-red-900/40 border border-red-800/50 px-3 py-1 text-xs font-bold uppercase text-red-400 transition hover:bg-red-800 hover:text-red-100"
-              >
-                Remover Arma
-              </button>
-            </div>
-
-            {(() => {
-              const compativeis = municoesHook?.getMunicoesCompativeis(arma.Nome_Item, arma.Categoria_Item) || [];
-              const precisaMunicao = (arma.Capacidade_Municao !== null && arma.Capacidade_Municao > 0) || compativeis.length > 0;
-              
-              if (!precisaMunicao) return null;
-
-              return (
+          <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-zinc-800/50">
+            {id !== 'coronhada-virtual' && (
+              <>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (compativeis.length === 1) {
-                      const idM = municoesHook?.adicionarMunicao(compativeis[0]);
-                      if (idM) armasHook?.acoplarMunicao(id, idM);
-                    } else {
-                      // Múltiplas compatíveis, precisa abrir o modal
-                      const invPanelSetters = (window as any)._inventarioPanelSetters;
-                      if (invPanelSetters) {
-                        invPanelSetters.setMunicaoTargetArmaId(id);
-                        invPanelSetters.setMunicaoFiltroNome(arma.Nome_Item);
-                        invPanelSetters.setMunicaoFiltroCategoria(arma.Categoria_Item);
-                        invPanelSetters.setModalMunicoesAberto(true);
-                      }
-                    }
+                    onEditar?.();
                   }}
-                  title="Adicionar Munição"
-                  className="w-7 h-7 flex items-center justify-center rounded-full bg-zinc-800 border border-zinc-700 text-zinc-300 font-bold hover:bg-zinc-700 hover:text-white transition"
+                  className="text-xs px-3 py-1.5 rounded bg-zinc-900 border border-zinc-700 hover:border-yellow-700 hover:bg-yellow-900/20 text-zinc-300 hover:text-yellow-400 transition-colors"
                 >
-                  +
+                  Editar
                 </button>
-              );
-            })()}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removerArma(id);
+                  }}
+                  className="text-xs text-red-500 hover:text-red-400 bg-red-950/30 hover:bg-red-900/50 px-3 py-1.5 rounded border border-red-900/50 transition-colors"
+                >
+                  Remover
+                </button>
+              </>
+            )}
           </div>
-        </div>
-      )}
-
-      {/* Munições Acopladas (renderizadas abaixo do bloco da arma, grudadas) */}
-      {municoesAcopladasList.length > 0 && (
-        <div className="flex flex-col border-t border-zinc-800 bg-zinc-950/40">
-          {municoesAcopladasList.map(minv => (
-            <div key={minv.id} className="flex items-center justify-between p-2 pl-8 border-b border-zinc-800/50 last:border-0 group">
-              <div className="flex items-center gap-2">
-                <span className="text-zinc-600">↳</span>
-                <span className="text-sm font-bold text-zinc-300">{minv.municao.Nome_Item}</span>
-              </div>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  armasHook?.desacoplarMunicao(id, minv.id);
-                  municoesHook?.removerMunicao(minv.id);
-                }}
-                title="Remover Munição"
-                className="text-zinc-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition px-2"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </button>
-            </div>
-          ))}
         </div>
       )}
     </div>
   );
 }
 
-function SortableMunicaoItem({
-  item,
-  isExpanded,
-  toggleExpandir,
-  removerMunicao,
-  armaAcopladaNome
-}: {
-  item: any; // MunicaoInventario
+interface SortableMunicaoItemProps {
+  id: string;
+  item: MunicaoInventario;
   isExpanded: boolean;
   toggleExpandir: (id: string) => void;
-  removerMunicao: (id: string) => void;
-  armaAcopladaNome?: string;
-}) {
-  const { id, municao } = item;
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id, data: { type: 'municao' } });
+  removerItem: (id: string) => void;
+  onEditar?: () => void;
+}
+
+function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem, onEditar }: SortableMunicaoItemProps) {
+  const { municao } = item;
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id, data: { type: 'municao' } });
+
+  const { modificacoesHook, regrasAutomaticasAtivas } = useRPG();
+  const [expandirMods, setExpandirMods] = useState(false);
+  const modsAtuais = (item.modificacoes || []).map(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)).filter(Boolean) as any[];
 
   const style = {
     transform: CSS.Translate.toString(transform),
@@ -1076,7 +1271,6 @@ function SortableMunicaoItem({
       className={`rounded border border-l-4 border-l-orange-600 transition-colors ${isDragging ? 'border-red-500 bg-zinc-900 shadow-xl scale-[1.02]' : 'border-zinc-800 bg-zinc-950/60 hover:bg-zinc-900/60'}`}
     >
       <div className="flex items-center gap-1 p-3">
-        {/* Drag handle */}
         <div
           {...attributes}
           {...listeners}
@@ -1088,49 +1282,92 @@ function SortableMunicaoItem({
           </svg>
         </div>
 
-        {/* Clicável para expandir */}
         <div 
           className="flex-1 flex items-center justify-between min-w-0 pr-2 cursor-pointer"
           onClick={() => toggleExpandir(id)}
         >
           <div className="flex flex-col gap-1 min-w-0 justify-center">
             <span className="font-bold text-zinc-100 text-sm truncate leading-none mt-0.5">{municao.Nome_Item}</span>
-            <span className="text-xs text-zinc-500 truncate mt-0.5">
-              {armaAcopladaNome ? (
-                <>Em: <span className="font-bold text-zinc-400">{armaAcopladaNome}</span></>
-              ) : (
-                municao.Tipo_Arma
-              )}
-            </span>
+            <div className="flex items-center gap-4 text-xs text-zinc-300 mt-0.5">
+              <span><span className="font-bold text-yellow-400">Categoria:</span> {municao.Categoria_Item}</span>
+            </div>
+            {modsAtuais.length > 0 && (
+              <div className="flex items-center mt-1 min-w-0">
+                <span className="text-[11px] text-zinc-400 truncate italic">
+                  {modsAtuais.map(m => m.Nome_Modif).join(' • ')}
+                </span>
+              </div>
+            )}
           </div>
           
           <div className="flex items-center gap-3 flex-shrink-0">
-            <span className="w-5 text-center text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
+            <div onClick={() => toggleExpandir(id)} className="w-5 text-center text-zinc-500 text-xs flex-shrink-0 cursor-pointer">{isExpanded ? '▲' : '▼'}</div>
           </div>
         </div>
       </div>
 
-      {/* Bloco expandido */}
       {isExpanded && (
         <div className="border-t border-zinc-800 px-3 py-3 text-xs flex flex-col gap-2 bg-zinc-950/80">
           <div className="flex flex-col gap-1 text-xs text-zinc-300">
-            <span><span className="text-red-400 font-bold">Categoria:</span> {municao.Categoria_Item}</span>
-            <span><span className="text-red-400 font-bold">Espaços:</span> {municao['Espaços_Item']}</span>
+            <span><span className="text-yellow-400 font-bold">Categoria:</span> {calcularCategoriaFinal(municao.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes)}</span>
+            <span><span className="text-yellow-400 font-bold">Espaços:</span> {calcularEspacosFinais(municao['Espaços_Item'], item.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas.has(43))}</span>
+            {modsAtuais.length > 0 && (
+              <div className="mt-2 border border-zinc-800 rounded bg-zinc-900/50 overflow-hidden">
+                <div 
+                  className="px-2 py-1.5 bg-zinc-800/40 flex justify-between items-center cursor-pointer hover:bg-zinc-800/60 transition"
+                  onClick={(e) => { e.stopPropagation(); setExpandirMods(!expandirMods); }}
+                >
+                  <div className="flex flex-wrap gap-1 items-center">
+                    <span className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mr-1">Modificações</span>
+                    {!expandirMods && modsAtuais.map(m => (
+                      <span key={m.Codigo_Modif} className="px-1.5 py-0.5 rounded bg-zinc-800/60 border border-zinc-700/50 text-[10px] font-bold text-zinc-300 truncate max-w-[120px]">
+                        {m.Nome_Modif}
+                      </span>
+                    ))}
+                  </div>
+                  <span className="text-zinc-500 text-[10px] ml-2 flex-shrink-0">{expandirMods ? '▲ Ocultar' : '▼ Expandir'}</span>
+                </div>
+                {expandirMods && (
+                  <div className="p-2 flex flex-col gap-2 max-h-[200px] overflow-y-auto overflow-x-hidden custom-scrollbar">
+                    {modsAtuais.map(m => (
+                      <div key={m.Codigo_Modif} className="flex flex-col gap-0.5 pb-2 border-b border-zinc-800/50 last:border-0 last:pb-0">
+                        <span className="text-xs font-bold text-zinc-200">{m.Nome_Modif}</span>
+                        <p className="text-[11px] text-zinc-400 leading-relaxed whitespace-pre-wrap">{formatarTexto(m.Descricao_Modif || '')}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           
           <div className="flex flex-col gap-1 mt-1">
-            <p className="text-zinc-400 text-xs leading-relaxed">{formatarTexto(municao.Descricao_Item)}</p>
+            <div 
+              className="text-zinc-400 text-xs leading-relaxed whitespace-pre-wrap"
+              dangerouslySetInnerHTML={{ __html: municao.Descricao_Item }}
+            />
           </div>
           
-          <div className="flex justify-between mt-3 pt-3 border-t border-zinc-800/50">
-            <button
+          <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-zinc-800/50">
+            {onEditar && (
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEditar();
+                }}
+                className="text-xs px-3 py-1.5 rounded bg-zinc-900 border border-zinc-700 hover:border-yellow-700 hover:bg-yellow-900/20 text-zinc-300 hover:text-yellow-400 transition-colors"
+              >
+                Editar
+              </button>
+            )}
+            <button 
               onClick={(e) => {
                 e.stopPropagation();
-                removerMunicao(id);
+                removerItem(id);
               }}
-              className="rounded bg-red-900/40 border border-red-800/50 px-3 py-1 text-xs font-bold uppercase text-red-400 transition hover:bg-red-800 hover:text-red-100"
+              className="text-xs text-red-500 hover:text-red-400 bg-red-950/30 hover:bg-red-900/50 px-3 py-1.5 rounded border border-red-900/50 transition-colors"
             >
-              Remover Munição
+              Remover
             </button>
           </div>
         </div>
@@ -1144,19 +1381,23 @@ function SortableProtecaoItem({
   isExpanded,
   toggleExpandir,
   removerProtecao,
-  onEditar
+  onEditar,
+  toggleEquipado
 }: {
   item: ProtecaoInventario;
   isExpanded: boolean;
   toggleExpandir: (id: string) => void;
   removerProtecao: (id: string) => void;
   onEditar?: () => void;
+  toggleEquipado: (id: string) => void;
 }) {
-  const { id, protecao } = item;
+  const { id, protecao, equipado } = item;
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id, data: { type: 'protecao' } });
-  
-  const { proficiencias } = useRPG();
-  const hasProficiencia = proficiencias.includes(protecao.Proficiencia);
+  const { proficienciasTotais, modificacoesHook, regrasAutomaticasAtivas } = useRPG();
+  const hasProficiencia = protecao.Proficiencia === 'Nenhuma' || proficienciasTotais.includes(protecao.Proficiencia);
+  const [expandirMods, setExpandirMods] = useState(false);
+
+  const modsAtuais = (item.modificacoes || []).map(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)).filter(Boolean) as any[];
 
   const style = {
     transform: CSS.Translate.toString(transform),
@@ -1192,50 +1433,102 @@ function SortableProtecaoItem({
           <div className="flex flex-col gap-1 flex-1 min-w-0 justify-center">
             <span className="font-bold text-sm text-zinc-100 truncate leading-none mt-0.5">{protecao.Nome_Protecao}</span>
             <div className="flex items-center gap-4 text-xs text-zinc-300 mt-0.5">
-              <span><span className="font-bold text-blue-400">Defesa</span> {String(protecao.Defesa_Protecao).startsWith('+') ? protecao.Defesa_Protecao : `+${protecao.Defesa_Protecao}`}</span>
+              <span><span className="font-bold text-blue-400">Defesa</span> {
+                (() => {
+                  const extraDef = modsAtuais.some(m => m?.Nome_Modif?.trim().toLowerCase() === 'reforçada') ? 2 : 0;
+                  const defVal = Number(String(protecao.Defesa_Protecao || '0').replace(/[^0-9.-]+/g, ''));
+                  const total = (isNaN(defVal) ? 0 : defVal) + extraDef;
+                  return total >= 0 ? `+${total}` : `${total}`;
+                })()
+              }</span>
             </div>
-          </div>
-          <div className="flex items-center gap-3 flex-shrink-0">
-            {!hasProficiencia && (
-              <span className="relative group cursor-help">
-                <span className="text-sm text-red-500">⚠️</span>
-                <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 hidden group-hover:block w-52 p-2 bg-zinc-800 border border-red-700/50 text-xs text-red-200 rounded z-50 text-center shadow-lg pointer-events-none">
-                  Se você usar uma proteção com a qual não seja proficiente, sofre -2d20 em testes baseados em Força ou Agilidade.
+            {modsAtuais.length > 0 && (
+              <div className="flex items-center mt-1 min-w-0">
+                <span className="text-[11px] text-zinc-400 truncate italic">
+                  {modsAtuais.map(m => m.Nome_Modif).join(' • ')}
                 </span>
-              </span>
+              </div>
             )}
-            <span className="w-5 text-center text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
           </div>
+        </div>
+        
+        <div className="flex items-center gap-3 flex-shrink-0">
+          <input
+            type="checkbox"
+            checked={!!equipado}
+            onPointerDown={(e) => e.stopPropagation()}
+            onChange={() => toggleEquipado(id)}
+            className="w-5 h-5 cursor-pointer accent-blue-600"
+            title={equipado ? "Desequipar" : "Equipar proteção"}
+          />
+          {!hasProficiencia && (
+            <span className="relative group cursor-help">
+              <span className="text-sm text-red-500">⚠️</span>
+              <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 hidden group-hover:block w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
+                Se você usar uma proteção com a qual não seja proficiente, sofre -2d20 em testes baseados em Força ou Agilidade.
+              </span>
+            </span>
+          )}
+          <div onClick={() => toggleExpandir(id)} className="w-5 text-center text-zinc-500 text-xs cursor-pointer">{isExpanded ? '▲' : '▼'}</div>
         </div>
       </div>
 
       {isExpanded && (
         <div className="border-t border-zinc-800 px-3 py-3 text-xs flex flex-col gap-2 bg-zinc-950/80">
           <div className="flex flex-col gap-1 text-xs text-zinc-300">
-            <span><span className="text-blue-400 font-bold">Categoria:</span> {protecao.Categoria_Protecao}</span>
-            <span><span className="text-blue-400 font-bold">Espaços:</span> {protecao.Espacos_Protecao}</span>
+            <span><span className="text-blue-400 font-bold">Proficiência:</span> {protecao.Proficiencia}</span>
+            <span><span className="text-blue-400 font-bold">Categoria:</span> {calcularCategoriaFinal(protecao.Categoria_Protecao, item.modificacoes, modificacoesHook.modificacoes)}</span>
+            <span><span className="text-blue-400 font-bold">Espaços:</span> {calcularEspacosFinais(protecao.Espacos_Protecao, item.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas.has(43))}</span>
+            {protecao.Penalidade_Protecao && <span className="flex items-center gap-1" title="Penalidade"><span className="text-sm">🏋️</span> {protecao.Penalidade_Protecao}</span>}
+            {modsAtuais.length > 0 && (
+              <div className="mt-2 border border-zinc-800 rounded bg-zinc-900/50 overflow-hidden">
+                <div 
+                  className="px-2 py-1.5 bg-zinc-800/40 flex justify-between items-center cursor-pointer hover:bg-zinc-800/60 transition"
+                  onClick={(e) => { e.stopPropagation(); setExpandirMods(!expandirMods); }}
+                >
+                  <div className="flex flex-wrap gap-1 items-center">
+                    <span className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mr-1">Modificações</span>
+                    {!expandirMods && modsAtuais.map(m => (
+                      <span key={m.Codigo_Modif} className="px-1.5 py-0.5 rounded bg-zinc-800/60 border border-zinc-700/50 text-[10px] font-bold text-zinc-300 truncate max-w-[120px]">
+                        {m.Nome_Modif}
+                      </span>
+                    ))}
+                  </div>
+                  <span className="text-zinc-500 text-[10px] ml-2 flex-shrink-0">{expandirMods ? '▲ Ocultar' : '▼ Expandir'}</span>
+                </div>
+                {expandirMods && (
+                  <div className="p-2 flex flex-col gap-2 max-h-[200px] overflow-y-auto overflow-x-hidden custom-scrollbar">
+                    {modsAtuais.map(m => (
+                      <div key={m.Codigo_Modif} className="flex flex-col gap-0.5 pb-2 border-b border-zinc-800/50 last:border-0 last:pb-0">
+                        <span className="text-xs font-bold text-zinc-200">{m.Nome_Modif}</span>
+                        <p className="text-[11px] text-zinc-400 leading-relaxed whitespace-pre-wrap">{formatarTexto(m.Descricao_Modif || '')}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           <div className="flex flex-col gap-1 mt-1">
             <div
-              className="text-zinc-400 text-xs leading-relaxed"
+              className="text-zinc-400 text-xs leading-relaxed whitespace-pre-wrap"
               dangerouslySetInnerHTML={{ __html: protecao.Descricao_Protecao || '' }}
             />
           </div>
-          <div className="flex justify-between items-center mt-3 pt-3 border-t border-zinc-800/50">
-            <div className="flex gap-2">
-              <button
-                onClick={(e) => { e.stopPropagation(); onEditar?.(); }}
-                className="rounded bg-zinc-800 border border-zinc-700 px-3 py-1 text-xs font-bold uppercase tracking-wider text-zinc-300 transition hover:bg-zinc-700 hover:text-zinc-100"
-              >
-                Editar Proteção
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); removerProtecao(id); }}
-                className="rounded bg-red-900/40 border border-red-800/50 px-3 py-1 text-xs font-bold uppercase text-red-400 transition hover:bg-red-800 hover:text-red-100"
-              >
-                Remover Proteção
-              </button>
-            </div>
+          <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-zinc-800/50">
+            <button
+              onClick={(e) => { e.stopPropagation(); onEditar?.(); }}
+              className="text-xs px-3 py-1.5 rounded bg-zinc-900 border border-zinc-700 hover:border-yellow-700 hover:bg-yellow-900/20 text-zinc-300 hover:text-yellow-400 transition-colors"
+            >
+              Editar
+            </button>
+            
+            <button
+              onClick={(e) => { e.stopPropagation(); removerProtecao(id); }}
+              className="text-xs text-red-500 hover:text-red-400 bg-red-950/30 hover:bg-red-900/50 px-3 py-1.5 rounded border border-red-900/50 transition-colors"
+            >
+              Remover
+            </button>
           </div>
         </div>
       )}

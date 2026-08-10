@@ -116,7 +116,7 @@ function AtributosFicha() {
 // COMPONENTE INTERNO: DEFESA
 // ============================================================
 function DefesaPanel() {
-  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras, periciasHook, atributosFinais, regrasAutomaticasAtivas, protecoes, protecoesHook } = useRPG();
+  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras, periciasHook, atributosFinais, regrasAutomaticasAtivas, protecoes, protecoesHook, totalDefesaProtecoes } = useRPG();
 
   const [bloqueio, setBloqueio] = React.useState(0);
   const [esquiva, setEsquiva] = React.useState(0);
@@ -171,17 +171,10 @@ function DefesaPanel() {
                 onKeyDown={bloquearLetras}
                 value={(() => {
                   const defOutrosBonusRegra = (regrasAutomaticasAtivas.has(4) ? 2 : 0) + (regrasAutomaticasAtivas.has(12) ? 2 : 0);
-                  const temProtecaoPesada = protecoes.some(p => p.toLowerCase().includes('pesada'));
+                  const temProtecaoPesada = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('pesada')) || false;
                   const bonusRegra21 = (regrasAutomaticasAtivas.has(21) && temProtecaoPesada) ? 2 : 0;
-                  const temProtecaoLeve = protecoes.some(p => p.toLowerCase().includes('leve'));
+                  const temProtecaoLeve = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('leve')) || false;
                   const bonusRegra25 = (regrasAutomaticasAtivas.has(25) && temProtecaoLeve) ? 2 : 0;
-                  
-                  const totalDefesaProtecoes = (protecoesHook?.protecoesInventario || []).reduce((acc, item) => {
-                    const defRaw = String(item.protecao.Defesa_Protecao || '0').replace(/[^0-9.-]+/g, '');
-                    const defVal = Number(defRaw);
-                    return acc + (isNaN(defVal) ? 0 : defVal);
-                  }, 0);
-                  
                   return defOutros + defOutrosBonusRegra + bonusRegra21 + bonusRegra25 + totalDefesaProtecoes || '';
                 })()}
                 placeholder="0"
@@ -189,17 +182,10 @@ function DefesaPanel() {
                 onChange={e => {
                   const valDigitado = Math.max(0, Number(e.target.value));
                   const defOutrosBonusRegra = (regrasAutomaticasAtivas.has(4) ? 2 : 0) + (regrasAutomaticasAtivas.has(12) ? 2 : 0);
-                  const temProtecaoPesada = protecoes.some(p => p.toLowerCase().includes('pesada'));
+                  const temProtecaoPesada = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('pesada')) || false;
                   const bonusRegra21 = (regrasAutomaticasAtivas.has(21) && temProtecaoPesada) ? 2 : 0;
-                  const temProtecaoLeve = protecoes.some(p => p.toLowerCase().includes('leve'));
+                  const temProtecaoLeve = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('leve')) || false;
                   const bonusRegra25 = (regrasAutomaticasAtivas.has(25) && temProtecaoLeve) ? 2 : 0;
-                  
-                  const totalDefesaProtecoes = (protecoesHook?.protecoesInventario || []).reduce((acc, item) => {
-                    const defRaw = String(item.protecao.Defesa_Protecao || '0').replace(/[^0-9.-]+/g, '');
-                    const defVal = Number(defRaw);
-                    return acc + (isNaN(defVal) ? 0 : defVal);
-                  }, 0);
-                  
                   setDefOutros(Math.max(0, valDigitado - defOutrosBonusRegra - bonusRegra21 - bonusRegra25 - totalDefesaProtecoes));
                 }}
                 className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-red-600"
@@ -247,11 +233,13 @@ function ProtecoesPanel() {
     sentidos, setSentidos,
     imunidades, setImunidades,
     vulnerabilidades, setVulnerabilidades,
-    regrasAutomaticasAtivas, atributosFinais, poderesHook, rituaisHook, periciasHook, status
+    regrasAutomaticasAtivas, atributosFinais, poderesHook, rituaisHook, periciasHook, status,
+    protecoesHook, modificacoesHook
   } = useRPG();
   const [mostrarOutros, setMostrarOutros] = React.useState(false);
 
-  const resistenciasExtras = [];
+  const protecoesExtras: string[] = [];
+  const resistenciasExtras: string[] = [];
   
   // REGRA 5: Resistência Mental +INT
   if (regrasAutomaticasAtivas.has(5) && atributosFinais.INT > 0) {
@@ -268,6 +256,7 @@ function ProtecoesPanel() {
       danoResist += 5;
     }
   }
+
   if (danoResist > 0) {
     resistenciasExtras.push(`Dano ${danoResist}`);
   }
@@ -339,7 +328,7 @@ function ProtecoesPanel() {
     proficienciasExtras.push('Proteções Leves');
   }
 
-  const temProtecaoPesada = protecoes.some(p => p.toLowerCase().includes('pesada'));
+  const temProtecaoPesada = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('pesada')) || false;
   let bonusDefesaRegra21 = 0;
   let bonusResistenciaFisica = 0;
 
@@ -347,6 +336,36 @@ function ProtecoesPanel() {
     bonusDefesaRegra21 = 2;
     bonusResistenciaFisica += 2;
   }
+  
+  // RD nativa de Proteções Equipadas e Modificação: Blindada
+  let rdProtecao = 0;
+  if (protecoesHook && modificacoesHook) {
+    const protecoesEquipadas = protecoesHook.protecoesInventario.filter(p => p.equipado);
+    protecoesEquipadas.forEach(p => {
+       const isPesada = p.protecao.Proficiencia?.toLowerCase().includes('pesada');
+       const temBlindada = p.modificacoes?.some(id => {
+         const m = modificacoesHook.modificacoes.find(mod => mod.Codigo_Modif === id);
+         return m?.Nome_Modif.trim().toLowerCase() === 'blindada';
+       });
+       
+       if (temBlindada) {
+         if (rdProtecao < 5) rdProtecao = 5;
+       } else if (isPesada) {
+         if (rdProtecao < 2) rdProtecao = 2;
+       }
+       
+       // Preencher protecoesExtras baseado na proficiência do item equipado
+       const prof = p.protecao.Proficiencia?.toLowerCase() || '';
+       if (prof.includes('leves') && !protecoesExtras.includes('Proteção Leve')) {
+         protecoesExtras.push('Proteção Leve');
+       } else if (prof.includes('pesadas') && !protecoesExtras.includes('Proteção Pesada')) {
+         protecoesExtras.push('Proteção Pesada');
+       } else if (prof.includes('escudos') && !protecoesExtras.includes('Escudo (Proteção Pesada)')) {
+         protecoesExtras.push('Escudo (Proteção Pesada)');
+       }
+    });
+  }
+  bonusResistenciaFisica += rdProtecao;
   
   // REGRA 65: Resistência Física +7
   if (regrasAutomaticasAtivas.has(65)) {
@@ -389,7 +408,7 @@ function ProtecoesPanel() {
 
   return (
     <div className="mt-6 flex w-full flex-col gap-5">
-      <BadgeBlock titulo="Proteção" itens={protecoes} setItens={setProtecoes} />
+      <BadgeBlock titulo="Proteção" itens={protecoes} setItens={setProtecoes} itensExtras={protecoesExtras} />
 
       <BadgeBlock titulo="Resistências" itens={resistencias} setItens={setResistencias} itensExtras={resistenciasExtras} />
       <BadgeBlock titulo="Proficiências" itens={proficiencias} setItens={setProficiencias} itensExtras={proficienciasExtras} />

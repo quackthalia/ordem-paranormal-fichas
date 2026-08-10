@@ -360,3 +360,41 @@ export function verificarAcessoCirculo(circuloExigido: number, nex: number, clas
   }
   return { atende: true };
 }
+
+export function categoriaRomanParaNum(categoria?: string | number | null): number {
+  if (categoria === undefined || categoria === null) return 0;
+  if (typeof categoria === 'number') return categoria;
+  const c = categoria.trim().toUpperCase();
+  if (c === 'O' || c === '0' || c === '') return 0;
+  if (c === 'I' || c === '1') return 1;
+  if (c === 'II' || c === '2') return 2;
+  if (c === 'III' || c === '3') return 3;
+  if (c === 'IV' || c === '4') return 4;
+  return parseInt(c) || 0;
+}
+
+export function categoriaNumParaRoman(num: number): string {
+  if (num <= 0) return '0';
+  if (num === 1) return 'I';
+  if (num === 2) return 'II';
+  if (num === 3) return 'III';
+  return 'IV';
+}
+
+export function calcularCategoriaFinal(categoriaBase: string | number | null | undefined, modificacoesIds?: number[], allModificacoes?: any[]): string {
+  const baseNum = categoriaRomanParaNum(categoriaBase);
+  let modificador = modificacoesIds?.length || 0;
+
+  if (modificacoesIds && allModificacoes) {
+    const temApocaliptica = modificacoesIds.some(id => {
+      const mod = allModificacoes.find(m => m.Codigo_Modif === id);
+      return mod?.Nome_Modif.trim().toLowerCase() === 'apocalíptica';
+    });
+    if (temApocaliptica) {
+      modificador -= 1;
+    }
+  }
+
+  const total = baseNum + modificador;
+  return categoriaNumParaRoman(Math.min(Math.max(0, total), 4));
+}

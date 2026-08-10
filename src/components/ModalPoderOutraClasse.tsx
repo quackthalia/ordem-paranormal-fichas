@@ -97,7 +97,7 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onClick={onClose}>
-      <div className="flex h-[85vh] w-[90vw] max-w-4xl flex-col rounded-xl border border-zinc-700 bg-zinc-900 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+      <div className="flex max-h-[85vh] w-[90vw] max-w-3xl flex-col rounded-xl border border-zinc-700 bg-zinc-900 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-950 rounded-t-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-display m-0 text-lg uppercase tracking-wide text-zinc-100">Poder de Outra Classe</h2>
@@ -118,7 +118,7 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
           ))}
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+        <div className="flex-1 overflow-y-scroll p-4 custom-scrollbar">
           <div className="flex flex-col gap-3">
             {poderesFiltrados.map(poder => {
               const req = verificarPreRequisitos(poder as Poder, contextoPrereq);

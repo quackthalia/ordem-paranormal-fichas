@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { ProtecaoInventario } from '../types';
 import { ToolbarFormato } from './ToolbarFormato';
+
+import { ModificacoesSelector } from './ModificacoesSelector';
+import { useRPG } from '../context/RPGContext';
+import { categoriaRomanParaNum, categoriaNumParaRoman } from '../utils/rpgRules';
 
 interface ModalEditarProtecaoProps {
   protecao: ProtecaoInventario | null;
   onClose: () => void;
-  onSave: (id: string, novosDados: any) => void;
+  onSave: (id: string, novosDados: any, modificacoes?: number[]) => void;
 }
 
 export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarProtecaoProps) {
@@ -14,48 +18,88 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
     return () => { document.body.style.overflow = 'unset'; };
   }, []);
 
-  const [nome, setNome] = useState('');
-  const [descricao, setDescricao] = useState('');
-  const [proficiencia, setProficiencia] = useState('');
-  const [defesa, setDefesa] = useState('');
-  const [espacos, setEspacos] = useState(0);
-  const [categoria, setCategoria] = useState('');
+  const safeP = protecao?.protecao;
+  const [nome, setNome] = useState(safeP?.Nome_Protecao || '');
+  const [descricao, setDescricao] = useState(safeP?.Descricao_Protecao || '');
+  const [proficiencia, setProficiencia] = useState(safeP?.Proficiencia || 'Proteções Leves');
+  const [defesa, setDefesa] = useState(String(safeP?.Defesa_Protecao || ''));
+  const [espacos, setEspacos] = useState(Number(safeP?.Espacos_Protecao || 0));
+  const [categoria, setCategoria] = useState(safeP?.Categoria_Protecao || 'I');
+  
+  const editorDesc = useRef<HTMLElement | null>(null);
 
-  useEffect(() => {
-    if (protecao) {
-      setNome(protecao.protecao.Nome_Protecao || '');
-      setDescricao(protecao.protecao.Descricao_Protecao || '');
-      setProficiencia(protecao.protecao.Proficiencia || 'Proteções Leves');
-      setDefesa(String(protecao.protecao.Defesa_Protecao || ''));
-      setEspacos(Number(protecao.protecao.Espacos_Protecao || 0));
-      setCategoria(protecao.protecao.Categoria_Protecao || 'I');
+  const { modificacoesHook } = useRPG();
+  const [modificacoes, setModificacoes] = useState<number[]>(protecao?.modificacoes || []);
+
+  const catNum = categoriaRomanParaNum(categoria);
+  const catFinal = catNum + modificacoes.length;
+  const podeAdicionarMod = catFinal < 4;
+
+  const temDiscreto = modificacoes.some(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)?.Nome_Modif.trim().toLowerCase() === 'discreto');
+  
+  const getEspacoNumber = (val: string | number) => {
+    const num = Number(String(val).replace(',', '.').replace(/[^0-9.-]+/g, ''));
+    return isNaN(num) ? 0 : num;
+  };
+  const baseEspacos = getEspacoNumber(espacos);
+  const espacosFinais = temDiscreto ? Math.max(0, baseEspacos - 1) : baseEspacos;
+
+  const handleAddMod = (id: number) => {
+    if (podeAdicionarMod) {
+      setModificacoes(prev => [...prev, id]);
     }
-  }, [protecao]);
+  };
+
+  const handleRemoveMod = (index: number) => {
+    setModificacoes(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const getOpcoesModificacoes = () => {
+    return modificacoesHook.modificacoes.filter(m => {
+      const cat = m.Categoria_Modif.toLowerCase();
+      const prof = proficiencia.toLowerCase();
+      const nomeMod = m.Nome_Modif.trim().toLowerCase();
+      
+      if (!cat.includes('proteç')) return false;
+
+      if (cat.includes('leve') && !prof.includes('leve')) return false;
+      if (cat.includes('pesada') && !prof.includes('pesada')) return false;
+      if (cat.includes('escudo') && !prof.includes('escudo')) return false;
+
+      // Mutuamente exclusivas: Discreta vs Reforçada
+      const temDiscretaList = modificacoes.some(id => modificacoesHook.modificacoes.find(mod => mod.Codigo_Modif === id)?.Nome_Modif.trim().toLowerCase() === 'discreta' || modificacoesHook.modificacoes.find(mod => mod.Codigo_Modif === id)?.Nome_Modif.trim().toLowerCase() === 'discreto');
+      const temReforcadaList = modificacoes.some(id => modificacoesHook.modificacoes.find(mod => mod.Codigo_Modif === id)?.Nome_Modif.trim().toLowerCase() === 'reforçada');
+
+      if ((nomeMod === 'discreta' || nomeMod === 'discreto') && temReforcadaList) return false;
+      if (nomeMod === 'reforçada' && temDiscretaList) return false;
+
+      return true;
+    });
+  };
+
+
 
   if (!protecao) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-5" onClick={onClose}>
       <div 
-        className="w-full max-w-2xl rounded-xl border border-zinc-700 bg-zinc-900 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+        className="flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-900 p-4">
-          <h2 className="text-xl font-bold text-zinc-100 flex items-center gap-2">
+        <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-950 px-6 py-4">
+          <h2 className="text-xl font-bold tracking-wider text-zinc-100 uppercase">
             Editar Proteção
           </h2>
           <button
             onClick={onClose}
-            className="rounded p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white"
+            className="text-zinc-500 transition hover:text-zinc-100 p-2 text-2xl border-none bg-transparent"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
+            &times;
           </button>
         </div>
 
-        <div className="p-4 space-y-4 overflow-y-auto custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-6 custom-scrollbar space-y-4">
           {/* Nome */}
           <div>
             <label className="mb-1 block text-sm font-semibold text-zinc-300">Nome da Proteção</label>
@@ -83,8 +127,8 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
               <label className="mb-1 block text-sm font-semibold text-zinc-300">Categoria</label>
               <select
                 className="w-full rounded bg-zinc-950 border border-zinc-700 p-2 text-zinc-100 focus:border-red-500 focus:outline-none"
-                value={categoria}
-                onChange={e => setCategoria(e.target.value)}
+                value={categoriaNumParaRoman(catFinal)}
+                onChange={e => setCategoria(categoriaNumParaRoman(Math.max(0, categoriaRomanParaNum(e.target.value) - modificacoes.length)))}
               >
                 <option value="0">0</option>
                 <option value="I">I</option>
@@ -111,40 +155,67 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
                 min="0"
                 step="0.5"
                 className="w-full rounded bg-zinc-950 border border-zinc-700 p-2 text-zinc-100 focus:border-red-500 focus:outline-none"
-                value={espacos}
-                onChange={e => setEspacos(Number(e.target.value))}
+                value={espacosFinais.toString()}
+                onChange={e => {
+                  const num = getEspacoNumber(e.target.value);
+                  setEspacos(temDiscreto ? num + 1 : num);
+                }}
               />
             </div>
           </div>
 
-          <div>
-            <label className="mb-1 block text-sm font-semibold text-zinc-300">Descrição</label>
-            <div className="rounded border border-zinc-700 bg-zinc-950 focus-within:border-red-500 transition-colors">
-              <ToolbarFormato value={descricao} onChange={setDescricao} />
-              <textarea
-                className="w-full min-h-[120px] bg-transparent p-3 text-zinc-100 focus:outline-none resize-y"
-                value={descricao}
-                onChange={e => setDescricao(e.target.value)}
-                placeholder="Detalhes, efeitos passivos, etc..."
+          <div className="mt-2">
+            <label className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-zinc-500">Descrição</label>
+            <div className="rounded border border-zinc-800 bg-zinc-950">
+              <ToolbarFormato editorRef={editorDesc as any} />
+              <div
+                ref={(el) => {
+                  editorDesc.current = el;
+                  if (el && !el.dataset.initialized) {
+                    el.innerHTML = descricao;
+                    el.dataset.initialized = 'true';
+                  }
+                }}
+                contentEditable
+                suppressContentEditableWarning
+                onBlur={(e) => setDescricao(e.currentTarget.innerHTML)}
+                className="w-full p-3 text-sm text-zinc-100 outline-none overflow-y-auto min-h-[100px] max-h-[250px]"
               />
             </div>
+          </div>
+
+          <div className="mt-4 border-t border-zinc-800 pt-4">
+            <ModificacoesSelector
+              modificacoesAplicadas={modificacoes}
+              opcoesModificacoes={getOpcoesModificacoes()}
+              todasModificacoes={modificacoesHook.modificacoes}
+              onAdd={handleAddMod}
+              onRemove={handleRemoveMod}
+              podeAdicionar={podeAdicionarMod}
+            />
           </div>
         </div>
 
-        <div className="flex items-center justify-end border-t border-zinc-800 bg-zinc-900 p-4">
+        <div className="border-t border-zinc-800 bg-zinc-950 px-6 py-4 flex justify-end gap-3">
+          <button
+            onClick={onClose}
+            className="rounded px-5 py-2 text-xs font-bold uppercase tracking-wider text-zinc-400 transition hover:bg-zinc-800 hover:text-zinc-100"
+          >
+            Cancelar
+          </button>
           <button
             onClick={() => {
               onSave(protecao.id, {
                 Nome_Protecao: nome,
-                Descricao_Protecao: descricao,
+                Descricao_Protecao: editorDesc.current?.innerHTML || descricao,
                 Proficiencia: proficiencia,
                 Defesa_Protecao: defesa,
-                Espacos_Protecao: espacos,
+                Espacos_Protecao: getEspacoNumber(espacos),
                 Categoria_Protecao: categoria
-              });
+              }, modificacoes);
               onClose();
             }}
-            className="rounded bg-red-700 px-6 py-2 font-bold text-white transition hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
+            className="rounded bg-red-800 px-5 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg transition hover:bg-red-700"
           >
             Salvar Alterações
           </button>

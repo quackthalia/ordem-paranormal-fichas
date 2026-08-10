@@ -98,8 +98,7 @@ export function ModalTrilhas({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-5">
       <div
         ref={ref}
-        className="flex w-full max-w-2xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50"
-        style={{ height: '85vh' }}
+        className="flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50"
       >
         <div className="flex flex-col border-b border-zinc-800 bg-zinc-950 px-6 py-4 gap-3">
           <div className="flex items-center justify-between">
@@ -150,7 +149,7 @@ export function ModalTrilhas({
         </div>
 
         {/* Lista de Trilhas */}
-        <div className="flex-1 overflow-y-auto p-5 custom-scrollbar">
+        <div className="flex-1 overflow-y-scroll p-5 custom-scrollbar">
           {loading && <div className="text-center italic text-zinc-500 mt-5">Carregando trilhas...</div>}
           {error && <div className="text-center italic text-red-500 mt-5">Erro: {error}</div>}
 

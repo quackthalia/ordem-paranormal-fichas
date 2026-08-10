@@ -20,13 +20,15 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
   React.useEffect(() => {
     if (aberto) {
       document.body.style.overflow = 'hidden';
+      setExpandidos([]);
     } else {
       document.body.style.overflow = 'unset';
+      setExpandidos([]);
     }
     return () => { document.body.style.overflow = 'unset'; };
   }, [aberto]);
 
-  const { armasHook, proficiencias, status, atributosFinais } = useRPG();
+  const { armasHook, proficienciasTotais, status, atributosFinais, regrasAutomaticasAtivas } = useRPG();
   const [busca, setBusca] = useState('');
   const [filtro, setFiltro] = useState<string>('Todas'); // Proficiência
   const [mostrarFiltrosAvançados, setMostrarFiltrosAvançados] = useState(false);
@@ -36,11 +38,11 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
   
   const [expandidos, setExpandidos] = useState<number[]>([]);
 
-  const calcularDT = (dtItem: string | null): string | null => {
+  const calcularDT = (dtItem: string | null, isExplosivo: boolean = false): string | null => {
     if (!dtItem) return null;
     
     if (dtItem.includes('/')) {
-      return dtItem.split('/').map(part => calcularDT(part.trim())).join(' / ');
+      return dtItem.split('/').map(part => calcularDT(part.trim(), isExplosivo)).join(' / ');
     }
 
     let pericia = '';
@@ -60,6 +62,10 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
     } else {
       const numVal = Number(val);
       calculado = isNaN(numVal) ? val : numVal;
+    }
+    
+    if (isExplosivo && regrasAutomaticasAtivas.has(29) && typeof calculado === 'number') {
+      calculado += atributosFinais.INT;
     }
     
     if (pericia) {
@@ -99,14 +105,14 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
     }
     
     return true;
-  });
+  }).sort((a: Arma, b: Arma) => a.Nome_Item.localeCompare(b.Nome_Item));
 
   const uniqueTipos = Array.from(new Set(armasHook.armas.map(a => a.Tipo_Arma))).filter(Boolean).sort();
   const uniqueEmpunhaduras = Array.from(new Set(armasHook.armas.map(a => a.Empunhadura_Arma))).filter(Boolean).sort();
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" onClick={onFechar}>
-      <div className="flex h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50" onClick={e => e.stopPropagation()}>
+      <div className="flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50" onClick={e => e.stopPropagation()}>
         
         {/* Header */}
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4">
@@ -206,12 +212,12 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
         </div>
 
         {/* Lista de armas */}
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-scroll p-4">
           <div className="flex flex-col gap-2">
           {armasFiltradas.map((arma: Arma) => {
             const isExpanded = expandidos.includes(arma.Codigo_Arma);
             const critico = formatarCritico(arma.Critico_Arma, arma.Multiplicador_Arma);
-            const hasProficiencia = proficiencias.includes(arma.Proficiencia);
+            const hasProficiencia = proficienciasTotais.includes(arma.Proficiencia);
             return (
               <div key={arma.Codigo_Arma} className="rounded border border-zinc-800 border-l-4 border-l-red-700 bg-zinc-950/60 transition hover:bg-zinc-900/60">
                 {/* Bloco fechado */}
@@ -231,7 +237,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                           <span className="font-bold text-zinc-400">Crítico:</span> {critico}
                         </span>
                       )}
-                      {arma.dt_item && <span><span className="font-bold text-red-400">DT:</span> {calcularDT(arma.dt_item)}</span>}
+                      {arma.dt_item && <span><span className="font-bold text-red-400">DT:</span> {calcularDT(arma.dt_item, arma.Categoria_Item?.toLowerCase().includes('explosivos') || arma.Nome_Item?.toLowerCase().includes('explosivo'))}</span>}
                     </div>
                   </div>
                   
@@ -284,16 +290,20 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                       <span className="text-zinc-600"> — </span>
                       <span className="italic text-zinc-400">{arma.Empunhadura_Arma}</span>
                     </div>
-                    <div className="flex flex-col gap-1 text-xs text-zinc-300">
-                      <span><span className="text-red-400 font-bold">Categoria:</span> {arma.Categoria_Item}</span>
-                      {arma.Alcance_Item && <span><span className="text-red-400 font-bold">Alcance:</span> {arma.Alcance_Item}</span>}
-                      <span><span className="text-red-400 font-bold">Tipo:</span> {arma.Tipo_Dano_Arma}</span>
-                      <span><span className="text-red-400 font-bold">Espaços:</span> {arma['Espaços_Item']}</span>
+
+                    <div className="border-t border-zinc-800/50 mt-3 pt-3">
+                      <div className="flex flex-wrap gap-x-4 gap-y-2 text-[11px]">
+                        <span><span className="text-red-400 font-bold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (arma['Espaços_Item'] === 0.5 || String(arma['Espaços_Item']) === '0,5' || String(arma['Espaços_Item']) === '0.5')) ? 0.25 : arma['Espaços_Item']}</span>
+                        <span><span className="text-red-400 font-bold">Categoria:</span> {arma.Categoria_Item}</span>
+                        {arma.Alcance_Item && <span><span className="text-red-400 font-bold">Alcance:</span> {arma.Alcance_Item}</span>}
+                        <span><span className="text-red-400 font-bold">Tipo:</span> {arma.Tipo_Dano_Arma}</span>
+                      </div>
+                      
+                      <div className="flex flex-col gap-1 mt-1">
+                        <p className="text-zinc-400 text-xs leading-relaxed">{formatarTexto(arma.Descricao_Item)}</p>
+                      </div>
                     </div>
                     
-                    <div className="flex flex-col gap-1 mt-1">
-                      <p className="text-zinc-400 text-xs leading-relaxed">{formatarTexto(arma.Descricao_Item)}</p>
-                    </div>
                     {arma.Fonte_Arma && (
                       <div className="flex justify-between items-center mt-3 pt-3 border-t border-zinc-800/50">
                         <span className="text-[10px] uppercase tracking-wider text-zinc-600">Fonte: {arma.Fonte_Arma}</span>

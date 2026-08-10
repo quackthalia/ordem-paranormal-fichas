@@ -56,7 +56,7 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-5">
-      <div className="flex w-full max-w-2xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50" style={{ maxHeight: '85vh' }}>
+      <div className="flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50">
         <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-950 px-6 py-4">
           <div>
             <h2 className="font-display text-lg uppercase tracking-wider text-zinc-100">Escolher Poder de Trilha <span className="text-red-500">(Ocultista)</span></h2>
@@ -65,7 +65,7 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
           <button onClick={onClose} className="text-zinc-500 transition hover:text-red-400">✕</button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-5 custom-scrollbar">
+        <div className="flex-1 overflow-y-scroll p-5 custom-scrollbar">
           {loading ? (
             <div className="text-center py-10 text-zinc-500 italic">Carregando trilhas de Ocultista...</div>
           ) : (

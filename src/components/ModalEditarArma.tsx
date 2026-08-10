@@ -3,19 +3,27 @@ import type { ArmaInventario, Arma } from '../types';
 import { InputOtimizado } from './InputOtimizado';
 import { ToolbarFormato } from './ToolbarFormato';
 
+import { ModificacoesSelector } from './ModificacoesSelector';
+import { useRPG } from '../context/RPGContext';
+import { categoriaRomanParaNum, categoriaNumParaRoman } from '../utils/rpgRules';
+
 export function ModalEditarArma({
   armaInventario,
   onSave,
   onClose,
 }: {
   armaInventario: ArmaInventario;
-  onSave: (novosDados: Partial<Arma>) => void;
+  onSave: (novosDados: Partial<Arma>, modificacoes?: number[]) => void;
   onClose: () => void;
 }) {
   React.useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = 'unset'; };
   }, []);
+
+  if (!armaInventario || !armaInventario.arma) {
+    return null;
+  }
 
   const { arma } = armaInventario;
 
@@ -25,6 +33,7 @@ export function ModalEditarArma({
   const [critico, setCritico] = useState(arma.Critico_Arma?.toString() || '');
   const [multiplicador, setMultiplicador] = useState(arma.Multiplicador_Arma?.toString() || '');
   const [alcance, setAlcance] = useState(arma.Alcance_Item || '');
+  const [danoSecundario, setDanoSecundario] = useState(arma.Dano_Secundario || '');
   const [categoria, setCategoria] = useState(arma.Categoria_Item || '');
   const [espacos, setEspacos] = useState(arma['Espaços_Item']?.toString() || '');
   const [dt, setDt] = useState(arma.dt_item || '');
@@ -34,7 +43,92 @@ export function ModalEditarArma({
   const [empunhadura, setEmpunhadura] = useState(arma.Empunhadura_Arma || 'Uma Mão');
   const [tipoDano, setTipoDano] = useState(arma.Tipo_Dano_Arma || 'Corte');
 
+  const { modificacoesHook } = useRPG();
+  const [modificacoes, setModificacoes] = useState<number[]>(armaInventario.modificacoes || []);
+
   const editorDesc = useRef<HTMLDivElement | null>(null);
+
+  const temDiscreto = modificacoes.some(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)?.Nome_Modif.trim().toLowerCase() === 'discreto' || modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)?.Nome_Modif.trim().toLowerCase() === 'discreta');
+  
+  const temMira = modificacoes.some(id => {
+    const nome = modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)?.Nome_Modif.trim().toLowerCase();
+    return nome === 'mira laser' || nome === 'perigosa';
+  });
+
+  const temCalibreGrosso = modificacoes.some(id => {
+    const nome = modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)?.Nome_Modif.trim().toLowerCase();
+    return nome === 'calibre grosso';
+  });
+
+  const temMiraTelescopica = modificacoes.some(id => {
+    const nome = modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)?.Nome_Modif.trim().toLowerCase();
+    return nome === 'mira telescópica';
+  });
+
+  const getEspacoNumber = (val: string | number) => {
+    const num = Number(String(val).replace(',', '.').replace(/[^0-9.-]+/g, ''));
+    return isNaN(num) ? 0 : num;
+  };
+  const baseEspacos = getEspacoNumber(espacos);
+  const espacosFinais = temDiscreto ? Math.max(0, baseEspacos - 1) : baseEspacos;
+
+  const criticoFinal = temMira ? Math.max(1, Number(critico || 20) - 2) : (critico || 20);
+  const danoFinal = temCalibreGrosso ? dano.replace(/(\d+)d(\d+)/i, (match, p1, p2) => `${Number(p1) + 1}d${p2}`) : dano;
+  
+  const ordAlcance = ['', 'Curto', 'Médio', 'Longo', 'Extremo', 'Ilimitado'];
+  let alcanceFinal = alcance;
+  if (temMiraTelescopica) {
+    const idx = ordAlcance.indexOf(alcance);
+    if (idx !== -1 && idx < ordAlcance.length - 1) {
+      alcanceFinal = ordAlcance[idx + 1];
+    }
+  }
+
+  const catNum = categoriaRomanParaNum(categoria);
+  let modificador = modificacoes.length;
+  const temApocaliptica = modificacoes.some(id => {
+    const nome = modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)?.Nome_Modif.trim().toLowerCase();
+    return nome === 'apocalíptica';
+  });
+  if (temApocaliptica) {
+    modificador -= 1;
+  }
+  const catFinal = catNum + modificador;
+  const podeAdicionarMod = catFinal < 4;
+
+  const handleAddMod = (id: number) => {
+    if (podeAdicionarMod) {
+      setModificacoes(prev => [...prev, id]);
+    }
+  };
+
+  const handleRemoveMod = (index: number) => {
+    setModificacoes(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const getOpcoesModificacoes = () => {
+    return modificacoesHook.modificacoes.filter(m => {
+      // Impede Ferrolho Automático se a arma já é automática
+      if (m.Nome_Modif === 'Ferrolho Automático' && arma['Automatica?']) return false;
+      
+      const cat = m.Categoria_Modif.toLowerCase();
+      const tipo = tipoArma.toLowerCase();
+
+      const isFogo = tipo.includes('fogo');
+      const isDisparo = tipo.includes('disparo');
+      const isCorpo = tipo.includes('corpo');
+      const isArremesso = tipo.includes('arremesso');
+      const isExplosivo = tipo.includes('explosivo');
+
+      if (cat.includes('armas de fogo / bestas e balestras') && (isFogo || isDisparo)) return true;
+      if (cat.includes('arma de fogo') && isFogo) return true;
+      if (cat.includes('corpo a corpo') && (isCorpo || isArremesso)) return true;
+      if (cat.includes('arremesso') && isArremesso) return true;
+      if ((cat.includes('explosivo') || cat.includes('granada')) && isExplosivo) return true;
+      if (cat === 'armas') return true;
+      return false;
+    });
+  };
 
   const handleSalvar = () => {
     onSave({
@@ -44,14 +138,15 @@ export function ModalEditarArma({
       Critico_Arma: Number(critico) || 20,
       Multiplicador_Arma: Number(multiplicador) || 2,
       Alcance_Item: alcance,
+      Dano_Secundario: danoSecundario,
       Categoria_Item: categoria,
-      'Espaços_Item': Number(espacos) || 0,
+      'Espaços_Item': getEspacoNumber(espacos),
       dt_item: dt,
       Proficiencia: proficiencia,
       Tipo_Arma: tipoArma,
       Empunhadura_Arma: empunhadura,
       Tipo_Dano_Arma: tipoDano,
-    });
+    }, modificacoes);
     onClose();
   };
 
@@ -64,7 +159,7 @@ export function ModalEditarArma({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-5" onClick={onClose}>
       <div 
-        className="flex h-full max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50"
+        className="flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50" 
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-900/50 px-5 py-4">
@@ -79,11 +174,10 @@ export function ModalEditarArma({
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-5 custom-scrollbar flex flex-col gap-4">
-          
+        <div className="flex-1 overflow-y-auto p-6 custom-scrollbar flex flex-col gap-4">
           <div className="rounded border border-zinc-800 bg-zinc-950 p-4">
             <h3 className="font-bold text-red-500 mb-2 border-b border-zinc-800 pb-2">Informações da Arma</h3>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 mt-4">
               
               <InputLabel label="Nome da Arma" />
               <InputOtimizado
@@ -93,7 +187,7 @@ export function ModalEditarArma({
               />
             </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
                 <div>
                   <InputLabel label="Proficiência" />
                   <select
@@ -118,6 +212,7 @@ export function ModalEditarArma({
                     <option value="Arma de Disparo">Arma de Disparo</option>
                     <option value="Arma de Fogo">Arma de Fogo</option>
                     <option value="Arma de Arremesso">Arma de Arremesso</option>
+                    <option value="Explosivos">Explosivos</option>
                   </select>
                 </div>
 
@@ -163,8 +258,15 @@ export function ModalEditarArma({
                 <div>
                   <InputLabel label="Dano" />
                   <InputOtimizado
-                    value={dano}
-                    onChange={setDano}
+                    value={danoFinal}
+                    onChange={val => {
+                      if (temCalibreGrosso) {
+                        const reversao = val.replace(/(\d+)d(\d+)/i, (match, p1, p2) => `${Math.max(1, Number(p1) - 1)}d${p2}`);
+                        setDano(reversao);
+                      } else {
+                        setDano(val);
+                      }
+                    }}
                     placeholder="Ex: 1d8"
                     className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
                   />
@@ -174,8 +276,15 @@ export function ModalEditarArma({
                   <div className="flex-1">
                     <InputLabel label="Crítico (Margem)" />
                     <InputOtimizado
-                      value={critico}
-                      onChange={setCritico}
+                      value={criticoFinal.toString()}
+                      onChange={val => {
+                        const num = Number(val);
+                        if (!isNaN(num)) {
+                          setCritico(temMira ? (num + 2).toString() : val);
+                        } else {
+                          setCritico(val);
+                        }
+                      }}
                       placeholder="Ex: 19"
                       className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
                     />
@@ -193,20 +302,48 @@ export function ModalEditarArma({
 
                 <div>
                   <InputLabel label="Alcance" />
+                  <select
+                    value={alcanceFinal}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (temMiraTelescopica) {
+                        const idx = ordAlcance.indexOf(val);
+                        if (idx > 0) {
+                          setAlcance(ordAlcance[idx - 1]);
+                        } else {
+                          setAlcance(val);
+                        }
+                      } else {
+                        setAlcance(val);
+                      }
+                    }}
+                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                  >
+                    <option value="">Nenhum</option>
+                    <option value="Curto">Curto</option>
+                    <option value="Médio">Médio</option>
+                    <option value="Longo">Longo</option>
+                    <option value="Extremo">Extremo</option>
+                    <option value="Ilimitado">Ilimitado</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <InputLabel label="Dano Secundário" />
                   <InputOtimizado
-                    value={alcance}
-                    onChange={setAlcance}
-                    placeholder="Ex: Curto, 10m"
+                    value={danoSecundario}
+                    onChange={setDanoSecundario}
+                    placeholder="Ex: +2d6 (Explosivo)"
                     className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
                   />
                 </div>
                 
                 <div>
-                  <InputLabel label="DT (Opcional)" />
+                  <InputLabel label="DT" />
                   <InputOtimizado
                     value={dt}
                     onChange={setDt}
-                    placeholder="Ex: AGI, FOR, ou DT 20"
+                    placeholder="Ex: Fortitude, 15 ou 20"
                     className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
                   />
                 </div>
@@ -214,8 +351,13 @@ export function ModalEditarArma({
                 <div>
                   <InputLabel label="Categoria" />
                   <InputOtimizado
-                    value={categoria}
-                    onChange={setCategoria}
+                    value={categoriaNumParaRoman(catFinal)}
+                    onChange={(val) => {
+                      const finalDesejado = categoriaRomanParaNum(val);
+                      let modCount = modificacoes.length;
+                      if (temApocaliptica) modCount -= 1;
+                      setCategoria(categoriaNumParaRoman(Math.max(0, finalDesejado - modCount)));
+                    }}
                     placeholder="Ex: I, II, 0"
                     className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
                   />
@@ -224,33 +366,48 @@ export function ModalEditarArma({
                 <div>
                   <InputLabel label="Espaços" />
                   <InputOtimizado
-                    value={espacos}
-                    onChange={setEspacos}
-                    placeholder="Ex: 1, 2"
+                    value={espacosFinais.toString()}
+                    onChange={val => {
+                      const num = getEspacoNumber(val);
+                      setEspacos(temDiscreto ? String(num + 1) : String(num));
+                    }}
+                    type="number"
+                    step="0.5"
                     className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
                   />
                 </div>
-              </div>
-
-            <div className="mt-2">
-              <InputLabel label="Descrição" />
-              <div>
-                <ToolbarFormato editorRef={editorDesc as any} />
-                <div
-                  ref={(el) => {
-                    editorDesc.current = el;
-                    if (el && !el.dataset.initialized) {
-                      el.innerHTML = descricao;
-                      el.dataset.initialized = 'true';
-                    }
-                  }}
-                  contentEditable
-                  onBlur={(e) => setDescricao(e.currentTarget.innerHTML)}
-                  className="min-h-[60px] rounded-b border border-zinc-700 bg-zinc-950 p-2.5 text-sm text-zinc-300 outline-none focus:border-red-700"
-                />
-              </div>
             </div>
+          </div>
 
+          <div className="mt-2">
+            <InputLabel label="Descrição" />
+            <div className="rounded border border-zinc-800 bg-zinc-950">
+              <ToolbarFormato editorRef={editorDesc as any} />
+              <div
+                ref={(el) => {
+                  editorDesc.current = el;
+                  if (el && !el.dataset.initialized) {
+                    el.innerHTML = descricao;
+                    el.dataset.initialized = 'true';
+                  }
+                }}
+                contentEditable
+                suppressContentEditableWarning
+                onBlur={(e) => setDescricao(e.currentTarget.innerHTML)}
+                className="w-full p-3 text-sm text-zinc-100 outline-none overflow-y-auto min-h-[100px] max-h-[250px]"
+              />
+            </div>
+          </div>
+
+          <div className="mt-4 border-t border-zinc-800 pt-4">
+            <ModificacoesSelector
+              modificacoesAplicadas={modificacoes}
+              opcoesModificacoes={getOpcoesModificacoes()}
+              todasModificacoes={modificacoesHook.modificacoes}
+              onAdd={handleAddMod}
+              onRemove={handleRemoveMod}
+              podeAdicionar={podeAdicionarMod}
+            />
           </div>
         </div>
 

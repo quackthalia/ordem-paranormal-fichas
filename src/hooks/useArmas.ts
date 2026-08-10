@@ -65,13 +65,17 @@ export function useArmas() {
     }));
   };
 
-  const editarArma = (idArma: string, novosDados: Partial<Arma>) => {
+  const editarArma = (idArma: string, novosDados: Partial<Arma>, novasModificacoes?: number[]) => {
     setArmasInventario(prev => prev.map(item => {
       if (item.id === idArma) {
-        return {
+        const ret: ArmaInventario = {
           ...item,
           arma: { ...item.arma, ...novosDados }
         };
+        if (novasModificacoes !== undefined) {
+          ret.modificacoes = novasModificacoes;
+        }
+        return ret;
       }
       return item;
     }));

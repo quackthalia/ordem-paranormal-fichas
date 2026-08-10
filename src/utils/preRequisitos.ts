@@ -702,6 +702,31 @@ export function verificarPreRequisitos(
       return { atende: true };
     }
 
+    case 49: {
+      // NEX 30% e poder específico escrito no campo
+      if (contexto.nex < 30) return { atende: false, motivo: 'NEX 30%' };
+      const nomeExigido = textoLower.trim();
+      if (!contexto.poderes.some(p => p.nome === nomeExigido)) {
+        return { atende: false, motivo: `Poder ${texto}` };
+      }
+      return { atende: true };
+    }
+
+    case 50: {
+      // NEX 45% e NÃO ser treinado na perícia do campo Pericia_Poder
+      if (contexto.nex < 45) return { atende: false, motivo: 'NEX 45%' };
+      if (poder.Pericia_Poder) {
+        const nomePericia = contexto.nomesPericias[poder.Pericia_Poder];
+        if (nomePericia) {
+          const dados = contexto.pericias[nomePericia];
+          if (dados && dados.treino >= 5) {
+            return { atende: false, motivo: `Não ser treinado em ${nomePericia}` };
+          }
+        }
+      }
+      return { atende: true };
+    }
+
     default:
       return { atende: true };
   }

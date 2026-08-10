@@ -101,7 +101,7 @@ export const ModalRituaisExtra: React.FC<ModalRituaisExtraProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-      <div className="flex h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50" onClick={e => e.stopPropagation()}>
+      <div className="flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50" onClick={e => e.stopPropagation()}>
         
         {/* Header */}
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4">
@@ -189,7 +189,7 @@ export const ModalRituaisExtra: React.FC<ModalRituaisExtraProps> = ({
         </div>
 
         {/* LISTA DE RITUAIS */}
-        <div className="flex-1 overflow-y-auto p-5">
+        <div className="flex-1 overflow-y-scroll p-5">
           <div className="flex flex-col gap-3">
             {listaFiltrada.map(ritual => {
               const codigo = ritual.Codigo_Ritual;

@@ -97,7 +97,7 @@ export function ModalEditarTrilha({
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-5 custom-scrollbar flex flex-col gap-4">
+        <div className="flex-1 overflow-y-scroll p-5 custom-scrollbar flex flex-col gap-4">
           
           <div className="rounded border border-zinc-800 bg-zinc-950 p-4">
             <h3 className="font-bold text-red-500 mb-2 border-b border-zinc-800 pb-2">Geral</h3>

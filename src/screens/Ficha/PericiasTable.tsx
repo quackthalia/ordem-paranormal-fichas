@@ -19,7 +19,7 @@ const BORDA_TREINO: Record<number, string> = {
 
 export const PericiasTable: React.FC = () => {
   const { 
-    periciasHook, regrasAtivas, setRegrasAtivas, regrasAutomaticasAtivas, protecoes,
+    periciasHook, regrasAtivas, setRegrasAtivas, regrasAutomaticasAtivas, protecoesHook,
     bonusDadosCondicionais, setBonusDadosCondicionais, bonusDadosAtivos, setBonusDadosAtivos,
     poderesHook, trilhasHook, itensHook
   } = useRPG();
@@ -34,7 +34,7 @@ export const PericiasTable: React.FC = () => {
     }
   };
 
-  const temProtecaoLeve = protecoes.some(p => p.toLowerCase().includes('leve'));
+  const temProtecaoLeve = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('leve')) || false;
 
   const formatarDescricaoHTML = (texto: string) => {
     let resultado = texto;
@@ -203,18 +203,50 @@ export const PericiasTable: React.FC = () => {
               const bonusRegra13 = (nome === 'Vontade' && regrasAutomaticasAtivas.has(13)) ? 2 : 0;
               const bonusRegra25 = (nome === 'Reflexos' && regrasAutomaticasAtivas.has(25) && temProtecaoLeve) ? 2 : 0;
               
-              // Bônus de Vestimenta/Utensílio
+              // Bônus de Itens (Vestimentas, Utensílios, Amuletos e Função Adicional)
               const bonusInventario = itensHook?.itensInventario.reduce((acc, obj) => {
-                const isBonusItem = obj.item.Nome_Item.toLowerCase().includes('vestimenta') || 
-                                    obj.item.Nome_Item.toLowerCase().includes('utensílio') ||
-                                    obj.item.Nome_Item.toLowerCase().includes('utensilio');
-                if (isBonusItem) {
-                  const match = obj.item.Nome_Item.match(/\((.*?)\)/);
-                  if (match && match[1].trim().toLowerCase() === nome.toLowerCase()) {
-                    return acc + 2;
+                const nomeItem = obj.item.Nome_Item.toLowerCase();
+                const isVestimenta = nomeItem.includes('vestimenta');
+                const isAmuleto = nomeItem.includes('amuleto sagrado');
+                
+                // Amuleto Sagrado especial (dá Religião ou Vontade nativamente, sem precisar estar escrito no nome)
+                // Se o Amuleto tiver (Religião*) no nome (porque recebeu Aprimorado), ele vai ser pego pelo bloco match abaixo e ganhar +5
+                // Então o bônus nativo (+2) só entra se ele estiver equipado E a perícia não tiver sido pega pelo Aprimorado.
+                // Mas para simplificar, a gente checa os parenteses primeiro.
+                
+                let bonusDesteItem = 0;
+
+                // Checa perícias entre parênteses, ex: Vestimenta (Ocultismo, Crime) ou Celular (Crime)
+                const match = obj.item.Nome_Item.match(/\((.*?)\)/);
+                if (match) {
+                  const periciasNoItem = match[1].split(',').map(s => s.trim().toLowerCase());
+                  
+                  // Procura a perícia atual na lista (com ou sem *)
+                  const periciaEncontrada = periciasNoItem.find(p => p.replace('*', '') === nome.toLowerCase());
+                  
+                  if (periciaEncontrada) {
+                    // Vestimentas e Amuletos precisam estar equipados para dar o bônus
+                    if ((isVestimenta || isAmuleto) && !obj.equipado) {
+                      // não ganha nada
+                    } else {
+                      if (periciaEncontrada.includes('*')) {
+                        bonusDesteItem = 5;
+                      } else {
+                        bonusDesteItem = 2;
+                      }
+                    }
                   }
                 }
-                return acc;
+                
+                // Se for Amuleto e ainda não ganhou bônus nessa perícia (ex: não pegou Aprimorado nela), 
+                // dá os +2 nativos de Religião/Vontade se estiver equipado.
+                if (isAmuleto && obj.equipado && bonusDesteItem === 0) {
+                  if (nome === 'Religião' || nome === 'Vontade') {
+                    bonusDesteItem = 2;
+                  }
+                }
+                
+                return acc + bonusDesteItem;
               }, 0) || 0;
 
               const totalBonus = dadosPericia.treino + dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25 + bonusInventario;

@@ -51,7 +51,7 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="flex h-[85vh] w-[90vw] max-w-4xl flex-col rounded-xl border border-zinc-700 bg-zinc-900 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+      <div className="flex max-h-[85vh] w-[90vw] max-w-3xl flex-col rounded-xl border border-zinc-700 bg-zinc-900 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-950 px-6 py-4">
           <h2 className="font-display text-xl uppercase tracking-widest text-red-500">Poder de Outra Origem</h2>
           <button onClick={onClose} className="text-zinc-500 hover:text-zinc-300">✕</button>
@@ -61,7 +61,7 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
           <InputOtimizado value={filtro} onChange={setFiltro} placeholder="Buscar origem..." className="w-full bg-zinc-950 border border-zinc-700 p-3 text-sm text-zinc-200 rounded outline-none focus:border-red-800 transition" />
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+        <div className="flex-1 overflow-y-scroll p-4 custom-scrollbar">
           <div className="flex flex-col gap-3">
             {origensFiltradas.map(origem => {
               const isExpanded = expandidos.includes(origem.Codigo_Origem);

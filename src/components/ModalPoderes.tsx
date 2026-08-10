@@ -110,9 +110,9 @@ function PoderCard({
     <div className="mb-3 overflow-hidden rounded-r border-l-4 border-red-800 bg-zinc-950/60">
       <div
         onClick={onToggle}
-        className="flex cursor-pointer items-center justify-between gap-3 bg-zinc-900/80 px-4 py-3 transition hover:bg-zinc-800/80"
+        className="flex flex-wrap cursor-pointer items-center justify-between gap-3 bg-zinc-900/80 px-4 py-3 transition hover:bg-zinc-800/80"
       >
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <span className="font-bold text-zinc-100">{poder.Nome}</span>
           {ehParanormal && paranormalData?.Elemento && (
             <span
@@ -126,9 +126,9 @@ function PoderCard({
             </span>
           )}
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center justify-end gap-3">
           {escolhendoElemento ? (
-            <div className="flex gap-1 items-center bg-zinc-950 p-1 rounded border border-zinc-800">
+            <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800">
               <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline">Elemento:</span>
               {['Sangue', 'Morte', 'Conhecimento', 'Energia'].map(elem => {
                 const valElem = contextoPrereq ? verificarPreRequisitos(poder as Poder, contextoPrereq, elem) : { atende: true };
@@ -157,7 +157,7 @@ function PoderCard({
               </button>
             </div>
           ) : escolhendoPericia ? (
-            <div className="flex gap-1 items-center bg-zinc-950 p-1 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
+            <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
               <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline">Perícia:</span>
               <select
                 className="bg-zinc-900 border border-zinc-700 text-xs text-zinc-300 rounded px-1 outline-none py-1 max-w-[120px]"
@@ -454,7 +454,7 @@ export const ModalPoderes: React.FC = () => {
                   }
                 }}
                 contentEditable
-                className="min-h-36 overflow-y-auto rounded-b border border-zinc-700 bg-zinc-950 p-3 text-left text-sm leading-relaxed text-zinc-100 outline-none focus:border-red-700"
+                className="min-h-36 overflow-y-scroll rounded-b border border-zinc-700 bg-zinc-950 p-3 text-left text-sm leading-relaxed text-zinc-100 outline-none focus:border-red-700"
               />
             </div>
           </div>
@@ -472,7 +472,7 @@ export const ModalPoderes: React.FC = () => {
                   }
                 }}
                 contentEditable
-                className="min-h-24 overflow-y-auto rounded-b border border-zinc-700 bg-zinc-950 p-3 text-left text-sm leading-relaxed text-zinc-100 outline-none focus:border-red-700"
+                className="min-h-24 overflow-y-scroll rounded-b border border-zinc-700 bg-zinc-950 p-3 text-left text-sm leading-relaxed text-zinc-100 outline-none focus:border-red-700"
               />
             </div>
           </div>
@@ -503,7 +503,7 @@ export const ModalPoderes: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-5">
-      <div className="flex h-[75vh] w-full max-w-3xl flex-col rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50">
+      <div className="flex max-h-[85vh] w-full max-w-3xl flex-col rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50">
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-950 rounded-t-lg">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-display m-0 text-lg uppercase tracking-wide text-zinc-100">
@@ -576,7 +576,7 @@ export const ModalPoderes: React.FC = () => {
           </div>
         )}
 
-        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-5">
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-scroll p-5">
           {listaFiltrada.map((poder: any) => {
             const estaExpandido = poderesModalExpandidos.includes(poder.codigo_poder);
             const pp = (poderesParanormais || []).find(

@@ -181,12 +181,14 @@ export interface Arma {
   dt_item: string | null;
   'Automatica?': boolean | null;
   Fonte_Arma: string;
+  Dano_Secundario?: string;
 }
 
 export interface ArmaInventario {
   id: string;
   arma: Arma;
   municoesAcopladas?: string[]; // IDs das munições (MunicaoInventario.id) acopladas a esta arma
+  modificacoes?: number[]; // IDs (Codigo_Modif) das modificações aplicadas
 }
 
 // ============================================================
@@ -205,6 +207,8 @@ export interface Protecao {
 export interface ProtecaoInventario {
   id: string;
   protecao: Protecao;
+  equipado?: boolean;
+  modificacoes?: number[]; // IDs (Codigo_Modif) das modificações aplicadas
 }
 
 // ============================================================
@@ -224,6 +228,8 @@ export interface ItemGeral {
 export interface ItemGeralInventario {
   id: string;
   item: ItemGeral;
+  equipado?: boolean;
+  modificacoes?: number[]; // IDs (Codigo_Modif) das modificações aplicadas
 }
 
 
@@ -242,4 +248,17 @@ export interface Municao {
 export interface MunicaoInventario {
   id: string;
   municao: Municao;
+  modificacoes?: number[];
+}
+
+// ============================================================
+// MODIFICAÇÕES
+// ============================================================
+export interface Modificacao {
+  Codigo_Modif: number;
+  Categoria_Modif: string;
+  Nome_Modif: string;
+  Descricao_Modif: string;
+  'Multiplica?': boolean | null;
+  Efeito: string;
 }

@@ -116,7 +116,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 p-5">
-      <div className="flex h-[80vh] w-full max-w-4xl flex-col rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50">
+      <div className="flex max-h-[85vh] w-full max-w-3xl flex-col rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50">
         
         {/* CABEÇALHO */}
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-950 rounded-t-lg">
@@ -208,7 +208,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
         </div>
 
         {/* LISTA DE RITUAIS */}
-        <div className="flex-1 overflow-y-auto p-5">
+        <div className="flex-1 overflow-y-scroll p-5">
           <div className="flex flex-col gap-3">
             {listaFiltrada.map(ritual => {
               const codigo = ritual.Codigo_Ritual;

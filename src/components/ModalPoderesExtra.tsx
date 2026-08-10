@@ -98,8 +98,8 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
   }, [atributos, nex, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, trilhasHook.trilhaSelecionada, rituaisHook.rituaisAprendidos, rituaisHook.rituais, origensHook.origemSelecionada]);
 
   const [poderesExpandidos, setPoderesExpandidos] = useState<number[]>([]);
-  const [escolhendoElementoId, setEscolhendoElementoId] = useState<number | null>(null);
-  const [escolhendoPericiaId, setEscolhendoPericiaId] = useState<number | null>(null);
+  const [escolhendoElementoId, setEscolhendoElementoId] = useState<number | string | null>(null);
+  const [escolhendoPericiaId, setEscolhendoPericiaId] = useState<number | string | null>(null);
 
   const periciasDisponiveis = useMemo(() => {
     return Object.entries(contextoPrereq.nomesPericias)
@@ -117,7 +117,12 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
     if (abaPrincipal === 'paranormais') {
       let lista = [...poderesParanormais].filter(p => {
         if (subAbaElemento && p.Elemento?.toLowerCase() !== subAbaElemento.toLowerCase()) return false;
-        if (busca.trim() && !p.Nome.toLowerCase().includes(busca.toLowerCase())) return false;
+        if (busca.trim()) {
+          const lower = busca.toLowerCase();
+          const matchesName = p.Nome.toLowerCase().includes(lower);
+          const matchesDesc = (p.Descricao || '').toLowerCase().includes(lower);
+          if (!matchesName && !matchesDesc) return false;
+        }
         return true;
       });
       return lista.sort((a, b) => sortPorElementoENome(a, b, p => p.Elemento, p => p.Nome));
@@ -150,13 +155,15 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
 
         if (busca.trim()) {
           const lower = busca.toLowerCase();
-          if (!p.Nome.toLowerCase().includes(lower)) return false;
+          const matchesName = p.Nome.toLowerCase().includes(lower);
+          const matchesDesc = (p.Descricao || '').toLowerCase().includes(lower);
+          if (!matchesName && !matchesDesc) return false;
         }
 
         return true;
       })
       .sort((a, b) => a.Nome.localeCompare(b.Nome));
-  }, [abaPrincipal, subAbaClasse, subAbaElemento, poderesGerais, poderesParanormais]);
+  }, [abaPrincipal, subAbaClasse, subAbaElemento, poderesGerais, poderesParanormais, busca]);
 
   const trilhasFiltradas = useMemo(() => {
     return trilhas
@@ -173,7 +180,12 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
         
         if (busca.trim()) {
           const lower = busca.toLowerCase();
-          if (!t.Nome_Trilha.toLowerCase().includes(lower)) return false;
+          const mName = t.Nome_Trilha.toLowerCase().includes(lower);
+          const m10 = (t.Nome_Habilidade_10 || '').toLowerCase().includes(lower) || (t.Descricao_10 || '').toLowerCase().includes(lower);
+          const m40 = (t.Nome_Habilidade_40 || '').toLowerCase().includes(lower) || (t.Descricao_40 || '').toLowerCase().includes(lower);
+          const m65 = (t.Nome_Habilidade_65 || '').toLowerCase().includes(lower) || (t.Descricao_65 || '').toLowerCase().includes(lower);
+          const m99 = (t.Nome_Habilidade_99 || '').toLowerCase().includes(lower) || (t.Descricao_99 || '').toLowerCase().includes(lower);
+          if (!mName && !m10 && !m40 && !m65 && !m99) return false;
         }
         return true;
       })
@@ -201,7 +213,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-      <div className="flex h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50" onClick={e => e.stopPropagation()}>
+      <div className="flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50" onClick={e => e.stopPropagation()}>
         
         {/* Header */}
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-950">
@@ -292,7 +304,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
           )}
 
         {/* Lista */}
-        <div className="flex-1 overflow-y-auto p-5">
+        <div className="flex-1 overflow-y-scroll p-5">
           {abaPrincipal === 'trilhas' && trilhasFiltradas.map(trilha => {
             const codigo = trilha.Codigo_Trilha;
             const estaExpandido = poderesExpandidos.includes(codigo);
@@ -394,9 +406,9 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
           })}
 
           {abaPrincipal !== 'trilhas' && listaFiltrada.map(poder => {
-            const codigo = 'codigo_poder' in poder ? poder.codigo_poder : (poder as Poder).codigo_poder;
+            const codigo = ('codigo_poder' in poder && poder.codigo_poder) ? poder.codigo_poder : poder.Nome;
             const ehParanormal = abaPrincipal === 'paranormais';
-            const estaExpandido = poderesExpandidos.includes(codigo);
+            const estaExpandido = poderesExpandidos.includes(codigo as number);
             
             const count = contextoPrereq ? contextoPrereq.poderes.filter(p => p.nome === poder.Nome.toLowerCase()).length : 0;
             let val = { atende: true, motivo: '' };
@@ -414,10 +426,10 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
             return (
               <div key={codigo} className="mb-3 overflow-hidden rounded-r border-l-4 border-red-800 bg-zinc-950/60">
                 <div
-                  onClick={() => toggleExpandir(codigo)}
-                  className="flex cursor-pointer items-center justify-between gap-3 bg-zinc-900/80 px-4 py-3 transition hover:bg-zinc-800/80"
+                  onClick={() => toggleExpandir(codigo as number)}
+                  className="flex flex-wrap cursor-pointer items-center justify-between gap-3 bg-zinc-900/80 px-4 py-3 transition hover:bg-zinc-800/80"
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <span className="font-bold text-zinc-100">{poder.Nome}</span>
                     {ehParanormal && 'Elemento' in poder && poder.Elemento && (
                       <span
@@ -436,9 +448,9 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-3">
-                    {escolhendoElementoId === codigo ? (
-                      <div className="flex gap-1 items-center bg-zinc-950 p-1 rounded border border-zinc-800">
+                  <div className="flex flex-wrap items-center justify-end gap-3">
+                    {escolhendoElementoId != null && escolhendoElementoId === codigo ? (
+                      <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800">
                         <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline">Elemento:</span>
                         {['Sangue', 'Morte', 'Conhecimento', 'Energia'].map(elem => {
                           const valElem = verificarPreRequisitos(poder as Poder, contextoPrereq, elem);
@@ -454,10 +466,10 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                               }}
                               className={`rounded px-1.5 py-0.5 text-[0.55rem] font-bold uppercase transition border ${
                                 !valElem.atende 
-                                  ? 'bg-zinc-900 border-red-900/50 text-red-500 hover:bg-red-900/20' // Adição livre com warning
+                                  ? 'border-red-500 hover:scale-105 opacity-80' 
                                   : 'border-zinc-700 hover:scale-105'
                               }`}
-                              style={valElem.atende ? { backgroundColor: obterCorBadge(elem), color: obterCorTexto(elem) } : undefined}
+                              style={{ backgroundColor: obterCorBadge(elem), color: obterCorTexto(elem) }}
                             >
                               {elem}
                             </button>
@@ -470,8 +482,8 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                           ✕
                         </button>
                       </div>
-                    ) : escolhendoPericiaId === codigo ? (
-                      <div className="flex gap-1 items-center bg-zinc-950 p-1 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
+                    ) : escolhendoPericiaId != null && escolhendoPericiaId === codigo ? (
+                      <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
                         <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline">Perícia:</span>
                         <select
                           className="bg-zinc-900 border border-zinc-700 text-xs text-zinc-300 rounded px-1 outline-none py-1 max-w-[120px]"

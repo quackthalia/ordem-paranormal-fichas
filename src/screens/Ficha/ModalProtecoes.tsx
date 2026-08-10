@@ -13,13 +13,15 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
   React.useEffect(() => {
     if (aberto) {
       document.body.style.overflow = 'hidden';
+      setExpandidos([]);
     } else {
       document.body.style.overflow = 'unset';
+      setExpandidos([]);
     }
     return () => { document.body.style.overflow = 'unset'; };
   }, [aberto]);
 
-  const { protecoesHook, proficiencias } = useRPG();
+  const { protecoesHook, proficienciasTotais, regrasAutomaticasAtivas } = useRPG();
   const [busca, setBusca] = useState('');
   const [filtro, setFiltro] = useState<string>('Todas');
   
@@ -51,7 +53,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
     }
     
     return true;
-  });
+  }).sort((a: Protecao, b: Protecao) => a.Nome_Protecao.localeCompare(b.Nome_Protecao));
   
   const uniqueCategorias = Array.from(new Set((protecoesHook?.protecoes || []).map(p => {
     const c = String(p.Categoria_Protecao).trim().toUpperCase();
@@ -61,7 +63,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" onClick={onFechar}>
-      <div className="flex h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50" onClick={e => e.stopPropagation()}>
+      <div className="flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50" onClick={e => e.stopPropagation()}>
 
         {/* Header */}
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4">
@@ -133,11 +135,11 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
         </div>
 
         {/* Lista de proteções */}
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-scroll p-4">
           <div className="flex flex-col gap-2">
             {protecoesFiltradas.map((protecao: Protecao) => {
               const isExpanded = expandidos.includes(protecao.Codigo_Protecao);
-              const hasProficiencia = proficiencias.includes(protecao.Proficiencia);
+              const hasProficiencia = proficienciasTotais.includes(protecao.Proficiencia);
               return (
                 <div key={protecao.Codigo_Protecao} className="rounded border border-zinc-800 border-l-4 border-l-blue-700 bg-zinc-950/60 transition hover:bg-zinc-900/60">
                   {/* Bloco fechado */}
@@ -187,7 +189,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                       </div>
                       <div className="flex flex-col gap-1 text-xs text-zinc-300">
                         <span><span className="text-blue-400 font-bold">Defesa:</span> {protecao.Defesa_Protecao}</span>
-                        <span><span className="text-blue-400 font-bold">Espaços:</span> {protecao.Espacos_Protecao}</span>
+                        <span><span className="text-blue-400 font-bold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (protecao.Espacos_Protecao === 0.5 || String(protecao.Espacos_Protecao) === '0,5' || String(protecao.Espacos_Protecao) === '0.5')) ? 0.25 : protecao.Espacos_Protecao}</span>
                       </div>
                       <div className="flex flex-col gap-1 mt-1">
                         <p className="text-zinc-400 text-xs leading-relaxed">{protecao.Descricao_Protecao}</p>

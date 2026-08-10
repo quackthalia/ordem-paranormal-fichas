@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../services/supabase';
 import type { ItemGeral, ItemGeralInventario } from '../types';
 
-export function useItens() {
+export function useItens(maxVestimentas: number = 2) {
   const [itens, setItens] = useState<ItemGeral[]>([]);
   const [itensInventario, setItensInventario] = useState<ItemGeralInventario[]>([]);
   const [loading, setLoading] = useState(false);
@@ -41,16 +41,52 @@ export function useItens() {
     });
   };
 
-  const editarItem = (id: string, novosDados: Partial<ItemGeral>) => {
+  const editarItem = (id: string, novosDados: Partial<ItemGeral>, novasModificacoes?: number[]) => {
     setItensInventario(prev => prev.map(item => {
       if (item.id === id) {
-        return {
+        const ret: ItemGeralInventario = {
           ...item,
           item: { ...item.item, ...novosDados }
         };
+        if (novasModificacoes !== undefined) {
+          ret.modificacoes = novasModificacoes;
+        }
+        return ret;
       }
       return item;
     }));
+  };
+
+  const toggleEquipado = (id: string) => {
+    setItensInventario(prev => {
+      const alvo = prev.find(i => i.id === id);
+      if (!alvo) return prev;
+
+      const vaEquipar = !alvo.equipado;
+      if (!vaEquipar) {
+        // Desequipar: sempre permite
+        return prev.map(i => i.id === id ? { ...i, equipado: false } : i);
+      }
+
+      // Equipar: verificar se já tem 2 vestimentas equipadas
+      const nomeItemTarget = alvo.item.Nome_Item.toLowerCase();
+      const isVestimenta = nomeItemTarget.includes('vestimenta') || nomeItemTarget.includes('amuleto sagrado');
+      
+      if (isVestimenta) {
+        const vestimentasEquipadas = prev.filter(i => i.id !== id && i.equipado && (i.item.Nome_Item.toLowerCase().includes('vestimenta') || i.item.Nome_Item.toLowerCase().includes('amuleto sagrado')));
+        if (vestimentasEquipadas.length >= maxVestimentas) {
+          // Desequipar a primeira vestimenta equipada (a mais antiga)
+          const idDesEquipar = vestimentasEquipadas[0].id;
+          return prev.map(i => {
+            if (i.id === id) return { ...i, equipado: true };
+            if (i.id === idDesEquipar) return { ...i, equipado: false };
+            return i;
+          });
+        }
+      }
+
+      return prev.map(i => i.id === id ? { ...i, equipado: true } : i);
+    });
   };
 
   const cargaItens = useMemo(() => {
@@ -93,6 +129,7 @@ export function useItens() {
     removerItem, 
     reordenarItens, 
     editarItem, 
+    toggleEquipado,
     cargaItens, 
     contagemPorCategoria,
     gruposUnicos,

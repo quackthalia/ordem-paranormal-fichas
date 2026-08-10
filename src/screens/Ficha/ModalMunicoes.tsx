@@ -18,7 +18,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
     return () => { document.body.style.overflow = 'unset'; };
   }, []);
 
-  const { municoesHook } = useRPG();
+  const { municoesHook, regrasAutomaticasAtivas } = useRPG();
   const [busca, setBusca] = useState('');
   
   const [mostrarFiltrosAvançados, setMostrarFiltrosAvançados] = useState(false);
@@ -42,7 +42,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
     if (filtroTipo !== 'Todos' && m.Tipo_Arma !== filtroTipo) return false;
     
     return true;
-  });
+  }).sort((a: Municao, b: Municao) => a.Nome_Item.localeCompare(b.Nome_Item));
   
   const uniqueCategorias = Array.from(new Set(municoesDisponiveis.map(m => {
     const c = String(m.Categoria_Item).trim().toUpperCase();
@@ -55,7 +55,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" onClick={onFechar}>
       <div 
-        className="flex h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50"
+        className="flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4">
@@ -119,7 +119,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto p-2 flex flex-col gap-2 custom-scrollbar">
+        <div className="flex-1 overflow-y-scroll p-2 flex flex-col gap-2 custom-scrollbar">
           {municoesFiltradas.length === 0 ? (
             <div className="text-center text-zinc-500 italic p-4">Nenhuma munição encontrada.</div>
           ) : (
@@ -132,7 +132,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
                     <span className="text-xs text-zinc-400 mt-1 leading-relaxed">{formatarTexto(municao.Descricao_Item)}</span>
                     <div className="flex gap-4 text-xs mt-2 text-zinc-500 font-bold uppercase tracking-wider">
                       <span>Categoria: <span className="text-red-400">{municao.Categoria_Item}</span></span>
-                      <span>Espaços: <span className="text-red-400">{municao['Espaços_Item']}</span></span>
+                      <span>Espaços: <span className="text-red-400">{(regrasAutomaticasAtivas.has(43) && (municao['Espaços_Item'] === 0.5 || String(municao['Espaços_Item']) === '0,5' || String(municao['Espaços_Item']) === '0.5')) ? 0.25 : municao['Espaços_Item']}</span></span>
                     </div>
                   </div>
                   

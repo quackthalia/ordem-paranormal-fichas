@@ -565,7 +565,7 @@ export const AbasPanel: React.FC = () => {
           // Ignora duplicata
         } else {
           if (pp) poderesRenderizados.add(nomeBaseCheck);
-          lista.push({ id: `escolha_extra_${key}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria });
+          lista.push({ id: `escolha_${key}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria });
         }
       }
     });
@@ -647,7 +647,7 @@ export const AbasPanel: React.FC = () => {
 
         const usouRegra31 = poderesEscolhidos['extra_regra31'];
         if (usouRegra31) {
-           lista.push({ id: 'extra_regra31', nome: usouRegra31.nome, descricao: usouRegra31.descricao, tipo: 'Especialista Diletante', categoria: diletanteCat, fonte: usouRegra31.fonte, preRequisitos: usouRegra31.preRequisitos, elemento: usouRegra31.elemento, afinidade: usouRegra31.afinidade });
+           lista.push({ id: 'escolha_extra_regra31', nome: usouRegra31.nome, descricao: usouRegra31.descricao, tipo: 'Especialista Diletante', categoria: diletanteCat, fonte: usouRegra31.fonte, preRequisitos: usouRegra31.preRequisitos, elemento: usouRegra31.elemento, afinidade: usouRegra31.afinidade });
         } else {
            lista.push({ id: 'escolha_extra_regra31', nome: 'Escolher Poder de Outra Classe', descricao: 'Clique no "+" para abrir a lista e selecionar seu poder extra.', tipo: 'Especialista Diletante', isSlotVazio: true, nexDoSlot: 0, categoria: diletanteCat });
         }
@@ -658,7 +658,7 @@ export const AbasPanel: React.FC = () => {
         const extraKey = 'extra_regra37';
         const usouRegra37 = poderesEscolhidos[extraKey];
         if (usouRegra37) {
-           lista.push({ id: extraKey, nome: usouRegra37.nome, descricao: usouRegra37.descricao, tipo: 'Dominar Habilidade Ritualística', categoria: 'trilha', fonte: usouRegra37.fonte, preRequisitos: usouRegra37.preRequisitos, elemento: usouRegra37.elemento, afinidade: usouRegra37.afinidade });
+           lista.push({ id: `escolha_${extraKey}`, nome: usouRegra37.nome, descricao: usouRegra37.descricao, tipo: 'Dominar Habilidade Ritualística', categoria: 'trilha', fonte: usouRegra37.fonte, preRequisitos: usouRegra37.preRequisitos, elemento: usouRegra37.elemento, afinidade: usouRegra37.afinidade });
         } else {
            lista.push({ id: `escolha_${extraKey}`, nome: 'Escolher Poder de Trilha', descricao: 'Clique no "+" para abrir a lista e selecionar sua habilidade ritualística.', tipo: 'Dominar Habilidade Ritualística', isSlotVazio: true, nexDoSlot: 0, categoria: 'trilha' });
         }
@@ -668,7 +668,7 @@ export const AbasPanel: React.FC = () => {
         const extraKey = 'extra_regra39';
         const usouRegra39 = poderesEscolhidos[extraKey];
         if (usouRegra39) {
-           lista.push({ id: extraKey, nome: usouRegra39.nome, descricao: usouRegra39.descricao, tipo: 'Poder Paranormal Extra', categoria: 'paranormais', fonte: usouRegra39.fonte, preRequisitos: usouRegra39.preRequisitos, elemento: usouRegra39.elemento, afinidade: usouRegra39.afinidade });
+           lista.push({ id: `escolha_${extraKey}`, nome: usouRegra39.nome, descricao: usouRegra39.descricao, tipo: 'Poder Paranormal Extra', categoria: 'paranormais', fonte: usouRegra39.fonte, preRequisitos: usouRegra39.preRequisitos, elemento: usouRegra39.elemento, afinidade: usouRegra39.afinidade });
         } else {
            lista.push({ id: `escolha_${extraKey}`, nome: 'Escolher Poder Paranormal', descricao: 'Clique no "+" para abrir a lista e selecionar seu poder paranormal extra.', tipo: 'Poder Paranormal Extra', isSlotVazio: true, nexDoSlot: 0, categoria: 'paranormais' });
         }
@@ -927,14 +927,14 @@ export const AbasPanel: React.FC = () => {
                                      </div>
                                   )}
 
-                                  <div className="mt-4 flex gap-2.5">
+                                  <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-zinc-800/50">
                                     {!isVersatilidade && (
                                       <button onClick={(e) => { e.stopPropagation(); setEditandoTrilha(true); }}
-                                        className="flex-1 rounded border border-zinc-700 bg-zinc-800 p-2 text-xs font-bold text-zinc-200 transition hover:bg-zinc-700"
+                                        className="text-xs px-3 py-1.5 rounded bg-zinc-900 border border-zinc-700 hover:border-yellow-700 hover:bg-yellow-900/20 text-zinc-300 hover:text-yellow-400 transition-colors"
                                       >Editar</button>
                                     )}
                                     <button onClick={(e) => { e.stopPropagation(); isVersatilidade ? trilhasHook.setVersatilidadeSelecionada(null) : trilhasHook.setTrilhaSelecionada(null); }}
-                                      className="flex-1 rounded border border-red-900/50 bg-red-950/30 p-2 text-xs font-bold text-red-500 transition hover:bg-red-900/50 hover:text-red-300"
+                                      className="text-xs text-red-500 hover:text-red-400 bg-red-950/30 hover:bg-red-900/50 px-3 py-1.5 rounded border border-red-900/50 transition-colors"
                                     >Remover</button>
                                   </div>
                                 </div>
@@ -1044,9 +1044,9 @@ export const AbasPanel: React.FC = () => {
                                 )}
 
                                 {(!hab.isSlotVazio && (hab.id.startsWith('escolha_nex_') || hab.id.startsWith('escolha_extra_'))) && (
-                                  <div className="mt-4 flex gap-2.5">
+                                  <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-zinc-800/50">
                                     <button onClick={(e) => { e.stopPropagation(); const nivel = extrairKeyDoId(hab.id); if (nivel !== null) { setNexPoderEditando(nivel); setNomeEditando(hab.nome); setDescricaoEditando(hab.descricao); setAfinidadeEditando(hab.afinidade || ''); } }}
-                                      className="flex-1 rounded border border-zinc-700 bg-zinc-800 p-2 text-xs font-bold text-zinc-200 transition hover:bg-zinc-700"
+                                      className="text-xs px-3 py-1.5 rounded bg-zinc-900 border border-zinc-700 hover:border-yellow-700 hover:bg-yellow-900/20 text-zinc-300 hover:text-yellow-400 transition-colors"
                                     >Editar</button>
                                     <button onClick={(e) => { 
                                       e.stopPropagation(); 
@@ -1069,8 +1069,8 @@ export const AbasPanel: React.FC = () => {
                                         removerPoder(nivel); 
                                       }
                                     }}
-                                      className="flex-1 rounded border border-red-900 bg-transparent p-2 text-xs font-bold text-red-500 transition hover:bg-red-950/40"
-                                    >Remover Poder</button>
+                                      className="text-xs text-red-500 hover:text-red-400 bg-red-950/30 hover:bg-red-900/50 px-3 py-1.5 rounded border border-red-900/50 transition-colors"
+                                    >Remover</button>
                                   </div>
                                 )}
                               </div>

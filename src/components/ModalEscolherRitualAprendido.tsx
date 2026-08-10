@@ -40,7 +40,7 @@ export const ModalEscolherRitualAprendido: React.FC<Props> = ({ isOpen, onClose,
         </div>
 
         {/* Lista */}
-        <div className="flex-1 overflow-y-auto max-h-[60vh] px-6 pb-6 custom-scrollbar">
+        <div className="flex-1 overflow-y-scroll max-h-[60vh] px-6 pb-6 custom-scrollbar">
           <div className="flex flex-col gap-2">
             {rituaisFiltrados.length === 0 ? (
               <p className="text-zinc-500 text-sm text-center py-4 italic">Nenhum ritual encontrado.</p>

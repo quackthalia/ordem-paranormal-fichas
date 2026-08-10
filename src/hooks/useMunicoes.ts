@@ -33,6 +33,15 @@ export function useMunicoes() {
     setMunicoesInventario(prev => prev.filter(item => item.id !== id));
   }, []);
 
+  const atualizarMunicao = useCallback((id: string, updates: Partial<MunicaoInventario>) => {
+    setMunicoesInventario(prev => prev.map(item => {
+      if (item.id === id) {
+        return { ...item, ...updates };
+      }
+      return item;
+    }));
+  }, []);
+
   const cargaMunicoes = useMemo(() => {
     return municoesInventario.reduce((acc, item) => {
       let esp = item.municao['Espaços_Item'];
@@ -112,6 +121,7 @@ export function useMunicoes() {
     setMunicoesInventario,
     adicionarMunicao,
     removerMunicao,
+    atualizarMunicao,
     reordenarMunicoes,
     cargaMunicoes,
     contagemPorCategoria,

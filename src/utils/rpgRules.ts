@@ -381,9 +381,13 @@ export function categoriaNumParaRoman(num: number): string {
   return 'IV';
 }
 
-export function calcularCategoriaFinal(categoriaBase: string | number | null | undefined, modificacoesIds?: number[], allModificacoes?: any[]): string {
+export function calcularCategoriaFinal(categoriaBase: string | number | null | undefined, modificacoesIds?: number[], allModificacoes?: any[], isArmaID71?: boolean): string {
   const baseNum = categoriaRomanParaNum(categoriaBase);
   let modificador = modificacoesIds?.length || 0;
+
+  if (isArmaID71 && modificador > 0) {
+    modificador -= 1;
+  }
 
   if (modificacoesIds && allModificacoes) {
     const temApocaliptica = modificacoesIds.some(id => {

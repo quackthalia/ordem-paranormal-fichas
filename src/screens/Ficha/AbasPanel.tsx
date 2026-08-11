@@ -1676,6 +1676,11 @@ export const AbasPanel: React.FC = () => {
               titulo="Reter Ritual"
               descricao="Retida. Quando conjura um ritual com duração cena, pode mudar a duração para retida como ação livre ou reação. Você retém os PE, reduzindo eles do seu valor atual e máximo. Enquanto você mantiver os PE retidos, o ritual permanecerá funcionando. Você está usando suas energias naturais e sobrenaturais para abrir sua comunicação com o Outro Lado e manter o fluxo a partir dela aberto. Entretanto, sempre que reter um ritual, você perde 1 SAN — manter seu pedido para o Outro Lado cobra seu preço."
             />
+            <RegraCheckbox
+              nome="contagem_municao"
+              titulo="Contagem de Munição"
+              descricao="A regra de munição, explicada na página 59, foi desenvolvida para simular ação cinematográfica e para agilizar o jogo, evitando que jogadores gastem tempo contando cada bala disparada. Se o seu grupo preferir uma abordagem mais realista — e não se importar com um pouco de “contabilidade” — pode usar contagem de munição concreta, e não abstrata. Fonte: OPRPG, p. 174."
+            />
           </div>
         )}
       </div>

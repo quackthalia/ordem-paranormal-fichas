@@ -243,6 +243,7 @@ export interface Municao {
   Tipo_Arma: string;
   Categoria_Item: string;
   'Espaços_Item': number;
+  contagem_municao?: number | string | null;
 }
 
 export interface MunicaoInventario {

@@ -20,11 +20,16 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
   React.useEffect(() => {
     if (aberto) {
       document.body.style.overflow = 'hidden';
-      setExpandidos([]);
     } else {
       document.body.style.overflow = 'unset';
-      setExpandidos([]);
     }
+    setExpandidos([]);
+    setBusca('');
+    setFiltro('Todas');
+    setFiltroTipo('Todos');
+    setFiltroEmpunhadura('Todas');
+    setFiltroAlcance('Todos');
+    setMostrarFiltrosAvançados(false);
     return () => { document.body.style.overflow = 'unset'; };
   }, [aberto]);
 
@@ -112,7 +117,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" onClick={onFechar}>
-      <div className="flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50" onClick={e => e.stopPropagation()}>
+      <div className="flex h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50" onClick={e => e.stopPropagation()}>
         
         {/* Header */}
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4">
@@ -149,6 +154,16 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
         {/* Filtros Avançados */}
         {mostrarFiltrosAvançados && (
           <div className="flex flex-wrap items-center gap-3 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
+            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Proficiência</label>
+              <select 
+                value={filtro} 
+                onChange={(e) => setFiltro(e.target.value)}
+                className="w-full rounded border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs text-zinc-300 outline-none"
+              >
+                {filtros.map(f => <option key={f.valor} value={f.valor}>{f.label}</option>)}
+              </select>
+            </div>
             <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
               <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Tipo de Arma</label>
               <select 
@@ -190,26 +205,6 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
             </div>
           </div>
         )}
-
-        {/* Filtros de proficiência originais */}
-        <div className="flex flex-wrap gap-1 border-b border-zinc-800 bg-zinc-950/80 px-3 py-2">
-          {filtros.map(f => {
-            const ativo = filtro === f.valor;
-            return (
-              <button
-                key={f.valor}
-                onClick={() => setFiltro(f.valor)}
-                className={`rounded px-2.5 py-1 text-[0.55rem] font-bold uppercase tracking-wider transition border ${
-                  ativo
-                    ? 'bg-red-900/40 text-red-300 border-red-800'
-                    : 'bg-zinc-800/60 text-zinc-500 border-zinc-700 hover:text-zinc-300'
-                }`}
-              >
-                {f.label}
-              </button>
-            );
-          })}
-        </div>
 
         {/* Lista de armas */}
         <div className="flex-1 overflow-y-scroll p-4">

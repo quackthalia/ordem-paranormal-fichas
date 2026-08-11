@@ -172,6 +172,12 @@ export function ModalEditarItem({
       }
 
       const cat = m.Categoria_Modif.toLowerCase().trim();
+      
+      // Regra específica: Soqueira
+      if (nome.toLowerCase().includes('soqueira')) {
+        if (cat.includes('corpo a corpo') || cat.includes('disparo')) return true;
+      }
+
       const grupoLower = grupo.toLowerCase().trim();
       
       // Se a categoria da mod bater com o grupo do item (ex: Medicamentos, Acessórios)

@@ -13,11 +13,14 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
   React.useEffect(() => {
     if (aberto) {
       document.body.style.overflow = 'hidden';
-      setExpandidos([]);
     } else {
       document.body.style.overflow = 'unset';
-      setExpandidos([]);
     }
+    setExpandidos([]);
+    setBusca('');
+    setFiltro('Todas');
+    setFiltroCategoria('Todas');
+    setMostrarFiltrosAvançados(false);
     return () => { document.body.style.overflow = 'unset'; };
   }, [aberto]);
 
@@ -63,7 +66,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" onClick={onFechar}>
-      <div className="flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50" onClick={e => e.stopPropagation()}>
+      <div className="flex h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50" onClick={e => e.stopPropagation()}>
 
         {/* Header */}
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4">

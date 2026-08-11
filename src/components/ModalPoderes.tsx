@@ -503,7 +503,7 @@ export const ModalPoderes: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-5">
-      <div className="flex max-h-[85vh] w-full max-w-3xl flex-col rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50">
+      <div className="flex h-[85vh] w-full max-w-3xl flex-col rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50">
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-950 rounded-t-lg">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-display m-0 text-lg uppercase tracking-wide text-zinc-100">

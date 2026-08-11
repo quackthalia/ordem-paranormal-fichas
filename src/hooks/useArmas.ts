@@ -23,6 +23,72 @@ export function useArmas() {
     carregar();
   }, []);
 
+  useEffect(() => {
+    setArmasInventario(prev => {
+      const armasDeFogo = prev.filter(a => a.id !== 'coronhada-virtual' && a.arma.Tipo_Arma?.toLowerCase().includes('fogo'));
+      const coronhadaIndex = prev.findIndex(a => a.id === 'coronhada-virtual');
+      const hasCoronhada = coronhadaIndex !== -1;
+
+      if (armasDeFogo.length > 0) {
+        const temDuasMaos = armasDeFogo.some(a => a.arma.Empunhadura_Arma?.toLowerCase().includes('duas'));
+        const temUmaMao = armasDeFogo.some(a => !a.arma.Empunhadura_Arma?.toLowerCase().includes('duas'));
+        
+        let danoCoronhada = '1d4';
+        let empunhadura = 'Uma Mão';
+        
+        if (temDuasMaos && temUmaMao) {
+          danoCoronhada = '1d4/1d6';
+          empunhadura = 'Uma/Duas Mãos';
+        } else if (temDuasMaos) {
+          danoCoronhada = '1d6';
+          empunhadura = 'Duas Mãos';
+        }
+
+        if (!hasCoronhada) {
+          const coronhadaVirtual: ArmaInventario = {
+            id: 'coronhada-virtual',
+            arma: {
+              Codigo_Arma: -1,
+              Nome_Item: 'Coronhada',
+              Descricao_Item: 'Você pode usar uma arma de fogo como uma arma corpo a corpo.',
+              Proficiencia: 'Armas Simples',
+              Tipo_Arma: 'Corpo a Corpo',
+              Empunhadura_Arma: empunhadura,
+              Dano_Arma: danoCoronhada,
+              Critico_Arma: 20,
+              Multiplicador_Arma: 2,
+              Tipo_Dano_Arma: 'Impacto',
+              Alcance_Item: null,
+              Categoria_Item: '0',
+              'Espaços_Item': 0,
+              'Agil?': false,
+              Capacidade_Municao: null,
+              dt_item: null,
+              'Automatica?': false,
+              Fonte_Arma: 'Sistema'
+            },
+            modificacoes: [],
+            municoesAcopladas: []
+          };
+          return [...prev, coronhadaVirtual];
+        } else {
+          const coronhada = prev[coronhadaIndex];
+          if (coronhada.arma.Dano_Arma !== danoCoronhada) {
+            const next = [...prev];
+            next[coronhadaIndex] = {
+              ...coronhada,
+              arma: { ...coronhada.arma, Dano_Arma: danoCoronhada, Empunhadura_Arma: empunhadura }
+            };
+            return next;
+          }
+        }
+      } else if (hasCoronhada) {
+        return prev.filter(a => a.id !== 'coronhada-virtual');
+      }
+      return prev;
+    });
+  }, [armasInventario.map(a => `${a.id}-${a.arma.Dano_Arma}-${a.arma.Tipo_Arma}-${a.arma.Empunhadura_Arma}`).join(',')]);
+
   const adicionarArma = (arma: Arma) => {
     const newId = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
     setArmasInventario(prev => [...prev, { id: newId, arma }]);

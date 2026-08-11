@@ -86,6 +86,11 @@ export function ModalEditarArma({
 
   const catNum = categoriaRomanParaNum(categoria);
   let modificador = modificacoes.length;
+
+  if (arma.Codigo_Arma === 71 && modificador > 0) {
+    modificador -= 1;
+  }
+
   const temApocaliptica = modificacoes.some(id => {
     const nome = modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)?.Nome_Modif.trim().toLowerCase();
     return nome === 'apocalíptica';

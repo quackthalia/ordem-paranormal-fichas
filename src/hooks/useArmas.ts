@@ -9,10 +9,12 @@ export function useArmas() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     async function carregar() {
       setLoading(true);
       setError(null);
       const { data, error } = await supabase.from('Armas').select('*');
+      if (cancelled) return;
       if (error) {
         setError(error.message);
       } else if (data) {
@@ -21,6 +23,7 @@ export function useArmas() {
       setLoading(false);
     }
     carregar();
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {

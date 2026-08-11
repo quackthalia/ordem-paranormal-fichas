@@ -500,15 +500,18 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                           <option value="" disabled>Escolher...</option>
                           {periciasDisponiveis.map(p => {
                             const valPericia = verificarPreRequisitos(poder as Poder, contextoPrereq, undefined, p.id);
+                            const isFocoEmPericia = (poder as any).Codigo_Regra === 42;
+                            const jaFocou = isFocoEmPericia && contextoPrereq ? Object.values(contextoPrereq.poderes).some(pe => pe.codigoRegra === 42 && pe.periciaEscolhidaNome === p.nome) : false;
+                            const isDisabled = !valPericia.atende || jaFocou;
                             return (
-                              <option 
-                                key={p.id} 
-                                value={p.id} 
-                                disabled={!valPericia.atende}
-                                style={{ color: !valPericia.atende ? '#52525b' : '#e4e4e7', backgroundColor: !valPericia.atende ? '#18181b' : '#27272a' }}
-                                className={!valPericia.atende ? "italic" : ""}
+                              <option
+                                key={p.id}
+                                value={p.id}
+                                disabled={isDisabled}
+                                style={{ color: isDisabled ? '#52525b' : '#e4e4e7', backgroundColor: isDisabled ? '#18181b' : '#27272a' }}
+                                className={isDisabled ? "italic" : ""}
                               >
-                                {p.nome}
+                                {p.nome} {jaFocou ? "(Já Escolhido)" : ""}
                               </option>
                             );
                           })}

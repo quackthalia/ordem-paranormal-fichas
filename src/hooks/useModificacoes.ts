@@ -8,10 +8,12 @@ export function useModificacoes() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     async function carregar() {
       setLoading(true);
       setError(null);
       const { data, error } = await supabase.from('Modificações').select('*');
+      if (cancelled) return;
       if (error) {
         console.error('Erro ao buscar modificações:', error);
         setError(error.message);
@@ -21,6 +23,7 @@ export function useModificacoes() {
       setLoading(false);
     }
     carregar();
+    return () => { cancelled = true; };
   }, []);
 
   // Helper function to find modifications by their IDs

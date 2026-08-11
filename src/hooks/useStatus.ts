@@ -128,10 +128,10 @@ export function useStatus(
 
       prevCalc.current = { pv: calcMaxPv, san: calcMaxSan, pe: calcMaxPe, pd: calcMaxPd, init: true };
     }
-  }, [calcMaxPv, calcMaxSan, calcMaxPe, classe]);
+  }, [calcMaxPv, calcMaxSan, calcMaxPe, calcMaxPd, classe]);
 
   const alterarStatus = useCallback(
-    (tipo: 'pv' | 'san' | 'pe', qtd: number) => {
+    (tipo: 'pv' | 'san' | 'pe' | 'pd', qtd: number) => {
       if (tipo === 'pv')
         setPvAtual(prev => Math.max(0, Math.min(pvMax, (prev ?? 0) + qtd)));
       if (tipo === 'san')
@@ -141,7 +141,7 @@ export function useStatus(
       if (tipo === 'pd')
         setPdAtual(prev => Math.max(0, Math.min(pdMax, (prev ?? 0) + qtd)));
     },
-    [pvMax, sanMax, peMax]
+    [pvMax, sanMax, peMax, pdMax]
   );
 
   const resetarStatus = useCallback(() => {

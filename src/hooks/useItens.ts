@@ -9,10 +9,12 @@ export function useItens(maxVestimentas: number = 2) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     async function carregar() {
       setLoading(true);
       setError(null);
       const { data, error } = await supabase.from('Itens').select('*');
+      if (cancelled) return;
       if (error) {
         setError(error.message);
       } else if (data) {
@@ -21,6 +23,7 @@ export function useItens(maxVestimentas: number = 2) {
       setLoading(false);
     }
     carregar();
+    return () => { cancelled = true; };
   }, []);
 
   const adicionarItem = (item: ItemGeral) => {
@@ -114,10 +117,11 @@ export function useItens(maxVestimentas: number = 2) {
     const contagem = [0, 0, 0, 0];
     itensInventario.forEach(obj => {
       const cat = String(obj.item.Categoria_Item).trim().toUpperCase();
-      if (cat === 'I' || cat === '1') contagem[1]++;
-      else if (cat === 'II' || cat === '2') contagem[2]++;
-      else if (cat === 'III' || cat === '3') contagem[3]++;
-      else if (cat === '0' || cat === 'O') contagem[0]++;
+      if (cat === 'I' || cat === '1') contagem[0]++;
+      else if (cat === 'II' || cat === '2') contagem[1]++;
+      else if (cat === 'III' || cat === '3') contagem[2]++;
+      else if (cat === 'IV' || cat === '4') contagem[3]++;
+      // Categoria '0' (itens de graça/sem categoria) não entra no limite de crédito por categoria.
     });
     return contagem;
   }, [itensInventario]);

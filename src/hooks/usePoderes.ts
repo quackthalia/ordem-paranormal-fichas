@@ -125,19 +125,11 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
   useEffect(() => {
     let cancelled = false;
     async function carregar() {
-      console.log('🔍 Buscando PoderesParanormais...');
       const { data, error: err } = await supabase.from('PoderesParanormais').select('*');
       if (cancelled) return;
       if (err) console.error(err);
       else if (data) {
-        const normalizados = data.map(normalizarPoderParanormal);
-        console.log('🔥 Poderes Paranormais carregados:', normalizados.length);
-        normalizados.forEach(p => {
-          if (p.PreRequisitosAfinidade) {
-            console.log(`⚡ Poder "${p.Nome}" tem PreRequisitosAfinidade: "${p.PreRequisitosAfinidade}"`);
-          }
-        });
-        setPoderesParanormais(normalizados);
+        setPoderesParanormais(data.map(normalizarPoderParanormal));
       }
     }
     carregar();
@@ -158,7 +150,8 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
 
       const { data, error: err } = await supabase.from('Poderes').select('*').eq('Codigo_Poder', codigoPoder).single();
       if (cancelled) return;
-      if (!err && data) setPoderClasse(normalizarPoder(data));
+      if (err) { console.error(err); setError(err.message); }
+      else if (data) setPoderClasse(normalizarPoder(data));
     }
     carregar();
     return () => { cancelled = true; };

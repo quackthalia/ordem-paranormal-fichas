@@ -507,7 +507,7 @@ export function verificarPreRequisitos(
       if (!resAttr.atende) return resAttr;
       if (!contexto.rituaisAprendidos || !contexto.rituaisAprendidos.some(r => {
          const def = contexto.rituais?.find(rd => rd.Nome_Ritual === r.nome);
-         return def && parseInt(def.Circulo) >= 2;
+         return def && def.Circulo_Ritual >= 2;
       })) {
         return { atende: false, motivo: 'Ritual de 2º Círculo' };
       }
@@ -661,8 +661,8 @@ export function verificarPreRequisitos(
     case 45: {
       // Ter um ritual de Sangue
       const temSangue = contexto.rituaisAprendidos?.some(ra => {
-        const def = contexto.rituais?.find(r => r.Nome_Ritual === (ra as any).nome);
-        return def && def.Elemento?.toLowerCase().trim() === 'sangue';
+        const def = contexto.rituais?.find(r => r.Nome_Ritual === ra.nome);
+        return def && def.Elemento_Ritual?.toLowerCase().trim() === 'sangue';
       });
       if (!temSangue) {
         return { atende: false, motivo: 'Ritual de Sangue' };

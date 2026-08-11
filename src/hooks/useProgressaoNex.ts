@@ -9,10 +9,11 @@ export interface ProgressaoNexItem {
 }
 
 export function useProgressaoNex() {
-  const [itensProgressao, setItensProgressao] = useState<any[]>([]);
+  const [itensProgressao, setItensProgressao] = useState<ProgressaoNexItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
     async function fetchProgressao() {
       try {
         // TABELA NO SUPABASE: Progressão NEX
@@ -21,19 +22,21 @@ export function useProgressaoNex() {
           .select("*")
           .order("Codigo_Progrecao", { ascending: true });
 
+        if (cancelled) return;
         if (error) {
           console.error("Erro ao buscar Progressão NEX:", error);
         } else if (data) {
-          setItensProgressao(data);
+          setItensProgressao(data as ProgressaoNexItem[]);
         }
       } catch (err) {
-        console.error("Exceção ao buscar Progressão NEX:", err);
+        if (!cancelled) console.error("Exceção ao buscar Progressão NEX:", err);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
 
     fetchProgressao();
+    return () => { cancelled = true; };
   }, []);
 
   return { itensProgressao, loading };

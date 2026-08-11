@@ -73,7 +73,10 @@ export function ModalEditarItem({
     });
   };
 
-  const temDiscreto = modificacoes.some(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)?.Nome_Modif.trim().toLowerCase() === 'discreto');
+  const temDiscreto = modificacoes.some(id => {
+    const nome = modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)?.Nome_Modif.trim().toLowerCase();
+    return nome === 'discreto' || nome === 'discreta';
+  });
   
   const getEspacoNumber = (val: string | number) => {
     const num = Number(String(val).replace(',', '.').replace(/[^0-9.-]+/g, ''));

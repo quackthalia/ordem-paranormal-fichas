@@ -2,6 +2,8 @@ import React, { useState, useMemo } from 'react';
 import type { Ritual } from '../types';
 import { sortPorElementoENome } from '../utils/rpgRules';
 
+const BANNED_RITUAIS = [10, 17, 49, 53, 64, 116];
+
 // Cores e utilitários replicados do sistema principal
 const CORES_ELEMENTOS: Record<string, string> = {
   sangue: '#b31717',
@@ -73,7 +75,7 @@ export const ModalRituaisExtra: React.FC<ModalRituaisExtraProps> = ({
     // let filtrada = rituais.filter(r => !rituaisAprendidosIds.includes(r.Codigo_Ritual));
     // MAS espera, como a chave de RitualAprendido usa a "origem", você PODE ter o mesmo ritual duas vezes.
     // Deixarei todos disponíveis.
-    let filtrada = rituais;
+    let filtrada = rituais.filter(r => !BANNED_RITUAIS.includes(r.Codigo_Ritual));
 
     if (abaElemento) {
       filtrada = filtrada.filter(r => {

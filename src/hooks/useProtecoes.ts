@@ -9,11 +9,12 @@ export function useProtecoes() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     async function carregar() {
       setLoading(true);
       setError(null);
       const { data, error } = await supabase.from('Proteções').select('*');
-      console.log('[useProtecoes] data:', data, 'error:', error);
+      if (cancelled) return;
       if (error) {
         setError(error.message);
       } else if (data) {
@@ -22,6 +23,7 @@ export function useProtecoes() {
       setLoading(false);
     }
     carregar();
+    return () => { cancelled = true; };
   }, []);
 
   const adicionarProtecao = useCallback((protecao: Protecao) => {

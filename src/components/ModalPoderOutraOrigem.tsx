@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useRPG } from '../context/RPGContext';
 import { InputOtimizado } from './InputOtimizado';
 import { supabase } from '../services/supabase';
 import type { Origem } from '../types';
 import { ModalEscolherRitualAprendido } from './ModalEscolherRitualAprendido';
+import type { ContextoPreRequisitos } from '../utils/preRequisitos';
 
 function formatarDescricao(texto: string): string {
   if (!texto) return '';
@@ -21,7 +22,7 @@ function formatarDescricao(texto: string): string {
 }
 
 export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
-  const { poderesHook, origensHook, contextoPrereq } = useRPG();
+  const { nex, atributos, periciasHook, poderesHook, origensHook, rituaisHook } = useRPG();
   const [origens, setOrigens] = useState<Origem[]>([]);
   const [filtro, setFiltro] = useState('');
   const [expandidos, setExpandidos] = useState<number[]>([]);
@@ -29,6 +30,25 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
   const [escolhendoElementoId, setEscolhendoElementoId] = useState<number | null>(null);
   const [escolhendoRitualId, setEscolhendoRitualId] = useState<number | null>(null);
   const [escolhendoPericiaId, setEscolhendoPericiaId] = useState<number | null>(null);
+
+  const contextoPrereq: ContextoPreRequisitos = useMemo(() => {
+    const poderesArray: { nome: string; elemento?: string; codigoRegra?: number | null; periciaEscolhidaNome?: string }[] = Object.values(poderesHook.poderesEscolhidos).map(p => ({
+      nome: p.nome.toLowerCase(),
+      elemento: p.elemento,
+      codigoRegra: p.codigoRegra,
+      periciaEscolhidaNome: p.periciaEscolhidaNome
+    }));
+
+    return {
+      atributos,
+      nex,
+      pericias: periciasHook.pericias,
+      nomesPericias: periciasHook.nomesPericias,
+      poderes: poderesArray,
+      rituaisAprendidos: rituaisHook.rituaisAprendidos,
+      rituais: rituaisHook.rituais
+    };
+  }, [atributos, nex, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, rituaisHook.rituaisAprendidos, rituaisHook.rituais]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -48,6 +68,8 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
     o.Nome.toLowerCase().includes(filtro.toLowerCase()) && 
     o.Codigo_Origem !== origensHook.origemSelecionada?.Codigo_Origem
   );
+
+  const periciasDisponiveis = Object.entries(contextoPrereq.nomesPericias).map(([id, nome]) => ({ id: Number(id), nome })).sort((a, b) => a.nome.localeCompare(b.nome));
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
@@ -102,6 +124,42 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
                             </button>
                           ))}
                           <button onClick={(e) => { e.stopPropagation(); setEscolhendoElementoId(null); }} className="ml-1 rounded px-1 py-0.5 text-[0.6rem] font-bold text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 transition">✕</button>
+                        </div>
+                      ) : !alreadyHas && escolhendoPericiaId === origem.Codigo_Origem ? (
+                        <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
+                          <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline">Perícia:</span>
+                          <select
+                            className="bg-zinc-900 border border-zinc-700 text-xs text-zinc-300 rounded px-1 outline-none py-1 max-w-[120px]"
+                            onChange={(e) => {
+                              const cod = Number(e.target.value);
+                              if (cod && contextoPrereq) {
+                                const nomePericia = contextoPrereq.nomesPericias[cod];
+                                setEscolhendoPericiaId(null);
+                                poderesHook.escolherPoderExtra({
+                                  Id_Poder: -origem.Codigo_Origem,
+                                  Codigo_Poder: -1,
+                                  Nome: origem.Nome_Poder,
+                                  Descricao: origem.Descricao_Poder,
+                                  Fonte: origem.Fonte,
+                                  Tipo: 'Geral',
+                                  Codigo_Regra: origem.Codigo_Regra
+                                } as any, undefined, nomePericia, 'extra_regra32');
+                                onClose();
+                              }
+                            }}
+                            defaultValue=""
+                          >
+                            <option value="" disabled>Escolher...</option>
+                            {periciasDisponiveis.map(p => (
+                              <option key={p.id} value={p.id}>{p.nome}</option>
+                            ))}
+                          </select>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setEscolhendoPericiaId(null); }}
+                            className="ml-1 rounded px-1 py-0.5 text-[0.6rem] font-bold text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 transition"
+                          >
+                            ✕
+                          </button>
                         </div>
                       ) : !alreadyHas && (
                         <button

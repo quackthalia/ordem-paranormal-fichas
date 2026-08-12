@@ -34,11 +34,21 @@ export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, remo
     opacity: isDragging ? 0.4 : 1,
   };
 
+  let corBordaLeft = 'border-l-zinc-600';
+  if (item.item.Elemento_Ama) {
+    const elStr = item.item.Elemento_Ama.toLowerCase();
+    corBordaLeft = elStr.includes('medo') ? 'border-l-zinc-200' :
+                   elStr.includes('sangue') ? 'border-l-red-600' :
+                   elStr.includes('morte') ? 'border-l-black' :
+                   elStr.includes('conhecimento') ? 'border-l-yellow-600' :
+                   elStr.includes('energia') ? 'border-l-purple-600' : 'border-l-zinc-600';
+  }
+
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`rounded border border-l-4 border-l-green-700 transition-colors w-full relative ${isDragging ? 'border-green-500 bg-zinc-900 shadow-xl scale-[1.02]' : 'border-zinc-800 bg-zinc-950/60 hover:bg-zinc-900/60'}`}
+      className={`rounded border border-l-4 ${corBordaLeft} transition-colors w-full relative ${isDragging ? 'border-zinc-500 bg-zinc-900 shadow-xl scale-[1.02]' : 'border-zinc-800 bg-zinc-950/60 hover:bg-zinc-900/60'}`}
     >
       <div className="flex items-center gap-1 p-3">
         <div

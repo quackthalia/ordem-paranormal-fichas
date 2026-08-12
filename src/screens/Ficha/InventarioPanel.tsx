@@ -9,6 +9,7 @@ import { ModalItensAmaldicoados } from './ModalItensAmaldicoados';
 import { ModalEditarProtecao } from '../../components/ModalEditarProtecao';
 import { ModalEditarItem } from '../../components/ModalEditarItem';
 import { ModalEditarMunicao } from '../../components/ModalEditarMunicao';
+import { ModalEditarItemAmaldicoado } from '../../components/ModalEditarItemAmaldicoado';
 import {
   DndContext,
   closestCenter,
@@ -295,6 +296,7 @@ export function InventarioPanel() {
   const [protecaoEditandoId, setProtecaoEditandoId] = useState<string | null>(null);
 
   const [editingItem, setEditingItem] = useState<{ id: string, tipo: 'arma' | 'protecao' | 'item' | 'municao' | 'amaldicoado' } | null>(null);
+  const [editingItemAmaldicoado, setEditingItemAmaldicoado] = useState<ItemAmaldicoadoInventario | null>(null);
   const [activeDragItem, setActiveDragItem] = useState<{ id: string, type: 'arma' | 'municao' | 'protecao' | 'item' | 'amaldicoado', name?: string } | null>(null);
 
   const getArmaParaEditar = () => editingItem?.tipo === 'arma' ? armasHook.armasInventario.find(i => i.id === editingItem.id) : null;
@@ -1008,6 +1010,7 @@ export function InventarioPanel() {
                       isExpanded={!!expandidos[item.id]}
                       toggleExpandir={toggleExpandir}
                       removerItem={itensAmaldicoadosHook?.removerItem || (() => {})}
+                      onEditar={() => setEditingItemAmaldicoado(item)}
                       stringDT={null}
                       toggleEquipado={(id) => toggleVestimentaGeral(id, true)}
                     />
@@ -1063,6 +1066,14 @@ export function InventarioPanel() {
             armasHook?.editarArma(armaEditandoId, novosDados, modificacoes);
           }}
           onClose={() => setArmaEditandoId(null)}
+        />
+      )}
+
+      {editingItemAmaldicoado && itensAmaldicoadosHook && (
+        <ModalEditarItemAmaldicoado
+          itemInventario={editingItemAmaldicoado}
+          onSave={(novosDados) => itensAmaldicoadosHook.editarItem(editingItemAmaldicoado.id, novosDados)}
+          onClose={() => setEditingItemAmaldicoado(null)}
         />
       )}
 

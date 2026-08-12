@@ -61,9 +61,9 @@ export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, remo
             
             {item.item.Elemento_Ama ? (() => {
                 const elStr = item.item.Elemento_Ama.toLowerCase();
-                const corText = elStr.includes('medo') ? 'text-white font-bold' :
+                const corText = elStr.includes('medo') ? 'bg-zinc-200 text-zinc-950 px-1.5 rounded font-bold border border-zinc-300' :
                                 elStr.includes('sangue') ? 'text-red-500 font-bold' :
-                                elStr.includes('morte') ? 'text-zinc-950 font-black drop-shadow-[0_0_2px_rgba(255,255,255,0.8)]' :
+                                elStr.includes('morte') ? 'bg-black text-white px-1.5 rounded font-bold border border-zinc-800' :
                                 elStr.includes('conhecimento') ? 'text-yellow-500 font-bold' :
                                 elStr.includes('energia') ? 'text-purple-500 font-bold' : 'text-zinc-400 font-bold';
                 return (

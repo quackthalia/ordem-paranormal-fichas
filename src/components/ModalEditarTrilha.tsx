@@ -91,7 +91,7 @@ export function ModalEditarTrilha({
           </h2>
           <button
             onClick={onClose}
-            className="text-zinc-500 hover:text-red-500 transition"
+            className="text-zinc-500 hover:text-green-500 transition"
           >
             ✕
           </button>
@@ -100,20 +100,20 @@ export function ModalEditarTrilha({
         <div className="flex-1 overflow-y-scroll p-5 custom-scrollbar flex flex-col gap-4">
           
           <div className="rounded border border-zinc-800 bg-zinc-950 p-4">
-            <h3 className="font-bold text-red-500 mb-2 border-b border-zinc-800 pb-2">Geral</h3>
+            <h3 className="font-bold text-green-500 mb-2 border-b border-zinc-800 pb-2">Geral</h3>
             <div className="flex flex-col gap-1.5 text-left">
               <InputLabel label="Nome da Trilha" />
               <InputOtimizado
                 value={nomeTrilha}
                 onChange={setNomeTrilha}
-                className="rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700"
+                className="rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-green-700"
               />
               
               <InputLabel label="Fonte" />
               <InputOtimizado
                 value={fonte}
                 onChange={setFonte}
-                className="rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700"
+                className="rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-green-700"
               />
 
               {!isVersatilidade && (
@@ -130,7 +130,7 @@ export function ModalEditarTrilha({
                       }}
                       contentEditable
                       onBlur={(e) => setDescTrilha(e.currentTarget.innerHTML)}
-                      className="min-h-[60px] rounded-b border border-zinc-700 bg-zinc-950 p-2.5 text-sm text-zinc-300 outline-none focus:border-red-700"
+                      className="min-h-[60px] rounded-b border border-zinc-700 bg-zinc-950 p-2.5 text-sm text-zinc-300 outline-none focus:border-green-700"
                     />
                   </div>
                 </>
@@ -145,13 +145,13 @@ export function ModalEditarTrilha({
             { nex: 99, nome: nome99, setNome: setNome99, desc: desc99, setDesc: setDesc99, refEdit: editorDesc99 },
           ].filter(hab => nex >= hab.nex && (!isVersatilidade || hab.nex === 10)).map((hab) => (
             <div key={hab.nex} className="rounded border border-zinc-800 bg-zinc-950 p-4">
-              <h3 className="font-bold text-red-500 mb-2 border-b border-zinc-800 pb-2">Habilidade {regras['nex_experiencia'] ? `Nível ${calcularNivel(hab.nex)}` : `NEX ${hab.nex}%`}</h3>
+              <h3 className="font-bold text-green-500 mb-2 border-b border-zinc-800 pb-2">Habilidade {regras['nex_experiencia'] ? `Nível ${calcularNivel(hab.nex)}` : `NEX ${hab.nex}%`}</h3>
               <div className="flex flex-col gap-1.5 text-left">
                 <InputLabel label="Nome da Habilidade" />
                 <InputOtimizado
                   value={hab.nome}
                   onChange={hab.setNome}
-                  className="rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700"
+                  className="rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-green-700"
                 />
 
                 <div>
@@ -166,7 +166,7 @@ export function ModalEditarTrilha({
                     }}
                     contentEditable
                     onBlur={(e) => hab.setDesc(e.currentTarget.innerHTML)}
-                    className="min-h-[60px] rounded-b border border-zinc-700 bg-zinc-950 p-2.5 text-sm text-zinc-300 outline-none focus:border-red-700"
+                    className="min-h-[60px] rounded-b border border-zinc-700 bg-zinc-950 p-2.5 text-sm text-zinc-300 outline-none focus:border-green-700"
                   />
                 </div>
               </div>
@@ -184,7 +184,7 @@ export function ModalEditarTrilha({
           </button>
           <button
             onClick={handleSalvar}
-            className="rounded bg-red-700 px-5 py-2 text-xs font-bold uppercase tracking-wider text-zinc-100 shadow hover:bg-red-600"
+            className="rounded bg-green-700 px-5 py-2 text-xs font-bold uppercase tracking-wider text-zinc-100 shadow hover:bg-green-600"
           >
             Salvar Alterações
           </button>

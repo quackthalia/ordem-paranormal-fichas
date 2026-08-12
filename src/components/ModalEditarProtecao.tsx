@@ -105,7 +105,7 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
             <label className="mb-1 block text-sm font-semibold text-zinc-300">Nome da Proteção</label>
             <input
               type="text"
-              className="w-full rounded bg-zinc-950 border border-zinc-700 p-2 text-zinc-100 focus:border-red-500 focus:outline-none"
+              className="w-full rounded bg-zinc-950 border border-zinc-700 p-2 text-zinc-100 focus:border-green-500 focus:outline-none"
               value={nome}
               onChange={e => setNome(e.target.value)}
             />
@@ -115,7 +115,7 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
             <div>
               <label className="mb-1 block text-sm font-semibold text-zinc-300">Proficiência</label>
               <select
-                className="w-full rounded bg-zinc-950 border border-zinc-700 p-2 text-zinc-100 focus:border-red-500 focus:outline-none"
+                className="w-full rounded bg-zinc-950 border border-zinc-700 p-2 text-zinc-100 focus:border-green-500 focus:outline-none"
                 value={proficiencia}
                 onChange={e => setProficiencia(e.target.value)}
               >
@@ -126,7 +126,7 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
             <div>
               <label className="mb-1 block text-sm font-semibold text-zinc-300">Categoria</label>
               <select
-                className="w-full rounded bg-zinc-950 border border-zinc-700 p-2 text-zinc-100 focus:border-red-500 focus:outline-none"
+                className="w-full rounded bg-zinc-950 border border-zinc-700 p-2 text-zinc-100 focus:border-green-500 focus:outline-none"
                 value={categoriaNumParaRoman(catFinal)}
                 onChange={e => setCategoria(categoriaNumParaRoman(Math.max(0, categoriaRomanParaNum(e.target.value) - modificacoes.length)))}
               >
@@ -142,7 +142,7 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
               <label className="mb-1 block text-sm font-semibold text-zinc-300">Defesa</label>
               <input
                 type="text"
-                className="w-full rounded bg-zinc-950 border border-zinc-700 p-2 text-zinc-100 focus:border-red-500 focus:outline-none"
+                className="w-full rounded bg-zinc-950 border border-zinc-700 p-2 text-zinc-100 focus:border-green-500 focus:outline-none"
                 value={defesa}
                 onChange={e => setDefesa(e.target.value)}
               />
@@ -154,7 +154,7 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
                 type="number"
                 min="0"
                 step="0.5"
-                className="w-full rounded bg-zinc-950 border border-zinc-700 p-2 text-zinc-100 focus:border-red-500 focus:outline-none"
+                className="w-full rounded bg-zinc-950 border border-zinc-700 p-2 text-zinc-100 focus:border-green-500 focus:outline-none"
                 value={espacosFinais.toString()}
                 onChange={e => {
                   const num = getEspacoNumber(e.target.value);
@@ -215,7 +215,7 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
               }, modificacoes);
               onClose();
             }}
-            className="rounded bg-red-800 px-5 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg transition hover:bg-red-700"
+            className="rounded bg-green-800 px-5 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg transition hover:bg-green-700"
           >
             Salvar Alterações
           </button>

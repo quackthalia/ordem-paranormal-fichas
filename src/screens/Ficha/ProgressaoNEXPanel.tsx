@@ -26,7 +26,7 @@ export const ProgressaoNEXPanel: React.FC = () => {
 
   return (
     <div className="flex h-full flex-col gap-2.5 overflow-y-auto pr-2 custom-scrollbar">
-      <h2 className="text-xl font-display uppercase text-red-500 mb-2 border-b border-red-900 pb-2">
+      <h2 className="text-xl font-display uppercase text-green-500 mb-2 border-b border-green-900 pb-2">
         Progressão de NEX
       </h2>
       
@@ -93,7 +93,7 @@ const ProgressaoBlock = ({ item, nexPatamar }: { item: ProgressaoNexItem, nexPat
   const textoParaExibir = progressaoNexEditados[item.Codigo_Progrecao] || item.Desc_Progrecao;
 
   return (
-    <div className="overflow-hidden rounded-r border-l-4 border-red-800 bg-zinc-900/50">
+    <div className="overflow-hidden rounded-r border-l-4 border-green-800 bg-zinc-900/50">
       <div 
         className="flex cursor-pointer items-center justify-between gap-3 bg-zinc-800/40 px-4 py-3 transition hover:bg-zinc-700/50"
         onClick={() => setExpandido(!expandido)}
@@ -102,8 +102,17 @@ const ProgressaoBlock = ({ item, nexPatamar }: { item: ProgressaoNexItem, nexPat
           NEX {item.Nex_Progrecao}
           {elementoDaLinha && (
             <span 
-              className="text-[10px] uppercase px-2 py-0.5 rounded"
-              style={{ backgroundColor: obterCorBadge(elementoDaLinha), color: obterCorTexto(elementoDaLinha) }}
+              className={`text-[10px] uppercase px-2 py-0.5 rounded font-bold ${
+                (() => {
+                  const elStr = elementoDaLinha.toLowerCase();
+                  if (elStr.includes('medo')) return 'bg-zinc-200/80 text-zinc-950 px-1';
+                  if (elStr.includes('sangue')) return 'text-red-500';
+                  if (elStr.includes('morte')) return 'bg-black/50 text-white px-1';
+                  if (elStr.includes('conhecimento')) return 'text-yellow-500';
+                  if (elStr.includes('energia')) return 'text-purple-500';
+                  return 'text-zinc-400';
+                })()
+              }`}
             >
               {elementoDaLinha}
             </span>
@@ -131,7 +140,7 @@ const ProgressaoBlock = ({ item, nexPatamar }: { item: ProgressaoNexItem, nexPat
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-5" onClick={(e) => e.stopPropagation()}>
               <div className="flex w-full max-w-2xl flex-col gap-4 rounded-lg border border-zinc-700 bg-zinc-900 p-6 shadow-2xl shadow-black/50" onClick={e => e.stopPropagation()}>
                 <h3 className="font-display border-b border-zinc-800 pb-2.5 text-left text-lg uppercase tracking-wide text-zinc-100">
-                  Editar Texto <span className="text-red-500">(NEX {item.Nex_Progrecao})</span>
+                  Editar Texto <span className="text-green-500">(NEX {item.Nex_Progrecao})</span>
                 </h3>
 
                 <div className="flex flex-col gap-1.5 text-left">
@@ -147,7 +156,7 @@ const ProgressaoBlock = ({ item, nexPatamar }: { item: ProgressaoNexItem, nexPat
                       }}
                       contentEditable
                       onBlur={(e) => setEditText(e.currentTarget.innerHTML)}
-                      className="min-h-48 overflow-y-auto rounded-b border border-zinc-700 bg-zinc-950 p-3 text-left text-sm leading-relaxed text-zinc-100 outline-none focus:border-red-700"
+                      className="min-h-48 overflow-y-auto rounded-b border border-zinc-700 bg-zinc-950 p-3 text-left text-sm leading-relaxed text-zinc-100 outline-none focus:border-green-700"
                     />
                   </div>
                 </div>
@@ -156,7 +165,7 @@ const ProgressaoBlock = ({ item, nexPatamar }: { item: ProgressaoNexItem, nexPat
                   {progressaoNexEditados[item.Codigo_Progrecao] && (
                     <button 
                       onClick={handleResetEdit}
-                      className="rounded border border-red-900/50 bg-red-950/30 px-4 py-2 text-sm font-bold text-red-500 transition hover:bg-red-900/50 hover:text-red-300 mr-auto"
+                      className="rounded border border-green-900/50 bg-green-950/30 px-4 py-2 text-sm font-bold text-green-500 transition hover:bg-green-900/50 hover:text-green-300 mr-auto"
                     >
                       Restaurar Original
                     </button>
@@ -169,7 +178,7 @@ const ProgressaoBlock = ({ item, nexPatamar }: { item: ProgressaoNexItem, nexPat
                   </button>
                   <button
                     onClick={handleSaveEdit}
-                    className="rounded bg-red-700 px-4 py-2 text-sm font-bold text-zinc-100 transition hover:bg-red-600"
+                    className="rounded bg-green-700 px-4 py-2 text-sm font-bold text-zinc-100 transition hover:bg-green-600"
                   >
                     Aplicar
                   </button>

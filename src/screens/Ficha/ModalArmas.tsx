@@ -116,11 +116,11 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
   const uniqueEmpunhaduras = Array.from(new Set(armasHook.armas.map(a => a.Empunhadura_Arma))).filter(Boolean).sort();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" onClick={onFechar}>
-      <div className="flex h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onFechar}>
+      <div className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden flex flex-col h-[90vh]" onClick={e => e.stopPropagation()}>
         
         {/* Header */}
-        <div className="flex flex-col border-b border-zinc-800 p-5 pb-4">
+        <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="font-display text-lg uppercase tracking-wide text-zinc-100">
@@ -136,13 +136,13 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
               placeholder="Buscar arma pelo nome..."
-              className="flex-1 rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700"
+              className="flex-1 rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700"
             />
             <button 
               onClick={() => setMostrarFiltrosAvançados(!mostrarFiltrosAvançados)}
               className={`rounded border px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition ${
                 mostrarFiltrosAvançados || filtroTipo !== 'Todos' || filtroEmpunhadura !== 'Todas' || filtroAlcance !== 'Todos'
-                  ? 'border-red-800 bg-red-900/40 text-red-300'
+                  ? 'border-green-800 bg-green-900/40 text-green-300'
                   : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
               }`}
             >
@@ -207,111 +207,115 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
         )}
 
         {/* Lista de armas */}
-        <div className="flex-1 overflow-y-scroll p-4">
-          <div className="flex flex-col gap-2">
+        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
           {armasFiltradas.map((arma: Arma) => {
             const isExpanded = expandidos.includes(arma.Codigo_Arma);
             const critico = formatarCritico(arma.Critico_Arma, arma.Multiplicador_Arma);
             const hasProficiencia = proficienciasTotais.includes(arma.Proficiencia);
             return (
-              <div key={arma.Codigo_Arma} className="rounded border border-zinc-800 border-l-4 border-l-red-700 bg-zinc-950/60 transition hover:bg-zinc-900/60">
+              <div 
+                key={arma.Codigo_Arma} 
+                className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col h-full"
+              >
                 {/* Bloco fechado */}
                 <div
-                  className="flex cursor-pointer items-center justify-between gap-3 p-3"
+                  className="flex items-start justify-between gap-2 mb-2 cursor-pointer"
                   onClick={() => toggleExpandir(arma.Codigo_Arma)}
                 >
-                  <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-                    <span className="font-bold text-sm text-zinc-100 truncate">{arma.Nome_Item}</span>
-                    
-                    <div className="flex items-center gap-4 text-xs text-zinc-300">
-                      <span>
-                        <span className="font-bold text-red-400">Dado:</span> {arma.Dano_Arma}
-                      </span>
-                      {critico && (
-                        <span>
-                          <span className="font-bold text-zinc-400">Crítico:</span> {critico}
-                        </span>
-                      )}
-                      {arma.dt_item && <span><span className="font-bold text-red-400">DT:</span> {calcularDT(arma.dt_item, arma.Categoria_Item?.toLowerCase().includes('explosivos') || arma.Nome_Item?.toLowerCase().includes('explosivo'))}</span>}
-                    </div>
-                  </div>
+                  <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
+                    {arma.Nome_Item}
+                  </h3>
                   
-                  <div className="flex items-center gap-3 flex-shrink-0">
+                  <div className="flex items-center gap-2 flex-shrink-0">
                     {arma['Agil?'] && (
-                      <span className="relative group cursor-help">
+                      <span className="relative group/agil cursor-help">
                         <span className="text-sm text-yellow-400">⚡</span>
-                        <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 hidden group-hover:block w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
+                        <span className="absolute right-0 top-full mt-1 opacity-0 invisible group-hover/agil:opacity-100 group-hover/agil:visible transition-all duration-300 group-hover/agil:delay-500 delay-0 w-48 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
                           Permite que você aplique sua Agilidade em vez de sua Força em testes de ataque e rolagens de dano.
                         </span>
                       </span>
                     )}
                     {arma['Automatica?'] && (
-                      <span className="relative group cursor-help">
+                      <span className="relative group/auto cursor-help">
                         <span className="text-sm text-blue-400">🔄</span>
-                        <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 hidden group-hover:block w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
+                        <span className="absolute right-0 top-full mt-1 opacity-0 invisible group-hover/auto:opacity-100 group-hover/auto:visible transition-all duration-300 group-hover/auto:delay-500 delay-0 w-48 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
                           Pode disparar tiros únicos ou rajadas (-1d20 no ataque, +1 dado de dano).
                         </span>
                       </span>
                     )}
                     {!hasProficiencia && (
-                      <span className="relative group cursor-help">
+                      <span className="relative group/prof cursor-help">
                         <span className="text-sm text-red-500">⚠️</span>
-                        <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 hidden group-hover:block w-52 p-2 bg-zinc-800 border border-red-700/50 text-xs text-red-200 rounded z-50 text-center shadow-lg pointer-events-none">
+                        <span className="absolute right-0 top-full mt-1 opacity-0 invisible group-hover/prof:opacity-100 group-hover/prof:visible transition-all duration-300 group-hover/prof:delay-500 delay-0 w-48 p-2 bg-zinc-800 border border-green-700/50 text-xs text-green-200 rounded z-50 text-center shadow-lg pointer-events-none">
                           Se você atacar com uma arma com a qual não seja proficiente, sofre -2d20 nos testes de ataque.
                         </span>
                       </span>
                     )}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        armasHook.adicionarArma(arma);
-                        onFechar();
-                      }}
-                      className="rounded bg-red-700 px-3 py-1.5 text-xs font-bold uppercase text-zinc-100 transition hover:bg-red-600"
-                    >
-                      Adicionar
-                    </button>
                     <span className="w-5 text-center text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
                   </div>
                 </div>
                 
-                {/* Bloco expandido */}
-                {isExpanded && (
-                  <div className="border-t border-zinc-800 px-3 py-3 text-xs flex flex-col gap-2 bg-zinc-950/80">
-                    <div>
-                      <span className="font-bold text-zinc-200">{arma.Proficiencia}</span>
-                      <span className="text-zinc-600"> — </span>
-                      <span className="italic text-zinc-400">{arma.Tipo_Arma}</span>
-                      <span className="text-zinc-600"> — </span>
-                      <span className="italic text-zinc-400">{arma.Empunhadura_Arma}</span>
-                    </div>
-
-                    <div className="border-t border-zinc-800/50 mt-3 pt-3">
-                      <div className="flex flex-wrap gap-x-4 gap-y-2 text-[11px]">
-                        <span><span className="text-red-400 font-bold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (arma['Espaços_Item'] === 0.5 || String(arma['Espaços_Item']) === '0,5' || String(arma['Espaços_Item']) === '0.5')) ? 0.25 : arma['Espaços_Item']}</span>
-                        <span><span className="text-red-400 font-bold">Categoria:</span> {arma.Categoria_Item}</span>
-                        {arma.Alcance_Item && <span><span className="text-red-400 font-bold">Alcance:</span> {arma.Alcance_Item}</span>}
-                        <span><span className="text-red-400 font-bold">Tipo:</span> {arma.Tipo_Dano_Arma}</span>
-                      </div>
-                      
-                      <div className="flex flex-col gap-1 mt-1">
-                        <p className="text-zinc-400 text-xs leading-relaxed">{formatarTexto(arma.Descricao_Item)}</p>
-                      </div>
-                    </div>
-                    
+                <div className="flex-1 cursor-pointer flex flex-col" onClick={() => toggleExpandir(arma.Codigo_Arma)}>
+                  <div className="flex items-center flex-wrap gap-4 text-xs text-zinc-300 mb-2">
+                    <span>
+                      <span className="font-bold text-green-400">Dado:</span> {arma.Dano_Arma}
+                    </span>
+                    {critico && (
+                      <span>
+                        <span className="font-bold text-zinc-400">Crítico:</span> {critico}
+                      </span>
+                    )}
+                    {arma.dt_item && <span><span className="font-bold text-green-400">DT:</span> {calcularDT(arma.dt_item, arma.Categoria_Item?.toLowerCase().includes('explosivos') || arma.Nome_Item?.toLowerCase().includes('explosivo'))}</span>}
+                  </div>
+                  
+                  <div className="text-[11px] mb-3 block text-zinc-400">
+                    <span className="font-bold text-zinc-200">{arma.Proficiencia}</span>
+                    <span className="text-zinc-600"> — </span>
+                    <span className="italic">{arma.Tipo_Arma}</span>
+                    <span className="text-zinc-600"> — </span>
+                    <span className="italic">{arma.Empunhadura_Arma}</span>
+                    <span className="text-zinc-600"> — </span>
+                    <span className="italic">{arma.Tipo_Dano_Arma}</span>
                     {arma.Fonte_Arma && (
-                      <div className="flex justify-between items-center mt-3 pt-3 border-t border-zinc-800/50">
-                        <span className="text-[10px] uppercase tracking-wider text-zinc-600">Fonte: {arma.Fonte_Arma}</span>
-                      </div>
+                      <>
+                        <span className="text-zinc-600"> — </span>
+                        <span className="text-zinc-500">Fonte: {arma.Fonte_Arma}</span>
+                      </>
                     )}
                   </div>
-                )}
+
+                  {arma.Descricao_Item && (
+                    <div className="flex flex-col gap-1 mt-1 mb-3">
+                      <p className={`text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none ${!isExpanded ? 'line-clamp-3' : ''}`}>{formatarTexto(arma.Descricao_Item)}</p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2">
+                  <span><span className="text-zinc-500 font-semibold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (arma['Espaços_Item'] === 0.5 || String(arma['Espaços_Item']) === '0,5' || String(arma['Espaços_Item']) === '0.5')) ? 0.25 : arma['Espaços_Item']}</span>
+                  <span><span className="text-zinc-500 font-semibold">Categoria:</span> {arma.Categoria_Item}</span>
+                  {arma.Alcance_Item && <span><span className="text-zinc-500 font-semibold">Alcance:</span> {arma.Alcance_Item}</span>}
+                  
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      armasHook.adicionarArma(arma);
+                      onFechar();
+                    }}
+                    className="ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                  >
+                    Adicionar
+                  </button>
+                </div>
               </div>
             );
           })}
           </div>
           {armasFiltradas.length === 0 && (
-            <p className="text-center text-zinc-600 text-sm py-8">Nenhuma arma encontrada.</p>
+            <p className="text-center text-zinc-600 text-sm py-8 mt-4 border border-dashed border-zinc-800 rounded">
+              Nenhuma arma encontrada.
+            </p>
           )}
         </div>
       </div>

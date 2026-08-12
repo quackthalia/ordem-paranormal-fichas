@@ -44,7 +44,7 @@ export function ModificacoesSelector({
           className={`px-4 py-1.5 text-xs font-bold text-white rounded transition ${
             !podeAdicionar && !selecionando 
               ? 'bg-zinc-800 cursor-not-allowed text-zinc-500' 
-              : 'bg-red-700 hover:bg-red-600'
+              : 'bg-green-700 hover:bg-green-600'
           }`}
         >
           {selecionando ? 'Cancelar' : 'Adicionar'}
@@ -52,7 +52,7 @@ export function ModificacoesSelector({
       </div>
 
       {selecionando && (
-        <div className="rounded border border-red-900 bg-zinc-950 p-2 shadow-lg mb-2 animate-in slide-in-from-top-1 fade-in duration-200">
+        <div className="rounded border border-green-900 bg-zinc-950 p-2 shadow-lg mb-2 animate-in slide-in-from-top-1 fade-in duration-200">
           <div className="text-[10px] font-bold text-zinc-500 mb-2 uppercase tracking-wider px-2">
             Selecione uma modificação
           </div>
@@ -67,7 +67,7 @@ export function ModificacoesSelector({
                     onAdd(opcao.Codigo_Modif);
                     setSelecionando(false);
                   }}
-                  className="flex flex-col px-3 py-2 rounded bg-transparent hover:bg-zinc-900 border border-transparent hover:border-red-800 cursor-pointer transition-colors"
+                  className="flex flex-col px-3 py-2 rounded bg-transparent hover:bg-zinc-900 border border-transparent hover:border-green-800 cursor-pointer transition-colors"
                 >
                   <span className="font-bold text-zinc-200 text-sm">{opcao.Nome_Modif}</span>
                   <span className="text-xs text-zinc-500 mt-1">{opcao.Descricao_Modif}</span>
@@ -85,7 +85,7 @@ export function ModificacoesSelector({
           aplicadas.map((mod, index) => (
             <div 
               key={`${mod.Codigo_Modif}-${index}`}
-              className="flex items-center justify-between p-4 bg-zinc-900/50 border-l-[3px] border-l-red-600"
+              className="flex items-center justify-between p-4 bg-zinc-900/50 border-l-[3px] border-l-green-600"
             >
               <div className="flex flex-col gap-1 flex-1 pr-6">
                 <span className="font-bold text-zinc-100 text-[15px]">{mod.Nome_Modif}</span>
@@ -96,7 +96,7 @@ export function ModificacoesSelector({
               <button
                 type="button"
                 onClick={() => onRemove(index)}
-                className="px-4 py-1.5 text-xs font-bold text-zinc-300 hover:text-white bg-zinc-800 hover:bg-red-700 rounded transition-colors flex-shrink-0"
+                className="px-4 py-1.5 text-xs font-bold text-zinc-300 hover:text-white bg-zinc-800 hover:bg-green-700 rounded transition-colors flex-shrink-0"
               >
                 Remover
               </button>

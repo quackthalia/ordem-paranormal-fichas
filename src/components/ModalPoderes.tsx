@@ -107,26 +107,73 @@ function PoderCard({
   const periciasDisponiveis = contextoPrereq ? Object.entries(contextoPrereq.nomesPericias).map(([id, nome]) => ({ id: Number(id), nome })).sort((a,b) => a.nome.localeCompare(b.nome)) : [];
 
   return (
-    <div className="mb-3 overflow-hidden rounded-r border-l-4 border-red-800 bg-zinc-950/60">
+    <div className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col">
       <div
         onClick={onToggle}
-        className="flex flex-wrap cursor-pointer items-center justify-between gap-3 bg-zinc-900/80 px-4 py-3 transition hover:bg-zinc-800/80"
+        className={`flex cursor-pointer items-start justify-between gap-3 ${!estaExpandido ? 'h-[92px] overflow-hidden' : ''}`}
       >
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="font-bold text-zinc-100">{poder.Nome}</span>
-          {ehParanormal && paranormalData?.Elemento && (
-            <span
-              className="inline-block rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight"
-              style={{
-                backgroundColor: obterCorBadge(paranormalData.Elemento),
-                color: obterCorTexto(paranormalData.Elemento),
-              }}
-            >
-              {paranormalData.Elemento}
-            </span>
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-bold text-zinc-200 group-hover:text-green-400 transition">{poder.Nome}</span>
+            {ehParanormal && paranormalData?.Elemento && (
+              <span
+                className={`inline-block rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight ${
+                  (() => {
+                    const elStr = paranormalData.Elemento!.toLowerCase();
+                    if (elStr.includes('medo')) return 'bg-zinc-200/80 text-zinc-950 px-2';
+                    if (elStr.includes('sangue')) return 'text-red-500';
+                    if (elStr.includes('morte')) return 'bg-black/50 text-white px-2';
+                    if (elStr.includes('conhecimento')) return 'text-yellow-500';
+                    if (elStr.includes('energia')) return 'text-purple-500';
+                    return 'text-zinc-400';
+                  })()
+                }`}
+              >
+                {paranormalData.Elemento}
+              </span>
+            )}
+          </div>
+          <div
+            className={`text-xs text-zinc-400 mt-1 leading-relaxed ${estaExpandido ? 'whitespace-pre-wrap' : 'line-clamp-2'}`}
+            dangerouslySetInnerHTML={{ __html: formatarDescricao(poder.Descricao) }}
+          />
+        </div>
+        <button className="text-zinc-500 text-xs mt-1 shrink-0">
+          {estaExpandido ? '▲' : '▼'}
+        </button>
+      </div>
+
+      {estaExpandido && (
+        <div className="mt-3 text-left border-t border-zinc-800/50 pt-3">
+
+          {ehParanormal && paranormalData?.Afinidade && (
+            <p className="mt-3 text-xs leading-relaxed text-zinc-300">
+              <strong className="text-green-400 font-bold">Afinidade:</strong> {paranormalData.Afinidade}
+            </p>
+          )}
+
+          {poder.PreRequisitos && (
+            <div className="mt-3 inline-block rounded bg-amber-400/5 px-3 py-2 text-xs italic text-amber-400">
+              <strong>Pré-requisitos:</strong> {contextoPrereq ? formatarTextoPreRequisitos(poder.PreRequisitos, contextoPrereq.nomesPericias) : poder.PreRequisitos}
+            </div>
+          )}
+
+          {ehParanormal && paranormalData?.PreRequisitosAfinidade && (
+            <div className="mt-2 inline-block rounded bg-purple-400/5 px-3 py-2 text-xs italic text-purple-400">
+              <strong>Pré-requisitos da Afinidade:</strong> {paranormalData.PreRequisitosAfinidade}
+            </div>
+          )}
+
+          {poder.Fonte && (
+            <div className="mt-2 text-[0.6rem] uppercase tracking-wider text-zinc-600">
+              Fonte: {poder.Fonte}
+            </div>
           )}
         </div>
-        <div className="flex flex-wrap items-center justify-end gap-3">
+      )}
+
+      <div className="flex flex-wrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-3 mt-3">
+        <div className="ml-auto flex items-center gap-2">
           {escolhendoElemento ? (
             <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800">
               <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline">Elemento:</span>
@@ -142,8 +189,17 @@ function PoderCard({
                       !valElem.atende 
                         ? 'bg-zinc-900 border-zinc-800 text-zinc-600 cursor-not-allowed opacity-50'
                         : 'border-zinc-700 hover:scale-105'
+                    } ${
+                      valElem.atende ? (() => {
+                        const elStr = elem.toLowerCase();
+                        if (elStr.includes('medo')) return 'bg-zinc-200/80 text-zinc-950 px-2';
+                        if (elStr.includes('sangue')) return 'text-red-500 bg-transparent';
+                        if (elStr.includes('morte')) return 'bg-black/50 text-white px-2';
+                        if (elStr.includes('conhecimento')) return 'text-yellow-500 bg-transparent';
+                        if (elStr.includes('energia')) return 'text-purple-500 bg-transparent';
+                        return 'text-zinc-400 bg-transparent';
+                      })() : ''
                     }`}
-                    style={valElem.atende ? { backgroundColor: obterCorBadge(elem), color: obterCorTexto(elem) } : undefined}
                   >
                     {elem}
                   </button>
@@ -210,49 +266,13 @@ function PoderCard({
                   onEscolher(); 
                 }
               }}
-              className={`rounded px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider transition ${bloqueado ? 'bg-zinc-800 text-zinc-600' : 'bg-red-900 text-red-100 hover:bg-red-800'}`}
+              className={`px-3 py-1 rounded font-bold text-[10px] uppercase tracking-wider transition-colors ${bloqueado ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed' : 'bg-green-700 hover:bg-green-600 text-white active:scale-95'}`}
             >
               Escolher
             </button>
           )}
-          <span className="w-5 text-center text-zinc-600">
-            {estaExpandido ? '▲' : '▼'}
-          </span>
         </div>
       </div>
-
-      {estaExpandido && (
-        <div className="border-t border-zinc-800 px-5 py-4 text-left">
-          <div
-            className="text-sm leading-relaxed text-zinc-400"
-            dangerouslySetInnerHTML={{ __html: formatarDescricao(poder.Descricao) }}
-          />
-
-          {ehParanormal && paranormalData?.Afinidade && (
-            <p className="mt-3 text-sm leading-relaxed text-zinc-300">
-              <strong className="text-zinc-100">Afinidade:</strong> {paranormalData.Afinidade}
-            </p>
-          )}
-
-          {poder.PreRequisitos && (
-            <div className="mt-3 inline-block rounded bg-amber-400/5 px-3 py-2 text-xs italic text-amber-400">
-              <strong>Pré-requisitos:</strong> {contextoPrereq ? formatarTextoPreRequisitos(poder.PreRequisitos, contextoPrereq.nomesPericias) : poder.PreRequisitos}
-            </div>
-          )}
-
-          {ehParanormal && paranormalData?.PreRequisitosAfinidade && (
-            <div className="mt-2 inline-block rounded bg-purple-400/5 px-3 py-2 text-xs italic text-purple-400">
-              <strong>Pré-requisitos da Afinidade:</strong> {paranormalData.PreRequisitosAfinidade}
-            </div>
-          )}
-
-          {poder.Fonte && (
-            <div className="mt-2 text-[0.6rem] uppercase tracking-wider text-zinc-600">
-              Fonte: {poder.Fonte}
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 }
@@ -417,6 +437,12 @@ export const ModalPoderes: React.FC = () => {
     }
   }, [abasDisponiveis, abaModalPoderes, setAbaModalPoderes]);
 
+  useEffect(() => {
+    if (nexModalAberto === null) {
+      setPoderesModalExpandidos([]);
+    }
+  }, [nexModalAberto, setPoderesModalExpandidos]);
+
   const handleTabChange = useCallback((aba: AbaModalPoderes) => {
     if (scrollContainerRef.current) {
       scrollPositions.current[abaModalPoderes] = scrollContainerRef.current.scrollTop;
@@ -426,10 +452,10 @@ export const ModalPoderes: React.FC = () => {
 
   if (nexPoderEditando !== null) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-5" onClick={() => setNexPoderEditando(null)}>
-        <div className="flex w-full max-w-2xl flex-col gap-4 rounded-lg border border-zinc-700 bg-zinc-900 p-6 shadow-2xl shadow-black/50" onClick={e => e.stopPropagation()}>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={() => setNexPoderEditando(null)}>
+        <div className="flex w-full max-w-4xl flex-col gap-4 rounded-lg border border-zinc-800 bg-zinc-950 p-6 shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
           <h3 className="font-display border-b border-zinc-800 pb-2.5 text-left text-lg uppercase tracking-wide text-zinc-100">
-            Editar Poder <span className="text-red-500">({typeof nexPoderEditando === 'number' ? `NEX ${nexPoderEditando}%` : 'Poder Extra'})</span>
+            EDITAR PODER <span className="text-green-500">({typeof nexPoderEditando === 'number' ? `NEX ${nexPoderEditando}%` : 'PODER EXTRA'})</span>
           </h3>
 
           <div className="flex flex-col gap-1.5 text-left">
@@ -437,7 +463,7 @@ export const ModalPoderes: React.FC = () => {
             <InputOtimizado
               value={nomeEditando}
               onChange={setNomeEditando}
-              className="rounded border border-zinc-700 bg-zinc-950 p-2.5 text-zinc-100 outline-none focus:border-red-700"
+              className="rounded border border-zinc-700 bg-zinc-950 p-2.5 text-sm text-zinc-100 outline-none focus:border-green-700"
             />
           </div>
 
@@ -454,7 +480,7 @@ export const ModalPoderes: React.FC = () => {
                   }
                 }}
                 contentEditable
-                className="min-h-36 overflow-y-scroll rounded-b border border-zinc-700 bg-zinc-950 p-3 text-left text-sm leading-relaxed text-zinc-100 outline-none focus:border-red-700"
+                className="min-h-36 overflow-y-auto custom-scrollbar rounded-b border border-zinc-700 bg-zinc-950 p-3 text-left text-sm leading-relaxed text-zinc-100 outline-none focus:border-green-700"
               />
             </div>
           </div>
@@ -472,7 +498,7 @@ export const ModalPoderes: React.FC = () => {
                   }
                 }}
                 contentEditable
-                className="min-h-24 overflow-y-scroll rounded-b border border-zinc-700 bg-zinc-950 p-3 text-left text-sm leading-relaxed text-zinc-100 outline-none focus:border-red-700"
+                className="min-h-24 overflow-y-auto custom-scrollbar rounded-b border border-zinc-700 bg-zinc-950 p-3 text-left text-sm leading-relaxed text-zinc-100 outline-none focus:border-green-700"
               />
             </div>
           </div>
@@ -491,7 +517,7 @@ export const ModalPoderes: React.FC = () => {
                 editarPoder(nexPoderEditando, nomeEditando, texto, textoAfinidade);
                 setNexPoderEditando(null);
               }}
-              className="rounded bg-red-700 px-4 py-2 text-sm font-bold text-zinc-100 transition hover:bg-red-600"
+              className="rounded bg-green-700 px-4 py-2 text-sm font-bold text-white transition hover:bg-green-600 active:scale-95 uppercase tracking-wider"
             >
               Aplicar
             </button>
@@ -502,16 +528,16 @@ export const ModalPoderes: React.FC = () => {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-5">
-      <div className="flex h-[85vh] w-full max-w-3xl flex-col rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50">
-        <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-950 rounded-t-lg">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={() => setNexModalAberto(null)}>
+      <div className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden flex flex-col h-[90vh]" onClick={(e) => e.stopPropagation()}>
+        <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-display m-0 text-lg uppercase tracking-wide text-zinc-100">
-              Escolher Poder — <span className="text-red-500">NEX {nexModalAberto && nexModalAberto > 1000 ? nexModalAberto - 1000 : nexModalAberto}%</span>
+            <h3 className="font-display text-lg uppercase tracking-wide text-zinc-100 m-0">
+              ESCOLHER PODER — <span className="text-green-500">NEX {nexModalAberto && nexModalAberto > 1000 ? nexModalAberto - 1000 : nexModalAberto}%</span>
             </h3>
             <button
               onClick={() => setNexModalAberto(null)}
-              className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100"
+              className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100 leading-none h-6"
             >
               &times;
             </button>
@@ -521,7 +547,7 @@ export const ModalPoderes: React.FC = () => {
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             placeholder="Buscar poder..."
-            className="w-full rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700"
+            className="flex-1 rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700 w-full"
           />
         </div>
 
@@ -532,7 +558,7 @@ export const ModalPoderes: React.FC = () => {
               onClick={() => handleTabChange(aba)}
               className={`min-w-[70px] flex-1 rounded-t px-1 py-2.5 text-xs font-bold uppercase tracking-wider transition ${
                 abaModalPoderes === aba
-                  ? 'border border-b-0 border-red-900 bg-zinc-900 text-zinc-100'
+                  ? 'border border-b-0 border-green-900 bg-zinc-900 text-zinc-100'
                   : 'border border-transparent text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300'
               }`}
             >
@@ -542,12 +568,13 @@ export const ModalPoderes: React.FC = () => {
         </div>
 
         {abaModalPoderes === 'paranormais' && (
-          <div className="flex flex-wrap gap-1 border-b border-zinc-800 bg-zinc-950/80 px-3 py-2">
+          <div className="flex flex-wrap items-center gap-2 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Elementos:</span>
             <button
               onClick={() => setSubAbaElemento(null)}
-              className={`rounded px-2.5 py-1 text-[0.55rem] font-bold uppercase tracking-wider transition ${
+              className={`rounded px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider transition ${
                 subAbaElemento === null
-                  ? 'bg-red-900/40 text-red-300 border border-red-800'
+                  ? 'bg-green-900/40 text-green-300 border border-green-800'
                   : 'bg-zinc-800/60 text-zinc-500 border border-zinc-700 hover:text-zinc-300'
               }`}
             >
@@ -559,15 +586,19 @@ export const ModalPoderes: React.FC = () => {
                 <button
                   key={elem}
                   onClick={() => setSubAbaElemento(elem)}
-                  className={`rounded px-2.5 py-1 text-[0.55rem] font-bold uppercase tracking-wider transition border ${
+                  className={`rounded px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider transition border ${
                     ativo
-                      ? 'border-zinc-600 text-zinc-100'
+                      ? (() => {
+                          const elStr = elem.toLowerCase();
+                          if (elStr.includes('medo')) return 'border-zinc-500 bg-zinc-200/80 text-zinc-950 px-3';
+                          if (elStr.includes('sangue')) return 'border-red-900 bg-red-950/20 text-red-500';
+                          if (elStr.includes('morte')) return 'border-zinc-700 bg-black/50 text-white px-3';
+                          if (elStr.includes('conhecimento')) return 'border-yellow-900 bg-yellow-950/20 text-yellow-500';
+                          if (elStr.includes('energia')) return 'border-purple-900 bg-purple-950/20 text-purple-500';
+                          return 'border-zinc-600 text-zinc-100';
+                        })()
                       : 'border-zinc-700 text-zinc-500 hover:text-zinc-300'
                   }`}
-                  style={{
-                    backgroundColor: ativo ? obterCorBadge(elem) : 'transparent',
-                    color: ativo ? obterCorTexto(elem) : undefined,
-                  }}
                 >
                   {elem}
                 </button>
@@ -576,76 +607,92 @@ export const ModalPoderes: React.FC = () => {
           </div>
         )}
 
-        <div ref={scrollContainerRef} className="flex-1 overflow-y-scroll p-5">
-          {listaFiltrada.map((poder: any) => {
-            const estaExpandido = poderesModalExpandidos.includes(poder.codigo_poder);
-            const pp = (poderesParanormais || []).find(
-              (p: { Nome: string }) => p.Nome === poder.Nome
-            );
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+          {(() => {
+            const renderedPoderes = listaFiltrada.map((poder: any) => {
+              const estaExpandido = poderesModalExpandidos.includes(poder.codigo_poder);
+              const pp = (poderesParanormais || []).find(
+                (p: { Nome: string }) => p.Nome === poder.Nome
+              );
+
+              return (
+                <PoderCard
+                  key={poder.codigo_poder}
+                  poder={{
+                    codigo_poder: poder.codigo_poder,
+                    Nome: poder.Nome,
+                    Descricao: poder.Descricao,
+                    PreRequisitos: poder.PreRequisitos || '',
+                    Fonte: (poder as any).Fonte || pp?.Fonte || '',
+                    Pre_Codigo: poder.Pre_Codigo,
+                    Tipo: poder.Tipo,
+                    Classe: poder.Classe,
+                    Codigo_Regra: poder.Codigo_Regra,
+                  }}
+                  contextoPrereq={contextoPrereq}
+                  ehParanormal={!!pp}
+                  paranormalData={pp ? {
+                    Elemento: pp.Elemento,
+                    Afinidade: pp.Afinidade,
+                    PreRequisitosAfinidade: pp.PreRequisitosAfinidade || undefined,
+                    Pre_Codigo_Afinidade: pp.Pre_Codigo_Afinidade,
+                  } : undefined}
+                  estaExpandido={estaExpandido}
+                  onToggle={() => {
+                    setPoderesModalExpandidos(prev =>
+                      prev.includes(poder.codigo_poder)
+                        ? prev.filter((id: number) => id !== poder.codigo_poder)
+                        : [...prev, poder.codigo_poder]
+                    );
+                  }}
+                  onEscolher={(elem, periciaId) => {
+                    let categoria: 'utilidade' | 'combate' | 'gerais' | 'paranormais' | 'trilha' = 'utilidade';
+                    if (abaModalPoderes === 'combate') categoria = 'combate';
+                    else if (abaModalPoderes === 'gerais') categoria = 'gerais';
+                    
+                    const nexEscolhido = nexModalAberto!;
+                    const nomePericia = periciaId ? contextoPrereq.nomesPericias[periciaId] : undefined;
+
+                    if (poder.Nome.toLowerCase() === 'aprender ritual') {
+                      escolherPoder(nexEscolhido, poder, categoria, elem, nomePericia);
+                      window.dispatchEvent(new CustomEvent('abrirModalRituais', { detail: { nex: nexEscolhido } }));
+                      setNexModalAberto(null);
+                    } else if (poder.Nome.toLowerCase() === 'especialista diletante' || poder.Codigo_Regra === 31 || (poder as any).codigo_regra === 31) {
+                      escolherPoder(nexEscolhido, poder, categoria, elem, nomePericia);
+                      window.dispatchEvent(new CustomEvent('abrirModalOutraClasse', { detail: { nex: nexEscolhido } }));
+                      setNexModalAberto(null);
+                    } else if (poder.Nome.toLowerCase().includes('flashback') || poder.Codigo_Regra === 32 || (poder as any).codigo_regra === 32) {
+                      escolherPoder(nexEscolhido, poder, categoria, elem, nomePericia);
+                      window.dispatchEvent(new Event('abrirModalOutraOrigem'));
+                      setNexModalAberto(null);
+                    } else if (poder.Codigo_Regra === 35) {
+                      setRitualModalAbertoPara({ poder, categoria });
+                    } else {
+                      escolherPoder(nexEscolhido, poder, categoria, elem, nomePericia);
+                      setNexModalAberto(null);
+                    }
+                  }}
+                />
+              );
+            });
 
             return (
-              <PoderCard
-                key={poder.codigo_poder}
-                poder={{
-                  codigo_poder: poder.codigo_poder,
-                  Nome: poder.Nome,
-                  Descricao: poder.Descricao,
-                  PreRequisitos: poder.PreRequisitos || '',
-                  Fonte: (poder as any).Fonte || pp?.Fonte || '',
-                  Pre_Codigo: poder.Pre_Codigo,
-                  Tipo: poder.Tipo,
-                  Classe: poder.Classe,
-                  Codigo_Regra: poder.Codigo_Regra,
-                }}
-                contextoPrereq={contextoPrereq}
-                ehParanormal={!!pp}
-                paranormalData={pp ? {
-                  Elemento: pp.Elemento,
-                  Afinidade: pp.Afinidade,
-                  PreRequisitosAfinidade: pp.PreRequisitosAfinidade || undefined,
-                  Pre_Codigo_Afinidade: pp.Pre_Codigo_Afinidade,
-                } : undefined}
-                estaExpandido={estaExpandido}
-                onToggle={() => {
-                  setPoderesModalExpandidos(prev =>
-                    prev.includes(poder.codigo_poder)
-                      ? prev.filter((id: number) => id !== poder.codigo_poder)
-                      : [...prev, poder.codigo_poder]
-                  );
-                }}
-                onEscolher={(elem, periciaId) => {
-                  let categoria: 'utilidade' | 'combate' | 'gerais' | 'paranormais' | 'trilha' = 'utilidade';
-                  if (abaModalPoderes === 'combate') categoria = 'combate';
-                  else if (abaModalPoderes === 'gerais') categoria = 'gerais';
-                  
-                  const nexEscolhido = nexModalAberto!;
-                  const nomePericia = periciaId ? contextoPrereq.nomesPericias[periciaId] : undefined;
-
-                  if (poder.Nome.toLowerCase() === 'aprender ritual') {
-                    escolherPoder(nexEscolhido, poder, categoria, elem, nomePericia);
-                    window.dispatchEvent(new CustomEvent('abrirModalRituais', { detail: { nex: nexEscolhido } }));
-                    setNexModalAberto(null);
-                  } else if (poder.Nome.toLowerCase() === 'especialista diletante' || poder.Codigo_Regra === 31 || (poder as any).codigo_regra === 31) {
-                    escolherPoder(nexEscolhido, poder, categoria, elem, nomePericia);
-                    window.dispatchEvent(new CustomEvent('abrirModalOutraClasse', { detail: { nex: nexEscolhido } }));
-                    setNexModalAberto(null);
-                  } else if (poder.Nome.toLowerCase().includes('flashback') || poder.Codigo_Regra === 32 || (poder as any).codigo_regra === 32) {
-                    escolherPoder(nexEscolhido, poder, categoria, elem, nomePericia);
-                    window.dispatchEvent(new Event('abrirModalOutraOrigem'));
-                    setNexModalAberto(null);
-                  } else if (poder.Codigo_Regra === 35) {
-                    setRitualModalAbertoPara({ poder, categoria });
-                  } else {
-                    escolherPoder(nexEscolhido, poder, categoria, elem, nomePericia);
-                    setNexModalAberto(null);
-                  }
-                }}
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
+                <div className="flex md:hidden flex-col gap-3">
+                  {renderedPoderes}
+                </div>
+                <div className="hidden md:flex flex-col gap-3">
+                  {renderedPoderes.filter((_, i) => i % 2 === 0)}
+                </div>
+                <div className="hidden md:flex flex-col gap-3">
+                  {renderedPoderes.filter((_, i) => i % 2 !== 0)}
+                </div>
+              </div>
             );
-          })}
+          })()}
 
           {listaFiltrada.length === 0 && (
-            <div className="mt-5 text-center italic text-zinc-600">
+            <div className="mt-5 text-center italic text-zinc-600 col-span-full">
               Nenhum poder encontrado.
             </div>
           )}

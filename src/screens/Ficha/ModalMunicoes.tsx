@@ -53,12 +53,12 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
   const uniqueTipos = Array.from(new Set(municoesDisponiveis.map(m => m.Tipo_Arma))).filter(Boolean).sort();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" onClick={onFechar}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onFechar}>
       <div 
-        className="flex h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50"
+        className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden flex flex-col h-[90vh]"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex flex-col border-b border-zinc-800 p-5 pb-4">
+        <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="font-display text-lg uppercase tracking-wide text-zinc-100">
@@ -75,13 +75,13 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
               placeholder="Buscar munição..."
               value={busca}
               onChange={e => setBusca(e.target.value)}
-              className="flex-1 rounded border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 outline-none transition focus:border-red-800"
+              className="flex-1 rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700"
             />
             <button 
               onClick={() => setMostrarFiltrosAvançados(!mostrarFiltrosAvançados)}
               className={`rounded border px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition ${
                 mostrarFiltrosAvançados || filtroCategoria !== 'Todas' || filtroTipo !== 'Todos'
-                  ? 'border-red-800 bg-red-900/40 text-red-300'
+                  ? 'border-green-800 bg-green-900/40 text-green-300'
                   : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
               }`}
             >
@@ -119,39 +119,58 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
           </div>
         )}
 
-        <div className="flex-1 overflow-y-scroll p-2 flex flex-col gap-2 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
           {municoesFiltradas.length === 0 ? (
             <div className="text-center text-zinc-500 italic p-4">Nenhuma munição encontrada.</div>
           ) : (
-            municoesFiltradas.map((municao) => (
-              <div key={municao.Codigo_Municao} className="rounded border border-zinc-800 bg-zinc-950/80 p-3 hover:border-zinc-700 transition">
-                <div className="flex justify-between items-start gap-3">
-                  <div className="flex flex-col gap-1 flex-1 min-w-0">
-                    <span className="font-bold text-zinc-100 text-sm truncate">{municao.Nome_Item}</span>
-                    <span className="text-xs text-zinc-500">{municao.Tipo_Arma}</span>
-                    <span className="text-xs text-zinc-400 mt-1 leading-relaxed">{formatarTexto(municao.Descricao_Item)}</span>
-                    <div className="flex gap-4 text-xs mt-2 text-zinc-500 font-bold uppercase tracking-wider">
-                      <span>Categoria: <span className="text-red-400">{municao.Categoria_Item}</span></span>
-                      <span>Espaços: <span className="text-red-400">{(regrasAutomaticasAtivas.has(43) && (municao['Espaços_Item'] === 0.5 || String(municao['Espaços_Item']) === '0,5' || String(municao['Espaços_Item']) === '0.5')) ? 0.25 : municao['Espaços_Item']}</span></span>
-                    </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
+              {municoesFiltradas.map((municao) => (
+                <div 
+                  key={municao.Codigo_Municao} 
+                  className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col h-full"
+                >
+                  <div className="flex items-start justify-between gap-2 mb-2 cursor-pointer">
+                    <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
+                      {municao.Nome_Item}
+                    </h3>
                   </div>
                   
-                  <button
-                    onClick={() => {
-                      if (onSelect) {
-                        onSelect(municao);
-                      } else {
-                        municoesHook.adicionarMunicao(municao);
-                        onFechar();
-                      }
-                    }}
-                    className="rounded bg-red-700 px-3 py-1.5 text-xs font-bold uppercase text-zinc-100 transition hover:bg-red-600 flex-shrink-0"
-                  >
-                    Selecionar
-                  </button>
+                  <div className="flex-1">
+                    <div className="flex items-center flex-wrap gap-4 text-xs text-zinc-300 mb-2">
+                      <span className="italic text-zinc-400">{municao.Tipo_Arma}</span>
+                    </div>
+                    
+                    <p className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none">
+                      {formatarTexto(municao.Descricao_Item)}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2">
+                    <span className="text-zinc-500">
+                      <span className="text-green-400 font-semibold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (municao['Espaços_Item'] === 0.5 || String(municao['Espaços_Item']) === '0,5' || String(municao['Espaços_Item']) === '0.5')) ? 0.25 : municao['Espaços_Item']}
+                    </span>
+                    <span className="text-zinc-500 flex items-center gap-1">
+                      • <span className="text-green-400 font-semibold">Categoria:</span> <span className="uppercase tracking-wider text-zinc-400">{municao.Categoria_Item}</span>
+                    </span>
+                    
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (onSelect) {
+                          onSelect(municao);
+                        } else {
+                          municoesHook.adicionarMunicao(municao);
+                          onFechar();
+                        }
+                      }}
+                      className="ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                    >
+                      Selecionar
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))
+              ))}
+            </div>
           )}
         </div>
       </div>

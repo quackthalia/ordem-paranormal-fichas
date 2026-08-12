@@ -60,6 +60,7 @@ interface SortableItemGeralProps {
   stringDT: string | null;
   onEditar?: () => void;
   toggleEquipado: (id: string) => void;
+  isOverlay?: boolean;
 }
 
 export const calcularEspacosFinais = (espacoBase: number | string, modificacoesIds?: number[], todasModificacoes?: any[], isRegra43Ativa?: boolean) => {
@@ -86,7 +87,7 @@ export const calcularEspacosFinais = (espacoBase: number | string, modificacoesI
   return val;
 };
 
-function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stringDT, onEditar, toggleEquipado }: SortableItemGeralProps) {
+function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stringDT, onEditar, toggleEquipado, isOverlay }: SortableItemGeralProps) {
   const { modificacoesHook, regrasAutomaticasAtivas } = useRPG();
   const [expandirMods, setExpandirMods] = useState(false);
   const modsAtuais = (item.modificacoes || []).map(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)).filter(Boolean) as any[];
@@ -100,7 +101,7 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
     isDragging,
   } = useSortable({ id: item.id, data: { type: 'item' } });
 
-  const style = {
+  const style = isOverlay ? {} : {
     transform: CSS.Transform.toString(transform),
     transition,
     zIndex: isDragging ? 10 : 1,
@@ -109,9 +110,12 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
 
   return (
     <div
-      ref={setNodeRef}
+      ref={isOverlay ? undefined : setNodeRef}
       style={style}
-      className={`rounded border border-l-4 border-l-red-700 transition-colors w-full relative ${isDragging ? 'border-red-500 bg-zinc-900 shadow-xl scale-[1.02]' : 'border-zinc-800 bg-zinc-950/60 hover:bg-zinc-900/60'}`}
+      className={`rounded border border-l-4 border-l-green-700 transition-colors w-full relative ${
+        isOverlay ? 'border-green-500 bg-zinc-900 shadow-2xl scale-[1.02] opacity-90 cursor-grabbing' :
+        isDragging ? 'border-zinc-800 bg-zinc-950/60 opacity-40' : 'border-zinc-800 bg-zinc-950/60 hover:bg-zinc-900/60'
+      }`}
     >
       <div className="flex items-center gap-1 p-3">
         {/* Drag handle */}
@@ -155,7 +159,7 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
                 
                 return (
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-300 mt-0.5">
-                    <span><span className="font-bold text-red-400">Dado:</span> {danoBase}</span>
+                    <span><span className="font-bold text-green-400">Dado:</span> {danoBase}</span>
                     <span><span className="font-bold text-zinc-400">Crítico:</span> {critText}</span>
                   </div>
                 );
@@ -165,7 +169,7 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
 
             {stringDT && (
               <div className="flex items-center gap-4 text-xs text-zinc-300 mt-0.5">
-                <span><span className="font-bold text-red-400">DT:</span> {stringDT}</span>
+                <span><span className="font-bold text-green-400">DT:</span> {stringDT}</span>
               </div>
             )}
             {modsAtuais.length > 0 && (
@@ -185,7 +189,7 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
               checked={!!item.equipado}
               onPointerDown={(e) => e.stopPropagation()}
               onChange={() => toggleEquipado(item.id)}
-              className="w-5 h-5 cursor-pointer accent-red-600"
+              className="w-5 h-5 cursor-pointer accent-green-600"
               title={item.equipado ? "Desequipar" : "Equipar item"}
             />
           )}
@@ -196,12 +200,12 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
       {isExpanded && (
         <div className="border-t border-zinc-800 px-3 py-3 text-xs bg-zinc-950/80 flex flex-col gap-2 relative z-10" onClick={e => e.stopPropagation()}>
           <div className="flex flex-col gap-1 mt-1">
-            <span><span className="text-red-400 font-bold">Categoria:</span> {calcularCategoriaFinal(item.item.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes)}</span>
-            <span><span className="text-red-400 font-bold">Espaços:</span> {calcularEspacosFinais(item.item.Espacos_Itens, item.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas?.has(43))}</span>
+            <span><span className="text-green-400 font-bold">Categoria:</span> {calcularCategoriaFinal(item.item.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes)}</span>
+            <span><span className="text-green-400 font-bold">Espaços:</span> {calcularEspacosFinais(item.item.Espacos_Itens, item.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas?.has(43))}</span>
             {item.item.Nome_Item.toLowerCase().includes('soqueira') && modsAtuais.length > 0 && (
               <>
-                <span><span className="text-red-400 font-bold">Alcance:</span> {(item.item as any).Alcance_Item || 'Corpo a Corpo'}</span>
-                <span><span className="text-red-400 font-bold">Tipo:</span> {(item.item as any).Tipo_Dano_Arma || 'Impacto'}</span>
+                <span><span className="text-green-400 font-bold">Alcance:</span> {(item.item as any).Alcance_Item || 'Corpo a Corpo'}</span>
+                <span><span className="text-green-400 font-bold">Tipo:</span> {(item.item as any).Tipo_Dano_Arma || 'Impacto'}</span>
               </>
             )}
             {modsAtuais.length > 0 && (
@@ -259,7 +263,7 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
                   e.stopPropagation();
                   removerItem(item.id);
                 }}
-                className="text-xs text-red-500 hover:text-red-400 bg-red-950/30 hover:bg-red-900/50 px-3 py-1.5 rounded border border-red-900/50 transition-colors"
+                className="text-xs text-green-500 hover:text-green-400 bg-green-950/30 hover:bg-green-900/50 px-3 py-1.5 rounded border border-green-900/50 transition-colors"
               >
                 Remover
               </button>
@@ -292,12 +296,17 @@ export function InventarioPanel() {
   const [municaoFiltroCategoria, setMunicaoFiltroCategoria] = useState<string | undefined>(undefined);
   const [municaoTargetArmaId, setMunicaoTargetArmaId] = useState<string | undefined>(undefined);
   const [expandidos, setExpandidos] = useState<Record<string, boolean>>({});
+  
+  useEffect(() => {
+    setExpandidos({});
+  }, [categoriaFiltro]);
+
   const [armaEditandoId, setArmaEditandoId] = useState<string | null>(null);
   const [protecaoEditandoId, setProtecaoEditandoId] = useState<string | null>(null);
 
   const [editingItem, setEditingItem] = useState<{ id: string, tipo: 'arma' | 'protecao' | 'item' | 'municao' | 'amaldicoado' } | null>(null);
   const [editingItemAmaldicoado, setEditingItemAmaldicoado] = useState<ItemAmaldicoadoInventario | null>(null);
-  const [activeDragItem, setActiveDragItem] = useState<{ id: string, type: 'arma' | 'municao' | 'protecao' | 'item' | 'amaldicoado', name?: string } | null>(null);
+  const [activeDragItem, setActiveDragItem] = useState<{ id: string, type: 'arma' | 'municao' | 'protecao' | 'item' | 'amaldicoado', name?: string, fullItem?: any, stringDT?: string | null } | null>(null);
 
   const getArmaParaEditar = () => editingItem?.tipo === 'arma' ? armasHook.armasInventario.find(i => i.id === editingItem.id) : null;
   const getProtecaoParaEditar = () => editingItem?.tipo === 'protecao' ? protecoesHook.protecoesInventario.find(i => i.id === editingItem.id) : null;
@@ -424,20 +433,30 @@ export function InventarioPanel() {
     }
     const type = active.data?.current?.type;
     let name = 'Item';
+    let fullItem = null;
+    let stringDT = null;
+    
     if (type === 'municao') {
-      const m = municoesHook?.municoesInventario.find(x => x.id === active.id);
-      if (m) name = m.municao.Nome_Item;
+      fullItem = municoesHook?.municoesInventario.find(x => x.id === active.id);
+      if (fullItem) name = fullItem.municao.Nome_Item;
     } else if (type === 'arma') {
-      const a = armasHook?.armasInventario.find(x => x.id === active.id);
-      if (a) name = a.arma.Nome_Item;
+      fullItem = armasHook?.armasInventario.find(x => x.id === active.id);
+      if (fullItem) {
+        name = fullItem.arma.Nome_Item;
+        stringDT = calcularDT(fullItem.arma.dt_item, fullItem.arma.Categoria_Item?.toLowerCase().includes('explosivos') || fullItem.arma.Nome_Item?.toLowerCase().includes('explosivo'));
+      }
     } else if (type === 'protecao') {
-      const p = protecoesHook?.protecoesInventario.find(x => x.id === active.id);
-      if (p) name = p.protecao.Nome_Protecao;
+      fullItem = protecoesHook?.protecoesInventario.find(x => x.id === active.id);
+      if (fullItem) name = fullItem.protecao.Nome_Protecao;
     } else if (type === 'item') {
-      const i = itensHook?.itensInventario.find(x => x.id === active.id);
-      if (i) name = i.item.Nome_Item;
+      fullItem = itensHook?.itensInventario.find(x => x.id === active.id);
+      if (fullItem) name = fullItem.item.Nome_Item;
+    } else if (type === 'amaldicoado') {
+      fullItem = itensAmaldicoadosHook?.itensAmaldicoadosInventario.find(x => x.id === active.id);
+      if (fullItem) name = fullItem.item.Nome_Item;
     }
-    setActiveDragItem({ id: active.id, type, name });
+    
+    setActiveDragItem({ id: active.id, type, name, fullItem, stringDT });
   };
 
   const handleDragEnd = (event: any) => {
@@ -564,7 +583,7 @@ export function InventarioPanel() {
             min="0"
             value={prestigio}
             onChange={(e) => setPrestigio(Number(e.target.value))}
-            className="w-16 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-center text-lg font-bold text-zinc-100 outline-none transition focus:border-red-800"
+            className="w-16 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-center text-lg font-bold text-zinc-100 outline-none transition focus:border-green-800"
           />
         </div>
         <div className="flex items-center gap-3">
@@ -572,7 +591,7 @@ export function InventarioPanel() {
           <select
             value={patente}
             onChange={(e) => setPatenteManual(e.target.value as Patente)}
-            className="w-48 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-center text-sm font-bold text-zinc-100 outline-none transition focus:border-red-800"
+            className="w-48 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-center text-sm font-bold text-zinc-100 outline-none transition focus:border-green-800"
           >
             {patentesDisponiveis.map(p => (
               <option key={p} value={p}>{p}</option>
@@ -592,7 +611,7 @@ export function InventarioPanel() {
               min="0"
               value={limite}
               onChange={(e) => setLimiteItemCategoria(index, Number(e.target.value))}
-              className="w-12 rounded border border-zinc-700 bg-zinc-900 py-1 text-center text-lg font-bold text-zinc-100 outline-none transition focus:border-red-800"
+              className="w-12 rounded border border-zinc-700 bg-zinc-900 py-1 text-center text-lg font-bold text-zinc-100 outline-none transition focus:border-green-800"
             />
           ))}
         </div>
@@ -620,7 +639,7 @@ export function InventarioPanel() {
           <select
             value={credito}
             onChange={(e) => setCreditoOverride(e.target.value as LimiteCredito)}
-            className="w-32 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-center text-sm font-bold text-zinc-100 outline-none transition focus:border-red-800"
+            className="w-32 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-center text-sm font-bold text-zinc-100 outline-none transition focus:border-green-800"
           >
             {creditosDisponiveis.map(c => (
               <option key={c} value={c}>{c}</option>
@@ -652,7 +671,7 @@ export function InventarioPanel() {
             title="Geral"
             className={`w-12 h-12 flex items-center justify-center rounded-t text-2xl transition border-b-2 ${
               categoriaFiltro === 'Geral' 
-                ? 'bg-zinc-900 text-red-400 border-b-red-500' 
+                ? 'bg-zinc-900 text-green-400 border-b-green-500' 
                 : 'text-zinc-600 hover:text-zinc-300 hover:bg-zinc-900/50 border-b-transparent'
             }`}
           >
@@ -663,7 +682,7 @@ export function InventarioPanel() {
             title="Armas"
             className={`w-12 h-12 flex items-center justify-center rounded-t text-2xl transition border-b-2 ${
               categoriaFiltro === 'Armas' 
-                ? 'bg-zinc-900 text-red-400 border-b-red-500' 
+                ? 'bg-zinc-900 text-green-400 border-b-green-500' 
                 : 'text-zinc-600 hover:text-zinc-300 hover:bg-zinc-900/50 border-b-transparent'
             }`}
           >
@@ -674,7 +693,7 @@ export function InventarioPanel() {
             title="Munições"
             className={`w-12 h-12 flex items-center justify-center rounded-t text-2xl transition border-b-2 ${
               categoriaFiltro === 'Munições' 
-                ? 'bg-zinc-900 text-red-400 border-b-red-500' 
+                ? 'bg-zinc-900 text-green-400 border-b-green-500' 
                 : 'text-zinc-600 hover:text-zinc-300 hover:bg-zinc-900/50 border-b-transparent'
             }`}
           >
@@ -685,7 +704,7 @@ export function InventarioPanel() {
             title="Proteções"
             className={`w-12 h-12 flex items-center justify-center rounded-t text-2xl transition border-b-2 ${
               categoriaFiltro === 'Proteções' 
-                ? 'bg-zinc-900 text-red-400 border-b-red-500' 
+                ? 'bg-zinc-900 text-green-400 border-b-green-500' 
                 : 'text-zinc-600 hover:text-zinc-300 hover:bg-zinc-900/50 border-b-transparent'
             }`}
           >
@@ -696,7 +715,7 @@ export function InventarioPanel() {
             title="Acessórios"
             className={`w-12 h-12 flex items-center justify-center rounded-t text-2xl transition border-b-2 ${
               categoriaFiltro === 'Acessórios' 
-                ? 'bg-zinc-900 text-red-400 border-b-red-500' 
+                ? 'bg-zinc-900 text-green-400 border-b-green-500' 
                 : 'text-zinc-600 hover:text-zinc-300 hover:bg-zinc-900/50 border-b-transparent'
             }`}
           >
@@ -707,7 +726,7 @@ export function InventarioPanel() {
             title="Explosivos"
             className={`w-12 h-12 flex items-center justify-center rounded-t text-2xl transition border-b-2 ${
               categoriaFiltro === 'Explosivos' 
-                ? 'bg-zinc-900 text-red-400 border-b-red-500' 
+                ? 'bg-zinc-900 text-green-400 border-b-green-500' 
                 : 'text-zinc-600 hover:text-zinc-300 hover:bg-zinc-900/50 border-b-transparent'
             }`}
           >
@@ -718,7 +737,7 @@ export function InventarioPanel() {
             title="Itens Operacionais"
             className={`w-12 h-12 flex items-center justify-center rounded-t text-2xl transition border-b-2 ${
               categoriaFiltro === 'Itens Operacionais' 
-                ? 'bg-zinc-900 text-red-400 border-b-red-500' 
+                ? 'bg-zinc-900 text-green-400 border-b-green-500' 
                 : 'text-zinc-600 hover:text-zinc-300 hover:bg-zinc-900/50 border-b-transparent'
             }`}
           >
@@ -729,7 +748,7 @@ export function InventarioPanel() {
             title="Medicamento"
             className={`w-12 h-12 flex items-center justify-center rounded-t text-2xl transition border-b-2 ${
               categoriaFiltro === 'Medicamento' 
-                ? 'bg-zinc-900 text-red-400 border-b-red-500' 
+                ? 'bg-zinc-900 text-green-400 border-b-green-500' 
                 : 'text-zinc-600 hover:text-zinc-300 hover:bg-zinc-900/50 border-b-transparent'
             }`}
           >
@@ -740,7 +759,7 @@ export function InventarioPanel() {
             title="Itens Paranormais"
             className={`w-12 h-12 flex items-center justify-center rounded-t text-2xl transition border-b-2 ${
               categoriaFiltro === 'Itens Paranormais' 
-                ? 'bg-zinc-900 text-red-400 border-b-red-500' 
+                ? 'bg-zinc-900 text-green-400 border-b-green-500' 
                 : 'text-zinc-600 hover:text-zinc-300 hover:bg-zinc-900/50 border-b-transparent'
             }`}
           >
@@ -998,7 +1017,7 @@ export function InventarioPanel() {
             {(categoriaFiltro === 'Amaldiçoados' || (categoriaFiltro === 'Geral' && (itensAmaldicoadosHook?.itensAmaldicoadosInventario?.length || 0) > 0)) && (
               <>
                 {categoriaFiltro === 'Geral' && (
-                  <h3 className="text-sm font-bold text-purple-500 uppercase tracking-wider mb-1 mt-2 border-b border-zinc-800 pb-1">Amaldiçoados</h3>
+                  <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-1 mt-2 border-b border-zinc-800 pb-1">Amaldiçoados</h3>
                 )}
                 <SortableContext items={(itensAmaldicoadosHook?.itensAmaldicoadosInventario || []).map(i => i.id)} strategy={verticalListSortingStrategy}>
                   {(itensAmaldicoadosHook?.itensAmaldicoadosInventario || [])
@@ -1023,12 +1042,13 @@ export function InventarioPanel() {
             )}
 
             <DragOverlay>
-              {activeDragItem ? (
-                <div className="rounded border border-zinc-700 bg-zinc-900 p-3 shadow-2xl opacity-90 cursor-grabbing flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded bg-zinc-800 text-zinc-400">
-                    {activeDragItem.type === 'municao' ? 'M' : activeDragItem.type === 'protecao' ? 'P' : activeDragItem.type === 'item' ? 'I' : 'A'}
-                  </div>
-                  <span className="font-bold text-zinc-100 text-sm">{activeDragItem.name}</span>
+              {activeDragItem?.fullItem ? (
+                <div className="w-full">
+                  {activeDragItem.type === 'arma' && <SortableArmaItem item={activeDragItem.fullItem} isExpanded={false} toggleExpandir={() => {}} removerArma={() => {}} stringDT={activeDragItem.stringDT || null} isOverlay />}
+                  {activeDragItem.type === 'protecao' && <SortableProtecaoItem item={activeDragItem.fullItem} isExpanded={false} toggleExpandir={() => {}} removerProtecao={() => {}} toggleEquipado={() => {}} isOverlay />}
+                  {activeDragItem.type === 'item' && <SortableItemGeral item={activeDragItem.fullItem} isExpanded={false} toggleExpandir={() => {}} removerItem={() => {}} stringDT={null} toggleEquipado={() => {}} isOverlay />}
+                  {activeDragItem.type === 'municao' && <SortableMunicaoItem id={activeDragItem.id} item={activeDragItem.fullItem} isExpanded={false} toggleExpandir={() => {}} removerItem={() => {}} isOverlay />}
+                  {activeDragItem.type === 'amaldicoado' && <SortableItemAmaldicoado item={activeDragItem.fullItem} isExpanded={false} toggleExpandir={() => {}} removerItem={() => {}} stringDT={null} toggleEquipado={() => {}} isOverlay />}
                 </div>
               ) : null}
             </DragOverlay>
@@ -1157,7 +1177,8 @@ function SortableArmaItem({
   toggleExpandir,
   stringDT,
   removerArma,
-  onEditar
+  onEditar,
+  isOverlay
 }: {
   item: ArmaInventario;
   isExpanded: boolean;
@@ -1165,6 +1186,7 @@ function SortableArmaItem({
   stringDT: string | null;
   removerArma: (id: string) => void;
   onEditar?: () => void;
+  isOverlay?: boolean;
 }) {
   const { id, arma } = item;
   const {
@@ -1236,18 +1258,21 @@ function SortableArmaItem({
 
   const stats = calcularEstatisticasFinaisArma();
 
-  const style = {
+  const style = isOverlay ? {} : {
     transform: CSS.Translate.toString(transform),
     transition,
     zIndex: isDragging ? 10 : 1,
-    opacity: isDragging ? 0.9 : 1,
+    opacity: isDragging ? 0.4 : 1,
   };
 
   return (
     <div
-      ref={setNodeRef}
+      ref={isOverlay ? undefined : setNodeRef}
       style={style}
-      className={`rounded border border-l-4 border-l-red-700 transition-colors ${isDragging ? 'border-red-500 bg-zinc-900 shadow-xl scale-[1.02]' : 'border-zinc-800 bg-zinc-950/60 hover:bg-zinc-900/60'}`}
+      className={`rounded border border-l-4 border-l-green-700 transition-colors ${
+        isOverlay ? 'border-green-500 bg-zinc-900 shadow-2xl scale-[1.02] opacity-90 cursor-grabbing' : 
+        isDragging ? 'border-zinc-800 bg-zinc-950/60 opacity-40' : 'border-zinc-800 bg-zinc-950/60 hover:bg-zinc-900/60'
+      }`}
     >
       <div className="flex items-center gap-1 p-3">
         <div
@@ -1268,10 +1293,10 @@ function SortableArmaItem({
           <div className="flex flex-col gap-1 flex-1 min-w-0 justify-center">
             <span className="font-bold text-sm text-zinc-100 truncate leading-none mt-0.5">{arma.Nome_Item}</span>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-300 mt-0.5">
-              <span><span className="font-bold text-red-400">Dado:</span> {stats.dano}</span>
-              {stats.danoSecundario && <span><span className="font-bold text-red-400">Secundário:</span> {stats.danoSecundario}</span>}
+              <span><span className="font-bold text-green-400">Dado:</span> {stats.dano}</span>
+              {stats.danoSecundario && <span><span className="font-bold text-green-400">Secundário:</span> {stats.danoSecundario}</span>}
               <span><span className="font-bold text-zinc-400">Crítico:</span> {formatarCritico(stats.critico, stats.multiplicador)}</span>
-              {stringDT && <span><span className="font-bold text-red-400">DT:</span> {stringDT}</span>}
+              {stringDT && <span><span className="font-bold text-green-400">DT:</span> {stringDT}</span>}
             </div>
             {modsAtuais.length > 0 && (
               <div className="flex items-center mt-1 min-w-0">
@@ -1284,35 +1309,35 @@ function SortableArmaItem({
           
           <div className="flex items-center gap-3 flex-shrink-0">
             {regras?.['contagem_municao'] && arma.Capacidade_Municao != null && (
-              <span className="relative group cursor-help flex items-center">
+              <span className="relative group/mun cursor-help flex items-center">
                 <span className="text-[11px] font-bold text-zinc-300 bg-zinc-800 px-2 py-0.5 rounded border border-zinc-700 whitespace-nowrap shadow-sm">
                   {arma.Capacidade_Municao}
                 </span>
-                <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 hidden group-hover:block w-32 p-1.5 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
+                <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 opacity-0 invisible group-hover/mun:opacity-100 group-hover/mun:visible transition-all duration-300 group-hover/mun:delay-500 delay-0 w-32 p-1.5 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
                   Capacidade de Munição
                 </span>
               </span>
             )}
             {arma['Agil?'] && (
-              <span className="relative group cursor-help">
+              <span className="relative group/agil cursor-help">
                 <span className="text-sm text-yellow-400">⚡</span>
-                <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 hidden group-hover:block w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
+                <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 opacity-0 invisible group-hover/agil:opacity-100 group-hover/agil:visible transition-all duration-300 group-hover/agil:delay-500 delay-0 w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
                   Permite que você aplique sua Agilidade em vez de sua Força em testes de ataque e rolagens de dano.
                 </span>
               </span>
             )}
             {stats.automatica && (
-              <span className="relative group cursor-help">
+              <span className="relative group/auto cursor-help">
                 <span className="text-sm text-blue-400">🔄</span>
-                <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 hidden group-hover:block w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
+                <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 opacity-0 invisible group-hover/auto:opacity-100 group-hover/auto:visible transition-all duration-300 group-hover/auto:delay-500 delay-0 w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
                   Pode disparar rajadas. Quando dispara uma rajada, você sofre -1d20 no teste de ataque, mas causa 1 dado de dano adicional do mesmo tipo.
                 </span>
               </span>
             )}
             {!hasProficiencia && (
-              <span className="relative group cursor-help">
+              <span className="relative group/prof cursor-help">
                 <span className="text-sm text-red-500">⚠️</span>
-                <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 hidden group-hover:block w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
+                <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 opacity-0 invisible group-hover/prof:opacity-100 group-hover/prof:visible transition-all duration-300 group-hover/prof:delay-500 delay-0 w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
                   Você não possui proficiência com esta arma, recebendo -2d20 em testes de ataque com ela.
                 </span>
               </span>
@@ -1330,11 +1355,11 @@ function SortableArmaItem({
             <span className="italic text-zinc-400">{arma.Tipo_Arma}</span>
           </div>
           <div className="flex flex-col gap-1 text-xs text-zinc-300">
-            <span><span className="text-red-400 font-bold">Categoria:</span> {calcularCategoriaFinal(arma.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes, arma.Codigo_Arma === 71)}</span>
-            {stats.alcance && <span><span className="text-red-400 font-bold">Alcance:</span> {stats.alcance}</span>}
-            <span><span className="text-red-400 font-bold">Tipo:</span> {arma.Tipo_Dano_Arma}</span>
-            {stats.danoSecundario && <span><span className="text-red-400 font-bold">Dano Secundário:</span> {stats.danoSecundario}</span>}
-            <span><span className="text-red-400 font-bold">Espaços:</span> {stats.espacos}</span>
+            <span><span className="text-green-400 font-bold">Categoria:</span> {calcularCategoriaFinal(arma.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes, arma.Codigo_Arma === 71)}</span>
+            {stats.alcance && <span><span className="text-green-400 font-bold">Alcance:</span> {stats.alcance}</span>}
+            <span><span className="text-green-400 font-bold">Tipo:</span> {arma.Tipo_Dano_Arma}</span>
+            {stats.danoSecundario && <span><span className="text-green-400 font-bold">Dano Secundário:</span> {stats.danoSecundario}</span>}
+            <span><span className="text-green-400 font-bold">Espaços:</span> {stats.espacos}</span>
             {modsAtuais.length > 0 && (
               <div className="mt-2 border border-zinc-800 rounded bg-zinc-900/50 overflow-hidden">
                 <div 
@@ -1386,7 +1411,7 @@ function SortableArmaItem({
                     e.stopPropagation();
                     removerArma(id);
                   }}
-                  className="text-xs text-red-500 hover:text-red-400 bg-red-950/30 hover:bg-red-900/50 px-3 py-1.5 rounded border border-red-900/50 transition-colors"
+                  className="text-xs text-green-500 hover:text-green-400 bg-green-950/30 hover:bg-green-900/50 px-3 py-1.5 rounded border border-green-900/50 transition-colors"
                 >
                   Remover
                 </button>
@@ -1406,9 +1431,10 @@ interface SortableMunicaoItemProps {
   toggleExpandir: (id: string) => void;
   removerItem: (id: string) => void;
   onEditar?: () => void;
+  isOverlay?: boolean;
 }
 
-function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem, onEditar }: SortableMunicaoItemProps) {
+function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem, onEditar, isOverlay }: SortableMunicaoItemProps) {
   const { municao } = item;
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id, data: { type: 'municao' } });
 
@@ -1416,18 +1442,21 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
   const [expandirMods, setExpandirMods] = useState(false);
   const modsAtuais = (item.modificacoes || []).map(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)).filter(Boolean) as any[];
 
-  const style = {
+  const style = isOverlay ? {} : {
     transform: CSS.Translate.toString(transform),
     transition,
     zIndex: isDragging ? 10 : 1,
-    opacity: isDragging ? 0.9 : 1,
+    opacity: isDragging ? 0.4 : 1,
   };
 
   return (
     <div
-      ref={setNodeRef}
+      ref={isOverlay ? undefined : setNodeRef}
       style={style}
-      className={`rounded border border-l-4 border-l-orange-600 transition-colors ${isDragging ? 'border-red-500 bg-zinc-900 shadow-xl scale-[1.02]' : 'border-zinc-800 bg-zinc-950/60 hover:bg-zinc-900/60'}`}
+      className={`rounded border border-l-4 border-l-orange-600 transition-colors ${
+        isOverlay ? 'border-orange-500 bg-zinc-900 shadow-2xl scale-[1.02] opacity-90 cursor-grabbing' :
+        isDragging ? 'border-zinc-800 bg-zinc-950/60 opacity-40' : 'border-zinc-800 bg-zinc-950/60 hover:bg-zinc-900/60'
+      }`}
     >
       <div className="flex items-center gap-1 p-3">
         <div
@@ -1527,7 +1556,7 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
                 e.stopPropagation();
                 removerItem(id);
               }}
-              className="text-xs text-red-500 hover:text-red-400 bg-red-950/30 hover:bg-red-900/50 px-3 py-1.5 rounded border border-red-900/50 transition-colors"
+              className="text-xs text-green-500 hover:text-green-400 bg-green-950/30 hover:bg-green-900/50 px-3 py-1.5 rounded border border-green-900/50 transition-colors"
             >
               Remover
             </button>
@@ -1544,7 +1573,8 @@ function SortableProtecaoItem({
   toggleExpandir,
   removerProtecao,
   onEditar,
-  toggleEquipado
+  toggleEquipado,
+  isOverlay
 }: {
   item: ProtecaoInventario;
   isExpanded: boolean;
@@ -1552,6 +1582,7 @@ function SortableProtecaoItem({
   removerProtecao: (id: string) => void;
   onEditar?: () => void;
   toggleEquipado: (id: string) => void;
+  isOverlay?: boolean;
 }) {
   const { id, protecao, equipado } = item;
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id, data: { type: 'protecao' } });
@@ -1561,19 +1592,20 @@ function SortableProtecaoItem({
 
   const modsAtuais = (item.modificacoes || []).map(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)).filter(Boolean) as any[];
 
-  const style = {
+  const style = isOverlay ? {} : {
     transform: CSS.Translate.toString(transform),
     transition,
     zIndex: isDragging ? 10 : 1,
-    opacity: isDragging ? 0.9 : 1,
+    opacity: isDragging ? 0.4 : 1,
   };
 
   return (
     <div
-      ref={setNodeRef}
+      ref={isOverlay ? undefined : setNodeRef}
       style={style}
       className={`rounded border border-l-4 border-l-blue-700 transition-colors ${
-        isDragging ? 'border-blue-500 bg-zinc-900 shadow-xl scale-[1.02]' : 'border-zinc-800 bg-zinc-950/60 hover:bg-zinc-900/60'
+        isOverlay ? 'border-blue-500 bg-zinc-900 shadow-2xl scale-[1.02] opacity-90 cursor-grabbing' :
+        isDragging ? 'border-zinc-800 bg-zinc-950/60 opacity-40' : 'border-zinc-800 bg-zinc-950/60 hover:bg-zinc-900/60'
       }`}
     >
       <div className="flex items-center gap-1 p-3">
@@ -1615,18 +1647,27 @@ function SortableProtecaoItem({
         </div>
         
         <div className="flex items-center gap-3 flex-shrink-0">
-          <input
-            type="checkbox"
-            checked={!!equipado}
+          <button
             onPointerDown={(e) => e.stopPropagation()}
-            onChange={() => toggleEquipado(id)}
-            className="w-5 h-5 cursor-pointer accent-blue-600"
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleEquipado(id);
+            }}
+            className={`w-4 h-4 rounded flex items-center justify-center border transition-colors cursor-pointer ${
+              equipado 
+                ? 'bg-zinc-700 border-zinc-500 text-zinc-100' 
+                : 'bg-zinc-900 border-zinc-700 text-transparent hover:border-zinc-500'
+            }`}
             title={equipado ? "Desequipar" : "Equipar proteção"}
-          />
+          >
+            <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="2.5 6 5 8.5 9.5 3.5" />
+            </svg>
+          </button>
           {!hasProficiencia && (
-            <span className="relative group cursor-help">
+            <span className="relative group/prof cursor-help">
               <span className="text-sm text-red-500">⚠️</span>
-              <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 hidden group-hover:block w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
+              <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 opacity-0 invisible group-hover/prof:opacity-100 group-hover/prof:visible transition-all duration-300 group-hover/prof:delay-500 delay-0 w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
                 Se você usar uma proteção com a qual não seja proficiente, sofre -2d20 em testes baseados em Força ou Agilidade.
               </span>
             </span>
@@ -1687,7 +1728,7 @@ function SortableProtecaoItem({
             
             <button
               onClick={(e) => { e.stopPropagation(); removerProtecao(id); }}
-              className="text-xs text-red-500 hover:text-red-400 bg-red-950/30 hover:bg-red-900/50 px-3 py-1.5 rounded border border-red-900/50 transition-colors"
+              className="text-xs text-green-500 hover:text-green-400 bg-green-950/30 hover:bg-green-900/50 px-3 py-1.5 rounded border border-green-900/50 transition-colors"
             >
               Remover
             </button>

@@ -7,14 +7,14 @@ const COR_TREINO: Record<number, string> = {
   0: 'text-zinc-400',
   5: 'text-emerald-400',
   10: 'text-amber-400',
-  15: 'text-red-400',
+  15: 'text-green-400',
 };
 
 const BORDA_TREINO: Record<number, string> = {
   0: 'border-zinc-600',
   5: 'border-emerald-400',
   10: 'border-amber-400',
-  15: 'border-red-400',
+  15: 'border-green-400',
 };
 
 export const PericiasTable: React.FC = () => {
@@ -58,7 +58,7 @@ export const PericiasTable: React.FC = () => {
             <label className="flex cursor-pointer items-center gap-2 text-zinc-400">
               <input
                 type="checkbox"
-                className="cursor-pointer accent-red-600"
+                className="cursor-pointer accent-green-600"
                 checked={regrasAtivas}
                 onChange={(e) => setRegrasAtivas(e.target.checked)}
               />
@@ -66,7 +66,7 @@ export const PericiasTable: React.FC = () => {
             </label>
             <button
               onClick={() => setMostrarBonus(!mostrarBonus)}
-              className={`rounded px-2 py-1 transition ${mostrarBonus ? 'bg-red-900/50 text-red-100 border-red-800/50' : 'bg-zinc-800/50 text-zinc-400 hover:text-zinc-200'} border border-zinc-700/50 flex items-center gap-2`}
+              className={`rounded px-2 py-1 transition ${mostrarBonus ? 'bg-green-900/50 text-green-100 border-green-800/50' : 'bg-zinc-800/50 text-zinc-400 hover:text-zinc-200'} border border-zinc-700/50 flex items-center gap-2`}
             >
               Bônus de Dados {mostrarBonus ? '▲' : '▼'}
             </button>
@@ -74,10 +74,10 @@ export const PericiasTable: React.FC = () => {
 
           {regrasAtivas && (
             <div className="flex gap-4 font-bold">
-              <span className={limites.maxTreinadas - totais.totalTreinadasUsadas < 0 ? 'text-red-500' : 'text-emerald-400'}>
+              <span className={limites.maxTreinadas - totais.totalTreinadasUsadas < 0 ? 'text-green-500' : 'text-emerald-400'}>
                 Treinar: {limites.maxTreinadas - totais.totalTreinadasUsadas}
               </span>
-              <span className={limites.maxUpgrades - totais.totalUpgradesGastos < 0 ? 'text-red-500' : 'text-amber-400'}>
+              <span className={limites.maxUpgrades - totais.totalUpgradesGastos < 0 ? 'text-green-500' : 'text-amber-400'}>
                 Upgrades: {limites.maxUpgrades - totais.totalUpgradesGastos}
               </span>
             </div>
@@ -87,9 +87,9 @@ export const PericiasTable: React.FC = () => {
         {/* REGRAS AUTOMÁTICAS INLINE */}
         {(regrasAutomaticasAtivas.has(8) || regrasAutomaticasAtivas.has(13) || regrasAutomaticasAtivas.has(25)) && (
           <div className="flex gap-2 flex-wrap mt-2 pt-2 border-t border-zinc-800/50">
-            {regrasAutomaticasAtivas.has(8) && <span className="rounded bg-red-900/30 px-2 py-0.5 text-xs text-red-400 border border-red-900/50 flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>+2 Diplomacia (Automático)</span>}
-            {regrasAutomaticasAtivas.has(13) && <span className="rounded bg-red-900/30 px-2 py-0.5 text-xs text-red-400 border border-red-900/50 flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>+2 Vontade (Automático)</span>}
-            {regrasAutomaticasAtivas.has(25) && temProtecaoLeve && <span className="rounded bg-red-900/30 px-2 py-0.5 text-xs text-red-400 border border-red-900/50 flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>+2 Reflexos (Automático)</span>}
+            {regrasAutomaticasAtivas.has(8) && <span className="rounded bg-green-900/30 px-2 py-0.5 text-xs text-green-400 border border-green-900/50 flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>+2 Diplomacia (Automático)</span>}
+            {regrasAutomaticasAtivas.has(13) && <span className="rounded bg-green-900/30 px-2 py-0.5 text-xs text-green-400 border border-green-900/50 flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>+2 Vontade (Automático)</span>}
+            {regrasAutomaticasAtivas.has(25) && temProtecaoLeve && <span className="rounded bg-green-900/30 px-2 py-0.5 text-xs text-green-400 border border-green-900/50 flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>+2 Reflexos (Automático)</span>}
           </div>
         )}
       </div>
@@ -106,28 +106,50 @@ export const PericiasTable: React.FC = () => {
               <div className="flex flex-col gap-0.5">
                 {regrasAutomaticasAtivas.has(30) && (
                   <div className="text-xs text-zinc-300 px-2 py-1 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start">
-                    <span className="text-red-500 font-bold mt-[-1px]">•</span>
+                    <span className="text-green-500 font-bold mt-[-1px]">•</span>
                     <span>+2d20 em Diplomacia, Enganação e Intuição no primeiro teste social que fizer num ambiente</span>
                   </div>
                 )}
                 {regrasAutomaticasAtivas.has(65) && (
                   <>
                     <div className="text-xs text-zinc-300 px-2 py-1 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start">
-                      <span className="text-red-500 font-bold mt-[-1px]">•</span>
+                      <span className="text-green-500 font-bold mt-[-1px]">•</span>
                       <span>+1d20 em testes para resistir a doenças</span>
                     </div>
                     <div className="text-xs text-zinc-300 px-2 py-1 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start">
-                      <span className="text-red-500 font-bold mt-[-1px]">•</span>
+                      <span className="text-green-500 font-bold mt-[-1px]">•</span>
                       <span>-1d20 em testes de Percepção para ouvir</span>
                     </div>
                   </>
                 )}
+                
+                {bonusDadosCondicionais.split('\n').filter(s => s.trim() !== '').map((bonus, idx) => (
+                  <div key={idx} className="text-xs text-zinc-300 px-2 py-1 rounded border border-zinc-800/50 bg-zinc-950/30 flex justify-between items-start group">
+                    <div className="flex gap-1.5 items-start">
+                      <span className="text-zinc-500 font-bold mt-[-1px]">•</span>
+                      <span>{bonus}</span>
+                    </div>
+                    <button onClick={() => {
+                      const lines = bonusDadosCondicionais.split('\n').filter(s => s.trim() !== '');
+                      lines.splice(idx, 1);
+                      setBonusDadosCondicionais(lines.join('\n'));
+                    }} className="text-red-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition px-1">✕</button>
+                  </div>
+                ))}
               </div>
-              <textarea
-                className="w-full bg-transparent text-zinc-300 text-sm p-2 outline-none border border-transparent hover:border-zinc-800 focus:border-red-900 rounded resize-none min-h-[32px]"
-                placeholder={(regrasAutomaticasAtivas.has(30) || regrasAutomaticasAtivas.has(65)) ? "" : "Você não possui nenhum bônus condicional registrado..."}
-                value={bonusDadosCondicionais}
-                onChange={(e) => setBonusDadosCondicionais(e.target.value)}
+              <input
+                className="w-full bg-transparent text-zinc-300 text-sm p-2 outline-none border border-zinc-800/50 focus:border-green-900 rounded placeholder-zinc-600"
+                placeholder="Escreva um bônus e aperte Enter..."
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const val = e.currentTarget.value.trim();
+                    if (val) {
+                      setBonusDadosCondicionais(bonusDadosCondicionais ? `${bonusDadosCondicionais}\n${val}` : val);
+                      e.currentTarget.value = '';
+                    }
+                  }
+                }}
               />
             </div>
             
@@ -138,7 +160,7 @@ export const PericiasTable: React.FC = () => {
               <div className="flex flex-col gap-0.5">
                 {regrasAutomaticasAtivas.has(33) && periciasHook.jaTinhaProfissao33 && (
                   <div className="text-xs text-zinc-300 px-2 py-1 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start">
-                    <span className="text-red-500 font-bold mt-[-1px]">•</span>
+                    <span className="text-green-500 font-bold mt-[-1px]">•</span>
                     <span>+1d20 em testes de Profissão (Faz-Tudo)</span>
                   </div>
                 )}
@@ -146,7 +168,7 @@ export const PericiasTable: React.FC = () => {
                   if (poder.codigoRegra === 42 && poder.periciaEscolhidaNome) {
                     return (
                       <div key={`regra42-${idx}`} className="text-xs text-zinc-300 px-2 py-1 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start">
-                        <span className="text-red-500 font-bold mt-[-1px]">•</span>
+                        <span className="text-green-500 font-bold mt-[-1px]">•</span>
                         <span>+1d20 em testes de {poder.periciaEscolhidaNome}</span>
                       </div>
                     );
@@ -156,27 +178,49 @@ export const PericiasTable: React.FC = () => {
                 {regrasAutomaticasAtivas.has(65) && (
                   <>
                     <div className="text-xs text-zinc-300 px-2 py-1 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start">
-                      <span className="text-red-500 font-bold mt-[-1px]">•</span>
+                      <span className="text-green-500 font-bold mt-[-1px]">•</span>
                       <span>+2d20 em testes de Intimidação</span>
                     </div>
                     <div className="text-xs text-zinc-300 px-2 py-1 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start">
-                      <span className="text-red-500 font-bold mt-[-1px]">•</span>
+                      <span className="text-green-500 font-bold mt-[-1px]">•</span>
                       <span>-1d20 em testes de Diplomacia</span>
                     </div>
                   </>
                 )}
                 {trilhasHook.trilhaSelecionada?.nome_pericia && (
                   <div className="text-xs text-zinc-300 px-2 py-1 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start">
-                    <span className="text-red-500 font-bold mt-[-1px]">•</span>
+                    <span className="text-green-500 font-bold mt-[-1px]">•</span>
                     <span>+1d20 em testes de {trilhasHook.trilhaSelecionada.nome_pericia} (Trilha {trilhasHook.trilhaSelecionada.Nome_Trilha})</span>
                   </div>
                 )}
+                
+                {bonusDadosAtivos.split('\n').filter(s => s.trim() !== '').map((bonus, idx) => (
+                  <div key={idx} className="text-xs text-zinc-300 px-2 py-1 rounded border border-zinc-800/50 bg-zinc-950/30 flex justify-between items-start group">
+                    <div className="flex gap-1.5 items-start">
+                      <span className="text-zinc-500 font-bold mt-[-1px]">•</span>
+                      <span>{bonus}</span>
+                    </div>
+                    <button onClick={() => {
+                      const lines = bonusDadosAtivos.split('\n').filter(s => s.trim() !== '');
+                      lines.splice(idx, 1);
+                      setBonusDadosAtivos(lines.join('\n'));
+                    }} className="text-red-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition px-1">✕</button>
+                  </div>
+                ))}
               </div>
-              <textarea
-                className="w-full bg-transparent text-zinc-300 text-sm p-2 outline-none border border-transparent hover:border-zinc-800 focus:border-red-900 rounded resize-none min-h-[32px]"
-                placeholder={(regrasAutomaticasAtivas.has(33) || regrasAutomaticasAtivas.has(42) || regrasAutomaticasAtivas.has(65) || !!trilhasHook.trilhaSelecionada?.nome_pericia) ? "" : "Você não possui nenhum bônus sempre ativo registrado..."}
-                value={bonusDadosAtivos}
-                onChange={(e) => setBonusDadosAtivos(e.target.value)}
+              <input
+                className="w-full bg-transparent text-zinc-300 text-sm p-2 outline-none border border-zinc-800/50 focus:border-green-900 rounded placeholder-zinc-600"
+                placeholder="Escreva um bônus e aperte Enter..."
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const val = e.currentTarget.value.trim();
+                    if (val) {
+                      setBonusDadosAtivos(bonusDadosAtivos ? `${bonusDadosAtivos}\n${val}` : val);
+                      e.currentTarget.value = '';
+                    }
+                  }
+                }}
               />
             </div>
           </div>
@@ -258,7 +302,7 @@ export const PericiasTable: React.FC = () => {
                   <td className={`px-2 py-1.5 font-bold text-sm ${corTexto}`}>
                     <div className="flex items-center gap-1">
                       <span 
-                        className="cursor-pointer hover:underline hover:text-red-400 transition"
+                        className="cursor-pointer hover:underline hover:text-green-400 transition"
                         onClick={() => setPericiaAberta({ nome, descricao: dadosPericia.descricao || 'Sem descrição.' })}
                       >
                         {nome}
@@ -358,7 +402,7 @@ export const PericiasTable: React.FC = () => {
             >
               ✕
             </button>
-            <h4 className="mb-4 text-xl font-display uppercase tracking-widest text-red-500">{periciaAberta.nome}</h4>
+            <h4 className="mb-4 text-xl font-display uppercase tracking-widest text-green-500">{periciaAberta.nome}</h4>
             <div 
               className="max-h-[60vh] overflow-y-auto custom-scrollbar text-sm text-zinc-300 leading-relaxed"
               dangerouslySetInnerHTML={{ __html: formatarDescricaoHTML(periciaAberta.descricao) }}

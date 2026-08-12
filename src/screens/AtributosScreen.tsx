@@ -35,7 +35,7 @@ export const AtributosScreen: React.FC = () => {
       <h1 className="font-display mb-2 text-3xl uppercase tracking-wide text-zinc-100">
         Criação de Personagem
       </h1>
-      <p className="mb-8 border-b border-zinc-800 pb-4 text-sm uppercase tracking-widest text-red-600">
+      <p className="mb-8 border-b border-zinc-800 pb-4 text-sm uppercase tracking-widest text-green-600">
         Passo 1 — Atributos
       </p>
 
@@ -82,7 +82,7 @@ export const AtributosScreen: React.FC = () => {
                 <button
                   onClick={() => alterarAtributo(nome, 'diminuir')}
                   disabled={naoPodeDiminuir}
-                  className="h-9 w-9 rounded-md border border-zinc-700 bg-zinc-800 text-lg font-bold text-zinc-100 transition hover:border-red-700 hover:bg-red-900/40 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-zinc-700 disabled:hover:bg-zinc-800"
+                  className="h-9 w-9 rounded-md border border-zinc-700 bg-zinc-800 text-lg font-bold text-zinc-100 transition hover:border-green-700 hover:bg-green-900/40 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-zinc-700 disabled:hover:bg-zinc-800"
                 >
                   −
                 </button>
@@ -90,7 +90,7 @@ export const AtributosScreen: React.FC = () => {
                 <button
                   onClick={() => alterarAtributo(nome, 'aumentar')}
                   disabled={naoPodeAumentar}
-                  className="h-9 w-9 rounded-md border border-zinc-700 bg-zinc-800 text-lg font-bold text-zinc-100 transition hover:border-red-700 hover:bg-red-900/40 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-zinc-700 disabled:hover:bg-zinc-800"
+                  className="h-9 w-9 rounded-md border border-zinc-700 bg-zinc-800 text-lg font-bold text-zinc-100 transition hover:border-green-700 hover:bg-green-900/40 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-zinc-700 disabled:hover:bg-zinc-800"
                 >
                   +
                 </button>
@@ -102,7 +102,7 @@ export const AtributosScreen: React.FC = () => {
 
       <button
         onClick={() => setTelaAtual('origens')}
-        className="rounded-md bg-red-700 px-8 py-3 text-lg font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-red-600"
+        className="rounded-md bg-green-700 px-8 py-3 text-lg font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-green-600"
       >
         Avançar para Origens ➔
       </button>

@@ -13,9 +13,10 @@ interface SortableItemAmaldicoadoProps {
   stringDT: string | null;
   onEditar?: () => void;
   toggleEquipado: (id: string) => void;
+  isOverlay?: boolean;
 }
 
-export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, removerItem, stringDT, onEditar, toggleEquipado }: SortableItemAmaldicoadoProps) {
+export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, removerItem, stringDT, onEditar, toggleEquipado, isOverlay }: SortableItemAmaldicoadoProps) {
   const { modificacoesHook } = useRPG();
 
   const {
@@ -27,7 +28,7 @@ export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, remo
     isDragging,
   } = useSortable({ id: item.id, data: { type: 'amaldicoado' } });
 
-  const style = {
+  const style = isOverlay ? {} : {
     transform: CSS.Transform.toString(transform),
     transition,
     zIndex: isDragging ? 10 : 1,
@@ -41,14 +42,18 @@ export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, remo
                    elStr.includes('sangue') ? 'border-l-red-600' :
                    elStr.includes('morte') ? 'border-l-black' :
                    elStr.includes('conhecimento') ? 'border-l-yellow-600' :
-                   elStr.includes('energia') ? 'border-l-purple-600' : 'border-l-zinc-600';
+                   elStr.includes('energia') ? 'border-l-purple-600' : 
+                   (elStr.includes('varia') || elStr.includes('vária')) ? 'border-l-green-600' : 'border-l-zinc-600';
   }
 
   return (
     <div
-      ref={setNodeRef}
+      ref={isOverlay ? undefined : setNodeRef}
       style={style}
-      className={`rounded border border-l-4 ${corBordaLeft} transition-colors w-full relative ${isDragging ? 'border-zinc-500 bg-zinc-900 shadow-xl scale-[1.02]' : 'border-zinc-800 bg-zinc-950/60 hover:bg-zinc-900/60'}`}
+      className={`rounded border border-l-4 ${corBordaLeft} transition-colors w-full relative ${
+        isOverlay ? 'border-zinc-500 bg-zinc-900 shadow-2xl scale-[1.02] opacity-90 cursor-grabbing' :
+        isDragging ? 'border-zinc-800 bg-zinc-950/60 opacity-40' : 'border-zinc-800 bg-zinc-950/60 hover:bg-zinc-900/60'
+      }`}
     >
       <div className="flex items-center gap-1 p-3">
         <div
@@ -76,7 +81,7 @@ export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, remo
             )}
             
             <div className="flex items-center min-w-0">
-              <span className="text-[11px] text-zinc-400 truncate italic">
+              <span className="text-[11px] text-zinc-400 truncate">
                 Categoria {item.item.Categoria_Ama}
               </span>
             </div>
@@ -90,24 +95,44 @@ export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, remo
                               elStr.includes('sangue') ? 'text-red-500' :
                               elStr.includes('morte') ? 'bg-black/50 text-white px-1' :
                               elStr.includes('conhecimento') ? 'text-yellow-500' :
-                              elStr.includes('energia') ? 'text-purple-500' : 'text-zinc-400';
+                              elStr.includes('energia') ? 'text-purple-500' : 
+                              'text-zinc-400';
               return (
                 <span className={`text-[10px] font-bold rounded-sm truncate uppercase tracking-wider w-fit ${corText}`}>
                   {item.item.Elemento_Ama}
                 </span>
               );
-          })() : <span className="text-[10px] font-bold text-zinc-500 truncate uppercase tracking-wider">Sem Elemento</span>}
+          })() : <span className="text-[10px] font-bold text-zinc-300 bg-zinc-700/50 px-1 rounded-sm truncate uppercase tracking-wider">Sem Elemento</span>}
 
-          {(item.item['Vestimenta?']?.toLowerCase() === 'true') && (
-            <input
-              type="checkbox"
-              checked={!!item.equipado}
-              onPointerDown={(e) => e.stopPropagation()}
-              onChange={() => toggleEquipado(item.id)}
-              className="w-5 h-5 cursor-pointer accent-green-600"
-              title={item.equipado ? "Desequipar" : "Equipar item"}
-            />
-          )}
+          {(item.item['Vestimenta?']?.toLowerCase() === 'true') && (() => {
+            const elStr = (item.item.Elemento_Ama || '').toLowerCase();
+            const checkedColor = elStr.includes('medo') ? 'bg-white border-zinc-400 text-zinc-950' :
+                                 elStr.includes('sangue') ? 'bg-red-700 border-zinc-700 text-white' :
+                                 elStr.includes('morte') ? 'bg-black border-zinc-700 text-white' :
+                                 elStr.includes('conhecimento') ? 'bg-yellow-600 border-zinc-700 text-white' :
+                                 elStr.includes('energia') ? 'bg-purple-600 border-zinc-700 text-white' : 
+                                 'bg-zinc-700 border-zinc-700 text-white';
+
+            return (
+              <button
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleEquipado(item.id);
+                }}
+                className={`w-4 h-4 rounded flex items-center justify-center border transition-colors cursor-pointer ${
+                  item.equipado 
+                    ? checkedColor 
+                    : 'bg-zinc-900 border-zinc-700 text-transparent hover:border-zinc-500'
+                }`}
+                title={item.equipado ? "Desequipar" : "Equipar item"}
+              >
+                <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="2.5 6 5 8.5 9.5 3.5" />
+                </svg>
+              </button>
+            );
+          })()}
           <div onClick={() => toggleExpandir(item.id)} className="w-5 text-center text-zinc-500 text-xs flex-shrink-0 cursor-pointer">{isExpanded ? '▲' : '▼'}</div>
         </div>
       </div>
@@ -146,7 +171,7 @@ export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, remo
                 e.stopPropagation();
                 removerItem(item.id);
               }}
-              className="text-xs text-red-500 hover:text-red-400 bg-red-950/30 hover:bg-red-900/50 px-3 py-1.5 rounded border border-red-900/50 transition-colors"
+              className="text-xs text-green-500 hover:text-green-400 bg-green-950/30 hover:bg-green-900/50 px-3 py-1.5 rounded border border-green-900/50 transition-colors"
             >
               Remover
             </button>

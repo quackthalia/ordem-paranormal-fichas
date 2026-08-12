@@ -97,11 +97,11 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
   }))).filter(Boolean).sort();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" onClick={onFechar}>
-      <div className="flex h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onFechar}>
+      <div className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden flex flex-col h-[90vh]" onClick={e => e.stopPropagation()}>
         
         {/* Header */}
-        <div className="flex flex-col border-b border-zinc-800 p-5 pb-4">
+        <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="font-display text-lg uppercase tracking-wide text-zinc-100">
@@ -117,13 +117,13 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
               placeholder="Buscar item pelo nome..."
-              className="flex-1 rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700"
+              className="flex-1 rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700"
             />
             <button 
               onClick={() => setMostrarFiltrosAvançados(!mostrarFiltrosAvançados)}
               className={`rounded border px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition ${
                 mostrarFiltrosAvançados || filtroCategoria !== 'Todas'
-                  ? 'border-red-800 bg-red-900/40 text-red-300'
+                  ? 'border-green-800 bg-green-900/40 text-green-300'
                   : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
               }`}
             >
@@ -150,30 +150,56 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
         )}
 
         {/* List */}
-        <div className="flex-1 overflow-y-scroll p-3">
-          <div className="flex flex-col gap-2">
+        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
           {itensFiltrados.map((item: ItemGeral) => {
             const isExpanded = expandidos.includes(item.Codigo_Item);
             
             return (
               <div 
                 key={item.Codigo_Item} 
-                className="flex flex-col rounded border border-zinc-800 bg-zinc-900/50 shadow-sm transition hover:border-zinc-700"
+                className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col h-full"
               >
                 {/* Cabeçalho do item */}
                 <div 
-                  className="flex cursor-pointer items-center justify-between p-3"
+                  className="flex items-start justify-between gap-2 mb-2 cursor-pointer"
                   onClick={() => toggleExpandir(item.Codigo_Item)}
                 >
-                  <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-                    <span className="font-bold text-sm text-zinc-100 truncate">{item.Nome_Item}</span>
-                    
-                    <div className="flex items-center gap-4 text-xs text-zinc-300">
-                      {item.Dt_Item && <span><span className="font-bold text-red-400">DT:</span> {calcularDT(item.Dt_Item)}</span>}
-                    </div>
-                  </div>
+                  <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
+                    {item.Nome_Item}
+                  </h3>
                   
-                  <div className="flex items-center gap-3 flex-shrink-0 ml-4">
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <span className="w-5 text-center text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
+                  </div>
+                </div>
+                
+                <div className="flex-1 cursor-pointer" onClick={() => toggleExpandir(item.Codigo_Item)}>
+                  <p className={`text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none ${!isExpanded ? 'line-clamp-3' : ''}`}>
+                    {formatarTexto(item.Desc_Item)}
+                  </p>
+                </div>
+
+                {isExpanded && (
+                  <div className="mt-2 text-xs flex flex-col gap-2 mb-4">
+                    {item.Dt_Item && <div><span className="font-bold text-green-400">DT:</span> {calcularDT(item.Dt_Item)}</div>}
+                    {item.Fonte_Item && (
+                      <div className="flex justify-between items-center mt-2 pt-2 border-t border-zinc-800/50">
+                        <span className="text-[10px] uppercase tracking-wider text-zinc-600">Fonte: {item.Fonte_Item}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex flex-wrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 min-h-[32px]">
+                  <span className="text-zinc-500">
+                    <span className="text-green-400 font-semibold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (item.Espacos_Itens === 0.5 || String(item.Espacos_Itens) === '0,5' || String(item.Espacos_Itens) === '0.5')) ? 0.25 : item.Espacos_Itens}
+                  </span>
+                  <span className="text-zinc-500 flex items-center gap-1">
+                    • <span className="text-green-400 font-semibold">Categoria:</span> <span className={`uppercase tracking-wider text-zinc-400`}>{item.Categoria_Item}</span>
+                  </span>
+                  
+                  <div className="ml-auto">
                     {escolhendoPericia === item.Codigo_Item ? (
                       <div className="flex items-center gap-2 bg-zinc-950 p-1 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
                         <select
@@ -273,32 +299,13 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
                             }
                           }
                         }}
-                        className="rounded bg-red-700 px-3 py-1.5 text-xs font-bold uppercase text-zinc-100 transition hover:bg-red-600"
+                        className="px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
                       >
                         Adicionar
                       </button>
                     )}
-                    <span className="w-5 text-center text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
                   </div>
                 </div>
-                
-                {/* Bloco expandido */}
-                {isExpanded && (
-                  <div className="border-t border-zinc-800 px-3 py-3 text-xs flex flex-col gap-2 bg-zinc-950/80">
-                    <div className="flex flex-col gap-1 mt-1">
-                      <span><span className="text-red-400 font-bold">Categoria:</span> {item.Categoria_Item}</span>
-                      <span><span className="text-red-400 font-bold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (item.Espacos_Itens === 0.5 || String(item.Espacos_Itens) === '0,5' || String(item.Espacos_Itens) === '0.5')) ? 0.25 : item.Espacos_Itens}</span>
-                    </div>
-                    <div className="flex flex-col gap-1 mt-1">
-                      <p className="text-zinc-400 text-xs leading-relaxed whitespace-pre-wrap">{formatarTexto(item.Desc_Item)}</p>
-                    </div>
-                    {item.Fonte_Item && (
-                      <div className="flex justify-between items-center mt-3 pt-3 border-t border-zinc-800/50">
-                        <span className="text-[10px] uppercase tracking-wider text-zinc-600">Fonte: {item.Fonte_Item}</span>
-                      </div>
-                    )}
-                  </div>
-                )}
               </div>
             );
           })}

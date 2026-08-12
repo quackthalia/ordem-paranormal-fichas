@@ -29,14 +29,14 @@ export const ClasseScreen: React.FC = () => {
       <h1 className="font-display mb-2 text-center text-3xl uppercase tracking-wide text-zinc-100">
         Escolha sua Classe
       </h1>
-      <p className="mb-10 text-center text-sm uppercase tracking-widest text-red-600">
+      <p className="mb-10 text-center text-sm uppercase tracking-widest text-green-600">
         Passo 3 — Seu papel na Ordem
       </p>
 
       <div className="flex flex-col items-stretch gap-5 lg:flex-row">
         {/* COMBATENTE — Sangue */}
-        <div className="flex flex-1 flex-col rounded-xl border border-red-900/60 bg-zinc-900/60 p-6 transition hover:border-red-700">
-          <h2 className="font-display mb-3 text-center text-xl uppercase tracking-wide text-red-500">
+        <div className="flex flex-1 flex-col rounded-xl border border-green-900/60 bg-zinc-900/60 p-6 transition hover:border-green-700">
+          <h2 className="font-display mb-3 text-center text-xl uppercase tracking-wide text-green-500">
             Combatente
           </h2>
           <p className="flex-grow text-sm leading-relaxed text-zinc-400">
@@ -47,20 +47,20 @@ export const ClasseScreen: React.FC = () => {
           <div className="my-5 flex min-h-[102px] flex-col justify-center gap-3 rounded-lg border border-zinc-800 bg-zinc-950/80 p-4 text-sm">
             <div className="flex items-center justify-center gap-3">
               <label className="flex cursor-pointer items-center gap-1.5">
-                <input type="radio" name="c1" className="accent-red-600" checked={skillCombatente1 === 'Luta'} onChange={() => setSkillCombatente1('Luta')} /> Luta
+                <input type="radio" name="c1" className="accent-green-600" checked={skillCombatente1 === 'Luta'} onChange={() => setSkillCombatente1('Luta')} /> Luta
               </label>
               <span className="text-zinc-600">ou</span>
               <label className="flex cursor-pointer items-center gap-1.5">
-                <input type="radio" name="c1" className="accent-red-600" checked={skillCombatente1 === 'Pontaria'} onChange={() => setSkillCombatente1('Pontaria')} /> Pontaria
+                <input type="radio" name="c1" className="accent-green-600" checked={skillCombatente1 === 'Pontaria'} onChange={() => setSkillCombatente1('Pontaria')} /> Pontaria
               </label>
             </div>
             <div className="flex items-center justify-center gap-3">
               <label className="flex cursor-pointer items-center gap-1.5">
-                <input type="radio" name="c2" className="accent-red-600" checked={skillCombatente2 === 'Fortitude'} onChange={() => setSkillCombatente2('Fortitude')} /> Fortitude
+                <input type="radio" name="c2" className="accent-green-600" checked={skillCombatente2 === 'Fortitude'} onChange={() => setSkillCombatente2('Fortitude')} /> Fortitude
               </label>
               <span className="text-zinc-600">ou</span>
               <label className="flex cursor-pointer items-center gap-1.5">
-                <input type="radio" name="c2" className="accent-red-600" checked={skillCombatente2 === 'Reflexos'} onChange={() => setSkillCombatente2('Reflexos')} /> Reflexos
+                <input type="radio" name="c2" className="accent-green-600" checked={skillCombatente2 === 'Reflexos'} onChange={() => setSkillCombatente2('Reflexos')} /> Reflexos
               </label>
             </div>
           </div>
@@ -68,7 +68,7 @@ export const ClasseScreen: React.FC = () => {
           <button
             onClick={() => escolherClasse('Combatente')}
             disabled={!combatentePronto}
-            className="w-full rounded-lg bg-red-800 p-3.5 font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-600"
+            className="w-full rounded-lg bg-green-800 p-3.5 font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-600"
           >
             {combatentePronto ? 'Selecionar Combatente' : 'Escolha as perícias'}
           </button>

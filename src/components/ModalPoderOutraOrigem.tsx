@@ -22,6 +22,13 @@ function formatarDescricao(texto: string): string {
 }
 
 export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = 'unset'; };
+    }
+  }, [isOpen]);
+
   const { nex, atributos, periciasHook, poderesHook, origensHook, rituaisHook } = useRPG();
   const [origens, setOrigens] = useState<Origem[]>([]);
   const [filtro, setFiltro] = useState('');
@@ -72,19 +79,18 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
   const periciasDisponiveis = Object.entries(contextoPrereq.nomesPericias).map(([id, nome]) => ({ id: Number(id), nome })).sort((a, b) => a.nome.localeCompare(b.nome));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="flex max-h-[85vh] w-[90vw] max-w-3xl flex-col rounded-xl border border-zinc-700 bg-zinc-900 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-950 px-6 py-4">
-          <h2 className="font-display text-xl uppercase tracking-widest text-red-500">Poder de Outra Origem</h2>
-          <button onClick={onClose} className="text-zinc-500 hover:text-zinc-300">✕</button>
-        </div>
-        
-        <div className="p-4 border-b border-zinc-800 bg-zinc-900/50">
-          <InputOtimizado value={filtro} onChange={setFiltro} placeholder="Buscar origem..." className="w-full bg-zinc-950 border border-zinc-700 p-3 text-sm text-zinc-200 rounded outline-none focus:border-red-800 transition" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onClose}>
+      <div className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden flex flex-col h-[90vh]" onClick={e => e.stopPropagation()}>
+        <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-display text-lg uppercase tracking-wide text-zinc-100">PODER DE OUTRA ORIGEM</h3>
+            <button onClick={onClose} className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100">&times;</button>
+          </div>
+          <InputOtimizado value={filtro} onChange={setFiltro} placeholder="Buscar origem..." className="flex-1 rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700" />
         </div>
 
-        <div className="flex-1 overflow-y-scroll p-4 custom-scrollbar">
-          <div className="flex flex-col gap-3">
+        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
             {origensFiltradas.map(origem => {
               const isExpanded = expandidos.includes(origem.Codigo_Origem);
               const alreadyHas = Object.values(poderesHook.poderesEscolhidos).some(p => p.nome === origem.Nome_Poder);
@@ -98,13 +104,15 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
               const bloqRitual = precisaEscolherRitual && rituaisAprendidos.length === 0;
 
               return (
-                <div key={origem.Codigo_Origem} className="overflow-hidden rounded-md border border-zinc-800 bg-zinc-900 transition hover:border-zinc-700">
-                  <div className="flex justify-between items-center bg-zinc-900/50 p-4">
-                    <button onClick={(e) => { e.stopPropagation(); setExpandidos(prev => prev.includes(origem.Codigo_Origem) ? prev.filter(id => id !== origem.Codigo_Origem) : [...prev, origem.Codigo_Origem]); }} className="flex flex-1 items-center gap-3 bg-transparent text-left outline-none">
-                      <span className={`text-xs text-zinc-600 transition-transform ${isExpanded ? 'rotate-180' : ''}`}>▼</span>
-                      <span className="text-lg font-bold text-zinc-100">{origem.Nome}</span>
+                <div key={origem.Codigo_Origem} className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col h-full">
+                  <div className="flex justify-between items-center cursor-pointer transition">
+                    <button onClick={(e) => { e.stopPropagation(); setExpandidos(prev => prev.includes(origem.Codigo_Origem) ? prev.filter(id => id !== origem.Codigo_Origem) : [...prev, origem.Codigo_Origem]); }} className="flex flex-1 items-center gap-3 bg-transparent text-left outline-none font-bold text-zinc-200 group-hover:text-green-400 transition">
+                      <span className="text-sm font-bold text-zinc-200 group-hover:text-green-400 transition">{origem.Nome}</span>
                     </button>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3"><span className="text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span></div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 mt-3">
+                    <div className="flex items-center justify-end w-full gap-2">
                       {!alreadyHas && escolhendoElementoId === origem.Codigo_Origem ? (
                         <div className="flex gap-1 items-center bg-zinc-950 p-1 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
                           <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline">Elemento:</span>
@@ -184,7 +192,7 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
                               onClose();
                             }
                           }}
-                          className={`rounded-md px-4 py-2 text-xs font-bold uppercase tracking-wider transition ${bloqRitual ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed' : 'bg-red-700 hover:bg-red-600 text-zinc-100'}`}
+                          className={`ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95 ${bloqRitual ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
                           Escolher
                         </button>
@@ -192,10 +200,10 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
                     </div>
                   </div>
                   {isExpanded && (
-                    <div className="border-t border-zinc-800 px-5 pb-5 pt-4 text-left leading-relaxed text-zinc-400">
+                    <div className="border-t border-zinc-800 px-5 py-4 text-left">
                       <p>
-                        <strong className="text-red-500">{origem.Nome_Poder}. </strong>
-                        <span dangerouslySetInnerHTML={{ __html: formatarDescricao(origem.Descricao_Poder) }} />
+                        <strong className="text-green-500">{origem.Nome_Poder}. </strong>
+                        <span className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: formatarDescricao(origem.Descricao_Poder) }} />
                       </p>
                     </div>
                   )}

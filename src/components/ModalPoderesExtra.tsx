@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import type { Poder, PoderParanormal, Trilha } from '../types';
 import { sortPorElementoENome } from '../utils/rpgRules';
 import { useRPG } from '../context/RPGContext';
@@ -58,6 +58,15 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
   trilhas = [],
   onEscolher
 }) => {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = 'unset'; };
+    } else {
+      setPoderesExpandidos([]);
+    }
+  }, [isOpen]);
+
   const [abaPrincipal, setAbaPrincipal] = useState<MainAba>('utilidade');
   const [subAbaClasse, setSubAbaClasse] = useState<SubAbaClasse>('todas');
   const [subAbaElemento, setSubAbaElemento] = useState<string | null>(null);
@@ -212,11 +221,11 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
   const subAbasElementos = ['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo', 'Varia'];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-      <div className="flex h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onClose}>
+      <div className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden flex flex-col h-[90vh]" onClick={e => e.stopPropagation()}>
         
         {/* Header */}
-        <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-950">
+        <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-display text-lg uppercase tracking-wide text-zinc-100">
               ESCOLHER PODER EXTRA
@@ -228,7 +237,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             placeholder="Buscar poder..."
-            className="w-full rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700"
+            className="flex-1 rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700"
           />
         </div>
 
@@ -240,7 +249,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
               onClick={() => setAbaPrincipal(aba.id)}
               className={`min-w-[70px] flex-1 rounded-t px-1 py-2.5 text-xs font-bold uppercase tracking-wider transition ${
                 abaPrincipal === aba.id
-                  ? 'border border-b-0 border-red-900 bg-zinc-900 text-zinc-100'
+                  ? 'border border-b-0 border-green-900 bg-zinc-900 text-zinc-100'
                   : 'border border-transparent text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300'
               }`}
             >
@@ -251,14 +260,14 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
 
           {/* Sub Abas */}
           {(abaPrincipal === 'utilidade' || abaPrincipal === 'combate' || abaPrincipal === 'trilhas') && (
-            <div className="flex flex-wrap gap-1 border-b border-zinc-800 bg-zinc-950/80 px-3 py-2">
+            <div className="flex flex-wrap items-center gap-3 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
               {subAbasClasses.map(sub => (
                 <button
                   key={sub.id}
                   onClick={() => setSubAbaClasse(sub.id)}
                   className={`rounded px-2.5 py-1 text-[0.55rem] font-bold uppercase tracking-wider transition ${
                     subAbaClasse === sub.id
-                      ? 'bg-red-900/40 text-red-300 border border-red-800'
+                      ? 'bg-green-900/40 text-green-300 border border-green-800'
                       : 'bg-zinc-800/60 text-zinc-500 border border-zinc-700 hover:text-zinc-300'
                   }`}
                 >
@@ -269,12 +278,12 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
           )}
 
           {abaPrincipal === 'paranormais' && (
-            <div className="flex flex-wrap gap-1 border-b border-zinc-800 bg-zinc-950/80 px-3 py-2">
+            <div className="flex flex-wrap items-center gap-3 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
               <button
                 onClick={() => setSubAbaElemento(null)}
                 className={`rounded px-2.5 py-1 text-[0.55rem] font-bold uppercase tracking-wider transition ${
                   subAbaElemento === null
-                    ? 'bg-red-900/40 text-red-300 border border-red-800'
+                    ? 'bg-green-900/40 text-green-300 border border-green-800'
                     : 'bg-zinc-800/60 text-zinc-500 border border-zinc-700 hover:text-zinc-300'
                 }`}
               >
@@ -288,13 +297,17 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                     onClick={() => setSubAbaElemento(elem)}
                     className={`rounded px-2.5 py-1 text-[0.55rem] font-bold uppercase tracking-wider transition border ${
                       ativo
-                        ? 'border-zinc-600 text-zinc-100'
+                        ? (() => {
+                            const elStr = elem.toLowerCase();
+                            if (elStr.includes('medo')) return 'border-zinc-500 bg-zinc-200/80 text-zinc-950 px-3';
+                            if (elStr.includes('sangue')) return 'border-red-900 bg-red-950/20 text-red-500';
+                            if (elStr.includes('morte')) return 'border-zinc-700 bg-black/50 text-white px-3';
+                            if (elStr.includes('conhecimento')) return 'border-yellow-900 bg-yellow-950/20 text-yellow-500';
+                            if (elStr.includes('energia')) return 'border-purple-900 bg-purple-950/20 text-purple-500';
+                            return 'border-zinc-600 text-zinc-100';
+                          })()
                         : 'border-zinc-700 text-zinc-500 hover:text-zinc-300'
                     }`}
-                    style={{
-                      backgroundColor: ativo ? obterCorBadge(elem) : 'transparent',
-                      color: ativo ? obterCorTexto(elem) : undefined,
-                    }}
                   >
                     {elem}
                   </button>
@@ -304,23 +317,31 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
           )}
 
         {/* Lista */}
-        <div className="flex-1 overflow-y-scroll p-5">
+        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
           {abaPrincipal === 'trilhas' && trilhasFiltradas.map(trilha => {
             const codigo = trilha.Codigo_Trilha;
             const estaExpandido = poderesExpandidos.includes(codigo);
             return (
-              <div key={codigo} className="mb-3 overflow-hidden rounded-r border-l-4 border-zinc-600 bg-zinc-950/60">
+              <div key={codigo} className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col h-full">
                 <div
                   onClick={() => toggleExpandir(codigo)}
-                  className="flex cursor-pointer items-center justify-between gap-3 bg-zinc-900/80 px-4 py-3 transition hover:bg-zinc-800/80"
+                  className="flex cursor-pointer items-center justify-between gap-3 transition"
                 >
                   <div className="flex flex-col items-start gap-1">
-                    <span className="font-bold text-zinc-100">{trilha.Nome_Trilha}</span>
+                    <span className="font-bold text-zinc-200 group-hover:text-green-400 transition">{trilha.Nome_Trilha}</span>
                     <span className="inline-block rounded bg-zinc-800 px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight text-zinc-400">
                       {trilha.Classe_Trilha}
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
+                    <span className="text-zinc-500 text-xs">
+                      {estaExpandido ? '▲' : '▼'}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 mt-3">
+                  <div className="flex flex-wrap items-center justify-end gap-3 w-full">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -337,13 +358,10 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                         });
                         onClose();
                       }}
-                      className="rounded bg-zinc-700 px-3.5 py-1.5 text-[0.65rem] font-bold uppercase text-zinc-100 transition hover:bg-zinc-600"
+                      className="ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
                     >
                       Escolher Trilha Completa
                     </button>
-                    <span className="w-5 text-center text-zinc-600">
-                      {estaExpandido ? '▲' : '▼'}
-                    </span>
                   </div>
                 </div>
 
@@ -378,7 +396,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                                 } as Poder);
                                 onClose();
                               }}
-                              className="rounded bg-red-900/60 px-2 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-200 transition hover:bg-red-800/80"
+                              className="rounded bg-green-900/60 px-2 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-green-200 transition hover:bg-green-800/80"
                             >
                               Escolher
                             </button>
@@ -424,20 +442,27 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
             }
 
             return (
-              <div key={codigo} className="mb-3 overflow-hidden rounded-r border-l-4 border-red-800 bg-zinc-950/60">
+              <div key={codigo} className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col h-full">
                 <div
                   onClick={() => toggleExpandir(codigo as number)}
-                  className="flex flex-wrap cursor-pointer items-center justify-between gap-3 bg-zinc-900/80 px-4 py-3 transition hover:bg-zinc-800/80"
+                  className="flex cursor-pointer items-start justify-between gap-3 transition"
                 >
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-bold text-zinc-100">{poder.Nome}</span>
+                  <div className="flex flex-col gap-1 w-full">
+                    <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-bold text-zinc-200 group-hover:text-green-400 transition">{poder.Nome}</span>
                     {ehParanormal && 'Elemento' in poder && poder.Elemento && (
                       <span
-                        className="inline-block rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight"
-                        style={{
-                          backgroundColor: obterCorBadge(poder.Elemento),
-                          color: obterCorTexto(poder.Elemento),
-                        }}
+                        className={`inline-block rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight ${
+                          (() => {
+                            const elStr = poder.Elemento!.toLowerCase();
+                            if (elStr.includes('medo')) return 'bg-zinc-200/80 text-zinc-950 px-2';
+                            if (elStr.includes('sangue')) return 'text-red-500';
+                            if (elStr.includes('morte')) return 'bg-black/50 text-white px-2';
+                            if (elStr.includes('conhecimento')) return 'text-yellow-500';
+                            if (elStr.includes('energia')) return 'text-purple-500';
+                            return 'text-zinc-400';
+                          })()
+                        }`}
                       >
                         {poder.Elemento}
                       </span>
@@ -448,7 +473,19 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                       </span>
                     )}
                   </div>
-                  <div className="flex flex-wrap items-center justify-end gap-3">
+                  <div 
+                    className={`text-[11px] text-zinc-400 mt-1 leading-relaxed ${estaExpandido ? 'whitespace-pre-wrap' : 'line-clamp-2'}`}
+                    dangerouslySetInnerHTML={{ __html: formatarDescricao(poder.Descricao) }} 
+                  />
+                </div>
+                <div className="flex items-center gap-3 shrink-0 mt-1">
+                    <span className="text-zinc-500 text-xs">
+                      {estaExpandido ? '▲' : '▼'}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 mt-3">
+                  <div className="flex flex-wrap items-center justify-end gap-3 w-full">
                     {escolhendoElementoId != null && escolhendoElementoId === codigo ? (
                       <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800">
                         <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline">Elemento:</span>
@@ -466,10 +503,19 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                               }}
                               className={`rounded px-1.5 py-0.5 text-[0.55rem] font-bold uppercase transition border ${
                                 !valElem.atende 
-                                  ? 'border-red-500 hover:scale-105 opacity-80' 
+                                  ? 'border-green-500 hover:scale-105 opacity-80' 
                                   : 'border-zinc-700 hover:scale-105'
+                              } ${
+                                (() => {
+                                  const elStr = elem.toLowerCase();
+                                  if (elStr.includes('medo')) return 'bg-zinc-200/80 text-zinc-950 px-2';
+                                  if (elStr.includes('sangue')) return 'text-red-500 bg-transparent';
+                                  if (elStr.includes('morte')) return 'bg-black/50 text-white px-2';
+                                  if (elStr.includes('conhecimento')) return 'text-yellow-500 bg-transparent';
+                                  if (elStr.includes('energia')) return 'text-purple-500 bg-transparent';
+                                  return 'text-zinc-400 bg-transparent';
+                                })()
                               }`}
-                              style={{ backgroundColor: obterCorBadge(elem), color: obterCorTexto(elem) }}
                             >
                               {elem}
                             </button>
@@ -539,23 +585,19 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                             onClose();
                           }
                         }}
-                        className="rounded bg-red-700 px-3.5 py-1.5 text-xs font-bold uppercase text-zinc-100 transition hover:bg-red-600"
+                        className="ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
                       >
                         Escolher
                       </button>
                     )}
-                    <span className="w-5 text-center text-zinc-600">
-                      {estaExpandido ? '▲' : '▼'}
-                    </span>
                   </div>
                 </div>
 
                 {estaExpandido && (
-                  <div className="border-t border-zinc-800 px-5 py-4 text-left">
-                    <div className="text-sm leading-relaxed text-zinc-400" dangerouslySetInnerHTML={{ __html: formatarDescricao(poder.Descricao) }} />
+                  <div className="border-t border-zinc-800/50 pt-3 mt-3 text-left">
                     
                     {ehParanormal && 'Afinidade' in poder && poder.Afinidade && (
-                      <p className="mt-3 text-sm leading-relaxed text-zinc-300">
+                      <p className="mt-3 text-[11px] leading-relaxed text-zinc-300">
                         <strong className="text-zinc-100">Afinidade:</strong> {poder.Afinidade}
                       </p>
                     )}
@@ -567,7 +609,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                     )}
                     
                     {!val.atende && val.motivo && (
-                      <div className="mt-2 block rounded bg-red-900/20 px-3 py-2 text-xs italic text-red-400">
+                      <div className="mt-2 block rounded bg-green-900/20 px-3 py-2 text-xs italic text-green-400">
                         <strong>Aviso de Requisitos:</strong> Oficialmente requer {val.motivo} (Adição livre)
                       </div>
                     )}
@@ -588,6 +630,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
               </div>
             );
           })}
+          </div>
           
           {abaPrincipal !== 'trilhas' && listaFiltrada.length === 0 && (
             <div className="py-10 text-center text-zinc-500">

@@ -39,7 +39,7 @@ export const OrigensScreen: React.FC = () => {
       <h1 className="font-display mb-2 text-3xl uppercase tracking-wide text-zinc-100">
         Escolha sua Origem
       </h1>
-      <p className="mb-4 border-b border-zinc-800 pb-4 text-sm uppercase tracking-widest text-red-600">
+      <p className="mb-4 border-b border-zinc-800 pb-4 text-sm uppercase tracking-widest text-green-600">
         Passo 2 — Quem você era antes do Paranormal
       </p>
 
@@ -50,7 +50,7 @@ export const OrigensScreen: React.FC = () => {
             onClick={() => setGrupoAtivo('todos')}
             className={`whitespace-nowrap rounded-md px-4 py-1.5 text-sm font-medium transition ${
               grupoAtivo === 'todos'
-                ? 'bg-red-700 text-white shadow-md shadow-red-900/50'
+                ? 'bg-green-700 text-white shadow-md shadow-green-900/50'
                 : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200'
             }`}
           >
@@ -62,7 +62,7 @@ export const OrigensScreen: React.FC = () => {
               onClick={() => setGrupoAtivo(g.Codigo_Grupo)}
               className={`whitespace-nowrap rounded-md px-4 py-1.5 text-sm font-medium transition ${
                 grupoAtivo === g.Codigo_Grupo
-                  ? 'bg-red-700 text-white shadow-md shadow-red-900/50'
+                  ? 'bg-green-700 text-white shadow-md shadow-green-900/50'
                   : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200'
               }`}
             >
@@ -78,7 +78,7 @@ export const OrigensScreen: React.FC = () => {
           placeholder="Buscar origem ou poder..."
           value={busca}
           onChange={e => setBusca(e.target.value)}
-          className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+          className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
         />
       </div>
 
@@ -92,7 +92,7 @@ export const OrigensScreen: React.FC = () => {
           return (
             <div
               key={origem.Codigo_Origem}
-              className="overflow-hidden rounded-r-lg border-l-4 border-red-800 bg-zinc-900/60 transition hover:bg-zinc-900"
+              className="overflow-hidden rounded-r-lg border-l-4 border-green-800 bg-zinc-900/60 transition hover:bg-zinc-900"
             >
               {/* CABEÇALHO */}
               <div className="flex items-center justify-between gap-4 px-5 py-4">
@@ -116,7 +116,7 @@ export const OrigensScreen: React.FC = () => {
                       setTelaAtual('classe');
                     }}
                     disabled={origem.Codigo_Per_Regra === 6 && !escolhasRegra6[origem.Codigo_Origem]}
-                    className={`rounded-md px-4 py-2 text-xs font-bold uppercase tracking-wider text-zinc-100 transition ${origem.Codigo_Per_Regra === 6 && !escolhasRegra6[origem.Codigo_Origem] ? 'bg-zinc-700 opacity-50 cursor-not-allowed' : 'bg-red-700 hover:bg-red-600'}`}
+                    className={`rounded-md px-4 py-2 text-xs font-bold uppercase tracking-wider text-zinc-100 transition ${origem.Codigo_Per_Regra === 6 && !escolhasRegra6[origem.Codigo_Origem] ? 'bg-zinc-700 opacity-50 cursor-not-allowed' : 'bg-green-700 hover:bg-green-600'}`}
                   >
                     Escolher
                   </button>
@@ -142,7 +142,7 @@ export const OrigensScreen: React.FC = () => {
                             name={`regra6_${origem.Codigo_Origem}`}
                             checked={escolhasRegra6[origem.Codigo_Origem] === 'p2'}
                             onChange={() => setEscolhasRegra6(prev => ({ ...prev, [origem.Codigo_Origem]: 'p2' }))}
-                            className="text-red-600 focus:ring-red-500 bg-zinc-900 border-zinc-700"
+                            className="text-green-600 focus:ring-green-500 bg-zinc-900 border-zinc-700"
                           />
                           <span>{nomePericia(origem.Pericia_Treinada_2)}</span>
                         </label>
@@ -152,7 +152,7 @@ export const OrigensScreen: React.FC = () => {
                             name={`regra6_${origem.Codigo_Origem}`}
                             checked={escolhasRegra6[origem.Codigo_Origem] === 'pesp'}
                             onChange={() => setEscolhasRegra6(prev => ({ ...prev, [origem.Codigo_Origem]: 'pesp' }))}
-                            className="text-red-600 focus:ring-red-500 bg-zinc-900 border-zinc-700"
+                            className="text-green-600 focus:ring-green-500 bg-zinc-900 border-zinc-700"
                           />
                           <span>{nomePericia(origem.Pericia_Treinada_Especial as any)}</span>
                         </label>
@@ -165,7 +165,7 @@ export const OrigensScreen: React.FC = () => {
                             setTelaAtual('classe');
                           }}
                           disabled={!escolhasRegra6[origem.Codigo_Origem]}
-                          className={`rounded-md px-4 py-2 text-xs font-bold uppercase tracking-wider text-zinc-100 transition ${!escolhasRegra6[origem.Codigo_Origem] ? 'bg-zinc-700 opacity-50 cursor-not-allowed' : 'bg-red-700 hover:bg-red-600'}`}
+                          className={`rounded-md px-4 py-2 text-xs font-bold uppercase tracking-wider text-zinc-100 transition ${!escolhasRegra6[origem.Codigo_Origem] ? 'bg-zinc-700 opacity-50 cursor-not-allowed' : 'bg-green-700 hover:bg-green-600'}`}
                         >
                           Escolher Origem
                         </button>
@@ -185,7 +185,7 @@ export const OrigensScreen: React.FC = () => {
                   )}
 
                   <p>
-                    <strong className="text-red-500">{origem.Nome_Poder}. </strong>
+                    <strong className="text-green-500">{origem.Nome_Poder}. </strong>
                     {origem.Descricao_Poder}
                   </p>
                 </div>

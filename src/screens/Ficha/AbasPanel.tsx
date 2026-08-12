@@ -180,6 +180,11 @@ export const AbasPanel: React.FC = () => {
   const effectiveNex = regras['nex_experiencia'] ? (nivel * 5) : nex;
 
   React.useEffect(() => {
+    setRituaisExpandidos([]);
+    if (setHabilidadesExpandidas) setHabilidadesExpandidas([]);
+  }, [abaDireita, setRituaisExpandidos, setHabilidadesExpandidas]);
+
+  React.useEffect(() => {
     const handler = (e: any) => {
       setEscolhendoRitualPlaceholder({ origem: `poder_57_${e.detail.nex}`, nex: e.detail.nex });
     };
@@ -731,7 +736,7 @@ export const AbasPanel: React.FC = () => {
         {(['combate','habilidades','rituais','inventario','descricao','regras'] as const).map(aba => (
           <button key={aba} onClick={() => setAbaDireita(aba)}
             className={`px-1.5 py-2 text-xs font-bold uppercase tracking-wider transition whitespace-nowrap ${
-              abaDireita === aba ? 'border-b-2 border-red-800 text-zinc-100' : 'border-b-2 border-transparent text-zinc-500 hover:text-zinc-300'
+              abaDireita === aba ? 'border-b-2 border-green-800 text-zinc-100' : 'border-b-2 border-transparent text-zinc-500 hover:text-zinc-300'
             }`}
           >{aba === 'inventario' ? 'Inventário' : aba === 'descricao' ? 'Descrição' : aba === 'regras' ? 'Regras' : aba}</button>
         ))}
@@ -745,9 +750,9 @@ export const AbasPanel: React.FC = () => {
             <div className="mb-5 flex items-center gap-4">
               <InputOtimizado value={filtroHabilidades} onChange={setFiltroHabilidades}
                 placeholder="Filtrar habilidades..."
-                className="flex-1 border-b border-zinc-700 bg-transparent py-2 text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700"
+                className="flex-1 border-b border-zinc-700 bg-transparent py-2 text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700"
               />
-              <button onClick={() => setModalExtraAberto(true)} className="whitespace-nowrap rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-xs font-bold text-zinc-200 transition hover:border-red-800 hover:bg-red-950/40">+ Adicionar</button>
+              <button onClick={() => setModalExtraAberto(true)} className="whitespace-nowrap rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-xs font-bold text-zinc-200 transition hover:border-green-800 hover:bg-green-950/40">+ Adicionar</button>
             </div>
 
             <div className="flex flex-1 flex-col gap-0 overflow-y-auto pr-1 min-h-0 custom-scrollbar">
@@ -829,7 +834,7 @@ export const AbasPanel: React.FC = () => {
                                   setNexModalAberto(hab.nexDoSlot ?? (extrairKeyDoId(hab.id) as number));
                                 }
                               }}
-                              className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-red-800 hover:bg-zinc-900/80"
+                              className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-green-800 hover:bg-zinc-900/80"
                               style={{ borderLeftStyle: 'solid' }}
                             >
                               <div className="flex items-center justify-between gap-3 bg-zinc-800/40 px-4 py-3 transition group-hover:bg-zinc-800/60">
@@ -837,7 +842,7 @@ export const AbasPanel: React.FC = () => {
                                   <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">{hab.nome}</span>
                                   <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-500 group-hover:text-zinc-400">{hab.tipo}</span>
                                 </div>
-                                <span className="whitespace-nowrap rounded bg-red-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-400 transition group-hover:bg-red-900/60 group-hover:text-red-300">+ Adicionar</span>
+                                <span className="whitespace-nowrap rounded bg-green-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-green-400 transition group-hover:bg-green-900/60 group-hover:text-green-300">+ Adicionar</span>
                               </div>
                               <div className="border-t border-zinc-800/50 px-4 py-3 text-left text-xs leading-relaxed text-zinc-500 transition group-hover:text-zinc-400">
                                 {hab.descricao}
@@ -855,7 +860,7 @@ export const AbasPanel: React.FC = () => {
                           const nexLevels = isVersatilidade ? [10] : [10, 40, 65, 99];
                           
                           return (
-                            <div key={hab.id} className="mb-3 overflow-hidden rounded-r border-l-4 border-red-800 bg-zinc-900/50">
+                            <div key={hab.id} className="mb-3 overflow-hidden rounded-r border-l-4 border-green-800 bg-zinc-900/50">
                               <div
                                 onClick={() => trilhasHook.toggleTrilhaExpandida(isVersatilidade ? t.Codigo_Trilha + 10000 : t.Codigo_Trilha)}
                                 className="flex cursor-pointer items-center justify-between gap-3 bg-zinc-800/40 px-4 py-3 transition hover:bg-zinc-700/50"
@@ -882,7 +887,7 @@ export const AbasPanel: React.FC = () => {
                                     dangerouslySetInnerHTML={{ __html: formatarDescricao(isVersatilidade ? `Em ${regras['nex_experiencia'] ? 'Nível 10' : 'NEX 50%'}, escolha entre receber um poder de ${classe.toLowerCase()} ou o primeiro poder de uma trilha de ${classe.toLowerCase()} que não a sua.<br/><br/>Trilha Escolhida: <strong>${t.Nome_Trilha}</strong>` : t.Descricao_Trilha) }}
                                   />
               
-                                  <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-red-400 border-b border-zinc-800 pb-1">
+                                  <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-green-400 border-b border-zinc-800 pb-1">
                                     {isVersatilidade ? 'Poder da Trilha' : 'Habilidades da Trilha'}
                                   </h4>
               
@@ -934,7 +939,7 @@ export const AbasPanel: React.FC = () => {
                                       >Editar</button>
                                     )}
                                     <button onClick={(e) => { e.stopPropagation(); isVersatilidade ? trilhasHook.setVersatilidadeSelecionada(null) : trilhasHook.setTrilhaSelecionada(null); }}
-                                      className="text-xs text-red-500 hover:text-red-400 bg-red-950/30 hover:bg-red-900/50 px-3 py-1.5 rounded border border-red-900/50 transition-colors"
+                                      className="text-xs text-green-500 hover:text-green-400 bg-green-950/30 hover:bg-green-900/50 px-3 py-1.5 rounded border border-green-900/50 transition-colors"
                                     >Remover</button>
                                   </div>
                                 </div>
@@ -945,7 +950,7 @@ export const AbasPanel: React.FC = () => {
 
                         return (
                           <div key={hab.id}
-                            className={`overflow-hidden rounded-r border-l-4 bg-zinc-900/50 ${hab.categoria === 'paranormais' ? 'border-l-0' : 'border-red-800'}`}
+                            className={`overflow-hidden rounded-r border-l-4 bg-zinc-900/50 ${hab.categoria === 'paranormais' ? 'border-l-0' : 'border-green-800'}`}
                           >
                             {hab.elemento && (
                               <div className="h-0.5 w-full" style={{ background: obterCorBadge(hab.elemento) }} />
@@ -973,8 +978,17 @@ export const AbasPanel: React.FC = () => {
                                 {/* 🔥 Badge do elemento ACIMA da descrição — text-[9px] ~ pequeno */}
                                 {hab.elemento && (
                                   <div className="mb-3">
-                                    <span className="inline-block rounded px-2 py-px text-[9px] font-bold uppercase tracking-wider leading-tight"
-                                      style={{ background: obterCorBadge(hab.elemento), color: obterCorTexto(hab.elemento) }}
+                                    <span className={`inline-block rounded px-2 py-px text-[9px] font-bold uppercase tracking-wider leading-tight ${
+                                      (() => {
+                                        const elStr = hab.elemento.toLowerCase();
+                                        if (elStr.includes('medo')) return 'bg-zinc-200/80 text-zinc-950 px-1';
+                                        if (elStr.includes('sangue')) return 'text-red-500';
+                                        if (elStr.includes('morte')) return 'bg-black/50 text-white px-1';
+                                        if (elStr.includes('conhecimento')) return 'text-yellow-500';
+                                        if (elStr.includes('energia')) return 'text-purple-500';
+                                        return 'text-zinc-400';
+                                      })()
+                                    }`}
                                     >{hab.elemento}</span>
                                   </div>
                                 )}
@@ -1005,7 +1019,7 @@ export const AbasPanel: React.FC = () => {
                                             e.stopPropagation();
                                             poderesHook.removerPoder(hab.afinidadeAdquiridaKey as number | string);
                                           }}
-                                          className="text-[10px] font-bold uppercase tracking-wider text-red-500/70 transition hover:text-red-400"
+                                          className="text-[10px] font-bold uppercase tracking-wider text-green-500/70 transition hover:text-green-400"
                                         >
                                           Remover
                                         </button>
@@ -1069,7 +1083,7 @@ export const AbasPanel: React.FC = () => {
                                         removerPoder(nivel); 
                                       }
                                     }}
-                                      className="text-xs text-red-500 hover:text-red-400 bg-red-950/30 hover:bg-red-900/50 px-3 py-1.5 rounded border border-red-900/50 transition-colors"
+                                      className="text-xs text-green-500 hover:text-green-400 bg-green-950/30 hover:bg-green-900/50 px-3 py-1.5 rounded border border-green-900/50 transition-colors"
                                     >Remover</button>
                                   </div>
                                 )}
@@ -1224,9 +1238,9 @@ export const AbasPanel: React.FC = () => {
               <div className="mb-5 flex items-center gap-4">
                 <InputOtimizado value={filtroRituais} onChange={setFiltroRituais}
                   placeholder="Filtrar rituais..."
-                  className="flex-1 border-b border-zinc-700 bg-transparent py-2 text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700"
+                  className="flex-1 border-b border-zinc-700 bg-transparent py-2 text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700"
                 />
-                <button onClick={() => setModalRituaisExtraAberto(true)} className="whitespace-nowrap rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-xs font-bold text-zinc-200 transition hover:border-red-800 hover:bg-red-950/40">+ Adicionar</button>
+                <button onClick={() => setModalRituaisExtraAberto(true)} className="whitespace-nowrap rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-xs font-bold text-zinc-200 transition hover:border-green-800 hover:bg-green-950/40">+ Adicionar</button>
               </div>
 
               <div className="flex flex-1 flex-col gap-1 overflow-y-auto pr-1 min-h-0 custom-scrollbar">
@@ -1294,7 +1308,7 @@ export const AbasPanel: React.FC = () => {
                               onClick={() => {
                                 setEscolhendoRitualPlaceholder({ origem: `ocultista_${(slot as any).index}`, nex: slot.nex });
                               }}
-                              className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-red-800 hover:bg-zinc-900/80"
+                              className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-green-800 hover:bg-zinc-900/80"
                               style={{ borderLeftStyle: 'solid' }}
                             >
                               <div className="flex items-center justify-between gap-3 bg-zinc-800/40 px-4 py-3 transition group-hover:bg-zinc-800/60">
@@ -1304,7 +1318,7 @@ export const AbasPanel: React.FC = () => {
                                     Ocultista ({regras['nex_experiencia'] ? `Nível ${calcularNivel(slot.nex)}` : `NEX ${slot.nex}%`})
                                   </span>
                                 </div>
-                                <span className="whitespace-nowrap rounded bg-red-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-400 transition group-hover:bg-red-900/60 group-hover:text-red-300">+ Adicionar</span>
+                                <span className="whitespace-nowrap rounded bg-green-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-green-400 transition group-hover:bg-green-900/60 group-hover:text-green-300">+ Adicionar</span>
                               </div>
                             </div>
                           );
@@ -1321,7 +1335,7 @@ export const AbasPanel: React.FC = () => {
                             <div
                               key={`vazio_poder_${chave}_${idx}`}
                               onClick={() => setEscolhendoRitualPlaceholder({ origem: isOrigemSlot || isRegra61 || isRegra62 ? chave : `poder_57_${chave}`, nex: isOrigemSlot || isRegra61 || isRegra62 ? 0 : (isExtra ? nex : nivelNum) })}
-                              className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-red-800 hover:bg-zinc-900/80"
+                              className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-green-800 hover:bg-zinc-900/80"
                               style={{ borderLeftStyle: 'solid' }}
                             >
                               <div className="flex items-center justify-between gap-3 bg-zinc-800/40 px-4 py-3 transition group-hover:bg-zinc-800/60">
@@ -1331,7 +1345,7 @@ export const AbasPanel: React.FC = () => {
                                     {labelNex}
                                   </span>
                                 </div>
-                                <span className="whitespace-nowrap rounded bg-red-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-400 transition group-hover:bg-red-900/60 group-hover:text-red-300">+ Adicionar</span>
+                                <span className="whitespace-nowrap rounded bg-green-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-green-400 transition group-hover:bg-green-900/60 group-hover:text-green-300">+ Adicionar</span>
                               </div>
                             </div>
                           );
@@ -1424,8 +1438,17 @@ export const AbasPanel: React.FC = () => {
                                 <div className="flex items-center gap-2.5">
                                   {/* Badge do elemento */}
                                   <span
-                                    className="inline-flex items-center gap-1.5 rounded px-2 py-0.5 uppercase tracking-wider leading-tight"
-                                    style={{ background: corElemento, color: corTextoElemento }}
+                                    className={`inline-flex items-center gap-1.5 rounded px-2 py-0.5 uppercase tracking-wider leading-tight ${
+                                      (() => {
+                                        const elStr = elementoEscolhido.toLowerCase();
+                                        if (elStr.includes('medo')) return 'bg-zinc-200/80 text-zinc-950 px-1';
+                                        if (elStr.includes('sangue')) return 'text-red-500';
+                                        if (elStr.includes('morte')) return 'bg-black/50 text-white px-1';
+                                        if (elStr.includes('conhecimento')) return 'text-yellow-500';
+                                        if (elStr.includes('energia')) return 'text-purple-500';
+                                        return 'text-zinc-400';
+                                      })()
+                                    }`}
                                   >
                                     <span className="text-[9px] font-bold">{elementoEscolhido}</span>
                                     <span className="text-[11px] font-black">{ritual.Circulo_Ritual}</span>
@@ -1504,7 +1527,7 @@ export const AbasPanel: React.FC = () => {
                                                 [chaveUnica]: e.target.value as VersaoRitual,
                                               }));
                                             }}
-                                            className="cursor-pointer rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs font-bold text-zinc-200 outline-none transition hover:bg-zinc-800 focus:border-red-700"
+                                            className="cursor-pointer rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs font-bold text-zinc-200 outline-none transition hover:bg-zinc-800 focus:border-green-700"
                                           >
                                             {versoesDisponiveis.map(v => (
                                               <option key={v.value} value={v.value} disabled={v.disabled} title={v.title}>
@@ -1636,7 +1659,7 @@ export const AbasPanel: React.FC = () => {
                                       }
                                       rituaisHook.esquecerRitual(ritual.Origem);
                                     }}
-                                    className="rounded bg-red-900/30 border border-red-800 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-500 transition hover:bg-red-900/50 hover:text-red-400"
+                                    className="rounded bg-green-900/30 border border-green-800 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-green-500 transition hover:bg-green-900/50 hover:text-green-400"
                                   >
                                     Esquecer Ritual
                                   </button>
@@ -1780,7 +1803,7 @@ export const AbasPanel: React.FC = () => {
                     value={ritualNomeEditando}
                     onChange={setRitualNomeEditando}
                     placeholder="Ex: Definhar, mas roxo..."
-                    className="rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 focus:border-red-700 focus:outline-none"
+                    className="rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 focus:border-green-700 focus:outline-none"
                   />
                 </div>
 
@@ -1790,7 +1813,7 @@ export const AbasPanel: React.FC = () => {
                     <select
                       value={ritualVersaoEditando}
                       onChange={(e) => setRitualVersaoEditando(e.target.value as any)}
-                      className="rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm font-bold text-zinc-200 focus:border-red-700 focus:outline-none w-fit"
+                      className="rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm font-bold text-zinc-200 focus:border-green-700 focus:outline-none w-fit"
                     >
                       <option value="normal">Normal</option>
                       {ritualBase.Tem_Discente && <option value="discente">Discente</option>}
@@ -1819,7 +1842,7 @@ export const AbasPanel: React.FC = () => {
                         value={(ritualPropsEditando?.[ritualVersaoEditando] as any)?.[prop.key] || ''}
                         onChange={(val) => setRitualPropsEditando(prev => ({ ...prev, [ritualVersaoEditando]: { ...(prev?.[ritualVersaoEditando] || {}), [prop.key]: val } }))}
                         placeholder={valorCalculado ? String(valorCalculado) : 'Padrão'}
-                        className="rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 focus:border-red-700 focus:outline-none"
+                        className="rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 focus:border-green-700 focus:outline-none"
                       />
                     </div>
                   );
@@ -1839,7 +1862,7 @@ export const AbasPanel: React.FC = () => {
                     }}
                     contentEditable
                     onBlur={(e) => setRitualDescricaoEditando(e.currentTarget.innerHTML)}
-                    className="min-h-[200px] w-full rounded-b border border-zinc-700 bg-zinc-950 p-3 text-sm leading-relaxed text-zinc-300 focus:border-red-700 focus:outline-none flex-1 overflow-y-auto"
+                    className="min-h-[200px] w-full rounded-b border border-zinc-700 bg-zinc-950 p-3 text-sm leading-relaxed text-zinc-300 focus:border-green-700 focus:outline-none flex-1 overflow-y-auto"
                   />
                 </div>
               </div>
@@ -1857,7 +1880,7 @@ export const AbasPanel: React.FC = () => {
                   rituaisHook.editarRitual(ritualEditandoOrigem, ritualNomeEditando, finalDesc, ritualPropsEditando);
                   setRitualEditandoOrigem(null);
                 }}
-                className="rounded bg-red-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-800"
+                className="rounded bg-green-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-green-800"
               >
                 Salvar Alterações
               </button>
@@ -1948,7 +1971,7 @@ function RegraCheckbox({ nome, titulo, descricao }: { nome: string; titulo: stri
           type="checkbox"
           checked={ativa}
           onChange={() => toggleRegra(nome)}
-          className="mt-0.5 accent-red-600"
+          className="mt-0.5 accent-green-600"
         />
         <div className="flex flex-col gap-1.5">
           <span className="text-sm font-bold text-zinc-100">{titulo}</span>

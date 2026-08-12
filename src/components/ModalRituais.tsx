@@ -73,8 +73,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
   const [abaElemento, setAbaElemento] = useState<string | null>(null);
   const [abaCirculo, setAbaCirculo] = useState<number | null>(null);
   
-  // Estado para elementos Varia temporários de cada ritual (se expandido/selecionando)
-  const [elementosVaria, setElementosVaria] = useState<Record<number, string>>({});
+  const [escolhendoElementoId, setEscolhendoElementoId] = useState<number | null>(null);
   const [expandidos, setExpandidos] = useState<number[]>([]);
   const [busca, setBusca] = useState('');
 
@@ -115,17 +114,20 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
   }, [rituais, abaElemento, abaCirculo, limiteCirculo, rituaisAprendidosIds, busca]);
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 p-5">
-      <div className="flex h-[85vh] w-full max-w-3xl flex-col rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onClose}>
+      <div 
+        className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden flex flex-col h-[90vh]"
+        onClick={(e) => e.stopPropagation()}
+      >
         
         {/* CABEÇALHO */}
-        <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-950 rounded-t-lg">
+        <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
           <div className="flex items-center justify-between mb-4">
             <div className="flex flex-col">
               <h3 className="font-display m-0 text-lg uppercase tracking-wide text-zinc-100">
-                Aprender Ritual
+                APRENDER RITUAL
               </h3>
-              <span className="text-xs text-zinc-500 mt-1">Selecione um ritual de até {limiteCirculo}º Círculo</span>
+              <span className="text-xs text-zinc-400 mt-1">Selecione um ritual de até {limiteCirculo}º Círculo</span>
             </div>
             <button
               onClick={onClose}
@@ -139,7 +141,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             placeholder="Buscar ritual..."
-            className="w-full rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700"
+            className="w-full rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700"
           />
         </div>
 
@@ -149,7 +151,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
             onClick={() => setAbaElemento(null)}
             className={`min-w-[70px] flex-1 px-1 py-2.5 text-xs font-bold uppercase tracking-wider transition ${
               abaElemento === null
-                ? 'border-b-2 border-red-900 bg-zinc-900 text-zinc-100'
+                ? 'border-b-2 border-green-900 bg-zinc-900 text-zinc-100'
                 : 'border-b-2 border-transparent text-zinc-500 hover:bg-zinc-900/50 hover:text-zinc-300'
             }`}
           >
@@ -182,8 +184,8 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
             onClick={() => setAbaCirculo(null)}
             className={`rounded px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider transition border ${
               abaCirculo === null
-                ? 'border-zinc-500 bg-zinc-800 text-zinc-100'
-                : 'border-zinc-700 bg-zinc-950/50 text-zinc-500 hover:text-zinc-300'
+                ? 'bg-green-900/40 text-green-300 border-green-800'
+                : 'bg-zinc-800/60 text-zinc-500 border-zinc-700 hover:text-zinc-300'
             }`}
           >
             Todos
@@ -197,8 +199,8 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                 onClick={() => setAbaCirculo(c)}
                 className={`rounded px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider transition border ${
                   ativo
-                    ? 'border-zinc-500 bg-zinc-800 text-zinc-100'
-                    : 'border-zinc-700 bg-zinc-950/50 text-zinc-500 hover:text-zinc-300'
+                    ? 'bg-green-900/40 text-green-300 border-green-800'
+                    : 'bg-zinc-800/60 text-zinc-500 border-zinc-700 hover:text-zinc-300'
                 }`}
               >
                 {c}º Círculo
@@ -208,94 +210,140 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
         </div>
 
         {/* LISTA DE RITUAIS */}
-        <div className="flex-1 overflow-y-scroll p-5">
-          <div className="flex flex-col gap-3">
+        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
             {listaFiltrada.map(ritual => {
               const codigo = ritual.Codigo_Ritual;
               const expandido = expandidos.includes(codigo);
               const isVaria = ritual.Elemento_Ritual.toLowerCase() === 'lista' || ritual.Elemento_Ritual.toLowerCase() === 'varia';
-              const elementoSendoEscolhido = isVaria ? (elementosVaria[codigo] || 'Sangue') : ritual.Elemento_Ritual;
+              const isEscolhendo = escolhendoElementoId === codigo;
+              const elementoSendoEscolhido = isVaria ? 'Varia' : ritual.Elemento_Ritual;
               const corElemento = obterCorBadge(elementoSendoEscolhido);
               const corTextoElemento = obterCorTexto(elementoSendoEscolhido);
 
               return (
-                <div key={codigo} className="overflow-hidden rounded-r border-l-4 bg-zinc-950/60 transition hover:bg-zinc-900/60" style={{ borderLeftColor: corElemento }}>
+                <div key={codigo} className="bg-zinc-900/40 border border-zinc-800/80 rounded hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col h-full border-l-4" style={{ borderLeftColor: corElemento }}>
                   <div
                     onClick={() => setExpandidos(prev => prev.includes(codigo) ? prev.filter(id => id !== codigo) : [...prev, codigo])}
-                    className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3"
+                    className="flex cursor-pointer items-start justify-between gap-3 p-3"
                   >
                     <div className="flex flex-col gap-1">
                       <div className="flex items-center gap-2.5">
                         <span
-                          className="inline-flex items-center gap-1.5 rounded px-2 py-0.5 uppercase tracking-wider leading-tight"
-                          style={{ background: corElemento, color: corTextoElemento }}
+                          className={`inline-flex items-center gap-1.5 rounded px-2 py-0.5 uppercase tracking-wider leading-tight ${
+                            (() => {
+                              const elStr = elementoSendoEscolhido.toLowerCase();
+                              if (elStr.includes('medo')) return 'bg-zinc-200/80 text-zinc-950 px-1';
+                              if (elStr.includes('sangue')) return 'text-red-500';
+                              if (elStr.includes('morte')) return 'bg-black/50 text-white px-1';
+                              if (elStr.includes('conhecimento')) return 'text-yellow-500';
+                              if (elStr.includes('energia')) return 'text-purple-500';
+                              return 'text-zinc-400';
+                            })()
+                          }`}
                         >
                           <span className="text-[9px] font-bold">{elementoSendoEscolhido}</span>
                           <span className="text-[11px] font-black">{ritual.Circulo_Ritual}</span>
                         </span>
-                        <span className="text-sm font-bold text-zinc-100">{ritual.Nome_Ritual}</span>
+                        <span className="font-bold text-zinc-200 group-hover:text-green-400 transition text-sm">{ritual.Nome_Ritual}</span>
                       </div>
                       {ritual.Dados_Ritual && (
-                        <span className="text-sm font-bold text-amber-400">{ritual.Dados_Ritual.split('/')[0].trim()}</span>
+                        <span className="text-xs font-bold text-green-400 mt-1">{ritual.Dados_Ritual.split('/')[0].trim()}</span>
                       )}
                     </div>
-
-                    <div className="flex items-center gap-4">
-                      {isVaria && (
-                        <div onClick={e => e.stopPropagation()} className="flex flex-col items-end gap-1">
-                          <span className="text-[0.55rem] uppercase tracking-wider text-zinc-500 font-bold">Definir Elemento:</span>
-                          <select
-                            value={elementosVaria[codigo] || 'Sangue'}
-                            onChange={e => setElementosVaria(prev => ({ ...prev, [codigo]: e.target.value }))}
-                            className="cursor-pointer rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs font-bold text-zinc-200 outline-none focus:border-red-700"
-                          >
-                            <option value="Sangue">Sangue</option>
-                            <option value="Conhecimento">Conhecimento</option>
-                            <option value="Energia">Energia</option>
-                            <option value="Morte">Morte</option>
-                          </select>
-                        </div>
-                      )}
-                      
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onSelect(ritual, isVaria ? (elementosVaria[codigo] || 'Sangue') : undefined);
-                        }}
-                        className="rounded bg-red-700 px-4 py-1.5 text-xs font-bold uppercase text-zinc-100 transition hover:bg-red-600"
-                      >
-                        Aprender
-                      </button>
-                      <span className="w-5 text-center text-zinc-600">{expandido ? '▲' : '▼'}</span>
-                    </div>
+                    <span className="text-zinc-500 text-xs mt-1">{expandido ? '▲' : '▼'}</span>
                   </div>
 
-                  {expandido && (
-                    <div className="border-t border-zinc-800/50 px-4 py-4">
-                      <div className="mb-4 flex flex-col gap-1">
-                        <div className="text-xs"><span className="font-bold text-zinc-300">Execução: </span><span className="text-zinc-400">{ritual.Execucao_Ritual}</span></div>
-                        <div className="text-xs"><span className="font-bold text-zinc-300">Alcance: </span><span className="text-zinc-400">{ritual.Alcance_Ritual}</span></div>
-                        <div className="text-xs"><span className="font-bold text-zinc-300">Área: </span><span className="text-zinc-400">{ritual.Area_Ritual}</span></div>
-                        <div className="text-xs"><span className="font-bold text-zinc-300">Alvo: </span><span className="text-zinc-400">{ritual.Alvo_Ritual}</span></div>
-                        <div className="text-xs"><span className="font-bold text-zinc-300">Duração: </span><span className="text-zinc-400">{ritual.Duracao_Ritual}</span></div>
-                        {ritual.Efeito_Ritual && <div className="text-xs"><span className="font-bold text-zinc-300">Efeito: </span><span className="text-zinc-400">{ritual.Efeito_Ritual}</span></div>}
-                        <div className="text-xs"><span className="font-bold text-zinc-300">Resistência: </span><span className="text-zinc-400">{ritual.Resistencia_Ritual}</span></div>
+                  {!expandido && (
+                    <div className="px-3 pb-3">
+                      <div className="text-xs text-zinc-400 leading-relaxed line-clamp-3">
+                        {ritual.Descricao_Ritual.replace(/\n/g, ' ')}
                       </div>
-                      <div className="text-sm leading-relaxed text-zinc-400">
+                    </div>
+                  )}
+
+                  {expandido && (
+                    <div className="px-3 pb-3 border-t border-zinc-800/50 pt-2 mt-1">
+                      <div className="mb-4 flex flex-col gap-1">
+                        <div className="text-xs"><span className="font-bold text-zinc-500">Execução: </span><span className="text-zinc-300">{ritual.Execucao_Ritual?.split('/')[0].trim()}</span></div>
+                        <div className="text-xs"><span className="font-bold text-zinc-500">Alcance: </span><span className="text-zinc-300">{ritual.Alcance_Ritual?.split('/')[0].trim()}</span></div>
+                        <div className="text-xs"><span className="font-bold text-zinc-500">Área: </span><span className="text-zinc-300">{ritual.Area_Ritual?.split('/')[0].trim()}</span></div>
+                        <div className="text-xs"><span className="font-bold text-zinc-500">Alvo: </span><span className="text-zinc-300">{ritual.Alvo_Ritual?.split('/')[0].trim()}</span></div>
+                        <div className="text-xs"><span className="font-bold text-zinc-500">Duração: </span><span className="text-zinc-300">{ritual.Duracao_Ritual?.split('/')[0].trim()}</span></div>
+                        {ritual.Efeito_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Efeito: </span><span className="text-zinc-300">{ritual.Efeito_Ritual.split('/')[0].trim()}</span></div>}
+                        <div className="text-xs"><span className="font-bold text-zinc-500">Resistência: </span><span className="text-zinc-300">{ritual.Resistencia_Ritual?.split('/')[0].trim()}</span></div>
+                      </div>
+                      <div className="text-xs leading-relaxed text-zinc-400">
                         {ritual.Descricao_Ritual.split('\n').map((linha, i) => (
-                          <span key={i} className="block" dangerouslySetInnerHTML={{ __html: formatarDescricao(linha) }} />
+                          <span key={i} className="block mb-1" dangerouslySetInnerHTML={{ __html: formatarDescricao(linha) }} />
                         ))}
                       </div>
                     </div>
                   )}
+                  
+                  <div className="flex flex-wrap items-center justify-end gap-2 mt-auto text-[11px] border-t border-zinc-800/50 p-3 pt-2">
+                    
+                    {isEscolhendo ? (
+                      <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800">
+                        <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline">Elemento:</span>
+                        {['Sangue', 'Morte', 'Conhecimento', 'Energia'].map(elem => {
+                          const isMedo = elem === 'Medo';
+                          const isSangue = elem === 'Sangue';
+                          const isMorte = elem === 'Morte';
+                          const isConhecimento = elem === 'Conhecimento';
+                          const isEnergia = elem === 'Energia';
+                          const colorClasses = isMedo ? 'bg-zinc-200/80 text-zinc-950 px-1 border-zinc-200/80' :
+                                               isSangue ? 'text-red-500 border-red-500' :
+                                               isMorte ? 'bg-black/50 text-white px-1 border-black/50' :
+                                               isConhecimento ? 'text-yellow-500 border-yellow-500' :
+                                               isEnergia ? 'text-purple-500 border-purple-500' : 
+                                               'text-zinc-400 border-zinc-400';
+                          
+                          return (
+                            <button
+                              key={elem}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEscolhendoElementoId(null);
+                                onSelect(ritual, elem);
+                              }}
+                              className={`rounded px-1.5 py-0.5 text-[0.55rem] font-bold uppercase transition border border-opacity-30 hover:bg-zinc-800 ${colorClasses}`}
+                            >
+                              {elem}
+                            </button>
+                          );
+                        })}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setEscolhendoElementoId(null); }}
+                          className="ml-1 rounded px-1 py-0.5 text-[0.6rem] font-bold text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 transition"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (isVaria) {
+                            setEscolhendoElementoId(codigo);
+                          } else {
+                            onSelect(ritual, undefined);
+                          }
+                        }}
+                        className="px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                      >
+                        Aprender
+                      </button>
+                    )}
+                  </div>
                 </div>
               );
             })}
-
-            {listaFiltrada.length === 0 && (
-              <div className="mt-10 text-center italic text-zinc-600">Nenhum ritual atende aos filtros.</div>
-            )}
           </div>
+
+          {listaFiltrada.length === 0 && (
+            <div className="mt-10 text-center italic text-zinc-600">Nenhum ritual atende aos filtros.</div>
+          )}
         </div>
 
       </div>

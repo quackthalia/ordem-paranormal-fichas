@@ -87,13 +87,13 @@ export const StatusPanel: React.FC = () => {
   return (
     <div>
       {/* LINHA: NEX + PE/TURNO + AFINIDADE + DESLOCAMENTO */}
-      <div className="mb-8 flex flex-wrap items-start gap-6 border-b border-zinc-800 pb-5">
+      <div className="mb-8 flex flex-wrap items-start gap-2 sm:gap-4 justify-between sm:justify-start border-b border-zinc-800 pb-5">
         {/* NEX / NÍVEL (regra NEX & EXPERIÊNCIA) */}
         {regraNexExperiencia ? (
           <>
             {/* NEX MANUAL */}
             <div className="flex flex-col items-center gap-1.5">
-              <div className="flex items-center rounded border border-zinc-600 bg-zinc-900 transition hover:border-red-700 focus-within:border-red-700">
+              <div className="flex items-center rounded border border-zinc-600 bg-zinc-900 transition hover:border-green-700 focus-within:border-green-700">
                 <input
                   type="number"
                   onKeyDown={bloquearLetras}
@@ -111,7 +111,7 @@ export const StatusPanel: React.FC = () => {
               <select
                 value={nivel}
                 onChange={(e) => setNivel(Number(e.target.value))}
-                className="cursor-pointer appearance-none rounded border border-zinc-600 bg-zinc-900 px-3 h-9 text-center text-base font-bold text-zinc-100 transition hover:border-red-700"
+                className="cursor-pointer appearance-none rounded border border-zinc-600 bg-zinc-900 px-3 h-9 text-center text-base font-bold text-zinc-100 transition hover:border-green-700"
               >
                 {NIVEL_OPTIONS.map(n => (
                   <option key={n} value={n}>{n}</option>
@@ -125,7 +125,7 @@ export const StatusPanel: React.FC = () => {
             <select
               value={nex}
               onChange={(e) => setNex(Number(e.target.value))}
-              className="cursor-pointer appearance-none rounded border border-zinc-600 bg-zinc-900 px-3 h-9 text-center text-base font-bold text-zinc-100 transition hover:border-red-700"
+              className="cursor-pointer appearance-none rounded border border-zinc-600 bg-zinc-900 px-3 h-9 text-center text-base font-bold text-zinc-100 transition hover:border-green-700"
             >
               {NEX_OPTIONS.map(n => (
                 <option key={n} value={n}>{n}%</option>
@@ -156,7 +156,7 @@ export const StatusPanel: React.FC = () => {
             >
               {afinidadeEscolhida}
               <button 
-                className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-zinc-800 text-xs text-zinc-400 opacity-0 transition hover:bg-red-900 hover:text-white group-hover:opacity-100"
+                className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-zinc-800 text-xs text-zinc-400 opacity-0 transition hover:bg-green-900 hover:text-white group-hover:opacity-100"
                 onClick={(e) => { 
                   e.stopPropagation(); 
                   setAfinidadeEscolhida(null); 
@@ -405,7 +405,7 @@ function BarraStatus({
           <label className="flex cursor-pointer items-center gap-1.5 text-xs text-zinc-500 transition hover:text-zinc-300">
             <input
               type="checkbox"
-              className="accent-red-600"
+              className="accent-green-600"
               checked={hasTemp}
               onChange={(e) => {
                 setHasTemp(e.target.checked);

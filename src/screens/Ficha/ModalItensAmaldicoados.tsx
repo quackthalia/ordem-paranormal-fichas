@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useRPG } from '../../context/RPGContext';
 import { formatarTexto } from '../../utils/formatters';
 
@@ -10,6 +10,8 @@ interface ModalItensAmaldicoadosProps {
 export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoadosProps) {
   const { itensAmaldicoadosHook } = useRPG();
   const { itens, adicionarItem, loading } = itensAmaldicoadosHook;
+
+  React.useEffect(() => { document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = 'unset'; }; }, []);
   
   const [busca, setBusca] = useState('');
   const [categoriaSelecionada, setCategoriaSelecionada] = useState<string>('Todos');
@@ -172,13 +174,14 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                                             elStr.includes('sangue') ? 'text-red-500' :
                                             elStr.includes('morte') ? 'bg-black/50 text-white px-1' :
                                             elStr.includes('conhecimento') ? 'text-yellow-500' :
-                                            elStr.includes('energia') ? 'text-purple-500' : 'text-zinc-400';
+                                            elStr.includes('energia') ? 'text-purple-500' : 
+                                            'text-zinc-400';
                             return (
                               <span className={`text-[10px] font-bold rounded-sm truncate uppercase tracking-wider w-fit ${corText}`}>
                                 {item.Elemento_Ama}
                               </span>
                             );
-                        })() : <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Sem Elemento</span>}
+                        })() : <span className="text-[10px] font-bold text-zinc-500 truncate uppercase tracking-wider">Sem Elemento</span>}
                         <div className="w-5 text-center text-zinc-500 text-xs flex-shrink-0">{isExpanded ? '▲' : '▼'}</div>
                       </div>
                     </div>

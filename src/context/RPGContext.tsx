@@ -114,6 +114,7 @@ interface RPGContextType {
   bonusDadosAtivos: string;
   setBonusDadosAtivos: React.Dispatch<React.SetStateAction<string>>;
   regras: Record<string, boolean>;
+  setRegras: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
   toggleRegra: (nome: string) => void;
   nivel: number;
   setNivel: React.Dispatch<React.SetStateAction<number>>;
@@ -200,6 +201,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
       // Se ativar nex_experiencia, pode calcular um nivel base inicial pra facilitar
       if (nome === 'nex_experiencia' && novo[nome]) {
         setNivel(Math.min(20, Math.max(1, Math.ceil(nex / 5))));
+        setNex(0);
       }
       return novo;
     });
@@ -421,7 +423,8 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     veteranasGratis, 
     regrasAutomaticasAtivas, 
     poderesHook.poderesEscolhidos,
-    origensHook.origemSelecionada
+    origensHook.origemSelecionada,
+    bonusVestimentas.pericias
   );
 
   // ============================================================
@@ -568,7 +571,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     deslocQ, setDeslocQ,
     bonusDadosCondicionais, setBonusDadosCondicionais,
     bonusDadosAtivos, setBonusDadosAtivos,
-    regras, toggleRegra,
+    regras, setRegras, toggleRegra,
     nivel, setNivel,
     rituaisExpandidos, setRituaisExpandidos,
     versaoRitual, setVersaoRitual,

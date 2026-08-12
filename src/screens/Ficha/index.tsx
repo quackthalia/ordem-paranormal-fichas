@@ -61,7 +61,7 @@ export const FichaScreen: React.FC = () => {
 
       <button
         onClick={handleRefazer}
-        className="mt-12 w-full rounded-md border border-zinc-800 bg-zinc-900 p-3.5 font-bold uppercase tracking-wider text-zinc-400 transition hover:border-red-900 hover:text-red-500"
+        className="mt-12 w-full rounded-md border border-zinc-800 bg-zinc-900 p-3.5 font-bold uppercase tracking-wider text-zinc-400 transition hover:border-green-900 hover:text-green-500"
       >
         Refazer Personagem
       </button>
@@ -104,7 +104,7 @@ function AtributosFicha() {
               const diferenca = atributosFinais[nome] - atributos[nome];
               setAtributos({ ...atributos, [nome]: Number(e.target.value) - diferenca });
             }}
-            className={`-mt-0.5 w-full bg-transparent text-center text-2xl font-bold outline-none ${atributosFinais[nome] > (atributos[nome] + bonusAtributos[nome]) ? 'text-red-500' : 'text-zinc-100'}`}
+            className={`-mt-0.5 w-full bg-transparent text-center text-2xl font-bold outline-none ${atributosFinais[nome] > (atributos[nome] + bonusAtributos[nome]) ? 'text-green-500' : 'text-zinc-100'}`}
           />
         </div>
       ))}
@@ -160,7 +160,7 @@ function DefesaPanel() {
                 placeholder="0"
                 title="Defesa de equipamento"
                 onChange={e => setDefEquip(Math.max(0, Number(e.target.value)))}
-                className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-red-600"
+                className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-green-600"
               />
               <span className="absolute top-full text-[9px] uppercase tracking-wider text-zinc-500 mt-0.5">Equip.</span>
             </div>
@@ -188,7 +188,7 @@ function DefesaPanel() {
                   const bonusRegra25 = (regrasAutomaticasAtivas.has(25) && temProtecaoLeve) ? 2 : 0;
                   setDefOutros(Math.max(0, valDigitado - defOutrosBonusRegra - bonusRegra21 - bonusRegra25 - totalDefesaProtecoes));
                 }}
-                className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-red-600"
+                className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-green-600"
               />
               <span className="absolute top-full text-[9px] uppercase tracking-wider text-zinc-500 mt-0.5">Outros</span>
             </div>
@@ -204,7 +204,7 @@ function DefesaPanel() {
           value={bloqueio || ''}
           placeholder="0"
           onChange={e => { bloqueioOverride.current = true; setBloqueio(Math.max(0, Number(e.target.value))); }}
-          className="mt-1 w-12 border-b border-zinc-600 bg-transparent text-center text-lg font-bold text-zinc-100 outline-none focus:border-red-600"
+          className="mt-1 w-12 border-b border-zinc-600 bg-transparent text-center text-lg font-bold text-zinc-100 outline-none focus:border-green-600"
         />
       </div>
       <div className="flex flex-col items-center">
@@ -215,7 +215,7 @@ function DefesaPanel() {
           value={esquiva || ''}
           placeholder="0"
           onChange={e => { esquivaOverride.current = true; setEsquiva(Math.max(0, Number(e.target.value))); }}
-          className="mt-1 w-12 border-b border-zinc-600 bg-transparent text-center text-lg font-bold text-zinc-100 outline-none focus:border-red-600"
+          className="mt-1 w-12 border-b border-zinc-600 bg-transparent text-center text-lg font-bold text-zinc-100 outline-none focus:border-green-600"
         />
       </div>
     </div>
@@ -475,7 +475,7 @@ function BadgeBlock({
               setInputValue('');
             }
           }}
-          className="flex-1 border-b border-zinc-800 bg-transparent py-1 text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700"
+          className="flex-1 border-b border-zinc-800 bg-transparent py-1 text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700"
         />
       </div>
       {(itens.length > 0 || itensExtras.length > 0) && (() => {
@@ -512,7 +512,7 @@ function BadgeBlock({
                 {!item.isExtra && (
                   <button
                     onClick={() => setItens(itens.filter((_, j) => j !== item.originalIndex))}
-                    className="px-0.5 text-zinc-500 transition hover:text-red-500"
+                    className="px-0.5 text-zinc-500 transition hover:text-green-500"
                     title="Remover"
                   >
                     ✕

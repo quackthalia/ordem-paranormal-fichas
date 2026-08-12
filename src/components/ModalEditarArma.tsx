@@ -173,7 +173,7 @@ export function ModalEditarArma({
           </h2>
           <button
             onClick={onClose}
-            className="text-zinc-500 hover:text-red-500 transition"
+            className="text-zinc-500 hover:text-green-500 transition"
           >
             ✕
           </button>
@@ -181,14 +181,14 @@ export function ModalEditarArma({
 
         <div className="flex-1 overflow-y-auto p-6 custom-scrollbar flex flex-col gap-4">
           <div className="rounded border border-zinc-800 bg-zinc-950 p-4">
-            <h3 className="font-bold text-red-500 mb-2 border-b border-zinc-800 pb-2">Informações da Arma</h3>
+            <h3 className="font-bold text-green-500 mb-2 border-b border-zinc-800 pb-2">Informações da Arma</h3>
             <div className="flex flex-col gap-2 mt-4">
               
               <InputLabel label="Nome da Arma" />
               <InputOtimizado
                 value={nome}
                 onChange={setNome}
-                className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-green-700 transition"
               />
             </div>
 
@@ -198,7 +198,7 @@ export function ModalEditarArma({
                   <select
                     value={proficiencia}
                     onChange={(e) => setProficiencia(e.target.value)}
-                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-green-700 transition"
                   >
                     <option value="Armas Simples">Armas Simples</option>
                     <option value="Armas Táticas">Armas Táticas</option>
@@ -211,7 +211,7 @@ export function ModalEditarArma({
                   <select
                     value={tipoArma}
                     onChange={(e) => setTipoArma(e.target.value)}
-                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-green-700 transition"
                   >
                     <option value="Corpo a Corpo">Corpo a Corpo</option>
                     <option value="Arma de Disparo">Arma de Disparo</option>
@@ -226,7 +226,7 @@ export function ModalEditarArma({
                   <select
                     value={empunhadura}
                     onChange={(e) => setEmpunhadura(e.target.value)}
-                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-green-700 transition"
                   >
                     <option value="Leve">Leve</option>
                     <option value="Uma Mão">Uma Mão</option>
@@ -242,7 +242,7 @@ export function ModalEditarArma({
                   <select
                     value={tipoDano}
                     onChange={(e) => setTipoDano(e.target.value)}
-                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-green-700 transition"
                   >
                     <option value="Corte">Corte</option>
                     <option value="Perfuração">Perfuração</option>
@@ -273,7 +273,7 @@ export function ModalEditarArma({
                       }
                     }}
                     placeholder="Ex: 1d8"
-                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-green-700 transition"
                   />
                 </div>
 
@@ -291,7 +291,7 @@ export function ModalEditarArma({
                         }
                       }}
                       placeholder="Ex: 19"
-                      className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                      className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-green-700 transition"
                     />
                   </div>
                   <div className="flex-1">
@@ -300,7 +300,7 @@ export function ModalEditarArma({
                       value={multiplicador}
                       onChange={setMultiplicador}
                       placeholder="Ex: 2"
-                      className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                      className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-green-700 transition"
                     />
                   </div>
                 </div>
@@ -322,7 +322,7 @@ export function ModalEditarArma({
                         setAlcance(val);
                       }
                     }}
-                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-green-700 transition"
                   >
                     <option value="">Nenhum</option>
                     <option value="Curto">Curto</option>
@@ -339,7 +339,7 @@ export function ModalEditarArma({
                     value={danoSecundario}
                     onChange={setDanoSecundario}
                     placeholder="Ex: +2d6 (Explosivo)"
-                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-green-700 transition"
                   />
                 </div>
                 
@@ -349,7 +349,7 @@ export function ModalEditarArma({
                     value={dt}
                     onChange={setDt}
                     placeholder="Ex: Fortitude, 15 ou 20"
-                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-green-700 transition"
                   />
                 </div>
 
@@ -364,7 +364,7 @@ export function ModalEditarArma({
                       setCategoria(categoriaNumParaRoman(Math.max(0, finalDesejado - modCount)));
                     }}
                     placeholder="Ex: I, II, 0"
-                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-green-700 transition"
                   />
                 </div>
 
@@ -378,7 +378,7 @@ export function ModalEditarArma({
                     }}
                     type="number"
                     step="0.5"
-                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition"
+                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-green-700 transition"
                   />
                 </div>
             </div>
@@ -425,7 +425,7 @@ export function ModalEditarArma({
           </button>
           <button
             onClick={handleSalvar}
-            className="rounded bg-red-700 px-5 py-2 text-xs font-bold uppercase tracking-wider text-zinc-100 shadow hover:bg-red-600"
+            className="rounded bg-green-700 px-5 py-2 text-xs font-bold uppercase tracking-wider text-zinc-100 shadow hover:bg-green-600"
           >
             Salvar Alterações
           </button>

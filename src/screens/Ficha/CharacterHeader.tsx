@@ -1,8 +1,10 @@
 import React from 'react';
 import { useRPG } from '../../context/RPGContext';
+import { SaveLoadButtons } from '../../components/SaveLoadButtons';
 
 export const CharacterHeader: React.FC = () => {
-  const { classe, origensHook } = useRPG();
+  const rpg = useRPG();
+  const { classe, origensHook } = rpg;
   const origemNome = origensHook.origemSelecionada?.Nome || '';
 
   return (
@@ -13,7 +15,11 @@ export const CharacterHeader: React.FC = () => {
       </div>
 
       {/* Info Grid */}
-      <div className="flex flex-1 gap-10">
+      <div className="flex flex-1 flex-col gap-2">
+        <div className="flex w-full justify-end">
+          <SaveLoadButtons />
+        </div>
+        <div className="flex flex-1 gap-10">
         
         {/* Left Column: Personagem & Origem */}
         <div className="flex flex-1 flex-col gap-2">
@@ -23,7 +29,9 @@ export const CharacterHeader: React.FC = () => {
             <input
               type="text"
               placeholder="Nome"
-              className="flex-1 border-b border-zinc-200 bg-transparent py-0.5 text-sm font-bold text-zinc-100 outline-none transition focus:border-red-500"
+              value={rpg.nomeEditando || ''}
+              onChange={(e) => rpg.setNomeEditando(e.target.value)}
+              className="flex-1 border-b border-zinc-200 bg-transparent py-0.5 text-sm font-bold text-zinc-100 outline-none transition focus:border-green-500"
             />
           </div>
           {/* Origem */}
@@ -34,7 +42,7 @@ export const CharacterHeader: React.FC = () => {
               type="text"
               defaultValue={origemNome}
               placeholder="Sua Origem"
-              className="flex-1 border-b border-zinc-200 bg-transparent py-0.5 text-sm font-bold text-zinc-100 outline-none transition focus:border-red-500"
+              className="flex-1 border-b border-zinc-200 bg-transparent py-0.5 text-sm font-bold text-zinc-100 outline-none transition focus:border-green-500"
             />
           </div>
         </div>
@@ -47,7 +55,7 @@ export const CharacterHeader: React.FC = () => {
             <input
               type="text"
               placeholder="Seu Nome"
-              className="flex-1 border-b border-zinc-200 bg-transparent py-0.5 text-sm font-bold text-zinc-100 outline-none transition focus:border-red-500"
+              className="flex-1 border-b border-zinc-200 bg-transparent py-0.5 text-sm font-bold text-zinc-100 outline-none transition focus:border-green-500"
             />
           </div>
           {/* Classe */}
@@ -58,11 +66,12 @@ export const CharacterHeader: React.FC = () => {
               type="text"
               defaultValue={classe || ''}
               placeholder="Sua Classe"
-              className="flex-1 border-b border-zinc-200 bg-transparent py-0.5 text-sm font-bold text-zinc-100 outline-none transition focus:border-red-500"
+              className="flex-1 border-b border-zinc-200 bg-transparent py-0.5 text-sm font-bold text-zinc-100 outline-none transition focus:border-green-500"
             />
           </div>
         </div>
 
+        </div>
       </div>
     </div>
   );

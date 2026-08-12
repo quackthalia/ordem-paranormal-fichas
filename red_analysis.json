@@ -1,0 +1,1002 @@
+[
+  {
+    "file": "src/components/ModalEditarArma.tsx",
+    "line": 176,
+    "content": "className=\"text-zinc-500 hover:text-red-500 transition\""
+  },
+  {
+    "file": "src/components/ModalEditarArma.tsx",
+    "line": 184,
+    "content": "<h3 className=\"font-bold text-red-500 mb-2 border-b border-zinc-800 pb-2\">Informações da Arma</h3>"
+  },
+  {
+    "file": "src/components/ModalEditarArma.tsx",
+    "line": 191,
+    "content": "className=\"w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition\""
+  },
+  {
+    "file": "src/components/ModalEditarArma.tsx",
+    "line": 201,
+    "content": "className=\"w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition\""
+  },
+  {
+    "file": "src/components/ModalEditarArma.tsx",
+    "line": 214,
+    "content": "className=\"w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition\""
+  },
+  {
+    "file": "src/components/ModalEditarArma.tsx",
+    "line": 229,
+    "content": "className=\"w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition\""
+  },
+  {
+    "file": "src/components/ModalEditarArma.tsx",
+    "line": 245,
+    "content": "className=\"w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition\""
+  },
+  {
+    "file": "src/components/ModalEditarArma.tsx",
+    "line": 276,
+    "content": "className=\"w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition\""
+  },
+  {
+    "file": "src/components/ModalEditarArma.tsx",
+    "line": 294,
+    "content": "className=\"w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition\""
+  },
+  {
+    "file": "src/components/ModalEditarArma.tsx",
+    "line": 303,
+    "content": "className=\"w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition\""
+  },
+  {
+    "file": "src/components/ModalEditarArma.tsx",
+    "line": 325,
+    "content": "className=\"w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition\""
+  },
+  {
+    "file": "src/components/ModalEditarArma.tsx",
+    "line": 342,
+    "content": "className=\"w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition\""
+  },
+  {
+    "file": "src/components/ModalEditarArma.tsx",
+    "line": 352,
+    "content": "className=\"w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition\""
+  },
+  {
+    "file": "src/components/ModalEditarArma.tsx",
+    "line": 367,
+    "content": "className=\"w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition\""
+  },
+  {
+    "file": "src/components/ModalEditarArma.tsx",
+    "line": 381,
+    "content": "className=\"w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700 transition\""
+  },
+  {
+    "file": "src/components/ModalEditarArma.tsx",
+    "line": 428,
+    "content": "className=\"rounded bg-red-700 px-5 py-2 text-xs font-bold uppercase tracking-wider text-zinc-100 shadow hover:bg-red-600\""
+  },
+  {
+    "file": "src/components/ModalEditarItem.tsx",
+    "line": 241,
+    "content": "className=\"w-full rounded border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-red-800\""
+  },
+  {
+    "file": "src/components/ModalEditarItem.tsx",
+    "line": 252,
+    "content": "className=\"w-full rounded border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-red-800\""
+  },
+  {
+    "file": "src/components/ModalEditarItem.tsx",
+    "line": 267,
+    "content": "className=\"w-full rounded border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-red-800\""
+  },
+  {
+    "file": "src/components/ModalEditarItem.tsx",
+    "line": 280,
+    "content": "className=\"w-full rounded border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-red-800\""
+  },
+  {
+    "file": "src/components/ModalEditarItem.tsx",
+    "line": 291,
+    "content": "className=\"w-full rounded border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-red-800\""
+  },
+  {
+    "file": "src/components/ModalEditarItem.tsx",
+    "line": 344,
+    "content": "className=\"rounded bg-red-800 px-5 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg transition hover:bg-red-700\""
+  },
+  {
+    "file": "src/components/ModalEditarItem.tsx",
+    "line": 356,
+    "content": "className=\"w-full bg-zinc-950 border border-zinc-700 text-sm text-zinc-100 rounded px-3 py-2 outline-none focus:border-red-700 mb-4\""
+  },
+  {
+    "file": "src/components/ModalEditarItem.tsx",
+    "line": 395,
+    "content": "className=\"w-full bg-zinc-950 border border-zinc-700 text-sm text-zinc-100 rounded px-3 py-2 outline-none focus:border-red-700 mb-4\""
+  },
+  {
+    "file": "src/components/ModalEditarProtecao.tsx",
+    "line": 108,
+    "content": "className=\"w-full rounded bg-zinc-950 border border-zinc-700 p-2 text-zinc-100 focus:border-red-500 focus:outline-none\""
+  },
+  {
+    "file": "src/components/ModalEditarProtecao.tsx",
+    "line": 118,
+    "content": "className=\"w-full rounded bg-zinc-950 border border-zinc-700 p-2 text-zinc-100 focus:border-red-500 focus:outline-none\""
+  },
+  {
+    "file": "src/components/ModalEditarProtecao.tsx",
+    "line": 129,
+    "content": "className=\"w-full rounded bg-zinc-950 border border-zinc-700 p-2 text-zinc-100 focus:border-red-500 focus:outline-none\""
+  },
+  {
+    "file": "src/components/ModalEditarProtecao.tsx",
+    "line": 145,
+    "content": "className=\"w-full rounded bg-zinc-950 border border-zinc-700 p-2 text-zinc-100 focus:border-red-500 focus:outline-none\""
+  },
+  {
+    "file": "src/components/ModalEditarProtecao.tsx",
+    "line": 157,
+    "content": "className=\"w-full rounded bg-zinc-950 border border-zinc-700 p-2 text-zinc-100 focus:border-red-500 focus:outline-none\""
+  },
+  {
+    "file": "src/components/ModalEditarProtecao.tsx",
+    "line": 218,
+    "content": "className=\"rounded bg-red-800 px-5 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg transition hover:bg-red-700\""
+  },
+  {
+    "file": "src/components/ModalEditarTrilha.tsx",
+    "line": 94,
+    "content": "className=\"text-zinc-500 hover:text-red-500 transition\""
+  },
+  {
+    "file": "src/components/ModalEditarTrilha.tsx",
+    "line": 103,
+    "content": "<h3 className=\"font-bold text-red-500 mb-2 border-b border-zinc-800 pb-2\">Geral</h3>"
+  },
+  {
+    "file": "src/components/ModalEditarTrilha.tsx",
+    "line": 109,
+    "content": "className=\"rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700\""
+  },
+  {
+    "file": "src/components/ModalEditarTrilha.tsx",
+    "line": 116,
+    "content": "className=\"rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700\""
+  },
+  {
+    "file": "src/components/ModalEditarTrilha.tsx",
+    "line": 133,
+    "content": "className=\"min-h-[60px] rounded-b border border-zinc-700 bg-zinc-950 p-2.5 text-sm text-zinc-300 outline-none focus:border-red-700\""
+  },
+  {
+    "file": "src/components/ModalEditarTrilha.tsx",
+    "line": 148,
+    "content": "<h3 className=\"font-bold text-red-500 mb-2 border-b border-zinc-800 pb-2\">Habilidade {regras['nex_experiencia'] ? `Nível ${calcularNivel(hab.nex)}` : `NEX ${hab.nex}%`}</h3>"
+  },
+  {
+    "file": "src/components/ModalEditarTrilha.tsx",
+    "line": 154,
+    "content": "className=\"rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-red-700\""
+  },
+  {
+    "file": "src/components/ModalEditarTrilha.tsx",
+    "line": 169,
+    "content": "className=\"min-h-[60px] rounded-b border border-zinc-700 bg-zinc-950 p-2.5 text-sm text-zinc-300 outline-none focus:border-red-700\""
+  },
+  {
+    "file": "src/components/ModalEditarTrilha.tsx",
+    "line": 187,
+    "content": "className=\"rounded bg-red-700 px-5 py-2 text-xs font-bold uppercase tracking-wider text-zinc-100 shadow hover:bg-red-600\""
+  },
+  {
+    "file": "src/components/ModalPoderesExtra.tsx",
+    "line": 488,
+    "content": "? 'border-red-500 hover:scale-105 opacity-80'"
+  },
+  {
+    "file": "src/components/ModalPoderesExtra.tsx",
+    "line": 586,
+    "content": "<div className=\"mt-2 block rounded bg-red-900/20 px-3 py-2 text-xs italic text-red-400\">"
+  },
+  {
+    "file": "src/components/ModalTrilhas.tsx",
+    "line": 144,
+    "content": "{error && <div className=\"text-center italic text-red-500 mt-5\">Erro: {error}</div>}"
+  },
+  {
+    "file": "src/components/ModificacoesSelector.tsx",
+    "line": 47,
+    "content": ": 'bg-red-700 hover:bg-red-600'"
+  },
+  {
+    "file": "src/components/ModificacoesSelector.tsx",
+    "line": 55,
+    "content": "<div className=\"rounded border border-red-900 bg-zinc-950 p-2 shadow-lg mb-2 animate-in slide-in-from-top-1 fade-in duration-200\">"
+  },
+  {
+    "file": "src/components/ModificacoesSelector.tsx",
+    "line": 70,
+    "content": "className=\"flex flex-col px-3 py-2 rounded bg-transparent hover:bg-zinc-900 border border-transparent hover:border-red-800 cursor-pointer transition-colors\""
+  },
+  {
+    "file": "src/components/ModificacoesSelector.tsx",
+    "line": 88,
+    "content": "className=\"flex items-center justify-between p-4 bg-zinc-900/50 border-l-[3px] border-l-red-600\""
+  },
+  {
+    "file": "src/components/ModificacoesSelector.tsx",
+    "line": 99,
+    "content": "className=\"px-4 py-1.5 text-xs font-bold text-zinc-300 hover:text-white bg-zinc-800 hover:bg-red-700 rounded transition-colors flex-shrink-0\""
+  },
+  {
+    "file": "src/components/SortableItemAmaldicoado.tsx",
+    "line": 41,
+    "content": "elStr.includes('sangue') ? 'border-l-red-600' :"
+  },
+  {
+    "file": "src/components/SortableItemAmaldicoado.tsx",
+    "line": 94,
+    "content": "elStr.includes('sangue') ? 'bg-red-700/50 text-white' :"
+  },
+  {
+    "file": "src/components/SortableItemAmaldicoado.tsx",
+    "line": 109,
+    "content": "elStr.includes('sangue') ? 'bg-red-700 border-zinc-700 text-white' :"
+  },
+  {
+    "file": "src/components/SortableItemAmaldicoado.tsx",
+    "line": 173,
+    "content": "className=\"text-xs text-red-500 hover:text-red-400 bg-red-950/30 hover:bg-red-900/50 px-3 py-1.5 rounded border border-red-900/50 transition-colors\""
+  },
+  {
+    "file": "src/screens/AtributosScreen.tsx",
+    "line": 38,
+    "content": "<p className=\"mb-8 border-b border-zinc-800 pb-4 text-sm uppercase tracking-widest text-red-600\">"
+  },
+  {
+    "file": "src/screens/AtributosScreen.tsx",
+    "line": 60,
+    "content": "<div className={`mb-6 text-lg font-bold ${pontosRestantes < 0 ? 'text-red-500' : 'text-zinc-100'}`}>"
+  },
+  {
+    "file": "src/screens/AtributosScreen.tsx",
+    "line": 62,
+    "content": "<span className={pontosRestantes > 0 ? 'text-red-500' : 'text-zinc-500'}>{pontosRestantes}</span>"
+  },
+  {
+    "file": "src/screens/AtributosScreen.tsx",
+    "line": 85,
+    "content": "className=\"h-9 w-9 rounded-md border border-zinc-700 bg-zinc-800 text-lg font-bold text-zinc-100 transition hover:border-red-700 hover:bg-red-900/40 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-zinc-700 disabled:hover:bg-zinc-800\""
+  },
+  {
+    "file": "src/screens/AtributosScreen.tsx",
+    "line": 93,
+    "content": "className=\"h-9 w-9 rounded-md border border-zinc-700 bg-zinc-800 text-lg font-bold text-zinc-100 transition hover:border-red-700 hover:bg-red-900/40 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-zinc-700 disabled:hover:bg-zinc-800\""
+  },
+  {
+    "file": "src/screens/AtributosScreen.tsx",
+    "line": 105,
+    "content": "className=\"rounded-md bg-red-700 px-8 py-3 text-lg font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-red-600\""
+  },
+  {
+    "file": "src/screens/ClasseScreen.tsx",
+    "line": 32,
+    "content": "<p className=\"mb-10 text-center text-sm uppercase tracking-widest text-red-600\">"
+  },
+  {
+    "file": "src/screens/ClasseScreen.tsx",
+    "line": 38,
+    "content": "<div className=\"flex flex-1 flex-col rounded-xl border border-red-900/60 bg-zinc-900/60 p-6 transition hover:border-red-700\">"
+  },
+  {
+    "file": "src/screens/ClasseScreen.tsx",
+    "line": 39,
+    "content": "<h2 className=\"font-display mb-3 text-center text-xl uppercase tracking-wide text-red-500\">"
+  },
+  {
+    "file": "src/screens/ClasseScreen.tsx",
+    "line": 50,
+    "content": "<input type=\"radio\" name=\"c1\" className=\"accent-red-600\" checked={skillCombatente1 === 'Luta'} onChange={() => setSkillCombatente1('Luta')} /> Luta"
+  },
+  {
+    "file": "src/screens/ClasseScreen.tsx",
+    "line": 54,
+    "content": "<input type=\"radio\" name=\"c1\" className=\"accent-red-600\" checked={skillCombatente1 === 'Pontaria'} onChange={() => setSkillCombatente1('Pontaria')} /> Pontaria"
+  },
+  {
+    "file": "src/screens/ClasseScreen.tsx",
+    "line": 59,
+    "content": "<input type=\"radio\" name=\"c2\" className=\"accent-red-600\" checked={skillCombatente2 === 'Fortitude'} onChange={() => setSkillCombatente2('Fortitude')} /> Fortitude"
+  },
+  {
+    "file": "src/screens/ClasseScreen.tsx",
+    "line": 63,
+    "content": "<input type=\"radio\" name=\"c2\" className=\"accent-red-600\" checked={skillCombatente2 === 'Reflexos'} onChange={() => setSkillCombatente2('Reflexos')} /> Reflexos"
+  },
+  {
+    "file": "src/screens/ClasseScreen.tsx",
+    "line": 71,
+    "content": "className=\"w-full rounded-lg bg-red-800 p-3.5 font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-600\""
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 739,
+    "content": "abaDireita === aba ? 'border-b-2 border-red-800 text-zinc-100' : 'border-b-2 border-transparent text-zinc-500 hover:text-zinc-300'"
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 753,
+    "content": "className=\"flex-1 border-b border-zinc-700 bg-transparent py-2 text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700\""
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 755,
+    "content": "<button onClick={() => setModalExtraAberto(true)} className=\"whitespace-nowrap rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-xs font-bold text-zinc-200 transition hover:border-red-800 hover:bg-red-950/40\">+ Adicionar</button>"
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 837,
+    "content": "className=\"group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-red-800 hover:bg-zinc-900/80\""
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 845,
+    "content": "<span className=\"whitespace-nowrap rounded bg-red-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-400 transition group-hover:bg-red-900/60 group-hover:text-red-300\">+ Adicionar</span>"
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 863,
+    "content": "<div key={hab.id} className=\"mb-3 overflow-hidden rounded-r border-l-4 border-red-800 bg-zinc-900/50\">"
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 890,
+    "content": "<h4 className=\"mb-2 text-xs font-bold uppercase tracking-wider text-red-400 border-b border-zinc-800 pb-1\">"
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 942,
+    "content": "className=\"text-xs text-red-500 hover:text-red-400 bg-red-950/30 hover:bg-red-900/50 px-3 py-1.5 rounded border border-red-900/50 transition-colors\""
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 953,
+    "content": "className={`overflow-hidden rounded-r border-l-4 bg-zinc-900/50 ${hab.categoria === 'paranormais' ? 'border-l-0' : 'border-red-800'}`}"
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 1013,
+    "content": "className=\"text-[10px] font-bold uppercase tracking-wider text-red-500/70 transition hover:text-red-400\""
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 1077,
+    "content": "className=\"text-xs text-red-500 hover:text-red-400 bg-red-950/30 hover:bg-red-900/50 px-3 py-1.5 rounded border border-red-900/50 transition-colors\""
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 1232,
+    "content": "className=\"flex-1 border-b border-zinc-700 bg-transparent py-2 text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700\""
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 1234,
+    "content": "<button onClick={() => setModalRituaisExtraAberto(true)} className=\"whitespace-nowrap rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-xs font-bold text-zinc-200 transition hover:border-red-800 hover:bg-red-950/40\">+ Adicionar</button>"
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 1242,
+    "content": "<div className=\"mt-5 text-center italic text-red-500\">Erro: {rituaisHook.error}</div>"
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 1302,
+    "content": "className=\"group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-red-800 hover:bg-zinc-900/80\""
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 1312,
+    "content": "<span className=\"whitespace-nowrap rounded bg-red-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-400 transition group-hover:bg-red-900/60 group-hover:text-red-300\">+ Adicionar</span>"
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 1329,
+    "content": "className=\"group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-red-800 hover:bg-zinc-900/80\""
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 1339,
+    "content": "<span className=\"whitespace-nowrap rounded bg-red-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-400 transition group-hover:bg-red-900/60 group-hover:text-red-300\">+ Adicionar</span>"
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 1512,
+    "content": "className=\"cursor-pointer rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs font-bold text-zinc-200 outline-none transition hover:bg-zinc-800 focus:border-red-700\""
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 1644,
+    "content": "className=\"rounded bg-red-900/30 border border-red-800 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-500 transition hover:bg-red-900/50 hover:text-red-400\""
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 1788,
+    "content": "className=\"rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 focus:border-red-700 focus:outline-none\""
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 1798,
+    "content": "className=\"rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm font-bold text-zinc-200 focus:border-red-700 focus:outline-none w-fit\""
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 1827,
+    "content": "className=\"rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 focus:border-red-700 focus:outline-none\""
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 1847,
+    "content": "className=\"min-h-[200px] w-full rounded-b border border-zinc-700 bg-zinc-950 p-3 text-sm leading-relaxed text-zinc-300 focus:border-red-700 focus:outline-none flex-1 overflow-y-auto\""
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 1865,
+    "content": "className=\"rounded bg-red-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-800\""
+  },
+  {
+    "file": "src/screens/Ficha/AbasPanel.tsx",
+    "line": 1956,
+    "content": "className=\"mt-0.5 accent-red-600\""
+  },
+  {
+    "file": "src/screens/Ficha/CharacterHeader.tsx",
+    "line": 26,
+    "content": "className=\"flex-1 border-b border-zinc-200 bg-transparent py-0.5 text-sm font-bold text-zinc-100 outline-none transition focus:border-red-500\""
+  },
+  {
+    "file": "src/screens/Ficha/CharacterHeader.tsx",
+    "line": 37,
+    "content": "className=\"flex-1 border-b border-zinc-200 bg-transparent py-0.5 text-sm font-bold text-zinc-100 outline-none transition focus:border-red-500\""
+  },
+  {
+    "file": "src/screens/Ficha/CharacterHeader.tsx",
+    "line": 50,
+    "content": "className=\"flex-1 border-b border-zinc-200 bg-transparent py-0.5 text-sm font-bold text-zinc-100 outline-none transition focus:border-red-500\""
+  },
+  {
+    "file": "src/screens/Ficha/CharacterHeader.tsx",
+    "line": 61,
+    "content": "className=\"flex-1 border-b border-zinc-200 bg-transparent py-0.5 text-sm font-bold text-zinc-100 outline-none transition focus:border-red-500\""
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 115,
+    "content": "className={`rounded border border-l-4 border-l-red-700 transition-colors w-full relative ${"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 116,
+    "content": "isOverlay ? 'border-red-500 bg-zinc-900 shadow-2xl scale-[1.02] opacity-90 cursor-grabbing' :"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 162,
+    "content": "<span><span className=\"font-bold text-red-400\">Dado:</span> {danoBase}</span>"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 172,
+    "content": "<span><span className=\"font-bold text-red-400\">DT:</span> {stringDT}</span>"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 192,
+    "content": "className=\"w-5 h-5 cursor-pointer accent-red-600\""
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 203,
+    "content": "<span><span className=\"text-red-400 font-bold\">Categoria:</span> {calcularCategoriaFinal(item.item.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes)}</span>"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 204,
+    "content": "<span><span className=\"text-red-400 font-bold\">Espaços:</span> {calcularEspacosFinais(item.item.Espacos_Itens, item.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas?.has(43))}</span>"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 207,
+    "content": "<span><span className=\"text-red-400 font-bold\">Alcance:</span> {(item.item as any).Alcance_Item || 'Corpo a Corpo'}</span>"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 208,
+    "content": "<span><span className=\"text-red-400 font-bold\">Tipo:</span> {(item.item as any).Tipo_Dano_Arma || 'Impacto'}</span>"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 266,
+    "content": "className=\"text-xs text-red-500 hover:text-red-400 bg-red-950/30 hover:bg-red-900/50 px-3 py-1.5 rounded border border-red-900/50 transition-colors\""
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 586,
+    "content": "className=\"w-16 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-center text-lg font-bold text-zinc-100 outline-none transition focus:border-red-800\""
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 594,
+    "content": "className=\"w-48 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-center text-sm font-bold text-zinc-100 outline-none transition focus:border-red-800\""
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 614,
+    "content": "className=\"w-12 rounded border border-zinc-700 bg-zinc-900 py-1 text-center text-lg font-bold text-zinc-100 outline-none transition focus:border-red-800\""
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 642,
+    "content": "className=\"w-32 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-center text-sm font-bold text-zinc-100 outline-none transition focus:border-red-800\""
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 674,
+    "content": "? 'bg-zinc-900 text-red-400 border-b-red-500'"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 685,
+    "content": "? 'bg-zinc-900 text-red-400 border-b-red-500'"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 696,
+    "content": "? 'bg-zinc-900 text-red-400 border-b-red-500'"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 707,
+    "content": "? 'bg-zinc-900 text-red-400 border-b-red-500'"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 718,
+    "content": "? 'bg-zinc-900 text-red-400 border-b-red-500'"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 729,
+    "content": "? 'bg-zinc-900 text-red-400 border-b-red-500'"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 740,
+    "content": "? 'bg-zinc-900 text-red-400 border-b-red-500'"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 751,
+    "content": "? 'bg-zinc-900 text-red-400 border-b-red-500'"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 762,
+    "content": "? 'bg-zinc-900 text-red-400 border-b-red-500'"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 1272,
+    "content": "className={`rounded border border-l-4 border-l-red-700 transition-colors ${"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 1273,
+    "content": "isOverlay ? 'border-red-500 bg-zinc-900 shadow-2xl scale-[1.02] opacity-90 cursor-grabbing' :"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 1296,
+    "content": "<span><span className=\"font-bold text-red-400\">Dado:</span> {stats.dano}</span>"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 1297,
+    "content": "{stats.danoSecundario && <span><span className=\"font-bold text-red-400\">Secundário:</span> {stats.danoSecundario}</span>}"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 1299,
+    "content": "{stringDT && <span><span className=\"font-bold text-red-400\">DT:</span> {stringDT}</span>}"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 1339,
+    "content": "<span className=\"text-sm text-red-500\">⚠️</span>"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 1358,
+    "content": "<span><span className=\"text-red-400 font-bold\">Categoria:</span> {calcularCategoriaFinal(arma.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes, arma.Codigo_Arma === 71)}</span>"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 1359,
+    "content": "{stats.alcance && <span><span className=\"text-red-400 font-bold\">Alcance:</span> {stats.alcance}</span>}"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 1360,
+    "content": "<span><span className=\"text-red-400 font-bold\">Tipo:</span> {arma.Tipo_Dano_Arma}</span>"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 1361,
+    "content": "{stats.danoSecundario && <span><span className=\"text-red-400 font-bold\">Dano Secundário:</span> {stats.danoSecundario}</span>}"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 1362,
+    "content": "<span><span className=\"text-red-400 font-bold\">Espaços:</span> {stats.espacos}</span>"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 1414,
+    "content": "className=\"text-xs text-red-500 hover:text-red-400 bg-red-950/30 hover:bg-red-900/50 px-3 py-1.5 rounded border border-red-900/50 transition-colors\""
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 1559,
+    "content": "className=\"text-xs text-red-500 hover:text-red-400 bg-red-950/30 hover:bg-red-900/50 px-3 py-1.5 rounded border border-red-900/50 transition-colors\""
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 1668,
+    "content": "<span className=\"text-sm text-red-500\">⚠️</span>"
+  },
+  {
+    "file": "src/screens/Ficha/InventarioPanel.tsx",
+    "line": 1730,
+    "content": "className=\"text-xs text-red-500 hover:text-red-400 bg-red-950/30 hover:bg-red-900/50 px-3 py-1.5 rounded border border-red-900/50 transition-colors\""
+  },
+  {
+    "file": "src/screens/Ficha/ModalArmas.tsx",
+    "line": 249,
+    "content": "<span className=\"text-sm text-red-500\">⚠️</span>"
+  },
+  {
+    "file": "src/screens/Ficha/ModalArmas.tsx",
+    "line": 250,
+    "content": "<span className=\"absolute right-0 top-full mt-1 opacity-0 invisible group-hover/prof:opacity-100 group-hover/prof:visible transition-all duration-300 group-hover/prof:delay-500 delay-0 w-48 p-2 bg-zinc-800 border border-red-700/50 text-xs text-red-200 rounded z-50 text-center shadow-lg pointer-events-none\">"
+  },
+  {
+    "file": "src/screens/Ficha/ModalItensAmaldicoados.tsx",
+    "line": 149,
+    "content": "<span className=\"text-red-500 font-bold\">Erro ao buscar:</span>"
+  },
+  {
+    "file": "src/screens/Ficha/ModalItensAmaldicoados.tsx",
+    "line": 150,
+    "content": "<span className=\"text-red-400\">{itensAmaldicoadosHook.error}</span>"
+  },
+  {
+    "file": "src/screens/Ficha/ModalItensAmaldicoados.tsx",
+    "line": 174,
+    "content": "elStr.includes('sangue') ? 'bg-red-700/50 text-white px-1' :"
+  },
+  {
+    "file": "src/screens/Ficha/ModalProtecoes.tsx",
+    "line": 167,
+    "content": "<span className=\"text-sm text-red-500\">⚠️</span>"
+  },
+  {
+    "file": "src/screens/Ficha/ModalProtecoes.tsx",
+    "line": 168,
+    "content": "<span className=\"absolute right-0 top-full mt-1 opacity-0 invisible group-hover/prof:opacity-100 group-hover/prof:visible transition-all duration-300 group-hover/prof:delay-500 delay-0 w-48 p-2 bg-zinc-800 border border-red-700/50 text-xs text-red-200 rounded z-50 text-center shadow-lg pointer-events-none\">"
+  },
+  {
+    "file": "src/screens/Ficha/PericiasTable.tsx",
+    "line": 10,
+    "content": "15: 'text-red-400',"
+  },
+  {
+    "file": "src/screens/Ficha/PericiasTable.tsx",
+    "line": 17,
+    "content": "15: 'border-red-400',"
+  },
+  {
+    "file": "src/screens/Ficha/PericiasTable.tsx",
+    "line": 61,
+    "content": "className=\"cursor-pointer accent-red-600\""
+  },
+  {
+    "file": "src/screens/Ficha/PericiasTable.tsx",
+    "line": 69,
+    "content": "className={`rounded px-2 py-1 transition ${mostrarBonus ? 'bg-red-900/50 text-red-100 border-red-800/50' : 'bg-zinc-800/50 text-zinc-400 hover:text-zinc-200'} border border-zinc-700/50 flex items-center gap-2`}"
+  },
+  {
+    "file": "src/screens/Ficha/PericiasTable.tsx",
+    "line": 77,
+    "content": "<span className={limites.maxTreinadas - totais.totalTreinadasUsadas < 0 ? 'text-red-500' : 'text-emerald-400'}>"
+  },
+  {
+    "file": "src/screens/Ficha/PericiasTable.tsx",
+    "line": 80,
+    "content": "<span className={limites.maxUpgrades - totais.totalUpgradesGastos < 0 ? 'text-red-500' : 'text-amber-400'}>"
+  },
+  {
+    "file": "src/screens/Ficha/PericiasTable.tsx",
+    "line": 90,
+    "content": "{regrasAutomaticasAtivas.has(8) && <span className=\"rounded bg-red-900/30 px-2 py-0.5 text-xs text-red-400 border border-red-900/50 flex items-center gap-1.5\"><span className=\"w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse\"></span>+2 Diplomacia (Automático)</span>}"
+  },
+  {
+    "file": "src/screens/Ficha/PericiasTable.tsx",
+    "line": 91,
+    "content": "{regrasAutomaticasAtivas.has(13) && <span className=\"rounded bg-red-900/30 px-2 py-0.5 text-xs text-red-400 border border-red-900/50 flex items-center gap-1.5\"><span className=\"w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse\"></span>+2 Vontade (Automático)</span>}"
+  },
+  {
+    "file": "src/screens/Ficha/PericiasTable.tsx",
+    "line": 92,
+    "content": "{regrasAutomaticasAtivas.has(25) && temProtecaoLeve && <span className=\"rounded bg-red-900/30 px-2 py-0.5 text-xs text-red-400 border border-red-900/50 flex items-center gap-1.5\"><span className=\"w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse\"></span>+2 Reflexos (Automático)</span>}"
+  },
+  {
+    "file": "src/screens/Ficha/PericiasTable.tsx",
+    "line": 109,
+    "content": "<span className=\"text-red-500 font-bold mt-[-1px]\">•</span>"
+  },
+  {
+    "file": "src/screens/Ficha/PericiasTable.tsx",
+    "line": 116,
+    "content": "<span className=\"text-red-500 font-bold mt-[-1px]\">•</span>"
+  },
+  {
+    "file": "src/screens/Ficha/PericiasTable.tsx",
+    "line": 120,
+    "content": "<span className=\"text-red-500 font-bold mt-[-1px]\">•</span>"
+  },
+  {
+    "file": "src/screens/Ficha/PericiasTable.tsx",
+    "line": 127,
+    "content": "className=\"w-full bg-transparent text-zinc-300 text-sm p-2 outline-none border border-transparent hover:border-zinc-800 focus:border-red-900 rounded resize-none min-h-[32px]\""
+  },
+  {
+    "file": "src/screens/Ficha/PericiasTable.tsx",
+    "line": 141,
+    "content": "<span className=\"text-red-500 font-bold mt-[-1px]\">•</span>"
+  },
+  {
+    "file": "src/screens/Ficha/PericiasTable.tsx",
+    "line": 149,
+    "content": "<span className=\"text-red-500 font-bold mt-[-1px]\">•</span>"
+  },
+  {
+    "file": "src/screens/Ficha/PericiasTable.tsx",
+    "line": 159,
+    "content": "<span className=\"text-red-500 font-bold mt-[-1px]\">•</span>"
+  },
+  {
+    "file": "src/screens/Ficha/PericiasTable.tsx",
+    "line": 163,
+    "content": "<span className=\"text-red-500 font-bold mt-[-1px]\">•</span>"
+  },
+  {
+    "file": "src/screens/Ficha/PericiasTable.tsx",
+    "line": 170,
+    "content": "<span className=\"text-red-500 font-bold mt-[-1px]\">•</span>"
+  },
+  {
+    "file": "src/screens/Ficha/PericiasTable.tsx",
+    "line": 176,
+    "content": "className=\"w-full bg-transparent text-zinc-300 text-sm p-2 outline-none border border-transparent hover:border-zinc-800 focus:border-red-900 rounded resize-none min-h-[32px]\""
+  },
+  {
+    "file": "src/screens/Ficha/PericiasTable.tsx",
+    "line": 261,
+    "content": "className=\"cursor-pointer hover:underline hover:text-red-400 transition\""
+  },
+  {
+    "file": "src/screens/Ficha/PericiasTable.tsx",
+    "line": 361,
+    "content": "<h4 className=\"mb-4 text-xl font-display uppercase tracking-widest text-red-500\">{periciaAberta.nome}</h4>"
+  },
+  {
+    "file": "src/screens/Ficha/ProgressaoNEXPanel.tsx",
+    "line": 29,
+    "content": "<h2 className=\"text-xl font-display uppercase text-red-500 mb-2 border-b border-red-900 pb-2\">"
+  },
+  {
+    "file": "src/screens/Ficha/ProgressaoNEXPanel.tsx",
+    "line": 96,
+    "content": "<div className=\"overflow-hidden rounded-r border-l-4 border-red-800 bg-zinc-900/50\">"
+  },
+  {
+    "file": "src/screens/Ficha/ProgressaoNEXPanel.tsx",
+    "line": 134,
+    "content": "Editar Texto <span className=\"text-red-500\">(NEX {item.Nex_Progrecao})</span>"
+  },
+  {
+    "file": "src/screens/Ficha/ProgressaoNEXPanel.tsx",
+    "line": 150,
+    "content": "className=\"min-h-48 overflow-y-auto rounded-b border border-zinc-700 bg-zinc-950 p-3 text-left text-sm leading-relaxed text-zinc-100 outline-none focus:border-red-700\""
+  },
+  {
+    "file": "src/screens/Ficha/ProgressaoNEXPanel.tsx",
+    "line": 159,
+    "content": "className=\"rounded border border-red-900/50 bg-red-950/30 px-4 py-2 text-sm font-bold text-red-500 transition hover:bg-red-900/50 hover:text-red-300 mr-auto\""
+  },
+  {
+    "file": "src/screens/Ficha/ProgressaoNEXPanel.tsx",
+    "line": 172,
+    "content": "className=\"rounded bg-red-700 px-4 py-2 text-sm font-bold text-zinc-100 transition hover:bg-red-600\""
+  },
+  {
+    "file": "src/screens/Ficha/StatusPanel.tsx",
+    "line": 96,
+    "content": "<div className=\"flex items-center rounded border border-zinc-600 bg-zinc-900 transition hover:border-red-700 focus-within:border-red-700\">"
+  },
+  {
+    "file": "src/screens/Ficha/StatusPanel.tsx",
+    "line": 114,
+    "content": "className=\"cursor-pointer appearance-none rounded border border-zinc-600 bg-zinc-900 px-3 h-9 text-center text-base font-bold text-zinc-100 transition hover:border-red-700\""
+  },
+  {
+    "file": "src/screens/Ficha/StatusPanel.tsx",
+    "line": 128,
+    "content": "className=\"cursor-pointer appearance-none rounded border border-zinc-600 bg-zinc-900 px-3 h-9 text-center text-base font-bold text-zinc-100 transition hover:border-red-700\""
+  },
+  {
+    "file": "src/screens/Ficha/StatusPanel.tsx",
+    "line": 159,
+    "content": "className=\"absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-zinc-800 text-xs text-zinc-400 opacity-0 transition hover:bg-red-900 hover:text-white group-hover:opacity-100\""
+  },
+  {
+    "file": "src/screens/Ficha/StatusPanel.tsx",
+    "line": 239,
+    "content": "corBarra=\"border-red-700 bg-red-950/40\""
+  },
+  {
+    "file": "src/screens/Ficha/StatusPanel.tsx",
+    "line": 240,
+    "content": "corTempClasses=\"border-red-500 bg-red-950/20\""
+  },
+  {
+    "file": "src/screens/Ficha/StatusPanel.tsx",
+    "line": 257,
+    "content": "<div className=\"mt-2 flex flex-col items-center gap-2.5 rounded-lg border border-red-900/50 bg-zinc-900/80 p-3 shadow-[0_0_10px_rgba(153,27,27,0.1)]\">"
+  },
+  {
+    "file": "src/screens/Ficha/StatusPanel.tsx",
+    "line": 258,
+    "content": "<span className=\"text-[10px] font-bold text-red-500 uppercase tracking-widest text-center\">"
+  },
+  {
+    "file": "src/screens/Ficha/StatusPanel.tsx",
+    "line": 265,
+    "content": "className=\"flex-1 rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs font-bold text-zinc-400 transition hover:border-red-900 hover:text-red-500 hover:bg-red-950/20\""
+  },
+  {
+    "file": "src/screens/Ficha/StatusPanel.tsx",
+    "line": 271,
+    "content": "className=\"flex-1 rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs font-bold text-zinc-400 transition hover:border-red-900 hover:text-red-500 hover:bg-red-950/20\""
+  },
+  {
+    "file": "src/screens/Ficha/StatusPanel.tsx",
+    "line": 277,
+    "content": "<div className=\"flex w-full items-center justify-between rounded-md border border-red-900/30 bg-red-950/20 px-4 py-2\">"
+  },
+  {
+    "file": "src/screens/Ficha/StatusPanel.tsx",
+    "line": 278,
+    "content": "<span className=\"text-xs font-bold text-red-400 uppercase tracking-wider\">"
+  },
+  {
+    "file": "src/screens/Ficha/StatusPanel.tsx",
+    "line": 281,
+    "content": "<span className=\"text-sm font-bold text-red-500\">"
+  },
+  {
+    "file": "src/screens/Ficha/StatusPanel.tsx",
+    "line": 408,
+    "content": "className=\"accent-red-600\""
+  },
+  {
+    "file": "src/screens/Ficha/index.tsx",
+    "line": 64,
+    "content": "className=\"mt-12 w-full rounded-md border border-zinc-800 bg-zinc-900 p-3.5 font-bold uppercase tracking-wider text-zinc-400 transition hover:border-red-900 hover:text-red-500\""
+  },
+  {
+    "file": "src/screens/Ficha/index.tsx",
+    "line": 107,
+    "content": "className={`-mt-0.5 w-full bg-transparent text-center text-2xl font-bold outline-none ${atributosFinais[nome] > (atributos[nome] + bonusAtributos[nome]) ? 'text-red-500' : 'text-zinc-100'}`}"
+  },
+  {
+    "file": "src/screens/Ficha/index.tsx",
+    "line": 163,
+    "content": "className=\"w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-red-600\""
+  },
+  {
+    "file": "src/screens/Ficha/index.tsx",
+    "line": 191,
+    "content": "className=\"w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-red-600\""
+  },
+  {
+    "file": "src/screens/Ficha/index.tsx",
+    "line": 207,
+    "content": "className=\"mt-1 w-12 border-b border-zinc-600 bg-transparent text-center text-lg font-bold text-zinc-100 outline-none focus:border-red-600\""
+  },
+  {
+    "file": "src/screens/Ficha/index.tsx",
+    "line": 218,
+    "content": "className=\"mt-1 w-12 border-b border-zinc-600 bg-transparent text-center text-lg font-bold text-zinc-100 outline-none focus:border-red-600\""
+  },
+  {
+    "file": "src/screens/Ficha/index.tsx",
+    "line": 478,
+    "content": "className=\"flex-1 border-b border-zinc-800 bg-transparent py-1 text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-red-700\""
+  },
+  {
+    "file": "src/screens/Ficha/index.tsx",
+    "line": 515,
+    "content": "className=\"px-0.5 text-zinc-500 transition hover:text-red-500\""
+  },
+  {
+    "file": "src/screens/OrigensScreen.tsx",
+    "line": 25,
+    "content": "return <div className=\"mx-auto max-w-[820px] text-red-500\">Erro: {error}</div>;"
+  },
+  {
+    "file": "src/screens/OrigensScreen.tsx",
+    "line": 42,
+    "content": "<p className=\"mb-4 border-b border-zinc-800 pb-4 text-sm uppercase tracking-widest text-red-600\">"
+  },
+  {
+    "file": "src/screens/OrigensScreen.tsx",
+    "line": 53,
+    "content": "? 'bg-red-700 text-white shadow-md shadow-red-900/50'"
+  },
+  {
+    "file": "src/screens/OrigensScreen.tsx",
+    "line": 65,
+    "content": "? 'bg-red-700 text-white shadow-md shadow-red-900/50'"
+  },
+  {
+    "file": "src/screens/OrigensScreen.tsx",
+    "line": 81,
+    "content": "className=\"w-full rounded-md border border-zinc-700 bg-zinc-900 px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500\""
+  },
+  {
+    "file": "src/screens/OrigensScreen.tsx",
+    "line": 95,
+    "content": "className=\"overflow-hidden rounded-r-lg border-l-4 border-red-800 bg-zinc-900/60 transition hover:bg-zinc-900\""
+  },
+  {
+    "file": "src/screens/OrigensScreen.tsx",
+    "line": 119,
+    "content": "className={`rounded-md px-4 py-2 text-xs font-bold uppercase tracking-wider text-zinc-100 transition ${origem.Codigo_Per_Regra === 6 && !escolhasRegra6[origem.Codigo_Origem] ? 'bg-zinc-700 opacity-50 cursor-not-allowed' : 'bg-red-700 hover:bg-red-600'}`}"
+  },
+  {
+    "file": "src/screens/OrigensScreen.tsx",
+    "line": 145,
+    "content": "className=\"text-red-600 focus:ring-red-500 bg-zinc-900 border-zinc-700\""
+  },
+  {
+    "file": "src/screens/OrigensScreen.tsx",
+    "line": 155,
+    "content": "className=\"text-red-600 focus:ring-red-500 bg-zinc-900 border-zinc-700\""
+  },
+  {
+    "file": "src/screens/OrigensScreen.tsx",
+    "line": 168,
+    "content": "className={`rounded-md px-4 py-2 text-xs font-bold uppercase tracking-wider text-zinc-100 transition ${!escolhasRegra6[origem.Codigo_Origem] ? 'bg-zinc-700 opacity-50 cursor-not-allowed' : 'bg-red-700 hover:bg-red-600'}`}"
+  },
+  {
+    "file": "src/screens/OrigensScreen.tsx",
+    "line": 188,
+    "content": "<strong className=\"text-red-500\">{origem.Nome_Poder}. </strong>"
+  }
+]

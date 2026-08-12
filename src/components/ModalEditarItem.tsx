@@ -238,7 +238,7 @@ export function ModalEditarItem({
             <InputOtimizado
               value={nome}
               onChange={setNome}
-              className="w-full rounded border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-red-800"
+              className="w-full rounded border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-green-800"
             />
           </div>
 
@@ -249,7 +249,7 @@ export function ModalEditarItem({
               <InputOtimizado
                 value={categoriaNumParaRoman(catFinal)}
                 onChange={val => setCategoria(categoriaNumParaRoman(Math.max(0, categoriaRomanParaNum(val) - modificacoes.length)))}
-                className="w-full rounded border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-red-800"
+                className="w-full rounded border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-green-800"
               />
             </div>
 
@@ -264,7 +264,7 @@ export function ModalEditarItem({
                 }}
                 type="number"
                 step="0.5"
-                className="w-full rounded border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-red-800"
+                className="w-full rounded border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-green-800"
               />
             </div>
           </div>
@@ -277,7 +277,7 @@ export function ModalEditarItem({
                 value={dt}
                 onChange={setDt}
                 placeholder="Ex: Fortitude, 15 ou 20"
-                className="w-full rounded border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-red-800"
+                className="w-full rounded border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-green-800"
               />
             </div>
 
@@ -288,7 +288,7 @@ export function ModalEditarItem({
                 value={grupo}
                 onChange={setGrupo}
                 placeholder="Ex: Acessórios"
-                className="w-full rounded border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-red-800"
+                className="w-full rounded border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-green-800"
               />
             </div>
           </div>
@@ -341,7 +341,7 @@ export function ModalEditarItem({
           </button>
           <button
             onClick={handleSalvar}
-            className="rounded bg-red-800 px-5 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg transition hover:bg-red-700"
+            className="rounded bg-green-800 px-5 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg transition hover:bg-green-700"
           >
             Salvar Alterações
           </button>
@@ -353,7 +353,7 @@ export function ModalEditarItem({
           <div className="flex w-full max-w-sm flex-col overflow-hidden rounded border border-zinc-700 bg-zinc-900 p-5 shadow-2xl">
             <h3 className="mb-4 font-bold text-sm uppercase tracking-wider text-zinc-100">Escolha a Perícia (Função Adicional)</h3>
             <select
-              className="w-full bg-zinc-950 border border-zinc-700 text-sm text-zinc-100 rounded px-3 py-2 outline-none focus:border-red-700 mb-4"
+              className="w-full bg-zinc-950 border border-zinc-700 text-sm text-zinc-100 rounded px-3 py-2 outline-none focus:border-green-700 mb-4"
               onChange={e => {
                 if (e.target.value) {
                   setModificacoes(prev => [...prev, escolhendoFuncaoAdicional]);
@@ -392,7 +392,7 @@ export function ModalEditarItem({
           <div className="flex w-full max-w-sm flex-col overflow-hidden rounded border border-zinc-700 bg-zinc-900 p-5 shadow-2xl">
             <h3 className="mb-4 font-bold text-sm uppercase tracking-wider text-zinc-100">Qual perícia Aprimorar? (+5)</h3>
             <select
-              className="w-full bg-zinc-950 border border-zinc-700 text-sm text-zinc-100 rounded px-3 py-2 outline-none focus:border-red-700 mb-4"
+              className="w-full bg-zinc-950 border border-zinc-700 text-sm text-zinc-100 rounded px-3 py-2 outline-none focus:border-green-700 mb-4"
               onChange={e => {
                 if (e.target.value) {
                   aplicarAprimoradoNaPericia(e.target.value, escolhendoAprimorado);

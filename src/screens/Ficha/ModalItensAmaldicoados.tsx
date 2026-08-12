@@ -161,7 +161,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                     const elStr = item.Elemento_Ama.toLowerCase();
                     corTextElemento = elStr.includes('medo') ? 'text-white' :
                                       elStr.includes('sangue') ? 'text-red-500' :
-                                      elStr.includes('morte') ? 'text-zinc-400' :
+                                      elStr.includes('morte') ? 'text-zinc-950 font-black drop-shadow-[0_0_2px_rgba(255,255,255,0.8)]' :
                                       elStr.includes('conhecimento') ? 'text-yellow-500' :
                                       elStr.includes('energia') ? 'text-purple-500' : 'text-zinc-400';
                 }

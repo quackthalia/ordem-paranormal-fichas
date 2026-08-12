@@ -5,6 +5,7 @@ import { ModalArmas, formatarCritico } from './ModalArmas';
 import type { ArmaInventario, ProtecaoInventario, ItemGeralInventario, MunicaoInventario } from '../../types';
 import { ModalProtecoes } from './ModalProtecoes';
 import { ModalItens } from './ModalItens';
+import { ModalItensAmaldicoados } from './ModalItensAmaldicoados';
 import { ModalEditarProtecao } from '../../components/ModalEditarProtecao';
 import { ModalEditarItem } from '../../components/ModalEditarItem';
 import { ModalEditarMunicao } from '../../components/ModalEditarMunicao';
@@ -28,6 +29,7 @@ import { restrictToWindowEdges, restrictToVerticalAxis, restrictToParentElement 
 import type { Modifier } from '@dnd-kit/core';
 import { ModalMunicoes } from './ModalMunicoes';
 import { ModalEditarArma } from '../../components/ModalEditarArma';
+import { SortableItemAmaldicoado } from '../../components/SortableItemAmaldicoado';
 
 import { formatarTexto } from '../../utils/formatters';
 import { calcularCategoriaFinal } from '../../utils/rpgRules';
@@ -269,7 +271,7 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
 }
 
 export function InventarioPanel() {
-  const { inventarioHook, atributosFinais, regrasAutomaticasAtivas, armasHook, municoesHook, protecoesHook, itensHook, status, modificacoesHook, proficienciasTotais } = useRPG();
+  const { inventarioHook, atributosFinais, regrasAutomaticasAtivas, armasHook, municoesHook, protecoesHook, itensHook, itensAmaldicoadosHook, toggleVestimentaGeral, status, modificacoesHook, proficienciasTotais } = useRPG();
   const {
     prestigio, setPrestigio,
     patente, setPatenteManual,
@@ -282,6 +284,7 @@ export function InventarioPanel() {
   const [modalProtecoesAberto, setModalProtecoesAberto] = useState(false);
   const [categoriaFiltro, setCategoriaFiltro] = useState<string>('Armas');
   const [modalItensAberto, setModalItensAberto] = useState(false);
+  const [modalItensAmaldicoadosAberto, setModalItensAmaldicoadosAberto] = useState(false);
   const [abaItensAberta, setAbaItensAberta] = useState<string>('');
   const [buscaItem, setBuscaItem] = useState('');
   const [municaoFiltroNome, setMunicaoFiltroNome] = useState<string | undefined>(undefined);
@@ -291,13 +294,14 @@ export function InventarioPanel() {
   const [armaEditandoId, setArmaEditandoId] = useState<string | null>(null);
   const [protecaoEditandoId, setProtecaoEditandoId] = useState<string | null>(null);
 
-  const [editingItem, setEditingItem] = useState<{ id: string, tipo: 'arma' | 'protecao' | 'item' | 'municao' } | null>(null);
-  const [activeDragItem, setActiveDragItem] = useState<{ id: string, type: 'arma' | 'municao' | 'protecao' | 'item', name?: string } | null>(null);
+  const [editingItem, setEditingItem] = useState<{ id: string, tipo: 'arma' | 'protecao' | 'item' | 'municao' | 'amaldicoado' } | null>(null);
+  const [activeDragItem, setActiveDragItem] = useState<{ id: string, type: 'arma' | 'municao' | 'protecao' | 'item' | 'amaldicoado', name?: string } | null>(null);
 
   const getArmaParaEditar = () => editingItem?.tipo === 'arma' ? armasHook.armasInventario.find(i => i.id === editingItem.id) : null;
   const getProtecaoParaEditar = () => editingItem?.tipo === 'protecao' ? protecoesHook.protecoesInventario.find(i => i.id === editingItem.id) : null;
   const getItemParaEditar = () => editingItem?.tipo === 'item' ? itensHook.itensInventario.find(i => i.id === editingItem.id) : null;
   const getMunicaoParaEditar = () => editingItem?.tipo === 'municao' ? municoesHook.municoesInventario.find(i => i.id === editingItem.id) : null;
+  const getItemAmaldicoadoParaEditar = () => editingItem?.tipo === 'amaldicoado' ? itensAmaldicoadosHook.itensAmaldicoadosInventario.find(i => i.id === editingItem.id) : null;
   const getSoqueiraComoArmaParaEditar = () => {
     if ((editingItem?.tipo as string) === 'soqueira-arma') {
       const soqueira = itensHook.itensInventario.find(i => i.id === editingItem?.id);
@@ -442,10 +446,12 @@ export function InventarioPanel() {
       const armaActive = armasHook?.armasInventario.find(a => a.id === active.id);
       const municaoActive = municoesHook?.municoesInventario.find(m => m.id === active.id);
       const protecaoActive = protecoesHook?.protecoesInventario.find(p => p.id === active.id);
+      const itemAmaldicoadoActive = itensAmaldicoadosHook?.itensAmaldicoadosInventario.find(p => p.id === active.id);
       
       const armaOver = armasHook?.armasInventario.find(a => a.id === over.id);
       const municaoOver = municoesHook?.municoesInventario.find(m => m.id === over.id);
       const protecaoOver = protecoesHook?.protecoesInventario.find(p => p.id === over.id);
+      const itemAmaldicoadoOver = itensAmaldicoadosHook?.itensAmaldicoadosInventario.find(p => p.id === over.id);
 
       const isMunicao = !!municaoActive;
       const isProtecao = !!protecaoActive;
@@ -490,6 +496,14 @@ export function InventarioPanel() {
       } else {
         const itemActive = itensHook?.itensInventario.find(i => i.id === active.id);
         const itemOver = itensHook?.itensInventario.find(i => i.id === over.id);
+        if (itemAmaldicoadoActive && itemAmaldicoadoOver) {
+          const oldIndex = (itensAmaldicoadosHook?.itensAmaldicoadosInventario || []).findIndex(x => x.id === active.id);
+          const newIndex = (itensAmaldicoadosHook?.itensAmaldicoadosInventario || []).findIndex(x => x.id === over.id);
+          if (oldIndex !== -1 && newIndex !== -1 && itensAmaldicoadosHook?.reordenarItens) {
+            itensAmaldicoadosHook.reordenarItens(oldIndex, newIndex);
+          }
+          return;
+        }
         if (itemActive && itemOver) {
           const oldIndex = (itensHook?.itensInventario || []).findIndex(x => x.id === active.id);
           const newIndex = (itensHook?.itensInventario || []).findIndex(x => x.id === over.id);
@@ -523,6 +537,11 @@ export function InventarioPanel() {
 
   const protecoesGeral = (protecoesHook?.protecoesInventario || []).filter(pinv => {
     if (buscaItem && !pinv.protecao.Nome_Protecao.toLowerCase().includes(buscaItem.toLowerCase())) return false;
+    return true;
+  });
+
+  const itensAmaldicoadosGeral = (itensAmaldicoadosHook?.itensAmaldicoadosInventario || []).filter(iinv => {
+    if (buscaItem && !iinv.item.Nome_Ama.toLowerCase().includes(buscaItem.toLowerCase())) return false;
     return true;
   });
 
@@ -725,6 +744,18 @@ export function InventarioPanel() {
           >
             👁️
           </button>
+        
+          <button
+            onClick={() => setCategoriaFiltro('Amaldiçoados')}
+            title="Amaldiçoados"
+            className={`w-12 h-12 flex items-center justify-center rounded-t text-2xl transition border-b-2 ${
+              categoriaFiltro === 'Amaldiçoados' 
+                ? 'bg-zinc-900 text-purple-400 border-b-purple-500' 
+                : 'text-zinc-600 hover:text-zinc-300 hover:bg-zinc-900/50 border-b-transparent'
+            }`}
+          >
+            💀
+          </button>
         </div>
 
         {/* Filtros e Busca */}
@@ -772,6 +803,14 @@ export function InventarioPanel() {
                 setModalItensAberto(true);
               }}
               className="bg-green-700 hover:bg-green-600 text-white px-4 py-1.5 rounded font-bold text-sm transition"
+            >
+              + Adicionar
+            </button>
+          )}
+          {categoriaFiltro === 'Amaldiçoados' && (
+            <button
+              onClick={() => setModalItensAmaldicoadosAberto(true)}
+              className="bg-purple-700 hover:bg-purple-600 text-white px-4 py-1.5 rounded font-bold text-sm transition"
             >
               + Adicionar
             </button>
@@ -954,6 +993,32 @@ export function InventarioPanel() {
               </>
             )}
 
+            {(categoriaFiltro === 'Amaldiçoados' || (categoriaFiltro === 'Geral' && (itensAmaldicoadosHook?.itensAmaldicoadosInventario?.length || 0) > 0)) && (
+              <>
+                {categoriaFiltro === 'Geral' && (
+                  <h3 className="text-sm font-bold text-purple-500 uppercase tracking-wider mb-1 mt-2 border-b border-zinc-800 pb-1">Amaldiçoados</h3>
+                )}
+                <SortableContext items={(itensAmaldicoadosHook?.itensAmaldicoadosInventario || []).map(i => i.id)} strategy={verticalListSortingStrategy}>
+                  {(itensAmaldicoadosHook?.itensAmaldicoadosInventario || [])
+                    .filter(item => buscaItem.trim() === '' || item.item.Nome_Ama.toLowerCase().includes(buscaItem.toLowerCase()))
+                    .map(item => (
+                    <SortableItemAmaldicoado
+                      key={item.id}
+                      item={item}
+                      isExpanded={!!expandidos[item.id]}
+                      toggleExpandir={toggleExpandir}
+                      removerItem={itensAmaldicoadosHook?.removerItem || (() => {})}
+                      stringDT={null}
+                      toggleEquipado={(id) => toggleVestimentaGeral(id, true)}
+                    />
+                  ))}
+                </SortableContext>
+                {categoriaFiltro === 'Amaldiçoados' && (itensAmaldicoadosHook?.itensAmaldicoadosInventario?.length || 0) === 0 && (
+                  <p className="text-center text-zinc-600 text-sm py-4">Nenhum item amaldiçoado no inventário.</p>
+                )}
+              </>
+            )}
+
             <DragOverlay>
               {activeDragItem ? (
                 <div className="rounded border border-zinc-700 bg-zinc-900 p-3 shadow-2xl opacity-90 cursor-grabbing flex items-center gap-3">
@@ -966,7 +1031,7 @@ export function InventarioPanel() {
             </DragOverlay>
           </DndContext>
 
-          {categoriaFiltro !== 'Armas' && categoriaFiltro !== 'Geral' && categoriaFiltro !== 'Munições' && categoriaFiltro !== 'Proteções' && !itensHook?.gruposUnicos.includes(categoriaFiltro) && (
+          {categoriaFiltro !== 'Armas' && categoriaFiltro !== 'Geral' && categoriaFiltro !== 'Munições' && categoriaFiltro !== 'Proteções' && categoriaFiltro !== 'Amaldiçoados' && !itensHook?.gruposUnicos.includes(categoriaFiltro) && (
             <p className="text-center text-zinc-600 text-sm py-8">Esta categoria ainda não possui itens implementados.</p>
           )}
         </div>
@@ -1004,6 +1069,11 @@ export function InventarioPanel() {
       <ModalProtecoes
         aberto={modalProtecoesAberto}
         onFechar={() => setModalProtecoesAberto(false)}
+      />
+      
+      <ModalItensAmaldicoados
+        aberto={modalItensAmaldicoadosAberto}
+        fechar={() => setModalItensAmaldicoadosAberto(false)}
       />
       <ModalItens
         aberto={modalItensAberto}
@@ -1560,7 +1630,7 @@ function SortableProtecaoItem({
             <span><span className="text-blue-400 font-bold">Proficiência:</span> {protecao.Proficiencia}</span>
             <span><span className="text-blue-400 font-bold">Categoria:</span> {calcularCategoriaFinal(protecao.Categoria_Protecao, item.modificacoes, modificacoesHook.modificacoes)}</span>
             <span><span className="text-blue-400 font-bold">Espaços:</span> {calcularEspacosFinais(protecao.Espacos_Protecao, item.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas.has(43))}</span>
-            {protecao.Penalidade_Protecao && <span className="flex items-center gap-1" title="Penalidade"><span className="text-sm">🏋️</span> {protecao.Penalidade_Protecao}</span>}
+
             {modsAtuais.length > 0 && (
               <div className="mt-2 border border-zinc-800 rounded bg-zinc-900/50 overflow-hidden">
                 <div 

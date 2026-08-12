@@ -1,0 +1,190 @@
+import { useState, useMemo } from 'react';
+import { useRPG } from '../../context/RPGContext';
+import { formatarTexto } from '../../utils/formatters';
+
+interface ModalItensAmaldicoadosProps {
+  aberto: boolean;
+  fechar: () => void;
+}
+
+export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoadosProps) {
+  const { itensAmaldicoadosHook } = useRPG();
+  const { itens, adicionarItem, loading } = itensAmaldicoadosHook;
+  
+  const [busca, setBusca] = useState('');
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState<string>('Todos');
+  const [elementoSelecionado, setElementoSelecionado] = useState<string>('Todos');
+  const [expandidos, setExpandidos] = useState<Record<string, boolean>>({});
+  const [mostrarFiltrosAvançados, setMostrarFiltrosAvançados] = useState(false);
+
+  const itensFiltrados = useMemo(() => {
+    return itens.filter(item => {
+      const matchBusca = item.Nome_Ama.toLowerCase().includes(busca.toLowerCase());
+      const matchCat = categoriaSelecionada === 'Todos' || item.Categoria_Ama === categoriaSelecionada;
+      
+      let matchElemento = true;
+      if (elementoSelecionado !== 'Todos') {
+        const itemEl = item.Elemento_Ama?.toLowerCase() || '';
+        matchElemento = itemEl.includes(elementoSelecionado.toLowerCase());
+      }
+
+      return matchBusca && matchCat && matchElemento;
+    }).sort((a, b) => a.Nome_Ama.localeCompare(b.Nome_Ama));
+  }, [itens, busca, categoriaSelecionada, elementoSelecionado]);
+
+  const toggleExpandir = (id: string) => {
+    setExpandidos(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  if (!aberto) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={fechar}>
+      <div 
+        className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="font-display text-lg uppercase tracking-wide text-zinc-100 flex items-center gap-2">
+                <span>💀</span> ADICIONAR ITEM AMALDIÇOADO
+              </h3>
+              <p className="mt-1 text-xs text-zinc-400">Selecione um item amaldiçoado para adicionar ao inventário.</p>
+            </div>
+            <button onClick={fechar} className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100">&times;</button>
+          </div>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar item amaldiçoado..."
+              className="flex-1 rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700"
+            />
+            <button 
+              onClick={() => setMostrarFiltrosAvançados(!mostrarFiltrosAvançados)}
+              className={`rounded border px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition ${
+                mostrarFiltrosAvançados || categoriaSelecionada !== 'Todos' || elementoSelecionado !== 'Todos'
+                  ? 'border-green-800 bg-green-900/40 text-green-300'
+                  : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
+              }`}
+            >
+              Filtros
+            </button>
+          </div>
+        </div>
+
+        {mostrarFiltrosAvançados && (
+          <div className="flex flex-wrap items-center gap-3 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
+            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Categoria</label>
+              <select 
+                value={categoriaSelecionada} 
+                onChange={(e) => setCategoriaSelecionada(e.target.value)}
+                className="w-full rounded border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs text-zinc-300 outline-none"
+              >
+                <option value="Todos">Todas Categorias</option>
+                <option value="I">I</option>
+                <option value="II">II</option>
+                <option value="III">III</option>
+                <option value="IV">IV</option>
+              </select>
+            </div>
+            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Elemento</label>
+              <select 
+                value={elementoSelecionado} 
+                onChange={(e) => setElementoSelecionado(e.target.value)}
+                className="w-full rounded border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs text-zinc-300 outline-none"
+              >
+                <option value="Todos">Todos Elementos</option>
+                <option value="Conhecimento">Conhecimento</option>
+                <option value="Energia">Energia</option>
+                <option value="Medo">Medo</option>
+                <option value="Morte">Morte</option>
+                <option value="Sangue">Sangue</option>
+              </select>
+            </div>
+          </div>
+        )}
+
+        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+          {loading ? (
+            <div className="flex justify-center items-center h-40">
+              <span className="text-zinc-500">Carregando itens amaldiçoados...</span>
+            </div>
+          ) : itensAmaldicoadosHook.error ? (
+            <div className="flex justify-center items-center h-40 flex-col gap-2">
+              <span className="text-red-500 font-bold">Erro ao buscar:</span>
+              <span className="text-red-400">{itensAmaldicoadosHook.error}</span>
+            </div>
+          ) : itensFiltrados.length === 0 ? (
+            <div className="flex justify-center items-center h-40 flex-col gap-2">
+              <span className="text-zinc-500 italic">Nenhum item amaldiçoado encontrado.</span>
+              <span className="text-zinc-700 text-xs">Total na base: {itens.length}</span>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
+              {itensFiltrados.map(item => {
+                const isExpanded = !!expandidos[item.Codigo_Item_Ama];
+                let corTextElemento = 'text-zinc-500';
+                if (item.Elemento_Ama) {
+                    const elStr = item.Elemento_Ama.toLowerCase();
+                    corTextElemento = elStr.includes('medo') ? 'text-white' :
+                                      elStr.includes('sangue') ? 'text-red-500' :
+                                      elStr.includes('morte') ? 'text-zinc-400' :
+                                      elStr.includes('conhecimento') ? 'text-yellow-500' :
+                                      elStr.includes('energia') ? 'text-purple-500' : 'text-zinc-400';
+                }
+
+                return (
+                  <div 
+                    key={item.Codigo_Item_Ama}
+                    className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col h-full"
+                  >
+                    <div className="flex items-start justify-between gap-2 mb-2 cursor-pointer" onClick={() => toggleExpandir(String(item.Codigo_Item_Ama))}>
+                      <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1">
+                        {item.Nome_Ama}
+                      </h3>
+                      {item.Elemento_Ama ? (
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider whitespace-nowrap select-none ${corTextElemento}`}>
+                            {item.Elemento_Ama}
+                        </span>
+                      ) : <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider whitespace-nowrap select-none text-zinc-500`}>Sem Elemento</span>}
+                    </div>
+                    
+                    <div className="flex-1 cursor-pointer" onClick={() => toggleExpandir(String(item.Codigo_Item_Ama))}>
+                        <p className={`text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none ${!isExpanded ? 'line-clamp-3' : ''}`}>
+                          {formatarTexto(item.Desc_Ama)}
+                        </p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2">
+                      <span className="text-zinc-500">
+                        <span className="text-zinc-400 font-semibold">Espaços:</span> {item.Espacos_Ama}
+                      </span>
+                      <span className="text-zinc-500 flex items-center gap-1">
+                        • <span className="text-zinc-400 font-semibold">Categoria:</span> <span className={`uppercase tracking-wider text-zinc-400`}>{item.Categoria_Ama}</span>
+                      </span>
+                      
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          adicionarItem(item);
+                        }}
+                        className="ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                      >
+                        + Adicionar
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

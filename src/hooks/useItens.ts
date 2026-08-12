@@ -126,14 +126,25 @@ export function useItens(maxVestimentas: number = 2) {
     return contagem;
   }, [itensInventario]);
 
+  const toggleEquipadoSimples = (id: string, overrideValue?: boolean) => {
+    setItensInventario(prev => prev.map(i => {
+      if (i.id === id) {
+        return { ...i, equipado: overrideValue !== undefined ? overrideValue : !i.equipado };
+      }
+      return i;
+    }));
+  };
+
   return { 
     itens, 
-    itensInventario, 
+    itensInventario,
+    setItensInventario,
     adicionarItem, 
     removerItem, 
     reordenarItens, 
     editarItem, 
     toggleEquipado,
+    toggleEquipadoSimples,
     cargaItens, 
     contagemPorCategoria,
     gruposUnicos,

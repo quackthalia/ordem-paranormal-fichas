@@ -16,6 +16,7 @@ interface UsePericiasReturn {
   jaTinhaProfissao33: boolean;
   debugRegra33: { avaliou: boolean, evalJaTinha: boolean };
   bonusRegra40: Record<string, number>;
+  bonusVestimentas: Record<string, number>;
 }
 
 export function usePericias(
@@ -28,7 +29,8 @@ export function usePericias(
   veteranasGratis: string[] = [],
   regrasAutomaticasAtivas?: Set<number>,
   poderesEscolhidos?: PoderesEscolhidos,
-  origemSelecionada?: Origem | null
+  origemSelecionada?: Origem | null,
+  bonusVestimentas?: Record<string, number>
 ): UsePericiasReturn {
   const [pericias, setPericias] = useState<PericiasMap>({});
   const [nomesPericias, setNomesPericias] = useState<Record<number, string>>({});
@@ -338,6 +340,7 @@ export function usePericias(
     if (codigoPerRegra === 5) extra = 3;
     
     return {
+    bonusVestimentas: bonusVestimentas || {},
       ...lim,
       maxTreinadas: lim.maxTreinadas + extra
     };
@@ -414,18 +417,34 @@ export function usePericias(
   );
 
   const periciasComBonus = useMemo(() => {
-    if (Object.keys(bonusRegra40).length === 0) return pericias;
-    const novas = { ...pericias };
-    Object.entries(bonusRegra40).forEach(([nome, bonus]) => {
-      if (novas[nome]) {
-        novas[nome] = {
-          ...novas[nome],
-          outros: (novas[nome].outros || 0) + bonus
-        };
-      }
-    });
+    let novas = { ...pericias };
+    
+    // Regra 40
+    if (Object.keys(bonusRegra40).length > 0) {
+      Object.entries(bonusRegra40).forEach(([nome, bonus]) => {
+        if (novas[nome]) {
+          novas[nome] = {
+            ...novas[nome],
+            outros: (novas[nome].outros || 0) + bonus
+          };
+        }
+      });
+    }
+
+    // Vestimentas
+    if (bonusVestimentas && Object.keys(bonusVestimentas).length > 0) {
+      Object.entries(bonusVestimentas).forEach(([nome, bonus]) => {
+        if (novas[nome]) {
+          novas[nome] = {
+            ...novas[nome],
+            outros: (novas[nome].outros || 0) + bonus
+          };
+        }
+      });
+    }
+
     return novas;
-  }, [pericias, bonusRegra40]);
+  }, [pericias, bonusRegra40, bonusVestimentas]);
 
   return { 
     pericias: periciasComBonus, 

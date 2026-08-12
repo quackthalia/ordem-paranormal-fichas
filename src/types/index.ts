@@ -263,3 +263,25 @@ export interface Modificacao {
   'Multiplica?': boolean | null;
   Efeito: string;
 }
+
+// ============================================================
+// INVENTÁRIO — ITENS AMALDIÇOADOS
+// ============================================================
+export interface ItemAmaldicoado {
+  Codigo_Item_Ama: number;
+  Nome_Ama: string;
+  Desc_Ama: string;
+  Espacos_Ama: number | string;
+  Categoria_Ama: string;
+  DT_Ama: string | null;
+  Elemento_Ama: string;
+  Fonte_Ama: string;
+  'Vestimenta?': string | null;
+  Bonus_Vestimenta: string | null;
+}
+
+export interface ItemAmaldicoadoInventario {
+  id: string;
+  item: ItemAmaldicoado;
+  equipado?: boolean;
+}

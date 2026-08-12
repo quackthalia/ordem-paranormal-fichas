@@ -21,6 +21,7 @@ export const StatusPanel: React.FC = () => {
     origensHook,
     regrasAutomaticasAtivas,
     escolhaRegra53, setEscolhaRegra53,
+    bonusVestimentas,
   } = useRPG();
 
   const regraNexExperiencia = regras['nex_experiencia'];
@@ -194,11 +195,11 @@ export const StatusPanel: React.FC = () => {
             <input
               type="number"
               value={(() => {
-                const bonusDesloc = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0) + (regrasAutomaticasAtivas.has(41) ? 3 : 0);
+                const bonusDesloc = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0) + (regrasAutomaticasAtivas.has(41) ? 3 : 0) + (bonusVestimentas?.deslocamento || 0);
                 return deslocM + bonusDesloc;
               })()}
               onChange={(e) => {
-                const bonusDesloc = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0) + (regrasAutomaticasAtivas.has(41) ? 3 : 0);
+                const bonusDesloc = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0) + (regrasAutomaticasAtivas.has(41) ? 3 : 0) + (bonusVestimentas?.deslocamento || 0);
                 const totalM = Number(e.target.value);
                 const m = totalM - bonusDesloc;
                 setDeslocM(m);
@@ -210,12 +211,12 @@ export const StatusPanel: React.FC = () => {
             <input
               type="number"
               value={(() => {
-                const bonusDesloc = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0) + (regrasAutomaticasAtivas.has(41) ? 3 : 0);
+                const bonusDesloc = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0) + (regrasAutomaticasAtivas.has(41) ? 3 : 0) + (bonusVestimentas?.deslocamento || 0);
                 const bonusDeslocQ = Math.floor(bonusDesloc / 1.5);
                 return deslocQ + bonusDeslocQ;
               })()}
               onChange={(e) => {
-                const bonusDesloc = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0) + (regrasAutomaticasAtivas.has(41) ? 3 : 0);
+                const bonusDesloc = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0) + (regrasAutomaticasAtivas.has(41) ? 3 : 0) + (bonusVestimentas?.deslocamento || 0);
                 const bonusDeslocQ = Math.floor(bonusDesloc / 1.5);
                 const totalQ = Number(e.target.value);
                 const q = totalQ - bonusDeslocQ;

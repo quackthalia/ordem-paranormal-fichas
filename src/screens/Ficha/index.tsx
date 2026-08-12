@@ -234,12 +234,12 @@ function ProtecoesPanel() {
     imunidades, setImunidades,
     vulnerabilidades, setVulnerabilidades,
     regrasAutomaticasAtivas, atributosFinais, poderesHook, rituaisHook, periciasHook, status,
-    protecoesHook, modificacoesHook
+    protecoesHook, modificacoesHook, bonusVestimentas
   } = useRPG();
   const [mostrarOutros, setMostrarOutros] = React.useState(false);
 
   const protecoesExtras: string[] = [];
-  const resistenciasExtras: string[] = [];
+  const resistenciasExtras: string[] = [...(bonusVestimentas?.resistenciasExtras || [])];
   
   // REGRA 5: Resistência Mental +INT
   if (regrasAutomaticasAtivas.has(5) && atributosFinais.INT > 0) {

@@ -19,6 +19,8 @@ import { useArmas } from '../hooks/useArmas';
 import { useMunicoes } from '../hooks/useMunicoes';
 import { useProtecoes } from '../hooks/useProtecoes';
 import { useItens } from '../hooks/useItens';
+import { useItensAmaldicoados } from '../hooks/useItensAmaldicoados';
+import { calcularBonusVestimentas, type VestimentasBonus } from '../utils/vestimentasRules';
 import { useModificacoes } from '../hooks/useModificacoes';
 import { capMaximoAtributo, pontosIniciaisPorNex, calcularStatusBase } from '../utils/rpgRules';
 
@@ -46,6 +48,9 @@ interface RPGContextType {
   municoesHook: ReturnType<typeof useMunicoes>;
   protecoesHook: ReturnType<typeof useProtecoes>;
   itensHook: ReturnType<typeof useItens>;
+  itensAmaldicoadosHook: ReturnType<typeof useItensAmaldicoados>;
+  bonusVestimentas: VestimentasBonus;
+  toggleVestimentaGeral: (id: string, isAmaldicoado: boolean) => void;
   modificacoesHook: ReturnType<typeof useModificacoes>;
   abaDireita: AbaDireita;
   setAbaDireita: React.Dispatch<React.SetStateAction<AbaDireita>>;
@@ -227,6 +232,45 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   }, [origensHook.origemSelecionada, poderesHook.poderesEscolhidos]);
 
   const itensHook = useItens(regrasAutomaticasAtivas.has(23) ? 3 : 2);
+  const itensAmaldicoadosHook = useItensAmaldicoados();
+
+  const bonusVestimentas = useMemo(() => {
+    return calcularBonusVestimentas(itensAmaldicoadosHook.itensAmaldicoadosInventario);
+  }, [itensAmaldicoadosHook.itensAmaldicoadosInventario]);
+
+
+  const toggleVestimentaGeral = useCallback((id: string, isAmaldicoado: boolean) => {
+    const maxVestimentas = regrasAutomaticasAtivas.has(23) ? 3 : 2;
+    
+    let isEquipando = false;
+    if (isAmaldicoado) {
+      isEquipando = !itensAmaldicoadosHook.itensAmaldicoadosInventario.find(i => i.id === id)?.equipado;
+    } else {
+      isEquipando = !itensHook.itensInventario.find(i => i.id === id)?.equipado;
+    }
+
+    if (!isEquipando) {
+      if (isAmaldicoado) itensAmaldicoadosHook.toggleEquipadoSimples(id, false);
+      else itensHook.toggleEquipadoSimples(id, false);
+      return;
+    }
+
+    const vestimentasGeraisEquipadas = itensHook.itensInventario.filter(i => i.equipado && (i.item.Nome_Item.toLowerCase().includes('vestimenta') || i.item.Nome_Item.toLowerCase().includes('amuleto sagrado')));
+    const vestimentasAmaldicoadasEquipadas = itensAmaldicoadosHook.itensAmaldicoadosInventario.filter(i => i.equipado && i.item['Vestimenta?']?.toLowerCase() === 'true');
+
+    const totalEquipadas = vestimentasGeraisEquipadas.length + vestimentasAmaldicoadasEquipadas.length;
+
+    if (totalEquipadas >= maxVestimentas) {
+      if (vestimentasGeraisEquipadas.length > 0) {
+        itensHook.toggleEquipadoSimples(vestimentasGeraisEquipadas[0].id, false);
+      } else if (vestimentasAmaldicoadasEquipadas.length > 0) {
+        itensAmaldicoadosHook.toggleEquipadoSimples(vestimentasAmaldicoadasEquipadas[0].id, false);
+      }
+    }
+
+    if (isAmaldicoado) itensAmaldicoadosHook.toggleEquipadoSimples(id, true);
+    else itensHook.toggleEquipadoSimples(id, true);
+  }, [itensHook, itensAmaldicoadosHook, regrasAutomaticasAtivas]);
 
   // Sincroniza ganho/perda de NEX pelos Rituais
   const rituaisAprendidosRef = React.useRef(rituaisHook.rituaisAprendidos);
@@ -294,7 +338,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     return obj;
   }, [atributos, bonusAtributos]);
 
-  const status = useStatus(classe, nex, nivel, atributosBaseComBonus, paranormalPenalty, regrasAutomaticasAtivas);
+  const status = useStatus(classe, nex, nivel, atributosBaseComBonus, paranormalPenalty, regrasAutomaticasAtivas, bonusVestimentas.pv, bonusVestimentas.pe);
 
   const atributosFinais = useMemo(() => {
     const obj = { ...atributosBaseComBonus };
@@ -492,7 +536,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     atributos, setAtributos,
     bonusAtributos, setBonusAtributos,
     pontosRestantes, alterarAtributo,
-    status, periciasHook, poderesHook, origensHook, trilhasHook, rituaisHook, inventarioHook, armasHook, municoesHook, protecoesHook, itensHook, modificacoesHook,
+    status, periciasHook, poderesHook, origensHook, trilhasHook, rituaisHook, inventarioHook, armasHook, municoesHook, protecoesHook, itensHook, itensAmaldicoadosHook, toggleVestimentaGeral, modificacoesHook, bonusVestimentas,
     abaDireita, setAbaDireita,
     abaModalPoderes, setAbaModalPoderes,
     tipoModalPoderes, setTipoModalPoderes,

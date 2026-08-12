@@ -156,30 +156,31 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
               {itensFiltrados.map(item => {
                 const isExpanded = !!expandidos[item.Codigo_Item_Ama];
-                let corTextElemento = 'text-zinc-500';
-                if (item.Elemento_Ama) {
-                    const elStr = item.Elemento_Ama.toLowerCase();
-                    corTextElemento = elStr.includes('medo') ? 'bg-zinc-200/80 text-zinc-950 px-1 rounded-sm' :
-                                      elStr.includes('sangue') ? 'text-red-500' :
-                                      elStr.includes('morte') ? 'bg-black/50 text-white px-1 rounded-sm' :
-                                      elStr.includes('conhecimento') ? 'text-yellow-500' :
-                                      elStr.includes('energia') ? 'text-purple-500' : 'text-zinc-400';
-                }
-
                 return (
                   <div 
                     key={item.Codigo_Item_Ama}
                     className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col h-full"
                   >
                     <div className="flex items-start justify-between gap-2 mb-2 cursor-pointer" onClick={() => toggleExpandir(String(item.Codigo_Item_Ama))}>
-                      <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1">
+                      <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
                         {item.Nome_Ama}
                       </h3>
-                      {item.Elemento_Ama ? (
-                        <span className={`text-[10px] font-bold uppercase tracking-wider whitespace-nowrap select-none ${corTextElemento}`}>
-                            {item.Elemento_Ama}
-                        </span>
-                      ) : <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider whitespace-nowrap select-none text-zinc-500`}>Sem Elemento</span>}
+                      <div className="flex items-center gap-2">
+                        {item.Elemento_Ama ? (() => {
+                            const elStr = item.Elemento_Ama.toLowerCase();
+                            const corText = elStr.includes('medo') ? 'bg-zinc-200/80 text-zinc-950 px-1' :
+                                            elStr.includes('sangue') ? 'text-red-500' :
+                                            elStr.includes('morte') ? 'bg-black/50 text-white px-1' :
+                                            elStr.includes('conhecimento') ? 'text-yellow-500' :
+                                            elStr.includes('energia') ? 'text-purple-500' : 'text-zinc-400';
+                            return (
+                              <span className={`text-[10px] font-bold rounded-sm truncate uppercase tracking-wider w-fit ${corText}`}>
+                                {item.Elemento_Ama}
+                              </span>
+                            );
+                        })() : <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Sem Elemento</span>}
+                        <div className="w-5 text-center text-zinc-500 text-xs flex-shrink-0">{isExpanded ? '▲' : '▼'}</div>
+                      </div>
                     </div>
                     
                     <div className="flex-1 cursor-pointer" onClick={() => toggleExpandir(String(item.Codigo_Item_Ama))}>

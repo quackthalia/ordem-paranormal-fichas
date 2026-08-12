@@ -56,22 +56,8 @@ export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, remo
           className="flex-1 flex cursor-pointer items-center justify-between gap-3 min-w-0"
           onClick={() => toggleExpandir(item.id)}
         >
-          <div className="flex flex-col gap-1 flex-1 min-w-0 justify-center">
+          <div className="flex flex-col gap-1.5 flex-1 min-w-0">
             <span className="font-bold text-sm text-zinc-100 truncate leading-none mt-0.5">{item.item.Nome_Ama}</span>
-            
-            {item.item.Elemento_Ama ? (() => {
-                const elStr = item.item.Elemento_Ama.toLowerCase();
-                const corText = elStr.includes('medo') ? 'bg-zinc-200/80 text-zinc-950 px-1.5 rounded-sm' :
-                                elStr.includes('sangue') ? 'text-red-500' :
-                                elStr.includes('morte') ? 'bg-black/50 text-white px-1.5 rounded-sm' :
-                                elStr.includes('conhecimento') ? 'text-yellow-500' :
-                                elStr.includes('energia') ? 'text-purple-500' : 'text-zinc-400';
-                return (
-                  <span className={`text-[10px] font-bold truncate uppercase tracking-wider w-fit ${corText}`}>
-                    {item.item.Elemento_Ama}
-                  </span>
-                );
-            })() : <span className="text-[11px] text-zinc-500 truncate uppercase tracking-wider">Sem Elemento</span>}
 
             {stringDT && (
               <div className="flex items-center gap-4 text-xs text-zinc-300 mt-0.5">
@@ -79,7 +65,7 @@ export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, remo
               </div>
             )}
             
-            <div className="flex items-center mt-1 min-w-0">
+            <div className="flex items-center min-w-0">
               <span className="text-[11px] text-zinc-400 truncate italic">
                 Categoria {item.item.Categoria_Ama}
               </span>
@@ -88,6 +74,20 @@ export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, remo
         </div>
 
         <div className="flex items-center gap-3 flex-shrink-0">
+          {item.item.Elemento_Ama ? (() => {
+              const elStr = item.item.Elemento_Ama.toLowerCase();
+              const corText = elStr.includes('medo') ? 'bg-zinc-200/80 text-zinc-950 px-1' :
+                              elStr.includes('sangue') ? 'text-red-500' :
+                              elStr.includes('morte') ? 'bg-black/50 text-white px-1' :
+                              elStr.includes('conhecimento') ? 'text-yellow-500' :
+                              elStr.includes('energia') ? 'text-purple-500' : 'text-zinc-400';
+              return (
+                <span className={`text-[10px] font-bold rounded-sm truncate uppercase tracking-wider w-fit ${corText}`}>
+                  {item.item.Elemento_Ama}
+                </span>
+              );
+          })() : <span className="text-[10px] font-bold text-zinc-500 truncate uppercase tracking-wider">Sem Elemento</span>}
+
           {(item.item['Vestimenta?']?.toLowerCase() === 'true') && (
             <input
               type="checkbox"

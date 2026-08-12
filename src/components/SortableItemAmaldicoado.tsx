@@ -57,7 +57,7 @@ export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, remo
           onClick={() => toggleExpandir(item.id)}
         >
           <div className="flex flex-col gap-1 flex-1 min-w-0 justify-center">
-            <span className="font-bold text-sm text-green-300 truncate leading-none mt-0.5">{item.item.Nome_Ama}</span>
+            <span className="font-bold text-sm text-zinc-100 truncate leading-none mt-0.5">{item.item.Nome_Ama}</span>
             
             {item.item.Elemento_Ama ? (() => {
                 const elStr = item.item.Elemento_Ama.toLowerCase();

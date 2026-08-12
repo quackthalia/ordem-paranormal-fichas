@@ -61,13 +61,13 @@ export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, remo
             
             {item.item.Elemento_Ama ? (() => {
                 const elStr = item.item.Elemento_Ama.toLowerCase();
-                const corText = elStr.includes('medo') ? 'bg-zinc-200 text-zinc-950 px-1 rounded-sm font-bold' :
-                                elStr.includes('sangue') ? 'text-red-500 font-bold' :
-                                elStr.includes('morte') ? 'bg-black text-white px-1 rounded-sm font-bold' :
-                                elStr.includes('conhecimento') ? 'text-yellow-500 font-bold' :
-                                elStr.includes('energia') ? 'text-purple-500 font-bold' : 'text-zinc-400 font-bold';
+                const corText = elStr.includes('medo') ? 'bg-zinc-200 text-zinc-950' :
+                                elStr.includes('sangue') ? 'bg-red-700 text-white' :
+                                elStr.includes('morte') ? 'bg-black text-white' :
+                                elStr.includes('conhecimento') ? 'bg-amber-600 text-white' :
+                                elStr.includes('energia') ? 'bg-purple-600 text-white' : 'bg-zinc-700 text-white';
                 return (
-                  <span className={`text-[11px] truncate uppercase tracking-wider ${corText}`}>
+                  <span className={`px-1.5 py-0.5 rounded-sm text-[10px] font-bold truncate uppercase tracking-wider w-fit ${corText}`}>
                     {item.item.Elemento_Ama}
                   </span>
                 );

@@ -160,10 +160,10 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                 if (item.Elemento_Ama) {
                     const elStr = item.Elemento_Ama.toLowerCase();
                     corTextElemento = elStr.includes('medo') ? 'bg-zinc-200 text-zinc-950' :
-                                      elStr.includes('sangue') ? 'text-red-500' :
+                                      elStr.includes('sangue') ? 'bg-red-700 text-white' :
                                       elStr.includes('morte') ? 'bg-black text-white' :
-                                      elStr.includes('conhecimento') ? 'text-yellow-500' :
-                                      elStr.includes('energia') ? 'text-purple-500' : 'text-zinc-400';
+                                      elStr.includes('conhecimento') ? 'bg-amber-600 text-white' :
+                                      elStr.includes('energia') ? 'bg-purple-600 text-white' : 'bg-zinc-700 text-white';
                 }
 
                 return (

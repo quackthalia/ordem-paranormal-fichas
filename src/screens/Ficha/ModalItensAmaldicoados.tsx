@@ -200,7 +200,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                         onClick={(e) => {
                           e.stopPropagation();
                           adicionarItem(item);
-                          onClose();
+                          fechar();
                         }}
                         className="ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
                       >

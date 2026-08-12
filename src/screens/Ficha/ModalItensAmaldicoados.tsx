@@ -29,7 +29,34 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
       }
 
       return matchBusca && matchCat && matchElemento;
-    }).sort((a, b) => a.Nome_Ama.localeCompare(b.Nome_Ama));
+    }).sort((a, b) => {
+      const elementOrder: Record<string, number> = {
+        'sangue': 1,
+        'morte': 2,
+        'conhecimento': 3,
+        'energia': 4,
+        'medo': 5,
+        'varia': 6,
+        'vária': 6,
+        'variável': 6,
+        'variavel': 6
+      };
+      
+      const getRank = (el: string | null | undefined) => {
+        if (!el) return 99;
+        const lower = el.toLowerCase();
+        for (const key in elementOrder) {
+          if (lower.includes(key)) return elementOrder[key];
+        }
+        return 99;
+      };
+
+      const rankA = getRank(a.Elemento_Ama);
+      const rankB = getRank(b.Elemento_Ama);
+      
+      if (rankA !== rankB) return rankA - rankB;
+      return a.Nome_Ama.localeCompare(b.Nome_Ama);
+    });
   }, [itens, busca, categoriaSelecionada, elementoSelecionado]);
 
   const toggleExpandir = (id: string) => {
@@ -104,6 +131,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                 <option value="Medo">Medo</option>
                 <option value="Morte">Morte</option>
                 <option value="Sangue">Sangue</option>
+                <option value="Varia">Varia</option>
               </select>
             </div>
           </div>

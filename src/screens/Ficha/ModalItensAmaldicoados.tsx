@@ -159,11 +159,11 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                 let corTextElemento = 'text-zinc-500';
                 if (item.Elemento_Ama) {
                     const elStr = item.Elemento_Ama.toLowerCase();
-                    corTextElemento = elStr.includes('medo') ? 'bg-zinc-200/80 text-zinc-950' :
-                                      elStr.includes('sangue') ? 'bg-red-700/50 text-white' :
-                                      elStr.includes('morte') ? 'bg-black/50 text-white' :
-                                      elStr.includes('conhecimento') ? 'bg-amber-600/50 text-white' :
-                                      elStr.includes('energia') ? 'bg-purple-600/50 text-white' : 'bg-zinc-700/50 text-white';
+                    corTextElemento = elStr.includes('medo') ? 'bg-zinc-200/80 text-zinc-950 px-1 rounded-sm' :
+                                      elStr.includes('sangue') ? 'text-red-500' :
+                                      elStr.includes('morte') ? 'bg-black/50 text-white px-1 rounded-sm' :
+                                      elStr.includes('conhecimento') ? 'text-yellow-500' :
+                                      elStr.includes('energia') ? 'text-purple-500' : 'text-zinc-400';
                 }
 
                 return (
@@ -176,7 +176,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                         {item.Nome_Ama}
                       </h3>
                       {item.Elemento_Ama ? (
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider whitespace-nowrap select-none ${corTextElemento}`}>
+                        <span className={`text-[10px] font-bold uppercase tracking-wider whitespace-nowrap select-none ${corTextElemento}`}>
                             {item.Elemento_Ama}
                         </span>
                       ) : <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider whitespace-nowrap select-none text-zinc-500`}>Sem Elemento</span>}

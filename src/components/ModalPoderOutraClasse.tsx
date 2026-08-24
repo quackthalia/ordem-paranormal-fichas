@@ -105,32 +105,9 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
   const poderesFiltrados = poderes.filter(p => p.Nome.toLowerCase().includes(filtro.toLowerCase()));
   const periciasDisponiveis = Object.entries(contextoPrereq.nomesPericias).map(([id, nome]) => ({ id: Number(id), nome })).sort((a, b) => a.nome.localeCompare(b.nome));
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onClose}>
-      <div className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden flex flex-col h-[90vh]" onClick={e => e.stopPropagation()}>
-        <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-display text-lg uppercase tracking-wide text-zinc-100">PODER DE OUTRA CLASSE</h3>
-            <button onClick={onClose} className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100">&times;</button>
-          </div>
-          <InputOtimizado value={filtro} onChange={setFiltro} placeholder={`Buscar poder de ${abaAtiva}...`} className="flex-1 rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700" />
-        </div>
-        
-        <div className="flex border-b border-zinc-800 bg-zinc-950">
-          {classesDisponiveis.map(c => (
-            <button
-              key={c}
-              onClick={() => setAbaAtiva(c)}
-              className={`min-w-[70px] flex-1 rounded-t px-1 py-2.5 text-xs font-bold uppercase tracking-wider transition ${abaAtiva === c ? 'border border-b-0 border-green-900 bg-zinc-900 text-zinc-100' : 'border border-transparent text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300'}`}
-            >
-              {c}
-            </button>
-          ))}
-        </div>
 
-        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
-            {poderesFiltrados.map(poder => {
+  const renderPoder = (poder: any) => {
+
               const req = verificarPreRequisitos(poder as Poder, contextoPrereq);
               const isExpanded = expandidos.includes(poder.codigo_poder);
               const alreadyHas = Object.values(poderesHook.poderesEscolhidos).some(p => p.nome === poder.Nome);
@@ -239,17 +216,49 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
                       )}
                     </div>
                   </div>
-                  {isExpanded && (
+                  <Collapse isOpen={isExpanded}>
                     <div className="border-t border-zinc-800 px-5 py-4 text-left">
                       <div className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: formatarDescricao(poder.Descricao) }} />
                       {poder.PreRequisitos && (
                         <div className="mt-4 p-2 rounded bg-amber-500/10 text-xs italic text-amber-500 border border-amber-500/20">Pré-requisitos: {formatarTextoPreRequisitos(poder.PreRequisitos, contextoPrereq.nomesPericias)}</div>
                       )}
                     </div>
-                  )}
+                  </Collapse>
                 </div>
               );
-            })}
+            
+  };
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onClose}>
+      <div className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden flex flex-col h-[90vh]" onClick={e => e.stopPropagation()}>
+        <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-display text-lg uppercase tracking-wide text-zinc-100">PODER DE OUTRA CLASSE</h3>
+            <button onClick={onClose} className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100">&times;</button>
+          </div>
+          <InputOtimizado value={filtro} onChange={setFiltro} placeholder={`Buscar poder de ${abaAtiva}...`} className="flex-1 rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700" />
+        </div>
+        
+        <div className="flex border-b border-zinc-800 bg-zinc-950">
+          {classesDisponiveis.map(c => (
+            <button
+              key={c}
+              onClick={() => setAbaAtiva(c)}
+              className={`min-w-[70px] flex-1 rounded-t px-1 py-2.5 text-xs font-bold uppercase tracking-wider transition ${abaAtiva === c ? 'border border-b-0 border-green-900 bg-zinc-900 text-zinc-100' : 'border border-transparent text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300'}`}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+          <div className="flex flex-col md:flex-row gap-3 items-start">
+            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+              {poderesFiltrados.filter((_, i) => i % 2 === 0).map(renderPoder)}
+            </div>
+            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+              {poderesFiltrados.filter((_, i) => i % 2 !== 0).map(renderPoder)}
+            </div>
           </div>
         </div>
       </div>

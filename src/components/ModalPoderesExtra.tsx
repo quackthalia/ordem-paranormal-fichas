@@ -1,3 +1,4 @@
+import { Collapse } from './Collapse';
 import React, { useState, useMemo, useEffect } from 'react';
 import { CustomSelect } from './CustomSelect';
 import type { Poder, PoderParanormal, Trilha } from '../types';
@@ -324,7 +325,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
             const codigo = trilha.Codigo_Trilha;
             const estaExpandido = poderesExpandidos.includes(codigo);
             return (
-              <div key={codigo} className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col h-full">
+              <div key={codigo} className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col">
                 <div
                   onClick={() => toggleExpandir(codigo)}
                   className="flex cursor-pointer items-center justify-between gap-3 transition"
@@ -443,7 +444,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
             }
 
             return (
-              <div key={codigo} className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col h-full">
+              <div key={codigo} className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col">
                 <div
                   onClick={() => toggleExpandir(codigo as number)}
                   className="flex cursor-pointer items-start justify-between gap-3 transition"

@@ -882,7 +882,7 @@ export const AbasPanel: React.FC = () => {
                                 </div>
                               </div>
               
-                              {trilhasHook.trilhasExpandidas.includes(isVersatilidade ? t.Codigo_Trilha + 10000 : t.Codigo_Trilha) && (
+                              <Collapse isOpen={trilhasHook.trilhasExpandidas.includes(isVersatilidade ? t.Codigo_Trilha + 10000 : t.Codigo_Trilha)}>
                                 <div className="p-4 text-sm text-zinc-400">
                                   <div
                                     className="mb-4 text-zinc-300"
@@ -919,12 +919,12 @@ export const AbasPanel: React.FC = () => {
                                             {isHabExpanded ? '▲' : '▼'}
                                           </span>
                                         </div>
-                                        {isHabExpanded && (
+                                        <Collapse isOpen={isHabExpanded}>
                                           <div
                                             className="px-3 pb-3 pt-1 text-xs text-zinc-400"
                                             dangerouslySetInnerHTML={{ __html: formatarDescricao(descHab) }}
                                           />
-                                        )}
+                                        </Collapse>
                                       </div>
                                     );
                                   })}
@@ -945,7 +945,7 @@ export const AbasPanel: React.FC = () => {
                                     >Remover</button>
                                   </div>
                                 </div>
-                              )}
+                              </Collapse>
                             </div>
                           );
                         }
@@ -1509,7 +1509,7 @@ export const AbasPanel: React.FC = () => {
                             </div>
 
                             {/* ══════ CONTEÚDO EXPANDIDO ══════ */}
-                            {expandido && (
+                            <Collapse isOpen={expandido}>
                               <div className="border-t border-zinc-800 px-4 py-4 text-left text-sm leading-relaxed text-zinc-400">
 
                                 {/* Dropdowns de configurações (Elemento e Versão) */}
@@ -1662,7 +1662,7 @@ export const AbasPanel: React.FC = () => {
                                 </div>
 
                               </div>
-                            )}
+                            </Collapse>
                           </div>
                         );
                       })}

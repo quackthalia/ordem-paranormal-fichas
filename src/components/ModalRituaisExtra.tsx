@@ -248,16 +248,17 @@ export const ModalRituaisExtra: React.FC<ModalRituaisExtraProps> = ({
                     {isVaria ? (
                       <div onClick={e => e.stopPropagation()} className="flex items-center gap-2">
                         <span className="text-[0.60rem] uppercase tracking-wider text-zinc-500 font-bold">Elemento:</span>
-                        <select
+                        <CustomSelect
                           value={elementosVaria[codigo] || 'Sangue'}
-                          onChange={e => setElementosVaria(prev => ({ ...prev, [codigo]: e.target.value }))}
-                          className="cursor-pointer rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-[10px] font-bold text-zinc-200 outline-none focus:border-green-700"
-                        >
-                          <option value="Sangue">Sangue</option>
-                          <option value="Conhecimento">Conhecimento</option>
-                          <option value="Energia">Energia</option>
-                          <option value="Morte">Morte</option>
-                        </select>
+                          onChange={(val) => setElementosVaria(prev => ({ ...prev, [codigo]: val }))}
+                          className="cursor-pointer rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-[10px] font-bold text-zinc-200 outline-none hover:bg-zinc-800 focus:border-green-700"
+                          options={[
+                            { value: 'Sangue', label: 'Sangue' },
+                            { value: 'Conhecimento', label: 'Conhecimento' },
+                            { value: 'Energia', label: 'Energia' },
+                            { value: 'Morte', label: 'Morte' }
+                          ]}
+                        />
                       </div>
                     ) : <div />}
                     

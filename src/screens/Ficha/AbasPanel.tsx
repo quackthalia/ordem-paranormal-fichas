@@ -882,13 +882,17 @@ export const AbasPanel: React.FC = () => {
                                 </div>
                               </div>
               
-                              <Collapse isOpen={trilhasHook.trilhasExpandidas.includes(isVersatilidade ? t.Codigo_Trilha + 10000 : t.Codigo_Trilha)}>
-                                <div className="p-4 text-sm text-zinc-400">
+                              <Collapse isOpen={trilhasHook.trilhasExpandidas.includes(isVersatilidade ? t.Codigo_Trilha + 10000 : t.Codigo_Trilha)} previewHeight="4.5em">
+                                <div className="px-4 pt-4 pb-2 text-sm text-zinc-400">
                                   <div
                                     className="mb-4 text-zinc-300"
                                     dangerouslySetInnerHTML={{ __html: formatarDescricao(isVersatilidade ? `Em ${regras['nex_experiencia'] ? 'Nível 10' : 'NEX 50%'}, escolha entre receber um poder de ${classe.toLowerCase()} ou o primeiro poder de uma trilha de ${classe.toLowerCase()} que não a sua.<br/><br/>Trilha Escolhida: <strong>${t.Nome_Trilha}</strong>` : t.Descricao_Trilha) }}
                                   />
               
+                                    </div>
+                              </Collapse>
+                              <Collapse isOpen={trilhasHook.trilhasExpandidas.includes(isVersatilidade ? t.Codigo_Trilha + 10000 : t.Codigo_Trilha)}>
+                                <div className="px-4 pb-4 text-sm text-zinc-400">
                                   <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-green-400 border-b border-zinc-800 pb-1">
                                     {isVersatilidade ? 'Poder da Trilha' : 'Habilidades da Trilha'}
                                   </h4>
@@ -1589,6 +1593,10 @@ export const AbasPanel: React.FC = () => {
                                   )}
                                 </div>
 
+                              </div>
+                            </Collapse>
+                            <Collapse isOpen={expandido} previewHeight="4.5em">
+                              <div className="px-4 pb-4 text-left text-sm leading-relaxed text-zinc-400">
                                 {/* Descrição formatada com versões dimmed */}
                                 <div className="text-sm leading-relaxed text-zinc-400">
                                   {(() => {

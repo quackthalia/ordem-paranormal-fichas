@@ -4,6 +4,8 @@ import { InputOtimizado } from '../../components/InputOtimizado';
 import { ModalRituais } from '../../components/ModalRituais';
 import { ModalRituaisExtra } from '../../components/ModalRituaisExtra';
 import { ModalTrilhas } from '../../components/ModalTrilhas';
+import { CustomSelect } from '../../components/CustomSelect';
+import { Collapse } from '../../components/Collapse';
 import { ModalEditarTrilha } from '../../components/ModalEditarTrilha';
 import type { HabilidadeItem, CategoriaHabilidade, VersaoRitual } from '../../types';
 import {
@@ -973,7 +975,7 @@ export const AbasPanel: React.FC = () => {
                               </div>
                             </div>
 
-                            {estaExpandida && (
+                            <Collapse isOpen={estaExpandida}>
                               <div className="px-4 py-4 text-left text-sm leading-relaxed text-zinc-400">
                                 {/* 🔥 Badge do elemento ACIMA da descrição — text-[9px] ~ pequeno */}
                                 {hab.elemento && (
@@ -1088,7 +1090,7 @@ export const AbasPanel: React.FC = () => {
                                   </div>
                                 )}
                               </div>
-                            )}
+                            </Collapse>
                           </div>
                         );
                       })}
@@ -1518,23 +1520,17 @@ export const AbasPanel: React.FC = () => {
                                       {versoesDisponiveis.length > 1 && (
                                         <div className="flex items-center gap-2">
                                           <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-600">Versão:</span>
-                                          <select
+                                          <CustomSelect
                                             value={versao}
-                                            onChange={e => {
-                                              e.stopPropagation();
+                                            onChange={(val) => {
                                               setVersaoRitual(prev => ({
                                                 ...prev,
-                                                [chaveUnica]: e.target.value as VersaoRitual,
+                                                [chaveUnica]: val as VersaoRitual,
                                               }));
                                             }}
                                             className="cursor-pointer rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs font-bold text-zinc-200 outline-none transition hover:bg-zinc-800 focus:border-green-700"
-                                          >
-                                            {versoesDisponiveis.map(v => (
-                                              <option key={v.value} value={v.value} disabled={v.disabled} title={v.title}>
-                                                {v.label}
-                                              </option>
-                                            ))}
-                                          </select>
+                                            options={versoesDisponiveis.map(v => ({ value: v.value, label: v.label }))}
+                                          />
                                         </div>
                                       )}
                                     </div>
@@ -1810,15 +1806,17 @@ export const AbasPanel: React.FC = () => {
                 {(ritualBase.Tem_Discente || ritualBase.Tem_Verdadeiro) && (
                   <div className="flex flex-col gap-1.5 border-t border-zinc-800 pt-3">
                     <label className="text-xs font-bold uppercase tracking-wider text-zinc-400">Propriedades Específicas por Versão</label>
-                    <select
+                    <CustomSelect
                       value={ritualVersaoEditando}
-                      onChange={(e) => setRitualVersaoEditando(e.target.value as any)}
+                      onChange={(val) => setRitualVersaoEditando(val as any)}
+                      wrapperClassName="w-fit"
                       className="rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm font-bold text-zinc-200 focus:border-green-700 focus:outline-none w-fit"
-                    >
-                      <option value="normal">Normal</option>
-                      {ritualBase.Tem_Discente && <option value="discente">Discente</option>}
-                      {ritualBase.Tem_Verdadeiro && <option value="verdadeiro">Verdadeiro</option>}
-                    </select>
+                      options={[
+                        { value: 'normal', label: 'Normal' },
+                        ...(ritualBase.Tem_Discente ? [{ value: 'discente', label: 'Discente' }] : []),
+                        ...(ritualBase.Tem_Verdadeiro ? [{ value: 'verdadeiro', label: 'Verdadeiro' }] : [])
+                      ]}
+                    />
                   </div>
                 )}
 

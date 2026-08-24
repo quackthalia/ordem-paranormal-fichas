@@ -3,6 +3,7 @@ import React from 'react';
 import { useRPG } from '../context/RPGContext';
 import { capMaximoAtributo, NEX_OPTIONS } from '../utils/rpgRules';
 import type { AtributoKey } from '../types';
+import { CustomSelect } from '../components/CustomSelect';
 
 const ATRIBUTOS_ORDER: AtributoKey[] = ['FOR', 'AGI', 'INT', 'PRE', 'VIG'];
 
@@ -23,8 +24,8 @@ export const AtributosScreen: React.FC = () => {
     setTelaAtual,
   } = useRPG();
 
-  const handleNexChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const novoNex = Number(e.target.value);
+  const handleNexChange = (novoNex: string) => {
+    setNex(Number(novoNex));
     setNex(novoNex);
     // ❌ REMOVIDO: setAtributos({ FOR: 1, AGI: 1, INT: 1, PRE: 1, VIG: 1 });
     // ✅ Agora só muda o NEX, os atributos distribuídos permanecem intactos
@@ -40,20 +41,11 @@ export const AtributosScreen: React.FC = () => {
       </p>
 
       {/* SELETOR DE NEX */}
-      <div className="mb-6 flex items-center gap-4 rounded-lg border border-zinc-800 bg-zinc-900/60 p-4">
+      <div className="mb-6 flex items-center gap-4 rounded-lg border border-zinc-800 bg-zinc-900/60 p-4 relative z-50">
         <label htmlFor="nex-select" className="text-sm font-bold uppercase tracking-wider text-zinc-400">
           NEX Inicial
         </label>
-        <select
-          id="nex-select"
-          value={nex}
-          onChange={handleNexChange}
-          className="rounded border border-zinc-700 bg-zinc-900 px-3 py-1.5 font-bold text-zinc-100"
-        >
-          {NEX_OPTIONS.map(n => (
-            <option key={n} value={n}>{n}%</option>
-          ))}
-        </select>
+        <CustomSelect value={nex.toString()} onChange={handleNexChange} options={NEX_OPTIONS.map(n => ({ value: n.toString(), label: n + "%" }))} wrapperClassName="w-32" />
       </div>
 
       {/* PONTOS RESTANTES — recalcula automaticamente */}

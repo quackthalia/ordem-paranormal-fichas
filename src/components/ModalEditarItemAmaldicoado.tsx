@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { ItemAmaldicoado, ItemAmaldicoadoInventario } from '../types';
 import { InputOtimizado } from './InputOtimizado';
+import { CustomSelect } from './CustomSelect';
 
 export function ModalEditarItemAmaldicoado({
   itemInventario,
@@ -69,35 +70,37 @@ export function ModalEditarItemAmaldicoado({
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
+            <div className="relative z-50">
               <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">Elemento</label>
-              <select 
+              <CustomSelect 
                 value={elemento}
-                onChange={e => setElemento(e.target.value)}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded p-2 text-zinc-200 outline-none focus:border-green-500/50 transition-colors"
-              >
-                <option value="">Nenhum</option>
-                <option value="Sangue">Sangue</option>
-                <option value="Morte">Morte</option>
-                <option value="Conhecimento">Conhecimento</option>
-                <option value="Energia">Energia</option>
-                <option value="Medo">Medo</option>
-                <option value="Varia">Varia</option>
-              </select>
+                onChange={val => setElemento(val)}
+                options={[
+                  { value: "", label: "Nenhum" },
+                  { value: "Sangue", label: "Sangue" },
+                  { value: "Morte", label: "Morte" },
+                  { value: "Conhecimento", label: "Conhecimento" },
+                  { value: "Energia", label: "Energia" },
+                  { value: "Medo", label: "Medo" },
+                  { value: "Varia", label: "Varia" }
+                ]}
+                wrapperClassName="w-full"
+              />
             </div>
-            <div>
+            <div className="relative z-50">
               <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">Categoria</label>
-              <select 
+              <CustomSelect 
                 value={categoria}
-                onChange={e => setCategoria(e.target.value)}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded p-2 text-zinc-200 outline-none focus:border-green-500/50 transition-colors"
-              >
-                <option value="0">0</option>
-                <option value="I">I</option>
-                <option value="II">II</option>
-                <option value="III">III</option>
-                <option value="IV">IV</option>
-              </select>
+                onChange={val => setCategoria(val)}
+                options={[
+                  { value: "0", label: "0" },
+                  { value: "I", label: "I" },
+                  { value: "II", label: "II" },
+                  { value: "III", label: "III" },
+                  { value: "IV", label: "IV" }
+                ]}
+                wrapperClassName="w-full"
+              />
             </div>
             <div>
               <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">Espaços</label>

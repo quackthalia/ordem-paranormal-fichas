@@ -5,6 +5,9 @@ import type { ItemGeral } from '../../types';
 
 import { formatarTexto } from '../../utils/formatters';
 import { CORES_ELEMENTOS } from '../../utils/rpgRules';
+import { CustomSelect } from '../../components/CustomSelect';
+import { Collapse } from '../../components/Collapse';
+
 interface ModalItensProps {
   aberto: boolean;
   onFechar: () => void;
@@ -137,48 +140,53 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
           <div className="flex flex-wrap items-center gap-3 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
             <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
               <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Categoria</label>
-              <select 
+              <CustomSelect 
                 value={filtroCategoria} 
-                onChange={(e) => setFiltroCategoria(e.target.value)}
+                onChange={(val) => setFiltroCategoria(val)}
+                wrapperClassName="w-full"
                 className="w-full rounded border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs text-zinc-300 outline-none"
-              >
-                <option value="Todas">Todas as Categorias</option>
-                {uniqueCategorias.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
+                options={[
+                  { value: 'Todas', label: 'Todas as Categorias' },
+                  ...uniqueCategorias.map(t => ({ value: t, label: t }))
+                ]}
+              />
             </div>
           </div>
         )}
 
         {/* List */}
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
-          {itensFiltrados.map((item: ItemGeral) => {
-            const isExpanded = expandidos.includes(item.Codigo_Item);
-            
-            return (
-              <div 
-                key={item.Codigo_Item} 
-                className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col h-full"
-              >
-                {/* Cabeçalho do item */}
+          <div className="flex flex-col md:flex-row gap-3 items-start">
+            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+            {itensFiltrados.filter((_, i) => i % 2 === 0).map((item: ItemGeral) => {
+              const isExpanded = expandidos.includes(item.Codigo_Item);
+              
+              return (
                 <div 
-                  className="flex items-start justify-between gap-2 mb-2 cursor-pointer"
-                  onClick={() => toggleExpandir(item.Codigo_Item)}
+                  key={item.Codigo_Item} 
+                  className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col"
                 >
-                  <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
-                    {item.Nome_Item}
-                  </h3>
-                  
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <span className="w-5 text-center text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
+                  {/* Cabeçalho do item */}
+                  <div 
+                    className="flex items-start justify-between gap-2 mb-2 cursor-pointer"
+                    onClick={() => toggleExpandir(item.Codigo_Item)}
+                  >
+                    <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
+                      {item.Nome_Item}
+                    </h3>
+                    
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <span className="w-5 text-center text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
+                    </div>
                   </div>
-                </div>
-                
-                <div className="flex-1 cursor-pointer" onClick={() => toggleExpandir(item.Codigo_Item)}>
-                  <p className={`text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none ${!isExpanded ? 'line-clamp-3' : ''}`}>
-                    {formatarTexto(item.Desc_Item)}
-                  </p>
-                </div>
+                  
+                  <div className="flex-1 cursor-pointer" onClick={() => toggleExpandir(item.Codigo_Item)}>
+                    <Collapse isOpen={isExpanded} previewHeight="4.5em">
+                      <p className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none">
+                        {formatarTexto(item.Desc_Item)}
+                      </p>
+                    </Collapse>
+                  </div>
 
                 {isExpanded && (
                   <div className="mt-2 text-xs flex flex-col gap-2 mb-4">
@@ -202,21 +210,24 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
                   <div className="ml-auto">
                     {escolhendoPericia === item.Codigo_Item ? (
                       <div className="flex items-center gap-2 bg-zinc-950 p-1 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
-                        <select
-                          className="bg-zinc-900 border border-zinc-700 text-xs text-zinc-100 rounded px-1 py-1 outline-none"
-                          onChange={e => {
-                            if (e.target.value) {
-                              const itemModificado = { ...item, Nome_Item: `${item.Nome_Item} (${e.target.value})` };
-                              itensHook.adicionarItem(itemModificado);
-                              setEscolhendoPericia(null);
-                              onFechar();
-                            }
-                          }}
-                          defaultValue=""
-                        >
-                          <option value="" disabled>Escolha a perícia...</option>
-                          {TODAS_PERICIAS.map(p => <option key={p} value={p}>{p}</option>)}
-                        </select>
+                        <div className="relative z-50">
+                          <CustomSelect
+                            value=""
+                            onChange={(val) => {
+                              if (val) {
+                                const itemModificado = { ...item, Nome_Item: `${item.Nome_Item} (${val})` };
+                                itensHook.adicionarItem(itemModificado);
+                                setEscolhendoPericia(null);
+                                onFechar();
+                              }
+                            }}
+                            className="bg-zinc-900 border border-zinc-700 text-xs text-zinc-100 rounded px-1 py-1 outline-none"
+                            options={[
+                              { value: '', label: 'Escolha a perícia...' },
+                              ...TODAS_PERICIAS.map(p => ({ value: p, label: p }))
+                            ]}
+                          />
+                        </div>
                         <button
                           onClick={(e) => { e.stopPropagation(); setEscolhendoPericia(null); }}
                           className="text-zinc-500 hover:text-zinc-100 p-1 font-bold text-xs"
@@ -309,6 +320,171 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
               </div>
             );
           })}
+          </div>
+          <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+            {itensFiltrados.filter((_, i) => i % 2 !== 0).map((item: ItemGeral) => {
+              const isExpanded = expandidos.includes(item.Codigo_Item);
+              
+              return (
+                <div 
+                  key={item.Codigo_Item} 
+                  className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col"
+                >
+                  {/* Cabeçalho do item */}
+                  <div 
+                    className="flex items-start justify-between gap-2 mb-2 cursor-pointer"
+                    onClick={() => toggleExpandir(item.Codigo_Item)}
+                  >
+                    <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
+                      {item.Nome_Item}
+                    </h3>
+                    
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <span className="w-5 text-center text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex-1 cursor-pointer" onClick={() => toggleExpandir(item.Codigo_Item)}>
+                    <Collapse isOpen={isExpanded} previewHeight="4.5em">
+                      <p className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none">
+                        {formatarTexto(item.Desc_Item)}
+                      </p>
+                    </Collapse>
+                  </div>
+
+                  {isExpanded && (
+                    <div className="mt-2 text-xs flex flex-col gap-2 mb-4">
+                      {item.Dt_Item && <div><span className="font-bold text-green-400">DT:</span> {calcularDT(item.Dt_Item)}</div>}
+                      {item.Fonte_Item && (
+                        <div className="flex justify-between items-center mt-2 pt-2 border-t border-zinc-800/50">
+                          <span className="text-[10px] uppercase tracking-wider text-zinc-600">Fonte: {item.Fonte_Item}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 min-h-[32px]">
+                    <span className="text-zinc-500">
+                      <span className="text-green-400 font-semibold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (item.Espacos_Itens === 0.5 || String(item.Espacos_Itens) === '0,5' || String(item.Espacos_Itens) === '0.5')) ? 0.25 : item.Espacos_Itens}
+                    </span>
+                    <span className="text-zinc-500 flex items-center gap-1">
+                      • <span className="text-green-400 font-semibold">Categoria:</span> <span className={`uppercase tracking-wider text-zinc-400`}>{item.Categoria_Item}</span>
+                    </span>
+                    
+                    <div className="ml-auto">
+                      {escolhendoPericia === item.Codigo_Item ? (
+                        <div className="flex items-center gap-2 bg-zinc-950 p-1 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
+                          <div className="relative z-50">
+                            <CustomSelect
+                              value=""
+                              onChange={(val) => {
+                                if (val) {
+                                  const itemModificado = { ...item, Nome_Item: `${item.Nome_Item} (${val})` };
+                                  itensHook.adicionarItem(itemModificado);
+                                  setEscolhendoPericia(null);
+                                  onFechar();
+                                }
+                              }}
+                              className="bg-zinc-900 border border-zinc-700 text-xs text-zinc-100 rounded px-1 py-1 outline-none"
+                              options={[
+                                { value: '', label: 'Escolha a perícia...' },
+                                ...TODAS_PERICIAS.map(p => ({ value: p, label: p }))
+                              ]}
+                            />
+                          </div>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setEscolhendoPericia(null); }}
+                            className="text-zinc-500 hover:text-zinc-100 p-1 font-bold text-xs"
+                          >✕</button>
+                        </div>
+                      ) : escolhendoElemento === item.Codigo_Item ? (
+                        <div className="flex gap-1 items-center bg-zinc-950 p-1 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
+                          <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline">Elemento:</span>
+                          {ELEMENTOS.map(elem => {
+                            const corB = CORES_ELEMENTOS[elem.toLowerCase()] || '#666';
+                            const corT = elem.toLowerCase() === 'medo' ? '#000000' : '#ffffff';
+                            return (
+                              <button
+                                key={elem}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    let novoNome = item.Nome_Item;
+                                    novoNome = novoNome.replace(/<Elemento>/gi, elem).replace(/\(Elemento\)/gi, elem);
+                                    
+                                    let novaDesc = item.Desc_Item;
+                                    if (item.Nome_Item.toLowerCase().includes('componentes ritualísticos') && novaDesc) {
+                                      const linhas = novaDesc.split('\n');
+                                      const baseLines: string[] = [];
+                                      const blocoElemento: string[] = [];
+                                      let currentElementBlock = '';
+
+                                      for (const linha of linhas) {
+                                        const matchElemento = linha.match(/^\*([A-Za-z]+):\*/);
+                                        if (matchElemento) {
+                                          currentElementBlock = matchElemento[1].toLowerCase();
+                                        }
+                                        
+                                        if (currentElementBlock === '') {
+                                          baseLines.push(linha);
+                                        } else if (currentElementBlock === elem.toLowerCase()) {
+                                          blocoElemento.push(linha);
+                                        }
+                                      }
+
+                                      if (blocoElemento.length > 0) {
+                                        novaDesc = baseLines.join('\n').trim() + '\n\n' + blocoElemento.join('\n').trim();
+                                      }
+                                    }
+
+                                    const itemModificado = { ...item, Nome_Item: novoNome, Desc_Item: novaDesc };
+                                    itensHook.adicionarItem(itemModificado);
+                                    setEscolhendoElemento(null);
+                                    onFechar();
+                                  }}
+                                style={{ backgroundColor: corB, color: corT }}
+                                className="rounded px-1.5 py-0.5 text-[0.55rem] font-bold uppercase transition border border-zinc-700 hover:scale-105"
+                              >
+                                {elem}
+                              </button>
+                            );
+                          })}
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setEscolhendoElemento(null); }}
+                            className="ml-1 rounded px-1 py-0.5 text-[0.6rem] font-bold text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 transition"
+                          >✕</button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            
+                            const precisaElemento = item.Nome_Item.toLowerCase().includes('<elemento>') || item.Nome_Item.toLowerCase().includes('(elemento)');
+                            
+                            if (precisaElemento) {
+                              setEscolhendoElemento(item.Codigo_Item);
+                            } else {
+                              const isUtensilioVestimenta = item.Nome_Item.toLowerCase().includes('vestimenta') || 
+                                                            item.Nome_Item.toLowerCase().includes('utensílio') || 
+                                                            item.Nome_Item.toLowerCase().includes('utensilio');
+                              if (isUtensilioVestimenta || Number(item.Codigo_Item) === 1 || Number(item.Codigo_Item) === 2) {
+                                setEscolhendoPericia(item.Codigo_Item);
+                              } else {
+                                itensHook.adicionarItem(item);
+                                onFechar();
+                              }
+                            }
+                          }}
+                          className="px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                        >
+                          Adicionar
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            </div>
           </div>
           {itensFiltrados.length === 0 && (
             <p className="text-center text-zinc-600 text-sm py-8 mt-4 border border-dashed border-zinc-800 rounded">

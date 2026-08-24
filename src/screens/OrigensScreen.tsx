@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRPG } from '../context/RPGContext';
+import { Collapse } from '../components/Collapse';
 
 export const OrigensScreen: React.FC = () => {
   const { setTelaAtual, origensHook } = useRPG();
@@ -124,7 +125,7 @@ export const OrigensScreen: React.FC = () => {
               </div>
 
               {/* CONTEÚDO EXPANSÍVEL */}
-              {estaExpandida && (
+              <Collapse isOpen={estaExpandida}>
                 <div className="border-t border-zinc-800 px-5 pb-5 pt-4 text-left leading-relaxed text-zinc-400">
                   <p className="mb-3">{origem.Descricao}</p>
                   
@@ -189,7 +190,7 @@ export const OrigensScreen: React.FC = () => {
                     {origem.Descricao_Poder}
                   </p>
                 </div>
-              )}
+              </Collapse>
             </div>
           );
         })}

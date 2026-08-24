@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import type { ItemGeralInventario, ItemGeral } from '../types';
 import { InputOtimizado } from './InputOtimizado';
 import { ToolbarFormato } from './ToolbarFormato';
+import { CustomSelect } from './CustomSelect';
 
 import { ModificacoesSelector } from './ModificacoesSelector';
 import { useRPG } from '../context/RPGContext';
@@ -352,31 +353,34 @@ export function ModalEditarItem({
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-5" onClick={(e) => e.stopPropagation()}>
           <div className="flex w-full max-w-sm flex-col overflow-hidden rounded border border-zinc-700 bg-zinc-900 p-5 shadow-2xl">
             <h3 className="mb-4 font-bold text-sm uppercase tracking-wider text-zinc-100">Escolha a Perícia (Função Adicional)</h3>
-            <select
-              className="w-full bg-zinc-950 border border-zinc-700 text-sm text-zinc-100 rounded px-3 py-2 outline-none focus:border-green-700 mb-4"
-              onChange={e => {
-                if (e.target.value) {
-                  setModificacoes(prev => [...prev, escolhendoFuncaoAdicional]);
-                  const match = nome.match(/\((.*?)\)/);
-                  if (match) {
-                    setNome(prev => prev.replace(/\((.*?)\)/, `($1, ${e.target.value})`));
-                  } else {
-                    setNome(prev => `${prev} (${e.target.value})`);
+            <div className="relative z-50 w-full mb-4">
+              <CustomSelect
+                value=""
+                onChange={val => {
+                  if (val) {
+                    setModificacoes(prev => [...prev, escolhendoFuncaoAdicional]);
+                    const match = nome.match(/\((.*?)\)/);
+                    if (match) {
+                      setNome(prev => prev.replace(/\((.*?)\)/, `($1, ${val})`));
+                    } else {
+                      setNome(prev => `${prev} (${val})`);
+                    }
+                    setEscolhendoFuncaoAdicional(null);
                   }
-                  setEscolhendoFuncaoAdicional(null);
-                }
-              }}
-              defaultValue=""
-            >
-              <option value="" disabled>Selecione a perícia...</option>
-              {TODAS_PERICIAS.filter(p => {
-                const match = nome.match(/\((.*?)\)/);
-                if (match && match[1]) {
-                  return match[1].toLowerCase().trim() !== p.toLowerCase().trim();
-                }
-                return true;
-              }).map(p => <option key={p} value={p}>{p}</option>)}
-            </select>
+                }}
+                options={[
+                  { value: "", label: "Selecione a perícia..." },
+                  ...TODAS_PERICIAS.filter(p => {
+                    const match = nome.match(/\((.*?)\)/);
+                    if (match && match[1]) {
+                      return match[1].toLowerCase().trim() !== p.toLowerCase().trim();
+                    }
+                    return true;
+                  }).map(p => ({ value: p, label: p }))
+                ]}
+                wrapperClassName="w-full"
+              />
+            </div>
             <button
               onClick={() => setEscolhendoFuncaoAdicional(null)}
               className="rounded bg-zinc-800 px-4 py-2 text-xs uppercase font-bold text-zinc-300 hover:bg-zinc-700 hover:text-white w-full transition"
@@ -391,27 +395,30 @@ export function ModalEditarItem({
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-5" onClick={(e) => e.stopPropagation()}>
           <div className="flex w-full max-w-sm flex-col overflow-hidden rounded border border-zinc-700 bg-zinc-900 p-5 shadow-2xl">
             <h3 className="mb-4 font-bold text-sm uppercase tracking-wider text-zinc-100">Qual perícia Aprimorar? (+5)</h3>
-            <select
-              className="w-full bg-zinc-950 border border-zinc-700 text-sm text-zinc-100 rounded px-3 py-2 outline-none focus:border-green-700 mb-4"
-              onChange={e => {
-                if (e.target.value) {
-                  aplicarAprimoradoNaPericia(e.target.value, escolhendoAprimorado);
-                  setEscolhendoAprimorado(null);
-                }
-              }}
-              defaultValue=""
-            >
-              <option value="" disabled>Selecione a perícia...</option>
-              {getPericiasDoItem().filter(p => {
-                  const match = nome.match(/\((.*?)\)/);
-                  if (match) {
-                     const parts = match[1].split(',').map(s => s.trim());
-                     const jaAprimorada = parts.find(part => part.toLowerCase().startsWith(p.toLowerCase()) && part.includes('*'));
-                     if (jaAprimorada) return false;
+            <div className="relative z-50 w-full mb-4">
+              <CustomSelect
+                value=""
+                onChange={val => {
+                  if (val) {
+                    aplicarAprimoradoNaPericia(val, escolhendoAprimorado);
+                    setEscolhendoAprimorado(null);
                   }
-                  return true;
-               }).map(p => <option key={p} value={p}>{p}</option>)}
-            </select>
+                }}
+                options={[
+                  { value: "", label: "Selecione a perícia..." },
+                  ...getPericiasDoItem().filter(p => {
+                      const match = nome.match(/\((.*?)\)/);
+                      if (match) {
+                         const parts = match[1].split(',').map(s => s.trim());
+                         const jaAprimorada = parts.find(part => part.toLowerCase().startsWith(p.toLowerCase()) && part.includes('*'));
+                         if (jaAprimorada) return false;
+                      }
+                      return true;
+                   }).map(p => ({ value: p, label: p }))
+                ]}
+                wrapperClassName="w-full"
+              />
+            </div>
             <button
               onClick={() => setEscolhendoAprimorado(null)}
               className="rounded bg-zinc-800 px-4 py-2 text-xs uppercase font-bold text-zinc-300 hover:bg-zinc-700 hover:text-white w-full transition"

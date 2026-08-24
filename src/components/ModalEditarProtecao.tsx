@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { ProtecaoInventario } from '../types';
 import { ToolbarFormato } from './ToolbarFormato';
+import { CustomSelect } from './CustomSelect';
 
 import { ModificacoesSelector } from './ModificacoesSelector';
 import { useRPG } from '../context/RPGContext';
@@ -112,30 +113,32 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
+            <div className="relative z-50">
               <label className="mb-1 block text-sm font-semibold text-zinc-300">Proficiência</label>
-              <select
-                className="w-full rounded bg-zinc-950 border border-zinc-700 p-2 text-zinc-100 focus:border-green-500 focus:outline-none"
+              <CustomSelect
                 value={proficiencia}
-                onChange={e => setProficiencia(e.target.value)}
-              >
-                <option value="Proteções Leves">Proteções Leves</option>
-                <option value="Proteções Pesadas">Proteções Pesadas</option>
-              </select>
+                onChange={val => setProficiencia(val)}
+                options={[
+                  { value: "Proteções Leves", label: "Proteções Leves" },
+                  { value: "Proteções Pesadas", label: "Proteções Pesadas" }
+                ]}
+                wrapperClassName="w-full"
+              />
             </div>
-            <div>
+            <div className="relative z-50">
               <label className="mb-1 block text-sm font-semibold text-zinc-300">Categoria</label>
-              <select
-                className="w-full rounded bg-zinc-950 border border-zinc-700 p-2 text-zinc-100 focus:border-green-500 focus:outline-none"
+              <CustomSelect
                 value={categoriaNumParaRoman(catFinal)}
-                onChange={e => setCategoria(categoriaNumParaRoman(Math.max(0, categoriaRomanParaNum(e.target.value) - modificacoes.length)))}
-              >
-                <option value="0">0</option>
-                <option value="I">I</option>
-                <option value="II">II</option>
-                <option value="III">III</option>
-                <option value="IV">IV</option>
-              </select>
+                onChange={val => setCategoria(categoriaNumParaRoman(Math.max(0, categoriaRomanParaNum(val) - modificacoes.length)))}
+                options={[
+                  { value: "0", label: "0" },
+                  { value: "I", label: "I" },
+                  { value: "II", label: "II" },
+                  { value: "III", label: "III" },
+                  { value: "IV", label: "IV" }
+                ]}
+                wrapperClassName="w-full"
+              />
             </div>
             
             <div>

@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useRPG } from '../../context/RPGContext';
 import { formatarTexto } from '../../utils/formatters';
+import { CustomSelect } from '../../components/CustomSelect';
+import { Collapse } from '../../components/Collapse';
 
 interface ModalItensAmaldicoadosProps {
   aberto: boolean;
@@ -106,35 +108,37 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
 
         {mostrarFiltrosAvançados && (
           <div className="flex flex-wrap items-center gap-3 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
-            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
+            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px] relative z-50">
               <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Categoria</label>
-              <select 
-                value={categoriaSelecionada} 
-                onChange={(e) => setCategoriaSelecionada(e.target.value)}
-                className="w-full rounded border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs text-zinc-300 outline-none"
-              >
-                <option value="Todos">Todas Categorias</option>
-                <option value="I">I</option>
-                <option value="II">II</option>
-                <option value="III">III</option>
-                <option value="IV">IV</option>
-              </select>
+              <CustomSelect
+                value={categoriaSelecionada}
+                onChange={setCategoriaSelecionada}
+                options={[
+                  { value: 'Todos', label: 'Todas Categorias' },
+                  { value: 'I', label: 'I' },
+                  { value: 'II', label: 'II' },
+                  { value: 'III', label: 'III' },
+                  { value: 'IV', label: 'IV' }
+                ]}
+                wrapperClassName="w-full"
+              />
             </div>
-            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
+            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px] relative z-50">
               <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Elemento</label>
-              <select 
-                value={elementoSelecionado} 
-                onChange={(e) => setElementoSelecionado(e.target.value)}
-                className="w-full rounded border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs text-zinc-300 outline-none"
-              >
-                <option value="Todos">Todos Elementos</option>
-                <option value="Conhecimento">Conhecimento</option>
-                <option value="Energia">Energia</option>
-                <option value="Medo">Medo</option>
-                <option value="Morte">Morte</option>
-                <option value="Sangue">Sangue</option>
-                <option value="Varia">Varia</option>
-              </select>
+              <CustomSelect
+                value={elementoSelecionado}
+                onChange={setElementoSelecionado}
+                options={[
+                  { value: 'Todos', label: 'Todos Elementos' },
+                  { value: 'Conhecimento', label: 'Conhecimento' },
+                  { value: 'Energia', label: 'Energia' },
+                  { value: 'Medo', label: 'Medo' },
+                  { value: 'Morte', label: 'Morte' },
+                  { value: 'Sangue', label: 'Sangue' },
+                  { value: 'Varia', label: 'Varia' }
+                ]}
+                wrapperClassName="w-full"
+              />
             </div>
           </div>
         )}
@@ -155,65 +159,131 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
               <span className="text-zinc-700 text-xs">Total na base: {itens.length}</span>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
-              {itensFiltrados.map(item => {
-                const isExpanded = !!expandidos[item.Codigo_Item_Ama];
-                return (
-                  <div 
-                    key={item.Codigo_Item_Ama}
-                    className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col h-full"
-                  >
-                    <div className="flex items-start justify-between gap-2 mb-2 cursor-pointer" onClick={() => toggleExpandir(String(item.Codigo_Item_Ama))}>
-                      <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
-                        {item.Nome_Ama}
-                      </h3>
-                      <div className="flex items-center gap-2">
-                        {item.Elemento_Ama ? (() => {
-                            const elStr = item.Elemento_Ama.toLowerCase();
-                            const corText = elStr.includes('medo') ? 'bg-zinc-200/80 text-zinc-950 px-1' :
-                                            elStr.includes('sangue') ? 'text-red-500' :
-                                            elStr.includes('morte') ? 'bg-black/50 text-white px-1' :
-                                            elStr.includes('conhecimento') ? 'text-yellow-500' :
-                                            elStr.includes('energia') ? 'text-purple-500' : 
-                                            'text-zinc-400';
-                            return (
-                              <span className={`text-[10px] font-bold rounded-sm truncate uppercase tracking-wider w-fit ${corText}`}>
-                                {item.Elemento_Ama}
-                              </span>
-                            );
-                        })() : <span className="text-[10px] font-bold text-zinc-500 truncate uppercase tracking-wider">Sem Elemento</span>}
-                        <div className="w-5 text-center text-zinc-500 text-xs flex-shrink-0">{isExpanded ? '▲' : '▼'}</div>
+            <div className="flex flex-col md:flex-row gap-3 items-start">
+              <div className="flex flex-col gap-3 flex-1 min-w-[200px]">
+                {itensFiltrados.filter((_, i) => i % 2 === 0).map(item => {
+                  const isExpanded = !!expandidos[item.Codigo_Item_Ama];
+                  return (
+                    <div 
+                      key={item.Codigo_Item_Ama}
+                      className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col"
+                    >
+                      <div className="flex items-start justify-between gap-2 mb-2 cursor-pointer" onClick={() => toggleExpandir(String(item.Codigo_Item_Ama))}>
+                        <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
+                          {item.Nome_Ama}
+                        </h3>
+                        <div className="flex items-center gap-2">
+                          {item.Elemento_Ama ? (() => {
+                              const elStr = item.Elemento_Ama.toLowerCase();
+                              const corText = elStr.includes('medo') ? 'bg-zinc-200/80 text-zinc-950 px-1' :
+                                              elStr.includes('sangue') ? 'text-red-500' :
+                                              elStr.includes('morte') ? 'bg-black/50 text-white px-1' :
+                                              elStr.includes('conhecimento') ? 'text-yellow-500' :
+                                              elStr.includes('energia') ? 'text-purple-500' : 
+                                              'text-zinc-400';
+                              return (
+                                <span className={`text-[10px] font-bold rounded-sm truncate uppercase tracking-wider w-fit ${corText}`}>
+                                  {item.Elemento_Ama}
+                                </span>
+                              );
+                          })() : <span className="text-[10px] font-bold text-zinc-500 truncate uppercase tracking-wider">Sem Elemento</span>}
+                          <div className="w-5 text-center text-zinc-500 text-xs flex-shrink-0">{isExpanded ? '▲' : '▼'}</div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex-1 cursor-pointer" onClick={() => toggleExpandir(String(item.Codigo_Item_Ama))}>
+                        <Collapse isOpen={isExpanded} previewHeight="4.5em">
+                          <p className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none">
+                            {formatarTexto(item.Desc_Ama)}
+                          </p>
+                        </Collapse>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2">
+                        <span className="text-zinc-500">
+                          <span className="text-zinc-400 font-semibold">Espaços:</span> {item.Espacos_Ama}
+                        </span>
+                        <span className="text-zinc-500 flex items-center gap-1">
+                          • <span className="text-zinc-400 font-semibold">Categoria:</span> <span className={`uppercase tracking-wider text-zinc-400`}>{item.Categoria_Ama}</span>
+                        </span>
+                        
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            adicionarItem(item);
+                            fechar();
+                          }}
+                          className="ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                        >
+                          + Adicionar
+                        </button>
                       </div>
                     </div>
-                    
-                    <div className="flex-1 cursor-pointer" onClick={() => toggleExpandir(String(item.Codigo_Item_Ama))}>
-                        <p className={`text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none ${!isExpanded ? 'line-clamp-3' : ''}`}>
-                          {formatarTexto(item.Desc_Ama)}
-                        </p>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2">
-                      <span className="text-zinc-500">
-                        <span className="text-zinc-400 font-semibold">Espaços:</span> {item.Espacos_Ama}
-                      </span>
-                      <span className="text-zinc-500 flex items-center gap-1">
-                        • <span className="text-zinc-400 font-semibold">Categoria:</span> <span className={`uppercase tracking-wider text-zinc-400`}>{item.Categoria_Ama}</span>
-                      </span>
+                  );
+                })}
+              </div>
+              <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+                {itensFiltrados.filter((_, i) => i % 2 !== 0).map(item => {
+                  const isExpanded = !!expandidos[item.Codigo_Item_Ama];
+                  return (
+                    <div 
+                      key={item.Codigo_Item_Ama}
+                      className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col"
+                    >
+                      <div className="flex items-start justify-between gap-2 mb-2 cursor-pointer" onClick={() => toggleExpandir(String(item.Codigo_Item_Ama))}>
+                        <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
+                          {item.Nome_Ama}
+                        </h3>
+                        <div className="flex items-center gap-2">
+                          {item.Elemento_Ama ? (() => {
+                              const elStr = item.Elemento_Ama.toLowerCase();
+                              const corText = elStr.includes('medo') ? 'bg-zinc-200/80 text-zinc-950 px-1' :
+                                              elStr.includes('sangue') ? 'text-red-500' :
+                                              elStr.includes('morte') ? 'bg-black/50 text-white px-1' :
+                                              elStr.includes('conhecimento') ? 'text-yellow-500' :
+                                              elStr.includes('energia') ? 'text-purple-500' : 
+                                              'text-zinc-400';
+                              return (
+                                <span className={`text-[10px] font-bold rounded-sm truncate uppercase tracking-wider w-fit ${corText}`}>
+                                  {item.Elemento_Ama}
+                                </span>
+                              );
+                          })() : <span className="text-[10px] font-bold text-zinc-500 truncate uppercase tracking-wider">Sem Elemento</span>}
+                          <div className="w-5 text-center text-zinc-500 text-xs flex-shrink-0">{isExpanded ? '▲' : '▼'}</div>
+                        </div>
+                      </div>
                       
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          adicionarItem(item);
-                          fechar();
-                        }}
-                        className="ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
-                      >
-                        + Adicionar
-                      </button>
+                      <div className="flex-1 cursor-pointer" onClick={() => toggleExpandir(String(item.Codigo_Item_Ama))}>
+                        <Collapse isOpen={isExpanded} previewHeight="4.5em">
+                          <p className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none">
+                            {formatarTexto(item.Desc_Ama)}
+                          </p>
+                        </Collapse>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2">
+                        <span className="text-zinc-500">
+                          <span className="text-zinc-400 font-semibold">Espaços:</span> {item.Espacos_Ama}
+                        </span>
+                        <span className="text-zinc-500 flex items-center gap-1">
+                          • <span className="text-zinc-400 font-semibold">Categoria:</span> <span className={`uppercase tracking-wider text-zinc-400`}>{item.Categoria_Ama}</span>
+                        </span>
+                        
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            adicionarItem(item);
+                            fechar();
+                          }}
+                          className="ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                        >
+                          + Adicionar
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>

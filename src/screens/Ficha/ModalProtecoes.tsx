@@ -4,6 +4,8 @@ import { useRPG } from '../../context/RPGContext';
 import type { Protecao } from '../../types';
 
 import { formatarTexto } from '../../utils/formatters';
+import { CustomSelect } from '../../components/CustomSelect';
+import { Collapse } from '../../components/Collapse';
 interface ModalProtecoesProps {
   aberto: boolean;
   onFechar: () => void;
@@ -104,16 +106,17 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
         {mostrarFiltrosAvançados && (
           <div className="flex flex-col gap-3 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
             <div className="flex flex-wrap items-center gap-3">
-              <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
+              <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px] relative z-50">
                 <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Categoria</label>
-                <select 
-                  value={filtroCategoria} 
-                  onChange={(e) => setFiltroCategoria(e.target.value)}
-                  className="w-full rounded border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs text-zinc-300 outline-none"
-                >
-                  <option value="Todas">Todas as Categorias</option>
-                  {uniqueCategorias.map(t => <option key={t} value={t}>{t}</option>)}
-                </select>
+                <CustomSelect
+                  value={filtroCategoria}
+                  onChange={setFiltroCategoria}
+                  options={[
+                    { value: 'Todas', label: 'Todas as Categorias' },
+                    ...uniqueCategorias.map(t => ({ value: t, label: t }))
+                  ]}
+                  wrapperClassName="w-full"
+                />
               </div>
             </div>
             
@@ -143,73 +146,147 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
 
         {/* Lista de proteções */}
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
-            {protecoesFiltradas.map((protecao: Protecao) => {
-              const isExpanded = expandidos.includes(protecao.Codigo_Protecao);
-              const hasProficiencia = proficienciasTotais.includes(protecao.Proficiencia);
-              return (
-                <div 
-                  key={protecao.Codigo_Protecao} 
-                  className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col h-full"
-                >
-                  {/* Bloco fechado */}
-                  <div
-                    className="flex items-start justify-between gap-2 mb-2 cursor-pointer"
-                    onClick={() => toggleExpandir(protecao.Codigo_Protecao)}
+          <div className="flex flex-col md:flex-row gap-3 items-start">
+            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+              {protecoesFiltradas.filter((_, i) => i % 2 === 0).map((protecao: Protecao) => {
+                const isExpanded = expandidos.includes(protecao.Codigo_Protecao);
+                const hasProficiencia = proficienciasTotais.includes(protecao.Proficiencia);
+                return (
+                  <div 
+                    key={protecao.Codigo_Protecao} 
+                    className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col"
                   >
-                    <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
-                      {protecao.Nome_Protecao}
-                    </h3>
-
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      {!hasProficiencia && (
-                        <span className="relative group/prof cursor-help">
-                          <span className="text-sm text-red-500">⚠️</span>
-                          <span className="absolute right-0 top-full mt-1 opacity-0 invisible group-hover/prof:opacity-100 group-hover/prof:visible transition-all duration-300 group-hover/prof:delay-500 delay-0 w-48 p-2 bg-zinc-800 border border-green-700/50 text-xs text-green-200 rounded z-50 text-center shadow-lg pointer-events-none">
-                            Se você usar uma proteção com a qual não seja proficiente, sofre -2d20 em testes baseados em Força ou Agilidade.
-                          </span>
-                        </span>
-                      )}
-                      <span className="w-5 text-center text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex-1 cursor-pointer flex flex-col" onClick={() => toggleExpandir(protecao.Codigo_Protecao)}>
-                    <div className="flex items-center flex-wrap gap-4 text-xs text-zinc-300 mb-2">
-                      <span>
-                        <span className="font-bold text-green-400">Defesa:</span> {String(protecao.Defesa_Protecao).startsWith('+') ? protecao.Defesa_Protecao : `+${protecao.Defesa_Protecao}`}
-                      </span>
-                    </div>
-
-                    <div className="text-[11px] mb-3 block text-zinc-400">
-                      <span className="font-bold text-zinc-200">{protecao.Proficiencia}</span>
-                    </div>
-                    
-                    {protecao.Descricao_Protecao && (
-                      <div className="flex flex-col gap-1 mt-1 mb-3">
-                        <p className={`text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none ${!isExpanded ? 'line-clamp-3' : ''}`}>{formatarTexto(protecao.Descricao_Protecao)}</p>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 min-h-[32px]">
-                    <span><span className="text-zinc-500 font-semibold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (protecao.Espacos_Protecao === 0.5 || String(protecao.Espacos_Protecao) === '0,5' || String(protecao.Espacos_Protecao) === '0.5')) ? 0.25 : protecao.Espacos_Protecao}</span>
-                    <span><span className="text-zinc-500 font-semibold">Categoria:</span> {protecao.Categoria_Protecao}</span>
-                    
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        protecoesHook?.adicionarProtecao(protecao);
-                        onFechar();
-                      }}
-                      className="ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                    {/* Bloco fechado */}
+                    <div
+                      className="flex items-start justify-between gap-2 mb-2 cursor-pointer"
+                      onClick={() => toggleExpandir(protecao.Codigo_Protecao)}
                     >
-                      Adicionar
-                    </button>
+                      <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
+                        {protecao.Nome_Protecao}
+                      </h3>
+
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        {!hasProficiencia && (
+                          <span className="relative group/prof cursor-help">
+                            <span className="text-sm text-red-500">⚠️</span>
+                            <span className="absolute right-0 top-full mt-1 opacity-0 invisible group-hover/prof:opacity-100 group-hover/prof:visible transition-all duration-300 group-hover/prof:delay-500 delay-0 w-48 p-2 bg-zinc-800 border border-green-700/50 text-xs text-green-200 rounded z-50 text-center shadow-lg pointer-events-none">
+                              Se você usar uma proteção com a qual não seja proficiente, sofre -2d20 em testes baseados em Força ou Agilidade.
+                            </span>
+                          </span>
+                        )}
+                        <span className="w-5 text-center text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex-1 cursor-pointer flex flex-col" onClick={() => toggleExpandir(protecao.Codigo_Protecao)}>
+                      <div className="flex items-center flex-wrap gap-4 text-xs text-zinc-300 mb-2">
+                        <span>
+                          <span className="font-bold text-green-400">Defesa:</span> {String(protecao.Defesa_Protecao).startsWith('+') ? protecao.Defesa_Protecao : `+${protecao.Defesa_Protecao}`}
+                        </span>
+                      </div>
+
+                      <div className="text-[11px] mb-3 block text-zinc-400">
+                        <span className="font-bold text-zinc-200">{protecao.Proficiencia}</span>
+                      </div>
+                      
+                      {protecao.Descricao_Protecao && (
+                        <div className="flex flex-col gap-1 mt-1 mb-3">
+                          <Collapse isOpen={isExpanded} previewHeight="4.5em">
+                            <p className="text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none">{formatarTexto(protecao.Descricao_Protecao)}</p>
+                          </Collapse>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 min-h-[32px]">
+                      <span><span className="text-zinc-500 font-semibold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (protecao.Espacos_Protecao === 0.5 || String(protecao.Espacos_Protecao) === '0,5' || String(protecao.Espacos_Protecao) === '0.5')) ? 0.25 : protecao.Espacos_Protecao}</span>
+                      <span><span className="text-zinc-500 font-semibold">Categoria:</span> {protecao.Categoria_Protecao}</span>
+                      
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          protecoesHook?.adicionarProtecao(protecao);
+                          onFechar();
+                        }}
+                        className="ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                      >
+                        Adicionar
+                      </button>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
+            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+              {protecoesFiltradas.filter((_, i) => i % 2 !== 0).map((protecao: Protecao) => {
+                const isExpanded = expandidos.includes(protecao.Codigo_Protecao);
+                const hasProficiencia = proficienciasTotais.includes(protecao.Proficiencia);
+                return (
+                  <div 
+                    key={protecao.Codigo_Protecao} 
+                    className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col"
+                  >
+                    {/* Bloco fechado */}
+                    <div
+                      className="flex items-start justify-between gap-2 mb-2 cursor-pointer"
+                      onClick={() => toggleExpandir(protecao.Codigo_Protecao)}
+                    >
+                      <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
+                        {protecao.Nome_Protecao}
+                      </h3>
+
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        {!hasProficiencia && (
+                          <span className="relative group/prof cursor-help">
+                            <span className="text-sm text-red-500">⚠️</span>
+                            <span className="absolute right-0 top-full mt-1 opacity-0 invisible group-hover/prof:opacity-100 group-hover/prof:visible transition-all duration-300 group-hover/prof:delay-500 delay-0 w-48 p-2 bg-zinc-800 border border-green-700/50 text-xs text-green-200 rounded z-50 text-center shadow-lg pointer-events-none">
+                              Se você usar uma proteção com a qual não seja proficiente, sofre -2d20 em testes baseados em Força ou Agilidade.
+                            </span>
+                          </span>
+                        )}
+                        <span className="w-5 text-center text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex-1 cursor-pointer flex flex-col" onClick={() => toggleExpandir(protecao.Codigo_Protecao)}>
+                      <div className="flex items-center flex-wrap gap-4 text-xs text-zinc-300 mb-2">
+                        <span>
+                          <span className="font-bold text-green-400">Defesa:</span> {String(protecao.Defesa_Protecao).startsWith('+') ? protecao.Defesa_Protecao : `+${protecao.Defesa_Protecao}`}
+                        </span>
+                      </div>
+
+                      <div className="text-[11px] mb-3 block text-zinc-400">
+                        <span className="font-bold text-zinc-200">{protecao.Proficiencia}</span>
+                      </div>
+                      
+                      {protecao.Descricao_Protecao && (
+                        <div className="flex flex-col gap-1 mt-1 mb-3">
+                          <Collapse isOpen={isExpanded} previewHeight="4.5em">
+                            <p className="text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none">{formatarTexto(protecao.Descricao_Protecao)}</p>
+                          </Collapse>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 min-h-[32px]">
+                      <span><span className="text-zinc-500 font-semibold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (protecao.Espacos_Protecao === 0.5 || String(protecao.Espacos_Protecao) === '0,5' || String(protecao.Espacos_Protecao) === '0.5')) ? 0.25 : protecao.Espacos_Protecao}</span>
+                      <span><span className="text-zinc-500 font-semibold">Categoria:</span> {protecao.Categoria_Protecao}</span>
+                      
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          protecoesHook?.adicionarProtecao(protecao);
+                          onFechar();
+                        }}
+                        className="ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                      >
+                        Adicionar
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
           {protecoesFiltradas.length === 0 && (
             <p className="text-center text-zinc-600 text-sm py-8 mt-4 border border-dashed border-zinc-800 rounded">

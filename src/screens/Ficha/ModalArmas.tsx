@@ -4,6 +4,9 @@ import { useRPG } from '../../context/RPGContext';
 import type { Arma } from '../../types';
 
 import { formatarTexto } from '../../utils/formatters';
+import { CustomSelect } from '../../components/CustomSelect';
+import { Collapse } from '../../components/Collapse';
+
 export function formatarCritico(critico: number, multiplicador: number): string {
   if (critico === 20 && multiplicador === 2) return 'x2';
   if (critico !== 20 && multiplicador === 2) return `${critico}`;
@@ -154,163 +157,269 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
         {/* Filtros Avançados */}
         {mostrarFiltrosAvançados && (
           <div className="flex flex-wrap items-center gap-3 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
-            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
+            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px] relative z-50">
               <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Proficiência</label>
-              <select 
-                value={filtro} 
-                onChange={(e) => setFiltro(e.target.value)}
-                className="w-full rounded border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs text-zinc-300 outline-none"
-              >
-                {filtros.map(f => <option key={f.valor} value={f.valor}>{f.label}</option>)}
-              </select>
+              <CustomSelect
+                value={filtro}
+                onChange={setFiltro}
+                options={filtros.map(f => ({ value: f.valor, label: f.label }))}
+                wrapperClassName="w-full"
+              />
             </div>
-            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
+            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px] relative z-50">
               <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Tipo de Arma</label>
-              <select 
-                value={filtroTipo} 
-                onChange={(e) => setFiltroTipo(e.target.value)}
-                className="w-full rounded border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs text-zinc-300 outline-none"
-              >
-                <option value="Todos">Todos os Tipos</option>
-                {uniqueTipos.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
+              <CustomSelect
+                value={filtroTipo}
+                onChange={setFiltroTipo}
+                options={[{ value: 'Todos', label: 'Todos os Tipos' }, ...uniqueTipos.map(t => ({ value: t, label: t }))]}
+                wrapperClassName="w-full"
+              />
             </div>
             
-            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
+            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px] relative z-50">
               <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Empunhadura</label>
-              <select 
-                value={filtroEmpunhadura} 
-                onChange={(e) => setFiltroEmpunhadura(e.target.value)}
-                className="w-full rounded border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs text-zinc-300 outline-none"
-              >
-                <option value="Todas">Todas as Empunhaduras</option>
-                {uniqueEmpunhaduras.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
+              <CustomSelect
+                value={filtroEmpunhadura}
+                onChange={setFiltroEmpunhadura}
+                options={[{ value: 'Todas', label: 'Todas as Empunhaduras' }, ...uniqueEmpunhaduras.map(t => ({ value: t, label: t }))]}
+                wrapperClassName="w-full"
+              />
             </div>
             
-            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
+            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px] relative z-50">
               <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Alcance</label>
-              <select 
-                value={filtroAlcance} 
-                onChange={(e) => setFiltroAlcance(e.target.value)}
-                className="w-full rounded border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs text-zinc-300 outline-none"
-              >
-                <option value="Todos">Todos os Alcances</option>
-                <option value="Corpo a Corpo">Corpo a Corpo</option>
-                <option value="Curto">Curto</option>
-                <option value="Médio">Médio</option>
-                <option value="Longo">Longo</option>
-                <option value="Extremo">Extremo</option>
-              </select>
+              <CustomSelect
+                value={filtroAlcance}
+                onChange={setFiltroAlcance}
+                options={[
+                  { value: 'Todos', label: 'Todos os Alcances' },
+                  { value: 'Corpo a Corpo', label: 'Corpo a Corpo' },
+                  { value: 'Curto', label: 'Curto' },
+                  { value: 'Médio', label: 'Médio' },
+                  { value: 'Longo', label: 'Longo' },
+                  { value: 'Extremo', label: 'Extremo' }
+                ]}
+                wrapperClassName="w-full"
+              />
             </div>
           </div>
         )}
 
         {/* Lista de armas */}
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
-          {armasFiltradas.map((arma: Arma) => {
-            const isExpanded = expandidos.includes(arma.Codigo_Arma);
-            const critico = formatarCritico(arma.Critico_Arma, arma.Multiplicador_Arma);
-            const hasProficiencia = proficienciasTotais.includes(arma.Proficiencia);
-            return (
-              <div 
-                key={arma.Codigo_Arma} 
-                className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col h-full"
-              >
-                {/* Bloco fechado */}
-                <div
-                  className="flex items-start justify-between gap-2 mb-2 cursor-pointer"
-                  onClick={() => toggleExpandir(arma.Codigo_Arma)}
-                >
-                  <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
-                    {arma.Nome_Item}
-                  </h3>
-                  
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    {arma['Agil?'] && (
-                      <span className="relative group/agil cursor-help">
-                        <span className="text-sm text-yellow-400">⚡</span>
-                        <span className="absolute right-0 top-full mt-1 opacity-0 invisible group-hover/agil:opacity-100 group-hover/agil:visible transition-all duration-300 group-hover/agil:delay-500 delay-0 w-48 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
-                          Permite que você aplique sua Agilidade em vez de sua Força em testes de ataque e rolagens de dano.
-                        </span>
-                      </span>
-                    )}
-                    {arma['Automatica?'] && (
-                      <span className="relative group/auto cursor-help">
-                        <span className="text-sm text-blue-400">🔄</span>
-                        <span className="absolute right-0 top-full mt-1 opacity-0 invisible group-hover/auto:opacity-100 group-hover/auto:visible transition-all duration-300 group-hover/auto:delay-500 delay-0 w-48 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
-                          Pode disparar tiros únicos ou rajadas (-1d20 no ataque, +1 dado de dano).
-                        </span>
-                      </span>
-                    )}
-                    {!hasProficiencia && (
-                      <span className="relative group/prof cursor-help">
-                        <span className="text-sm text-red-500">⚠️</span>
-                        <span className="absolute right-0 top-full mt-1 opacity-0 invisible group-hover/prof:opacity-100 group-hover/prof:visible transition-all duration-300 group-hover/prof:delay-500 delay-0 w-48 p-2 bg-zinc-800 border border-green-700/50 text-xs text-green-200 rounded z-50 text-center shadow-lg pointer-events-none">
-                          Se você atacar com uma arma com a qual não seja proficiente, sofre -2d20 nos testes de ataque.
-                        </span>
-                      </span>
-                    )}
-                    <span className="w-5 text-center text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
-                  </div>
-                </div>
-                
-                <div className="flex-1 cursor-pointer flex flex-col" onClick={() => toggleExpandir(arma.Codigo_Arma)}>
-                  <div className="flex items-center flex-wrap gap-4 text-xs text-zinc-300 mb-2">
-                    <span>
-                      <span className="font-bold text-green-400">Dado:</span> {arma.Dano_Arma}
-                    </span>
-                    {critico && (
-                      <span>
-                        <span className="font-bold text-zinc-400">Crítico:</span> {critico}
-                      </span>
-                    )}
-                    {arma.dt_item && <span><span className="font-bold text-green-400">DT:</span> {calcularDT(arma.dt_item, arma.Categoria_Item?.toLowerCase().includes('explosivos') || arma.Nome_Item?.toLowerCase().includes('explosivo'))}</span>}
-                  </div>
-                  
-                  <div className="text-[11px] mb-3 block text-zinc-400">
-                    <span className="font-bold text-zinc-200">{arma.Proficiencia}</span>
-                    <span className="text-zinc-600"> — </span>
-                    <span className="italic">{arma.Tipo_Arma}</span>
-                    <span className="text-zinc-600"> — </span>
-                    <span className="italic">{arma.Empunhadura_Arma}</span>
-                    <span className="text-zinc-600"> — </span>
-                    <span className="italic">{arma.Tipo_Dano_Arma}</span>
-                    {arma.Fonte_Arma && (
-                      <>
-                        <span className="text-zinc-600"> — </span>
-                        <span className="text-zinc-500">Fonte: {arma.Fonte_Arma}</span>
-                      </>
-                    )}
-                  </div>
-
-                  {arma.Descricao_Item && (
-                    <div className="flex flex-col gap-1 mt-1 mb-3">
-                      <p className={`text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none ${!isExpanded ? 'line-clamp-3' : ''}`}>{formatarTexto(arma.Descricao_Item)}</p>
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2">
-                  <span><span className="text-zinc-500 font-semibold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (arma['Espaços_Item'] === 0.5 || String(arma['Espaços_Item']) === '0,5' || String(arma['Espaços_Item']) === '0.5')) ? 0.25 : arma['Espaços_Item']}</span>
-                  <span><span className="text-zinc-500 font-semibold">Categoria:</span> {arma.Categoria_Item}</span>
-                  {arma.Alcance_Item && <span><span className="text-zinc-500 font-semibold">Alcance:</span> {arma.Alcance_Item}</span>}
-                  
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      armasHook.adicionarArma(arma);
-                      onFechar();
-                    }}
-                    className="ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+          <div className="flex flex-col md:flex-row gap-3 items-start">
+            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+              {armasFiltradas.filter((_, i) => i % 2 === 0).map((arma: Arma) => {
+                const isExpanded = expandidos.includes(arma.Codigo_Arma);
+                const critico = formatarCritico(arma.Critico_Arma, arma.Multiplicador_Arma);
+                const hasProficiencia = proficienciasTotais.includes(arma.Proficiencia);
+                return (
+                  <div 
+                    key={arma.Codigo_Arma} 
+                    className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col"
                   >
-                    Adicionar
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+                    {/* Bloco fechado */}
+                    <div
+                      className="flex items-start justify-between gap-2 mb-2 cursor-pointer"
+                      onClick={() => toggleExpandir(arma.Codigo_Arma)}
+                    >
+                      <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
+                        {arma.Nome_Item}
+                      </h3>
+                      
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        {arma['Agil?'] && (
+                          <span className="relative group/agil cursor-help">
+                            <span className="text-sm text-yellow-400">⚡</span>
+                            <span className="absolute right-0 top-full mt-1 opacity-0 invisible group-hover/agil:opacity-100 group-hover/agil:visible transition-all duration-300 group-hover/agil:delay-500 delay-0 w-48 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
+                              Permite que você aplique sua Agilidade em vez de sua Força em testes de ataque e rolagens de dano.
+                            </span>
+                          </span>
+                        )}
+                        {arma['Automatica?'] && (
+                          <span className="relative group/auto cursor-help">
+                            <span className="text-sm text-blue-400">🔄</span>
+                            <span className="absolute right-0 top-full mt-1 opacity-0 invisible group-hover/auto:opacity-100 group-hover/auto:visible transition-all duration-300 group-hover/auto:delay-500 delay-0 w-48 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
+                              Pode disparar tiros únicos ou rajadas (-1d20 no ataque, +1 dado de dano).
+                            </span>
+                          </span>
+                        )}
+                        {!hasProficiencia && (
+                          <span className="relative group/prof cursor-help">
+                            <span className="text-sm text-red-500">⚠️</span>
+                            <span className="absolute right-0 top-full mt-1 opacity-0 invisible group-hover/prof:opacity-100 group-hover/prof:visible transition-all duration-300 group-hover/prof:delay-500 delay-0 w-48 p-2 bg-zinc-800 border border-green-700/50 text-xs text-green-200 rounded z-50 text-center shadow-lg pointer-events-none">
+                              Se você atacar com uma arma com a qual não seja proficiente, sofre -2d20 nos testes de ataque.
+                            </span>
+                          </span>
+                        )}
+                        <span className="w-5 text-center text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex-1 cursor-pointer flex flex-col" onClick={() => toggleExpandir(arma.Codigo_Arma)}>
+                      <div className="flex items-center flex-wrap gap-4 text-xs text-zinc-300 mb-2">
+                        <span>
+                          <span className="font-bold text-green-400">Dado:</span> {arma.Dano_Arma}
+                        </span>
+                        {critico && (
+                          <span>
+                            <span className="font-bold text-zinc-400">Crítico:</span> {critico}
+                          </span>
+                        )}
+                        {arma.dt_item && <span><span className="font-bold text-green-400">DT:</span> {calcularDT(arma.dt_item, arma.Categoria_Item?.toLowerCase().includes('explosivos') || arma.Nome_Item?.toLowerCase().includes('explosivo'))}</span>}
+                      </div>
+                      
+                      <div className="text-[11px] mb-3 block text-zinc-400">
+                        <span className="font-bold text-zinc-200">{arma.Proficiencia}</span>
+                        <span className="text-zinc-600"> — </span>
+                        <span className="italic">{arma.Tipo_Arma}</span>
+                        <span className="text-zinc-600"> — </span>
+                        <span className="italic">{arma.Empunhadura_Arma}</span>
+                        <span className="text-zinc-600"> — </span>
+                        <span className="italic">{arma.Tipo_Dano_Arma}</span>
+                        {arma.Fonte_Arma && (
+                          <>
+                            <span className="text-zinc-600"> — </span>
+                            <span className="text-zinc-500">Fonte: {arma.Fonte_Arma}</span>
+                          </>
+                        )}
+                      </div>
+
+                      {arma.Descricao_Item && (
+                        <div className="flex flex-col gap-1 mt-1 mb-3">
+                          <Collapse isOpen={isExpanded} previewHeight="4.5em">
+                            <p className="text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none">{formatarTexto(arma.Descricao_Item)}</p>
+                          </Collapse>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2">
+                      <span><span className="text-zinc-500 font-semibold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (arma['Espaços_Item'] === 0.5 || String(arma['Espaços_Item']) === '0,5' || String(arma['Espaços_Item']) === '0.5')) ? 0.25 : arma['Espaços_Item']}</span>
+                      <span><span className="text-zinc-500 font-semibold">Categoria:</span> {arma.Categoria_Item}</span>
+                      {arma.Alcance_Item && <span><span className="text-zinc-500 font-semibold">Alcance:</span> {arma.Alcance_Item}</span>}
+                      
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          armasHook.adicionarArma(arma);
+                          onFechar();
+                        }}
+                        className="ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                      >
+                        Adicionar
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+              {armasFiltradas.filter((_, i) => i % 2 !== 0).map((arma: Arma) => {
+                const isExpanded = expandidos.includes(arma.Codigo_Arma);
+                const critico = formatarCritico(arma.Critico_Arma, arma.Multiplicador_Arma);
+                const hasProficiencia = proficienciasTotais.includes(arma.Proficiencia);
+                return (
+                  <div 
+                    key={arma.Codigo_Arma} 
+                    className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col"
+                  >
+                    {/* Bloco fechado */}
+                    <div
+                      className="flex items-start justify-between gap-2 mb-2 cursor-pointer"
+                      onClick={() => toggleExpandir(arma.Codigo_Arma)}
+                    >
+                      <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
+                        {arma.Nome_Item}
+                      </h3>
+                      
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        {arma['Agil?'] && (
+                          <span className="relative group/agil cursor-help">
+                            <span className="text-sm text-yellow-400">⚡</span>
+                            <span className="absolute right-0 top-full mt-1 opacity-0 invisible group-hover/agil:opacity-100 group-hover/agil:visible transition-all duration-300 group-hover/agil:delay-500 delay-0 w-48 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
+                              Permite que você aplique sua Agilidade em vez de sua Força em testes de ataque e rolagens de dano.
+                            </span>
+                          </span>
+                        )}
+                        {arma['Automatica?'] && (
+                          <span className="relative group/auto cursor-help">
+                            <span className="text-sm text-blue-400">🔄</span>
+                            <span className="absolute right-0 top-full mt-1 opacity-0 invisible group-hover/auto:opacity-100 group-hover/auto:visible transition-all duration-300 group-hover/auto:delay-500 delay-0 w-48 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
+                              Pode disparar tiros únicos ou rajadas (-1d20 no ataque, +1 dado de dano).
+                            </span>
+                          </span>
+                        )}
+                        {!hasProficiencia && (
+                          <span className="relative group/prof cursor-help">
+                            <span className="text-sm text-red-500">⚠️</span>
+                            <span className="absolute right-0 top-full mt-1 opacity-0 invisible group-hover/prof:opacity-100 group-hover/prof:visible transition-all duration-300 group-hover/prof:delay-500 delay-0 w-48 p-2 bg-zinc-800 border border-green-700/50 text-xs text-green-200 rounded z-50 text-center shadow-lg pointer-events-none">
+                              Se você atacar com uma arma com a qual não seja proficiente, sofre -2d20 nos testes de ataque.
+                            </span>
+                          </span>
+                        )}
+                        <span className="w-5 text-center text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex-1 cursor-pointer flex flex-col" onClick={() => toggleExpandir(arma.Codigo_Arma)}>
+                      <div className="flex items-center flex-wrap gap-4 text-xs text-zinc-300 mb-2">
+                        <span>
+                          <span className="font-bold text-green-400">Dado:</span> {arma.Dano_Arma}
+                        </span>
+                        {critico && (
+                          <span>
+                            <span className="font-bold text-zinc-400">Crítico:</span> {critico}
+                          </span>
+                        )}
+                        {arma.dt_item && <span><span className="font-bold text-green-400">DT:</span> {calcularDT(arma.dt_item, arma.Categoria_Item?.toLowerCase().includes('explosivos') || arma.Nome_Item?.toLowerCase().includes('explosivo'))}</span>}
+                      </div>
+                      
+                      <div className="text-[11px] mb-3 block text-zinc-400">
+                        <span className="font-bold text-zinc-200">{arma.Proficiencia}</span>
+                        <span className="text-zinc-600"> — </span>
+                        <span className="italic">{arma.Tipo_Arma}</span>
+                        <span className="text-zinc-600"> — </span>
+                        <span className="italic">{arma.Empunhadura_Arma}</span>
+                        <span className="text-zinc-600"> — </span>
+                        <span className="italic">{arma.Tipo_Dano_Arma}</span>
+                        {arma.Fonte_Arma && (
+                          <>
+                            <span className="text-zinc-600"> — </span>
+                            <span className="text-zinc-500">Fonte: {arma.Fonte_Arma}</span>
+                          </>
+                        )}
+                      </div>
+
+                      {arma.Descricao_Item && (
+                        <div className="flex flex-col gap-1 mt-1 mb-3">
+                          <Collapse isOpen={isExpanded} previewHeight="4.5em">
+                            <p className="text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none">{formatarTexto(arma.Descricao_Item)}</p>
+                          </Collapse>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2">
+                      <span><span className="text-zinc-500 font-semibold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (arma['Espaços_Item'] === 0.5 || String(arma['Espaços_Item']) === '0,5' || String(arma['Espaços_Item']) === '0.5')) ? 0.25 : arma['Espaços_Item']}</span>
+                      <span><span className="text-zinc-500 font-semibold">Categoria:</span> {arma.Categoria_Item}</span>
+                      {arma.Alcance_Item && <span><span className="text-zinc-500 font-semibold">Alcance:</span> {arma.Alcance_Item}</span>}
+                      
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          armasHook.adicionarArma(arma);
+                          onFechar();
+                        }}
+                        className="ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                      >
+                        Adicionar
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
           {armasFiltradas.length === 0 && (
             <p className="text-center text-zinc-600 text-sm py-8 mt-4 border border-dashed border-zinc-800 rounded">

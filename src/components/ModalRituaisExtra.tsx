@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import type { Ritual } from '../types';
 import { sortPorElementoENome } from '../utils/rpgRules';
+import { Collapse } from './Collapse';
 
 const BANNED_RITUAIS = [10, 17, 49, 53, 64, 116];
 
@@ -192,8 +193,9 @@ export const ModalRituaisExtra: React.FC<ModalRituaisExtraProps> = ({
 
         {/* LISTA DE RITUAIS */}
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
-            {listaFiltrada.map(ritual => {
+          <div className="flex flex-col md:flex-row gap-3 items-start">
+            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+            {listaFiltrada.filter((_, i) => i % 2 === 0).map(ritual => {
               const codigo = ritual.Codigo_Ritual;
               const expandido = expandidos.includes(codigo);
               const isVaria = ritual.Elemento_Ritual.toLowerCase() === 'lista' || ritual.Elemento_Ritual.toLowerCase() === 'varia';
@@ -222,17 +224,9 @@ export const ModalRituaisExtra: React.FC<ModalRituaisExtraProps> = ({
                     <span className="text-zinc-500 text-xs mt-1">{expandido ? '▲' : '▼'}</span>
                   </div>
 
-                  {!expandido && (
-                    <div className="px-3 pb-3">
-                      <div className="text-xs text-zinc-400 leading-relaxed line-clamp-3">
-                        {ritual.Descricao_Ritual.replace(/\n/g, ' ')}
-                      </div>
-                    </div>
-                  )}
-
-                  {expandido && (
-                    <div className="px-3 pb-3 border-t border-zinc-800/50 pt-2 mt-1">
-                      <div className="mb-4 flex flex-col gap-1">
+                  <div className="px-3 pb-3 cursor-pointer" onClick={() => setExpandidos(prev => prev.includes(codigo) ? prev.filter(id => id !== codigo) : [...prev, codigo])}>
+                    <Collapse isOpen={expandido}>
+                      <div className="mb-3 flex flex-col gap-1 border-b border-zinc-800/50 pb-3">
                         {ritual.Execucao_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Execução: </span><span className="text-zinc-300">{ritual.Execucao_Ritual}</span></div>}
                         {ritual.Alcance_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Alcance: </span><span className="text-zinc-300">{ritual.Alcance_Ritual}</span></div>}
                         {ritual.Area_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Área: </span><span className="text-zinc-300">{ritual.Area_Ritual}</span></div>}
@@ -240,13 +234,15 @@ export const ModalRituaisExtra: React.FC<ModalRituaisExtraProps> = ({
                         {ritual.Duracao_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Duração: </span><span className="text-zinc-300">{ritual.Duracao_Ritual}</span></div>}
                         {ritual.Resistencia_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Resistência: </span><span className="text-zinc-300">{ritual.Resistencia_Ritual}</span></div>}
                       </div>
+                    </Collapse>
+                    <Collapse isOpen={expandido} previewHeight="4.5em">
                       <div className="text-xs leading-relaxed text-zinc-400">
                         {ritual.Descricao_Ritual.split('\n').map((linha, i) => (
                           <span key={i} className="block mb-1" dangerouslySetInnerHTML={{ __html: formatarDescricao(linha) }} />
                         ))}
                       </div>
-                    </div>
-                  )}
+                    </Collapse>
+                  </div>
 
                   <div className="flex flex-wrap items-center justify-between gap-2 mt-auto text-[11px] border-t border-zinc-800/50 p-3 pt-2">
                     {isVaria ? (
@@ -278,7 +274,90 @@ export const ModalRituaisExtra: React.FC<ModalRituaisExtraProps> = ({
                 </div>
               );
             })}
+            </div>
+            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+              {listaFiltrada.filter((_, i) => i % 2 !== 0).map(ritual => {
+                const codigo = ritual.Codigo_Ritual;
+                const expandido = expandidos.includes(codigo);
+                const isVaria = ritual.Elemento_Ritual.toLowerCase() === 'lista' || ritual.Elemento_Ritual.toLowerCase() === 'varia';
+                const elementoSendoEscolhido = isVaria ? (elementosVaria[codigo] || 'Sangue') : ritual.Elemento_Ritual;
+                const corElemento = obterCorBadge(elementoSendoEscolhido);
+                const corTextoElemento = obterCorTexto(elementoSendoEscolhido);
 
+                return (
+                  <div key={codigo} className="bg-zinc-900/40 border border-zinc-800/80 rounded hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col border-l-4" style={{ borderLeftColor: corElemento }}>
+                    <div
+                      onClick={() => setExpandidos(prev => prev.includes(codigo) ? prev.filter(id => id !== codigo) : [...prev, codigo])}
+                      className="flex cursor-pointer items-start justify-between gap-3 p-3"
+                    >
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2.5">
+                          <span
+                            className="inline-flex items-center gap-1.5 rounded px-2 py-0.5 uppercase tracking-wider leading-tight"
+                            style={{ background: corElemento, color: corTextoElemento }}
+                          >
+                            <span className="text-[9px] font-bold">{elementoSendoEscolhido}</span>
+                            <span className="text-[11px] font-black">{ritual.Circulo_Ritual}</span>
+                          </span>
+                          <span className="font-bold text-zinc-200 group-hover:text-green-400 transition text-sm">{ritual.Nome_Ritual}</span>
+                        </div>
+                      </div>
+                      <span className="text-zinc-500 text-xs mt-1">{expandido ? '▲' : '▼'}</span>
+                    </div>
+
+                    <div className="px-3 pb-3 cursor-pointer" onClick={() => setExpandidos(prev => prev.includes(codigo) ? prev.filter(id => id !== codigo) : [...prev, codigo])}>
+                      <Collapse isOpen={expandido}>
+                        <div className="mb-3 flex flex-col gap-1 border-b border-zinc-800/50 pb-3">
+                          {ritual.Execucao_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Execução: </span><span className="text-zinc-300">{ritual.Execucao_Ritual}</span></div>}
+                          {ritual.Alcance_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Alcance: </span><span className="text-zinc-300">{ritual.Alcance_Ritual}</span></div>}
+                          {ritual.Area_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Área: </span><span className="text-zinc-300">{ritual.Area_Ritual}</span></div>}
+                          {ritual.Alvo_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Alvo: </span><span className="text-zinc-300">{ritual.Alvo_Ritual}</span></div>}
+                          {ritual.Duracao_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Duração: </span><span className="text-zinc-300">{ritual.Duracao_Ritual}</span></div>}
+                          {ritual.Resistencia_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Resistência: </span><span className="text-zinc-300">{ritual.Resistencia_Ritual}</span></div>}
+                        </div>
+                      </Collapse>
+                      <Collapse isOpen={expandido} previewHeight="4.5em">
+                        <div className="text-xs leading-relaxed text-zinc-400">
+                          {ritual.Descricao_Ritual.split('\n').map((linha, idx) => (
+                            <span key={idx} className="block mb-1" dangerouslySetInnerHTML={{ __html: formatarDescricao(linha) }} />
+                          ))}
+                        </div>
+                      </Collapse>
+                    </div>
+
+                    <div className="flex flex-wrap items-center justify-between gap-2 mt-auto text-[11px] border-t border-zinc-800/50 p-3 pt-2">
+                      {isVaria ? (
+                        <div onClick={e => e.stopPropagation()} className="flex items-center gap-2">
+                          <span className="text-[0.60rem] uppercase tracking-wider text-zinc-500 font-bold">Elemento:</span>
+                          <CustomSelect
+                            value={elementosVaria[codigo] || 'Sangue'}
+                            onChange={val => setElementosVaria(prev => ({ ...prev, [codigo]: val }))}
+                            options={[
+                              { value: 'Sangue', label: 'Sangue' },
+                              { value: 'Conhecimento', label: 'Conhecimento' },
+                              { value: 'Energia', label: 'Energia' },
+                              { value: 'Morte', label: 'Morte' }
+                            ]}
+                            className="px-2 py-1 text-[10px]"
+                            wrapperClassName="w-24 relative z-50"
+                          />
+                        </div>
+                      ) : <div />}
+                      
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSelect(ritual, isVaria ? (elementosVaria[codigo] || 'Sangue') : undefined);
+                        }}
+                        className="ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                      >
+                        Aprender
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
             {listaFiltrada.length === 0 && (
               <div className="col-span-full py-10 text-center text-zinc-500">
                 Nenhum ritual encontrado.

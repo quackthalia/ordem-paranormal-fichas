@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { useRPG } from '../../context/RPGContext';
 import { NEX_OPTIONS, CORES_ELEMENTOS, obterElementoOpressor } from '../../utils/rpgRules';
 import { ModalAfinidade } from '../../components/ModalAfinidade';
+import { CustomSelect } from '../../components/CustomSelect';
 
 const NIVEL_OPTIONS = Array.from({ length: 20 }, (_, i) => i + 1);
 
@@ -108,29 +109,27 @@ export const StatusPanel: React.FC = () => {
 
             {/* NÍVEL */}
             <div className="flex flex-col items-center gap-1.5">
-              <select
-                value={nivel}
-                onChange={(e) => setNivel(Number(e.target.value))}
-                className="cursor-pointer appearance-none rounded border border-zinc-600 bg-zinc-900 px-3 h-9 text-center text-base font-bold text-zinc-100 transition hover:border-green-700"
-              >
-                {NIVEL_OPTIONS.map(n => (
-                  <option key={n} value={n}>{n}</option>
-                ))}
-              </select>
+              <div className="relative z-50 w-full">
+                <CustomSelect
+                  value={nivel.toString()}
+                  onChange={(val) => setNivel(Number(val))}
+                  options={NIVEL_OPTIONS.map(n => ({ value: n.toString(), label: n.toString() }))}
+                  wrapperClassName="w-20"
+                />
+              </div>
               <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Nível</span>
             </div>
           </>
         ) : (
           <div className="flex flex-col items-center gap-1.5">
-            <select
-              value={nex}
-              onChange={(e) => setNex(Number(e.target.value))}
-              className="cursor-pointer appearance-none rounded border border-zinc-600 bg-zinc-900 px-3 h-9 text-center text-base font-bold text-zinc-100 transition hover:border-green-700"
-            >
-              {NEX_OPTIONS.map(n => (
-                <option key={n} value={n}>{n}%</option>
-              ))}
-            </select>
+            <div className="relative z-50 w-full">
+              <CustomSelect
+                value={nex.toString()}
+                onChange={(val) => setNex(Number(val))}
+                options={NEX_OPTIONS.map(n => ({ value: n.toString(), label: n + '%' }))}
+                wrapperClassName="w-24"
+              />
+            </div>
             <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">NEX</span>
           </div>
         )}

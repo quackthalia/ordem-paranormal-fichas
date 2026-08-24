@@ -3,6 +3,7 @@ import { useRPG } from '../../context/RPGContext';
 import { ToolbarFormato } from '../../components/ToolbarFormato';
 import { obterCorBadge } from '../../utils/rpgRules';
 import { useProgressaoNex, type ProgressaoNexItem } from '../../hooks/useProgressaoNex';
+import { Collapse } from '../../components/Collapse';
 
 function obterCorTexto(elemento: string): string {
   if (!elemento) return '#ffffff';
@@ -121,7 +122,7 @@ const ProgressaoBlock = ({ item, nexPatamar }: { item: ProgressaoNexItem, nexPat
         <span className="text-xs text-zinc-600">{expandido ? '▲' : '▼'}</span>
       </div>
       
-      {expandido && (
+      <Collapse isOpen={expandido}>
         <div className="p-4 text-sm text-zinc-400">
           <div className="flex justify-between items-center mb-3">
             <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Descrição</span>
@@ -236,7 +237,7 @@ const ProgressaoBlock = ({ item, nexPatamar }: { item: ProgressaoNexItem, nexPat
             </div>
           )}
         </div>
-      )}
+      </Collapse>
     </div>
   );
 };

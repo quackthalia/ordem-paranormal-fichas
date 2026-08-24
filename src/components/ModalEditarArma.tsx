@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import type { ArmaInventario, Arma } from '../types';
 import { InputOtimizado } from './InputOtimizado';
 import { ToolbarFormato } from './ToolbarFormato';
+import { CustomSelect } from './CustomSelect';
 
 import { ModificacoesSelector } from './ModificacoesSelector';
 import { useRPG } from '../context/RPGContext';
@@ -193,71 +194,75 @@ export function ModalEditarArma({
             </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
-                <div>
+                <div className="relative z-50">
                   <InputLabel label="Proficiência" />
-                  <select
+                  <CustomSelect
                     value={proficiencia}
-                    onChange={(e) => setProficiencia(e.target.value)}
-                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-green-700 transition"
-                  >
-                    <option value="Armas Simples">Armas Simples</option>
-                    <option value="Armas Táticas">Armas Táticas</option>
-                    <option value="Armas Pesadas">Armas Pesadas</option>
-                  </select>
+                    onChange={val => setProficiencia(val)}
+                    options={[
+                      { value: "Armas Simples", label: "Armas Simples" },
+                      { value: "Armas Táticas", label: "Armas Táticas" },
+                      { value: "Armas Pesadas", label: "Armas Pesadas" }
+                    ]}
+                    wrapperClassName="w-full"
+                  />
                 </div>
 
-                <div>
+                <div className="relative z-50">
                   <InputLabel label="Tipo da Arma" />
-                  <select
+                  <CustomSelect
                     value={tipoArma}
-                    onChange={(e) => setTipoArma(e.target.value)}
-                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-green-700 transition"
-                  >
-                    <option value="Corpo a Corpo">Corpo a Corpo</option>
-                    <option value="Arma de Disparo">Arma de Disparo</option>
-                    <option value="Arma de Fogo">Arma de Fogo</option>
-                    <option value="Arma de Arremesso">Arma de Arremesso</option>
-                    <option value="Explosivos">Explosivos</option>
-                  </select>
+                    onChange={val => setTipoArma(val)}
+                    options={[
+                      { value: "Corpo a Corpo", label: "Corpo a Corpo" },
+                      { value: "Arma de Disparo", label: "Arma de Disparo" },
+                      { value: "Arma de Fogo", label: "Arma de Fogo" },
+                      { value: "Arma de Arremesso", label: "Arma de Arremesso" },
+                      { value: "Explosivos", label: "Explosivos" }
+                    ]}
+                    wrapperClassName="w-full"
+                  />
                 </div>
 
-                <div>
+                <div className="relative z-50">
                   <InputLabel label="Empunhadura" />
-                  <select
+                  <CustomSelect
                     value={empunhadura}
-                    onChange={(e) => setEmpunhadura(e.target.value)}
-                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-green-700 transition"
-                  >
-                    <option value="Leve">Leve</option>
-                    <option value="Uma Mão">Uma Mão</option>
-                    <option value="Duas Mãos">Duas Mãos</option>
-                    <option value="Uma Mão/Duas Mãos">Uma Mão/Duas Mãos</option>
-                  </select>
+                    onChange={val => setEmpunhadura(val)}
+                    options={[
+                      { value: "Leve", label: "Leve" },
+                      { value: "Uma Mão", label: "Uma Mão" },
+                      { value: "Duas Mãos", label: "Duas Mãos" },
+                      { value: "Uma Mão/Duas Mãos", label: "Uma Mão/Duas Mãos" }
+                    ]}
+                    wrapperClassName="w-full"
+                  />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
-                <div>
+                <div className="relative z-50">
                   <InputLabel label="Tipo de Dano" />
-                  <select
+                  <CustomSelect
                     value={tipoDano}
-                    onChange={(e) => setTipoDano(e.target.value)}
-                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-green-700 transition"
-                  >
-                    <option value="Corte">Corte</option>
-                    <option value="Perfuração">Perfuração</option>
-                    <option value="Impacto">Impacto</option>
-                    <option value="Balístico">Balístico</option>
-                    <option value="Fogo">Fogo</option>
-                    <option value="Frio">Frio</option>
-                    <option value="Químico">Químico</option>
-                    <option value="Eletricidade">Eletricidade</option>
-                    <option value="Morte">Morte</option>
-                    <option value="Sangue">Sangue</option>
-                    <option value="Energia">Energia</option>
-                    <option value="Conhecimento">Conhecimento</option>
-                    <option value="Medo">Medo</option>
-                  </select>
+                    onChange={val => setTipoDano(val)}
+                    options={[
+                      { value: "Corte", label: "Corte" },
+                      { value: "Perfuração", label: "Perfuração" },
+                      { value: "Impacto", label: "Impacto" },
+                      { value: "Balístico", label: "Balístico" },
+                      { value: "Fogo", label: "Fogo" },
+                      { value: "Frio", label: "Frio" },
+                      { value: "Químico", label: "Químico" },
+                      { value: "Eletricidade", label: "Eletricidade" },
+                      { value: "Morte", label: "Morte" },
+                      { value: "Sangue", label: "Sangue" },
+                      { value: "Energia", label: "Energia" },
+                      { value: "Conhecimento", label: "Conhecimento" },
+                      { value: "Medo", label: "Medo" }
+                    ]}
+                    wrapperClassName="w-full"
+                  />
                 </div>
 
                 <div>
@@ -305,12 +310,11 @@ export function ModalEditarArma({
                   </div>
                 </div>
 
-                <div>
+                <div className="relative z-50">
                   <InputLabel label="Alcance" />
-                  <select
+                  <CustomSelect
                     value={alcanceFinal}
-                    onChange={(e) => {
-                      const val = e.target.value;
+                    onChange={(val) => {
                       if (temMiraTelescopica) {
                         const idx = ordAlcance.indexOf(val);
                         if (idx > 0) {
@@ -322,15 +326,16 @@ export function ModalEditarArma({
                         setAlcance(val);
                       }
                     }}
-                    className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-green-700 transition"
-                  >
-                    <option value="">Nenhum</option>
-                    <option value="Curto">Curto</option>
-                    <option value="Médio">Médio</option>
-                    <option value="Longo">Longo</option>
-                    <option value="Extremo">Extremo</option>
-                    <option value="Ilimitado">Ilimitado</option>
-                  </select>
+                    options={[
+                      { value: "", label: "Nenhum" },
+                      { value: "Curto", label: "Curto" },
+                      { value: "Médio", label: "Médio" },
+                      { value: "Longo", label: "Longo" },
+                      { value: "Extremo", label: "Extremo" },
+                      { value: "Ilimitado", label: "Ilimitado" }
+                    ]}
+                    wrapperClassName="w-full"
+                  />
                 </div>
                 
                 <div>

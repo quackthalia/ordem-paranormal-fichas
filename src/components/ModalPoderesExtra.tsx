@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { CustomSelect } from './CustomSelect';
 import type { Poder, PoderParanormal, Trilha } from '../types';
 import { sortPorElementoENome } from '../utils/rpgRules';
 import { useRPG } from '../context/RPGContext';
@@ -531,37 +532,33 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                     ) : escolhendoPericiaId != null && escolhendoPericiaId === codigo ? (
                       <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
                         <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline">Perícia:</span>
-                        <select
-                          className="bg-zinc-900 border border-zinc-700 text-xs text-zinc-300 rounded px-1 outline-none py-1 max-w-[120px]"
-                          onChange={(e) => {
-                            const cod = Number(e.target.value);
-                            if (cod) {
-                              setEscolhendoPericiaId(null);
-                              onEscolher(poder, undefined, cod);
-                              onClose();
-                            }
-                          }}
-                          defaultValue=""
-                        >
-                          <option value="" disabled>Escolher...</option>
-                          {periciasDisponiveis.map(p => {
-                            const valPericia = verificarPreRequisitos(poder as Poder, contextoPrereq, undefined, p.id);
-                            const isFocoEmPericia = (poder as any).Codigo_Regra === 42;
-                            const jaFocou = isFocoEmPericia && contextoPrereq ? Object.values(contextoPrereq.poderes).some(pe => pe.codigoRegra === 42 && pe.periciaEscolhidaNome === p.nome) : false;
-                            const isDisabled = !valPericia.atende || jaFocou;
-                            return (
-                              <option
-                                key={p.id}
-                                value={p.id}
-                                disabled={isDisabled}
-                                style={{ color: isDisabled ? '#52525b' : '#e4e4e7', backgroundColor: isDisabled ? '#18181b' : '#27272a' }}
-                                className={isDisabled ? "italic" : ""}
-                              >
-                                {p.nome} {jaFocou ? "(Já Escolhido)" : ""}
-                              </option>
-                            );
-                          })}
-                        </select>
+                        <CustomSelect
+  value=""
+  onChange={(val) => {
+    const cod = Number(val);
+    if (cod) {
+      setEscolhendoPericiaId(null);
+      onEscolher(poder, undefined, cod);
+      onClose();
+    }
+  }}
+  options={[
+    { value: '', label: 'Escolher...' },
+    ...periciasDisponiveis.map(p => {
+      const valPericia = verificarPreRequisitos(poder as Poder, contextoPrereq, undefined, p.id);
+      const isFocoEmPericia = (poder as any).Codigo_Regra === 42;
+      const jaFocou = isFocoEmPericia && contextoPrereq ? Object.values(contextoPrereq.poderes).some(pe => pe.codigoRegra === 42 && pe.periciaEscolhidaNome === p.nome) : false;
+      const isDisabled = !valPericia.atende || jaFocou;
+      return {
+        value: String(p.id),
+        label: `${p.nome} ${jaFocou ? "(Já Escolhido)" : ""}`.trim(),
+        disabled: isDisabled
+      };
+    })
+  ]}
+  wrapperClassName="max-w-[120px]"
+  className="bg-zinc-900 border border-zinc-700 text-xs text-zinc-300 rounded px-1 py-1"
+/>
                         <button
                           onClick={(e) => { e.stopPropagation(); setEscolhendoPericiaId(null); }}
                           className="ml-1 rounded px-1 py-0.5 text-[0.6rem] font-bold text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 transition"

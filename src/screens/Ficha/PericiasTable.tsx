@@ -1,13 +1,14 @@
 import React from 'react';
 import { useRPG } from '../../context/RPGContext';
 import type { AtributoKey } from '../../types';
+import { CustomSelect } from '../../components/CustomSelect';
 
 // Cores por grau de treino: destreinado → treinado → veterano → expert
 const COR_TREINO: Record<number, string> = {
-  0: 'text-zinc-400',
-  5: 'text-emerald-400',
-  10: 'text-amber-400',
-  15: 'text-green-400',
+  0: '!text-zinc-400',
+  5: '!text-emerald-400',
+  10: '!text-amber-400',
+  15: '!text-green-400',
 };
 
 const BORDA_TREINO: Record<number, string> = {
@@ -46,7 +47,7 @@ export const PericiasTable: React.FC = () => {
   };
 
   return (
-    <div className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-6">
+    <div className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-6 h-full flex flex-col">
       <h3 className="font-display mb-2 border-b border-zinc-800 pb-1 text-center text-lg uppercase tracking-[0.2em] text-zinc-300">
         Perícias
       </h3>
@@ -228,7 +229,7 @@ export const PericiasTable: React.FC = () => {
       )}
 
       {/* TABELA */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto flex-1">
         <table className="w-full border-collapse text-zinc-100">
           <thead>
             <tr className="border-b border-zinc-700 text-xs uppercase tracking-wider text-zinc-500">
@@ -331,21 +332,26 @@ export const PericiasTable: React.FC = () => {
                   </td>
 
                   <td className={`px-2 py-1.5 text-center text-sm ${corTexto}`}>
-                    <span>(</span>
-                    <select
-                      value={dadosPericia.atributo}
-                      onChange={(e) =>
-                        handleMudarPericia(nome, 'atributo', e.target.value as AtributoKey)
-                      }
-                      className={`cursor-pointer appearance-none border-none bg-transparent text-center font-bold outline-none ${corTexto}`}
-                    >
-                      <option value="FOR">FOR</option>
-                      <option value="AGI">AGI</option>
-                      <option value="INT">INT</option>
-                      <option value="PRE">PRE</option>
-                      <option value="VIG">VIG</option>
-                    </select>
-                    <span>)</span>
+                    <div className="flex items-center justify-center gap-0.5">
+                      <span>(</span>
+                      <CustomSelect
+                        value={dadosPericia.atributo}
+                        onChange={(val) =>
+                          handleMudarPericia(nome, 'atributo', val as AtributoKey)
+                        }
+                        wrapperClassName="w-[4.5rem]"
+                        className={`cursor-pointer appearance-none border-none bg-transparent text-center font-bold outline-none !px-0 ${corTexto}`}
+                        hideIcon={true}
+                        options={[
+                          { value: 'FOR', label: 'FOR' },
+                          { value: 'AGI', label: 'AGI' },
+                          { value: 'INT', label: 'INT' },
+                          { value: 'PRE', label: 'PRE' },
+                          { value: 'VIG', label: 'VIG' }
+                        ]}
+                      />
+                      <span>)</span>
+                    </div>
                   </td>
 
                   <td className={`px-2 py-1.5 text-center font-bold ${corTexto}`}>
@@ -353,18 +359,23 @@ export const PericiasTable: React.FC = () => {
                   </td>
 
                   <td className="px-2 py-1.5 text-center">
-                    <select
-                      value={dadosPericia.treino}
-                      onChange={(e) =>
-                        handleMudarPericia(nome, 'treino', Number(e.target.value))
-                      }
-                      className={`w-12 cursor-pointer appearance-none border-b bg-transparent text-center font-bold outline-none ${corTexto} ${corBorda}`}
-                    >
-                      <option value={0}>0</option>
-                      <option value={5}>5</option>
-                      <option value={10}>10</option>
-                      <option value={15}>15</option>
-                    </select>
+                    <div className="flex justify-center">
+                      <CustomSelect
+                        value={String(dadosPericia.treino)}
+                        onChange={(val) =>
+                          handleMudarPericia(nome, 'treino', Number(val))
+                        }
+                        wrapperClassName="w-14"
+                        className={`cursor-pointer appearance-none border-b bg-transparent text-center font-bold outline-none !px-0 py-0.5 ${corTexto} ${corBorda}`}
+                        hideIcon={true}
+                        options={[
+                          { value: '0', label: '0' },
+                          { value: '5', label: '5' },
+                          { value: '10', label: '10' },
+                          { value: '15', label: '15' }
+                        ]}
+                      />
+                    </div>
                   </td>
 
                   <td className="px-2 py-1.5 text-center">

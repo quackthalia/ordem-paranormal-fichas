@@ -1,3 +1,4 @@
+import { CustomSelect } from './CustomSelect';
 import React, { useEffect, useState, useMemo } from 'react';
 import { useRPG } from '../context/RPGContext';
 import { InputOtimizado } from './InputOtimizado';
@@ -136,32 +137,35 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
                       ) : !alreadyHas && escolhendoPericiaId === origem.Codigo_Origem ? (
                         <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
                           <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline">Perícia:</span>
-                          <select
-                            className="bg-zinc-900 border border-zinc-700 text-xs text-zinc-300 rounded px-1 outline-none py-1 max-w-[120px]"
-                            onChange={(e) => {
-                              const cod = Number(e.target.value);
-                              if (cod && contextoPrereq) {
-                                const nomePericia = contextoPrereq.nomesPericias[cod];
-                                setEscolhendoPericiaId(null);
-                                poderesHook.escolherPoderExtra({
-                                  Id_Poder: -origem.Codigo_Origem,
-                                  Codigo_Poder: -1,
-                                  Nome: origem.Nome_Poder,
-                                  Descricao: origem.Descricao_Poder,
-                                  Fonte: origem.Fonte,
-                                  Tipo: 'Geral',
-                                  Codigo_Regra: origem.Codigo_Regra
-                                } as any, undefined, nomePericia, 'extra_regra32');
-                                onClose();
-                              }
-                            }}
-                            defaultValue=""
-                          >
-                            <option value="" disabled>Escolher...</option>
-                            {periciasDisponiveis.map(p => (
-                              <option key={p.id} value={p.id}>{p.nome}</option>
-                            ))}
-                          </select>
+                          <CustomSelect
+  value=""
+  onChange={(val) => {
+    const cod = Number(val);
+    if (cod && contextoPrereq) {
+      const nomePericia = contextoPrereq.nomesPericias[cod];
+      setEscolhendoPericiaId(null);
+      poderesHook.escolherPoderExtra({
+        Id_Poder: -origem.Codigo_Origem,
+        Codigo_Poder: -1,
+        Nome: origem.Nome_Poder,
+        Descricao: origem.Descricao_Poder,
+        Fonte: origem.Fonte,
+        Tipo: 'Geral',
+        Codigo_Regra: origem.Codigo_Regra
+      } as any, undefined, nomePericia, 'extra_regra32');
+      onClose();
+    }
+  }}
+  options={[
+    { value: '', label: 'Escolher...' },
+    ...periciasDisponiveis.map(p => ({
+      value: String(p.id),
+      label: p.nome
+    }))
+  ]}
+  wrapperClassName="max-w-[120px]"
+  className="bg-zinc-900 border border-zinc-700 text-xs text-zinc-300 rounded px-1 py-1"
+/>
                           <button
                             onClick={(e) => { e.stopPropagation(); setEscolhendoPericiaId(null); }}
                             className="ml-1 rounded px-1 py-0.5 text-[0.6rem] font-bold text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 transition"

@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import type { Ritual, ClasseRPG } from '../types';
 import { sortPorElementoENome } from '../utils/rpgRules';
+import { Collapse } from './Collapse';
 
 interface ModalRituaisProps {
   rituais: Ritual[];
@@ -211,26 +212,25 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
 
         {/* LISTA DE RITUAIS */}
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
-            {listaFiltrada.map(ritual => {
-              const codigo = ritual.Codigo_Ritual;
-              const expandido = expandidos.includes(codigo);
-              const isVaria = ritual.Elemento_Ritual.toLowerCase() === 'lista' || ritual.Elemento_Ritual.toLowerCase() === 'varia';
-              const isEscolhendo = escolhendoElementoId === codigo;
-              const elementoSendoEscolhido = isVaria ? 'Varia' : ritual.Elemento_Ritual;
-              const corElemento = obterCorBadge(elementoSendoEscolhido);
-              const corTextoElemento = obterCorTexto(elementoSendoEscolhido);
+          <div className="flex flex-col md:flex-row gap-3 items-start">
+            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+              {listaFiltrada.filter((_, i) => i % 2 === 0).map(ritual => {
+                const codigo = ritual.Codigo_Ritual;
+                const expandido = expandidos.includes(codigo);
+                const isVaria = ritual.Elemento_Ritual.toLowerCase() === 'lista' || ritual.Elemento_Ritual.toLowerCase() === 'varia';
+                const isEscolhendo = escolhendoElementoId === codigo;
+                const elementoSendoEscolhido = isVaria ? 'Varia' : ritual.Elemento_Ritual;
+                const corElemento = obterCorBadge(elementoSendoEscolhido);
 
-              return (
-                <div key={codigo} className="bg-zinc-900/40 border border-zinc-800/80 rounded hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col h-full border-l-4" style={{ borderLeftColor: corElemento }}>
-                  <div
-                    onClick={() => setExpandidos(prev => prev.includes(codigo) ? prev.filter(id => id !== codigo) : [...prev, codigo])}
-                    className="flex cursor-pointer items-start justify-between gap-3 p-3"
-                  >
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2.5">
-                        <span
-                          className={`inline-flex items-center gap-1.5 rounded px-2 py-0.5 uppercase tracking-wider leading-tight ${
+                return (
+                  <div key={codigo} className="bg-zinc-900/40 border border-zinc-800/80 rounded hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col border-l-4" style={{ borderLeftColor: corElemento }}>
+                    <div
+                      onClick={() => setExpandidos(prev => prev.includes(codigo) ? prev.filter(id => id !== codigo) : [...prev, codigo])}
+                      className="flex cursor-pointer items-start justify-between gap-3 p-3"
+                    >
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2.5">
+                          <span className={`inline-flex items-center gap-1.5 rounded px-2 py-0.5 uppercase tracking-wider leading-tight ${
                             (() => {
                               const elStr = elementoSendoEscolhido.toLowerCase();
                               if (elStr.includes('medo')) return 'bg-zinc-200/80 text-zinc-950 px-1';
@@ -240,66 +240,42 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                               if (elStr.includes('energia')) return 'text-purple-500';
                               return 'text-zinc-400';
                             })()
-                          }`}
-                        >
-                          <span className="text-[9px] font-bold">{elementoSendoEscolhido}</span>
-                          <span className="text-[11px] font-black">{ritual.Circulo_Ritual}</span>
-                        </span>
-                        <span className="font-bold text-zinc-200 group-hover:text-green-400 transition text-sm">{ritual.Nome_Ritual}</span>
+                          }`}>
+                            <span className="text-[9px] font-bold">{elementoSendoEscolhido}</span>
+                            <span className="text-[11px] font-black">{ritual.Circulo_Ritual}</span>
+                          </span>
+                          <span className="font-bold text-zinc-200 group-hover:text-green-400 transition text-sm">{ritual.Nome_Ritual}</span>
+                        </div>
                       </div>
-                      {ritual.Dados_Ritual && (
-                        <span className="text-xs font-bold text-green-400 mt-1">{ritual.Dados_Ritual.split('/')[0].trim()}</span>
-                      )}
+                      <span className="text-zinc-500 text-xs mt-1">{expandido ? '▲' : '▼'}</span>
                     </div>
-                    <span className="text-zinc-500 text-xs mt-1">{expandido ? '▲' : '▼'}</span>
-                  </div>
 
-                  {!expandido && (
-                    <div className="px-3 pb-3">
-                      <div className="text-xs text-zinc-400 leading-relaxed line-clamp-3">
-                        {ritual.Descricao_Ritual.replace(/\n/g, ' ')}
-                      </div>
+                    <div className="px-3 pb-3 cursor-pointer" onClick={() => setExpandidos(prev => prev.includes(codigo) ? prev.filter(id => id !== codigo) : [...prev, codigo])}>
+                      <Collapse isOpen={expandido}>
+                        <div className="mb-3 flex flex-col gap-1 border-b border-zinc-800/50 pb-3">
+                          {ritual.Execucao_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Execução: </span><span className="text-zinc-300">{ritual.Execucao_Ritual?.split('/')[0].trim()}</span></div>}
+                          {ritual.Alcance_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Alcance: </span><span className="text-zinc-300">{ritual.Alcance_Ritual?.split('/')[0].trim()}</span></div>}
+                          {ritual.Area_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Área: </span><span className="text-zinc-300">{ritual.Area_Ritual?.split('/')[0].trim()}</span></div>}
+                          {ritual.Alvo_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Alvo: </span><span className="text-zinc-300">{ritual.Alvo_Ritual?.split('/')[0].trim()}</span></div>}
+                          {ritual.Duracao_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Duração: </span><span className="text-zinc-300">{ritual.Duracao_Ritual?.split('/')[0].trim()}</span></div>}
+                          {ritual.Efeito_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Efeito: </span><span className="text-zinc-300">{ritual.Efeito_Ritual.split('/')[0].trim()}</span></div>}
+                          {ritual.Resistencia_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Resistência: </span><span className="text-zinc-300">{ritual.Resistencia_Ritual?.split('/')[0].trim()}</span></div>}
+                        </div>
+                      </Collapse>
+                      <Collapse isOpen={expandido} previewHeight="4.5em">
+                        <div className="text-xs leading-relaxed text-zinc-400">
+                          {ritual.Descricao_Ritual.split('\n').map((linha, idx) => (
+                            <span key={idx} className="block mb-1" dangerouslySetInnerHTML={{ __html: formatarDescricao(linha) }} />
+                          ))}
+                        </div>
+                      </Collapse>
                     </div>
-                  )}
-
-                  {expandido && (
-                    <div className="px-3 pb-3 border-t border-zinc-800/50 pt-2 mt-1">
-                      <div className="mb-4 flex flex-col gap-1">
-                        <div className="text-xs"><span className="font-bold text-zinc-500">Execução: </span><span className="text-zinc-300">{ritual.Execucao_Ritual?.split('/')[0].trim()}</span></div>
-                        <div className="text-xs"><span className="font-bold text-zinc-500">Alcance: </span><span className="text-zinc-300">{ritual.Alcance_Ritual?.split('/')[0].trim()}</span></div>
-                        <div className="text-xs"><span className="font-bold text-zinc-500">Área: </span><span className="text-zinc-300">{ritual.Area_Ritual?.split('/')[0].trim()}</span></div>
-                        <div className="text-xs"><span className="font-bold text-zinc-500">Alvo: </span><span className="text-zinc-300">{ritual.Alvo_Ritual?.split('/')[0].trim()}</span></div>
-                        <div className="text-xs"><span className="font-bold text-zinc-500">Duração: </span><span className="text-zinc-300">{ritual.Duracao_Ritual?.split('/')[0].trim()}</span></div>
-                        {ritual.Efeito_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Efeito: </span><span className="text-zinc-300">{ritual.Efeito_Ritual.split('/')[0].trim()}</span></div>}
-                        <div className="text-xs"><span className="font-bold text-zinc-500">Resistência: </span><span className="text-zinc-300">{ritual.Resistencia_Ritual?.split('/')[0].trim()}</span></div>
-                      </div>
-                      <div className="text-xs leading-relaxed text-zinc-400">
-                        {ritual.Descricao_Ritual.split('\n').map((linha, i) => (
-                          <span key={i} className="block mb-1" dangerouslySetInnerHTML={{ __html: formatarDescricao(linha) }} />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div className="flex flex-wrap items-center justify-end gap-2 mt-auto text-[11px] border-t border-zinc-800/50 p-3 pt-2">
                     
-                    {isEscolhendo ? (
-                      <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800">
-                        <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline">Elemento:</span>
-                        {['Sangue', 'Morte', 'Conhecimento', 'Energia'].map(elem => {
-                          const isMedo = elem === 'Medo';
-                          const isSangue = elem === 'Sangue';
-                          const isMorte = elem === 'Morte';
-                          const isConhecimento = elem === 'Conhecimento';
-                          const isEnergia = elem === 'Energia';
-                          const colorClasses = isMedo ? 'bg-zinc-200/80 text-zinc-950 px-1 border-zinc-200/80' :
-                                               isSangue ? 'text-red-500 border-red-500' :
-                                               isMorte ? 'bg-black/50 text-white px-1 border-black/50' :
-                                               isConhecimento ? 'text-yellow-500 border-yellow-500' :
-                                               isEnergia ? 'text-purple-500 border-purple-500' : 
-                                               'text-zinc-400 border-zinc-400';
-                          
-                          return (
+                    <div className="flex flex-wrap items-center justify-end gap-2 mt-auto text-[11px] border-t border-zinc-800/50 p-3 pt-2 min-h-[44px]">
+                      {isEscolhendo ? (
+                        <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
+                          <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1">Elemento:</span>
+                          {['Sangue', 'Morte', 'Conhecimento', 'Energia'].map(elem => (
                             <button
                               key={elem}
                               onClick={(e) => {
@@ -307,38 +283,120 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                                 setEscolhendoElementoId(null);
                                 onSelect(ritual, elem);
                               }}
-                              className={`rounded px-1.5 py-0.5 text-[0.55rem] font-bold uppercase transition border border-opacity-30 hover:bg-zinc-800 ${colorClasses}`}
+                              className="text-[9px] font-bold px-1.5 py-0.5 rounded border border-zinc-600 hover:border-zinc-400"
                             >
                               {elem}
                             </button>
-                          );
-                        })}
+                          ))}
+                        </div>
+                      ) : (
                         <button
-                          onClick={(e) => { e.stopPropagation(); setEscolhendoElementoId(null); }}
-                          className="ml-1 rounded px-1 py-0.5 text-[0.6rem] font-bold text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 transition"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            isVaria ? setEscolhendoElementoId(codigo) : onSelect(ritual, undefined);
+                          }}
+                          className="px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider ml-auto"
                         >
-                          ✕
+                          Adicionar
                         </button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (isVaria) {
-                            setEscolhendoElementoId(codigo);
-                          } else {
-                            onSelect(ritual, undefined);
-                          }
-                        }}
-                        className="px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
-                      >
-                        Aprender
-                      </button>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
+            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+              {listaFiltrada.filter((_, i) => i % 2 !== 0).map(ritual => {
+                const codigo = ritual.Codigo_Ritual;
+                const expandido = expandidos.includes(codigo);
+                const isVaria = ritual.Elemento_Ritual.toLowerCase() === 'lista' || ritual.Elemento_Ritual.toLowerCase() === 'varia';
+                const isEscolhendo = escolhendoElementoId === codigo;
+                const elementoSendoEscolhido = isVaria ? 'Varia' : ritual.Elemento_Ritual;
+                const corElemento = obterCorBadge(elementoSendoEscolhido);
+
+                return (
+                  <div key={codigo} className="bg-zinc-900/40 border border-zinc-800/80 rounded hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col border-l-4" style={{ borderLeftColor: corElemento }}>
+                    <div
+                      onClick={() => setExpandidos(prev => prev.includes(codigo) ? prev.filter(id => id !== codigo) : [...prev, codigo])}
+                      className="flex cursor-pointer items-start justify-between gap-3 p-3"
+                    >
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2.5">
+                          <span className={`inline-flex items-center gap-1.5 rounded px-2 py-0.5 uppercase tracking-wider leading-tight ${
+                            (() => {
+                              const elStr = elementoSendoEscolhido.toLowerCase();
+                              if (elStr.includes('medo')) return 'bg-zinc-200/80 text-zinc-950 px-1';
+                              if (elStr.includes('sangue')) return 'text-red-500';
+                              if (elStr.includes('morte')) return 'bg-black/50 text-white px-1';
+                              if (elStr.includes('conhecimento')) return 'text-yellow-500';
+                              if (elStr.includes('energia')) return 'text-purple-500';
+                              return 'text-zinc-400';
+                            })()
+                          }`}>
+                            <span className="text-[9px] font-bold">{elementoSendoEscolhido}</span>
+                            <span className="text-[11px] font-black">{ritual.Circulo_Ritual}</span>
+                          </span>
+                          <span className="font-bold text-zinc-200 group-hover:text-green-400 transition text-sm">{ritual.Nome_Ritual}</span>
+                        </div>
+                      </div>
+                      <span className="text-zinc-500 text-xs mt-1">{expandido ? '▲' : '▼'}</span>
+                    </div>
+
+                    <div className="px-3 pb-3 cursor-pointer" onClick={() => setExpandidos(prev => prev.includes(codigo) ? prev.filter(id => id !== codigo) : [...prev, codigo])}>
+                      <Collapse isOpen={expandido}>
+                        <div className="mb-3 flex flex-col gap-1 border-b border-zinc-800/50 pb-3">
+                          {ritual.Execucao_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Execução: </span><span className="text-zinc-300">{ritual.Execucao_Ritual?.split('/')[0].trim()}</span></div>}
+                          {ritual.Alcance_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Alcance: </span><span className="text-zinc-300">{ritual.Alcance_Ritual?.split('/')[0].trim()}</span></div>}
+                          {ritual.Area_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Área: </span><span className="text-zinc-300">{ritual.Area_Ritual?.split('/')[0].trim()}</span></div>}
+                          {ritual.Alvo_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Alvo: </span><span className="text-zinc-300">{ritual.Alvo_Ritual?.split('/')[0].trim()}</span></div>}
+                          {ritual.Duracao_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Duração: </span><span className="text-zinc-300">{ritual.Duracao_Ritual?.split('/')[0].trim()}</span></div>}
+                          {ritual.Efeito_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Efeito: </span><span className="text-zinc-300">{ritual.Efeito_Ritual.split('/')[0].trim()}</span></div>}
+                          {ritual.Resistencia_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Resistência: </span><span className="text-zinc-300">{ritual.Resistencia_Ritual?.split('/')[0].trim()}</span></div>}
+                        </div>
+                      </Collapse>
+                      <Collapse isOpen={expandido} previewHeight="4.5em">
+                        <div className="text-xs leading-relaxed text-zinc-400">
+                          {ritual.Descricao_Ritual.split('\n').map((linha, idx) => (
+                            <span key={idx} className="block mb-1" dangerouslySetInnerHTML={{ __html: formatarDescricao(linha) }} />
+                          ))}
+                        </div>
+                      </Collapse>
+                    </div>
+                    
+                    <div className="flex flex-wrap items-center justify-end gap-2 mt-auto text-[11px] border-t border-zinc-800/50 p-3 pt-2 min-h-[44px]">
+                      {isEscolhendo ? (
+                        <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
+                          <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1">Elemento:</span>
+                          {['Sangue', 'Morte', 'Conhecimento', 'Energia'].map(elem => (
+                            <button
+                              key={elem}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEscolhendoElementoId(null);
+                                onSelect(ritual, elem);
+                              }}
+                              className="text-[9px] font-bold px-1.5 py-0.5 rounded border border-zinc-600 hover:border-zinc-400"
+                            >
+                              {elem}
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            isVaria ? setEscolhendoElementoId(codigo) : onSelect(ritual, undefined);
+                          }}
+                          className="px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider ml-auto"
+                        >
+                          Adicionar
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           {listaFiltrada.length === 0 && (

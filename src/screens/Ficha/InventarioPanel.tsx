@@ -10,6 +10,8 @@ import { ModalEditarProtecao } from '../../components/ModalEditarProtecao';
 import { ModalEditarItem } from '../../components/ModalEditarItem';
 import { ModalEditarMunicao } from '../../components/ModalEditarMunicao';
 import { ModalEditarItemAmaldicoado } from '../../components/ModalEditarItemAmaldicoado';
+import { CustomSelect } from '../../components/CustomSelect';
+import { Collapse } from '../../components/Collapse';
 import {
   DndContext,
   closestCenter,
@@ -197,7 +199,7 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
         </div>
       </div>
       
-      {isExpanded && (
+      <Collapse isOpen={isExpanded}>
         <div className="border-t border-zinc-800 px-3 py-3 text-xs bg-zinc-950/80 flex flex-col gap-2 relative z-10" onClick={e => e.stopPropagation()}>
           <div className="flex flex-col gap-1 mt-1">
             <span><span className="text-green-400 font-bold">Categoria:</span> {calcularCategoriaFinal(item.item.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes)}</span>
@@ -224,7 +226,7 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
                   </div>
                   <span className="text-zinc-500 text-[10px] ml-2 flex-shrink-0">{expandirMods ? '▲ Ocultar' : '▼ Expandir'}</span>
                 </div>
-                {expandirMods && (
+                <Collapse isOpen={expandirMods}>
                   <div className="p-2 flex flex-col gap-2 max-h-[200px] overflow-y-auto overflow-x-hidden custom-scrollbar">
                     {modsAtuais.map(m => (
                       <div key={m.Codigo_Modif} className="flex flex-col gap-0.5 pb-2 border-b border-zinc-800/50 last:border-0 last:pb-0">
@@ -233,7 +235,7 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
                       </div>
                     ))}
                   </div>
-                )}
+                </Collapse>
               </div>
             )}
           </div>
@@ -270,7 +272,7 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
             )}
           </div>
         </div>
-      )}
+      </Collapse>
     </div>
   );
 }
@@ -588,15 +590,13 @@ export function InventarioPanel() {
         </div>
         <div className="flex items-center gap-3">
           <label className="text-sm font-bold uppercase tracking-wider text-zinc-400">Patente</label>
-          <select
+          <CustomSelect
             value={patente}
-            onChange={(e) => setPatenteManual(e.target.value as Patente)}
+            onChange={(val) => setPatenteManual(val as Patente)}
+            wrapperClassName="w-48"
             className="w-48 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-center text-sm font-bold text-zinc-100 outline-none transition focus:border-green-800"
-          >
-            {patentesDisponiveis.map(p => (
-              <option key={p} value={p}>{p}</option>
-            ))}
-          </select>
+            options={patentesDisponiveis.map(p => ({ value: p, label: p }))}
+          />
         </div>
       </div>
 
@@ -636,15 +636,13 @@ export function InventarioPanel() {
       <div className="flex items-center gap-8">
         <div className="flex items-center gap-3">
           <label className="text-sm font-bold uppercase tracking-wider text-zinc-400 w-32">Limite de Crédito</label>
-          <select
+          <CustomSelect
             value={credito}
-            onChange={(e) => setCreditoOverride(e.target.value as LimiteCredito)}
+            onChange={(val) => setCreditoOverride(val as LimiteCredito)}
+            wrapperClassName="w-32"
             className="w-32 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-center text-sm font-bold text-zinc-100 outline-none transition focus:border-green-800"
-          >
-            {creditosDisponiveis.map(c => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
+            options={creditosDisponiveis.map(c => ({ value: c, label: c }))}
+          />
         </div>
         
         <div className="flex items-center gap-3">

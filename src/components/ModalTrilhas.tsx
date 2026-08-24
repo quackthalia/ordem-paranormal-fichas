@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useRPG } from '../context/RPGContext';
 import type { Trilha } from '../types';
 import { calcularNivel } from '../utils/rpgRules';
+import { Collapse } from './Collapse';
 
 function formatarDescricao(texto: string): string {
   if (!texto) return '';
@@ -169,7 +170,9 @@ export function ModalTrilhas({
                     </span>
                   </div>
 
-                  <div className={`text-xs text-zinc-400 mb-4 leading-relaxed ${!estaExpandida ? 'line-clamp-3' : ''}`} dangerouslySetInnerHTML={{ __html: formatarDescricao(trilha.Descricao_Trilha) }} />
+                  <Collapse isOpen={estaExpandida} previewHeight="4.5em">
+                    <div className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: formatarDescricao(trilha.Descricao_Trilha) }} />
+                  </Collapse>
 
                   {estaExpandida && (
                     <div className="flex flex-col gap-2 mb-4">

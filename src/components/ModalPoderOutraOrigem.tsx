@@ -1,4 +1,5 @@
 import { CustomSelect } from './CustomSelect';
+import { Collapse } from './Collapse';
 import React, { useEffect, useState, useMemo } from 'react';
 import { useRPG } from '../context/RPGContext';
 import { InputOtimizado } from './InputOtimizado';
@@ -79,20 +80,9 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
 
   const periciasDisponiveis = Object.entries(contextoPrereq.nomesPericias).map(([id, nome]) => ({ id: Number(id), nome })).sort((a, b) => a.nome.localeCompare(b.nome));
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onClose}>
-      <div className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden flex flex-col h-[90vh]" onClick={e => e.stopPropagation()}>
-        <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-display text-lg uppercase tracking-wide text-zinc-100">PODER DE OUTRA ORIGEM</h3>
-            <button onClick={onClose} className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100">&times;</button>
-          </div>
-          <InputOtimizado value={filtro} onChange={setFiltro} placeholder="Buscar origem..." className="flex-1 rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700" />
-        </div>
 
-        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
-            {origensFiltradas.map(origem => {
+  const renderOrigem = (origem: any) => {
+
               const isExpanded = expandidos.includes(origem.Codigo_Origem);
               const alreadyHas = Object.values(poderesHook.poderesEscolhidos).some(p => p.nome === origem.Nome_Poder);
 
@@ -105,7 +95,7 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
               const bloqRitual = precisaEscolherRitual && rituaisAprendidos.length === 0;
 
               return (
-                <div key={origem.Codigo_Origem} className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col h-full">
+                <div key={origem.Codigo_Origem} className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col">
                   <div className="flex justify-between items-center cursor-pointer transition">
                     <button onClick={(e) => { e.stopPropagation(); setExpandidos(prev => prev.includes(origem.Codigo_Origem) ? prev.filter(id => id !== origem.Codigo_Origem) : [...prev, origem.Codigo_Origem]); }} className="flex flex-1 items-center gap-3 bg-transparent text-left outline-none font-bold text-zinc-200 group-hover:text-green-400 transition">
                       <span className="text-sm font-bold text-zinc-200 group-hover:text-green-400 transition">{origem.Nome}</span>
@@ -203,17 +193,37 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
                       )}
                     </div>
                   </div>
-                  {isExpanded && (
+                  <Collapse isOpen={isExpanded}>
                     <div className="border-t border-zinc-800 px-5 py-4 text-left">
                       <p>
                         <strong className="text-green-500">{origem.Nome_Poder}. </strong>
                         <span className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: formatarDescricao(origem.Descricao_Poder) }} />
                       </p>
                     </div>
-                  )}
+                  </Collapse>
                 </div>
               );
-            })}
+            
+  };
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onClose}>
+      <div className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden flex flex-col h-[90vh]" onClick={e => e.stopPropagation()}>
+        <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-display text-lg uppercase tracking-wide text-zinc-100">PODER DE OUTRA ORIGEM</h3>
+            <button onClick={onClose} className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100">&times;</button>
+          </div>
+          <InputOtimizado value={filtro} onChange={setFiltro} placeholder="Buscar origem..." className="flex-1 rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700" />
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+          <div className="flex flex-col md:flex-row gap-3 items-start">
+            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+              {origensFiltradas.filter((_, i) => i % 2 === 0).map(renderOrigem)}
+            </div>
+            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+              {origensFiltradas.filter((_, i) => i % 2 !== 0).map(renderOrigem)}
+            </div>
           </div>
         </div>
       </div>

@@ -1,3 +1,4 @@
+import { Collapse } from './Collapse';
 import React, { useRef, useMemo, useEffect, useState, useCallback } from 'react';
 import { useRPG } from '../context/RPGContext';
 import { usePoderesFiltrados } from '../hooks/usePoderes';
@@ -111,7 +112,7 @@ function PoderCard({
     <div className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col">
       <div
         onClick={onToggle}
-        className={`flex cursor-pointer items-start justify-between gap-3 ${!estaExpandido ? 'h-[92px] overflow-hidden' : ''}`}
+        className="flex cursor-pointer items-start justify-between gap-3 mb-2"
       >
         <div className="flex flex-col gap-1">
           <div className="flex flex-wrap items-center gap-2">

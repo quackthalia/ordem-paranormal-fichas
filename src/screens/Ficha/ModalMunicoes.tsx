@@ -94,7 +94,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
         </div>
 
         {/* Filtros Avançados */}
-        <Collapse isOpen={mostrarFiltrosAvançados}>
+        <Collapse isOpen={mostrarFiltrosAvançados} className="z-50">
 
           <div className="flex flex-wrap items-center gap-3 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
             <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px] relative z-50">

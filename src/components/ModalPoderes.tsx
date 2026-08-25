@@ -135,17 +135,19 @@ function PoderCard({
               </span>
             )}
           </div>
-          <div
-            className={`text-xs text-zinc-400 mt-1 leading-relaxed ${estaExpandido ? 'whitespace-pre-wrap' : 'line-clamp-2'}`}
-            dangerouslySetInnerHTML={{ __html: formatarDescricao(poder.Descricao) }}
-          />
+            <Collapse isOpen={estaExpandido} previewHeight="4.5em">
+              <div 
+                className="text-xs text-zinc-400 mt-1 leading-relaxed whitespace-pre-wrap"
+                dangerouslySetInnerHTML={{ __html: formatarDescricao(poder.Descricao) }}
+              />
+            </Collapse>
         </div>
         <button className="text-zinc-500 text-xs mt-1 shrink-0">
           {estaExpandido ? '▲' : '▼'}
         </button>
       </div>
 
-      {estaExpandido && (
+      <Collapse isOpen={estaExpandido}>
         <div className="mt-3 text-left border-t border-zinc-800/50 pt-3">
 
           {ehParanormal && paranormalData?.Afinidade && (
@@ -172,7 +174,7 @@ function PoderCard({
             </div>
           )}
         </div>
-      )}
+      </Collapse>
 
       <div className="flex flex-wrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-3 mt-3">
         <div className="ml-auto flex items-center gap-2">
@@ -675,14 +677,14 @@ export const ModalPoderes: React.FC = () => {
             });
 
             return (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
-                <div className="flex md:hidden flex-col gap-3">
+              <div className="flex flex-col md:flex-row gap-3 items-start">
+                <div className="flex md:hidden flex-col gap-3 flex-1 w-full min-w-[200px]">
                   {renderedPoderes}
                 </div>
-                <div className="hidden md:flex flex-col gap-3">
+                <div className="hidden md:flex flex-col gap-3 flex-1 min-w-[200px]">
                   {renderedPoderes.filter((_, i) => i % 2 === 0)}
                 </div>
-                <div className="hidden md:flex flex-col gap-3">
+                <div className="hidden md:flex flex-col gap-3 flex-1 min-w-[200px]">
                   {renderedPoderes.filter((_, i) => i % 2 !== 0)}
                 </div>
               </div>

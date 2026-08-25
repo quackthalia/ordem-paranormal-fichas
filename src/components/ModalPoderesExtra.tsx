@@ -320,8 +320,8 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
 
         {/* Lista */}
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
-          {abaPrincipal === 'trilhas' && trilhasFiltradas.map(trilha => {
+                    {(() => {
+            const renderTrilha = (trilha: any) => {
             const codigo = trilha.Codigo_Trilha;
             const estaExpandido = poderesExpandidos.includes(codigo);
             return (
@@ -367,7 +367,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                   </div>
                 </div>
 
-                {estaExpandido && (
+                <Collapse isOpen={estaExpandido}>
                   <div className="border-t border-zinc-800 px-5 py-4 text-left">
                     <div className="mb-4 text-sm leading-relaxed text-zinc-400" dangerouslySetInnerHTML={{ __html: formatarDescricao(trilha.Descricao_Trilha) }} />
                     
@@ -420,12 +420,11 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                       </div>
                     )}
                   </div>
-                )}
+                </Collapse>
               </div>
             );
-          })}
-
-          {abaPrincipal !== 'trilhas' && listaFiltrada.map(poder => {
+          };
+            const renderPoder = (poder: any) => {
             const codigo = ('codigo_poder' in poder && poder.codigo_poder) ? poder.codigo_poder : poder.Nome;
             const ehParanormal = abaPrincipal === 'paranormais';
             const estaExpandido = poderesExpandidos.includes(codigo as number);
@@ -591,7 +590,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                   </div>
                 </div>
 
-                {estaExpandido && (
+                <Collapse isOpen={estaExpandido}>
                   <div className="border-t border-zinc-800/50 pt-3 mt-3 text-left">
                     
                     {ehParanormal && 'Afinidade' in poder && poder.Afinidade && (
@@ -624,11 +623,27 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                       </div>
                     )}
                   </div>
-                )}
+                </Collapse>
               </div>
             );
-          })}
-          </div>
+          };
+            
+            return (
+              <div className="flex flex-col md:flex-row gap-3 items-start">
+                <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+                  {abaPrincipal === 'trilhas'
+                    ? trilhasFiltradas.filter((_, i) => i % 2 === 0).map(renderTrilha)
+                    : listaFiltrada.filter((_, i) => i % 2 === 0).map(renderPoder)}
+                </div>
+                <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+                  {abaPrincipal === 'trilhas'
+                    ? trilhasFiltradas.filter((_, i) => i % 2 !== 0).map(renderTrilha)
+                    : listaFiltrada.filter((_, i) => i % 2 !== 0).map(renderPoder)}
+                </div>
+              </div>
+            );
+          })()}
+          
           
           {abaPrincipal !== 'trilhas' && listaFiltrada.length === 0 && (
             <div className="py-10 text-center text-zinc-500">

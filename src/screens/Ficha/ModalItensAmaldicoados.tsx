@@ -177,7 +177,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                   return (
                     <div 
                       key={item.Codigo_Item_Ama}
-                      className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col min-h-[220px]`}
+                      className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col min-h-[190px]`}
                     >
                       <div className="flex items-start justify-between gap-2 mb-2 cursor-pointer min-h-[2.5rem]" onClick={() => toggleExpandir(String(item.Codigo_Item_Ama))}>
                         <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 line-clamp-2">
@@ -239,7 +239,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                   return (
                     <div 
                       key={item.Codigo_Item_Ama}
-                      className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col min-h-[220px]`}
+                      className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col min-h-[190px]`}
                     >
                       <div className="flex items-start justify-between gap-2 mb-2 cursor-pointer min-h-[2.5rem]" onClick={() => toggleExpandir(String(item.Codigo_Item_Ama))}>
                         <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 line-clamp-2">

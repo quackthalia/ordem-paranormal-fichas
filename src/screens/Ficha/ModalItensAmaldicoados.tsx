@@ -13,7 +13,18 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
   const { itensAmaldicoadosHook } = useRPG();
   const { itens, adicionarItem, loading } = itensAmaldicoadosHook;
 
-  React.useEffect(() => { document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = 'unset'; }; }, []);
+  React.useEffect(() => {
+    if (aberto) {
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = 'unset'; };
+    } else {
+      setBusca('');
+      setCategoriaSelecionada('Todos');
+      setElementoSelecionado('Todos');
+      setExpandidos({});
+      setMostrarFiltrosAvançados(false);
+    }
+  }, [aberto]);
   
   const [busca, setBusca] = useState('');
   const [categoriaSelecionada, setCategoriaSelecionada] = useState<string>('Todos');

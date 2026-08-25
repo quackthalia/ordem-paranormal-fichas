@@ -28,6 +28,12 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
     if (isOpen) {
       document.body.style.overflow = 'hidden';
       return () => { document.body.style.overflow = 'unset'; };
+    } else {
+      setFiltro('');
+      setExpandidos([]);
+      setEscolhendoElementoId(null);
+      setEscolhendoRitualId(null);
+      setEscolhendoPericiaId(null);
     }
   }, [isOpen]);
 

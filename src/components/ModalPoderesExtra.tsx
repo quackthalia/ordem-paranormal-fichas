@@ -65,7 +65,13 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
       document.body.style.overflow = 'hidden';
       return () => { document.body.style.overflow = 'unset'; };
     } else {
+      setAbaPrincipal('utilidade');
+      setSubAbaClasse('todas');
+      setSubAbaElemento(null);
+      setBusca('');
       setPoderesExpandidos([]);
+      setEscolhendoElementoId(null);
+      setEscolhendoPericiaId(null);
     }
   }, [isOpen]);
 

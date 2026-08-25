@@ -443,6 +443,9 @@ export const ModalPoderes: React.FC = () => {
   useEffect(() => {
     if (nexModalAberto === null) {
       setPoderesModalExpandidos([]);
+      setBusca('');
+      setSubAbaElemento(null);
+      setRitualModalAbertoPara(null);
     }
   }, [nexModalAberto, setPoderesModalExpandidos]);
 
@@ -681,13 +684,13 @@ export const ModalPoderes: React.FC = () => {
 
             return (
               <div className="flex flex-col md:flex-row gap-3 items-start">
-                <div className="flex md:hidden flex-col gap-3 flex-1 w-full min-w-[200px]">
+                <div className="flex md:hidden flex-col gap-3 flex-1 w-full min-w-0">
                   {renderedPoderes}
                 </div>
-                <div className="hidden md:flex flex-col gap-3 flex-1 min-w-[200px]">
+                <div className="hidden md:flex flex-col gap-3 md:w-1/2 flex-1 min-w-0">
                   {renderedPoderes.filter((_, i) => i % 2 === 0)}
                 </div>
-                <div className="hidden md:flex flex-col gap-3 flex-1 min-w-[200px]">
+                <div className="hidden md:flex flex-col gap-3 md:w-1/2 flex-1 min-w-0">
                   {renderedPoderes.filter((_, i) => i % 2 !== 0)}
                 </div>
               </div>

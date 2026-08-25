@@ -42,8 +42,8 @@ export function Collapse({ isOpen, children, className = '', previewHeight }: Co
       style={{
         maxHeight: isOpen ? `${height}px` : (previewHeight !== undefined ? previewHeight : '0px'),
         opacity: (isOpen || previewHeight !== undefined) ? 1 : 0,
-        overflow: isFullyOpen ? 'visible' : 'hidden',
-        transition: isFullyOpen ? 'max-height 0.01s linear, opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1)' : 'max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+        overflow: (isFullyOpen && isOpen) ? 'visible' : 'hidden',
+        transition: (isFullyOpen && isOpen) ? 'max-height 0.01s linear, opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1)' : 'max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
         willChange: 'max-height, opacity'
       }}
     >

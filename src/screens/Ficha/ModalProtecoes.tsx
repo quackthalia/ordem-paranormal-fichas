@@ -154,14 +154,14 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                 return (
                   <div 
                     key={protecao.Codigo_Protecao} 
-                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col ${isExpanded ? '' : 'h-[190px]'}`}
+                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col`}
                   >
                     {/* Bloco fechado */}
                     <div
                       className="flex items-start justify-between gap-2 mb-2 cursor-pointer min-h-[2.5rem]"
                       onClick={() => toggleExpandir(protecao.Codigo_Protecao)}
                     >
-                      <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
+                      <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 line-clamp-2">
                         {protecao.Nome_Protecao}
                       </h3>
 
@@ -224,14 +224,14 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                 return (
                   <div 
                     key={protecao.Codigo_Protecao} 
-                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col ${isExpanded ? '' : 'h-[190px]'}`}
+                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col`}
                   >
                     {/* Bloco fechado */}
                     <div
                       className="flex items-start justify-between gap-2 mb-2 cursor-pointer min-h-[2.5rem]"
                       onClick={() => toggleExpandir(protecao.Codigo_Protecao)}
                     >
-                      <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
+                      <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 line-clamp-2">
                         {protecao.Nome_Protecao}
                       </h3>
 

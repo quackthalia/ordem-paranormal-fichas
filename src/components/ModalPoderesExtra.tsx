@@ -331,7 +331,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
             const codigo = trilha.Codigo_Trilha;
             const estaExpandido = poderesExpandidos.includes(codigo);
             return (
-              <div key={codigo} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col ${estaExpandido ? '' : 'h-[190px]'}`}>
+              <div key={codigo} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col`}>
                 <div
                   onClick={() => toggleExpandir(codigo)}
                   className="flex cursor-pointer items-center justify-between gap-3 transition"
@@ -449,14 +449,14 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
             }
 
             return (
-              <div key={codigo} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col ${estaExpandido ? '' : 'h-[190px]'}`}>
+              <div key={codigo} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col`}>
                 <div
                   onClick={() => toggleExpandir(codigo as number)}
                   className="flex cursor-pointer items-start justify-between gap-3 transition"
                 >
                   <div className="flex flex-col gap-1 w-full">
                     <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-bold text-zinc-200 group-hover:text-green-400 transition">{poder.Nome}</span>
+                    <span className="font-bold text-zinc-200 group-hover:text-green-400 transition line-clamp-2">{poder.Nome}</span>
                     {ehParanormal && 'Elemento' in poder && poder.Elemento && (
                       <span
                         className={`inline-block rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight ${

@@ -132,10 +132,10 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
                 {municoesFiltradas.filter((_, i) => i % 2 === 0).map((municao) => (
                   <div 
                     key={municao.Codigo_Municao} 
-                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col ${isExpanded ? '' : 'h-[190px]'}`}
+                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col`}
                   >
                     <div className="flex items-start justify-between gap-2 mb-2 cursor-pointer min-h-[2.5rem]">
-                      <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
+                      <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 line-clamp-2">
                         {municao.Nome_Item}
                       </h3>
                     </div>
@@ -180,10 +180,10 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
                 {municoesFiltradas.filter((_, i) => i % 2 !== 0).map((municao) => (
                   <div 
                     key={municao.Codigo_Municao} 
-                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col ${isExpanded ? '' : 'h-[190px]'}`}
+                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col`}
                   >
                     <div className="flex items-start justify-between gap-2 mb-2 cursor-pointer min-h-[2.5rem]">
-                      <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
+                      <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 line-clamp-2">
                         {municao.Nome_Item}
                       </h3>
                     </div>

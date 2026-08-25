@@ -109,14 +109,14 @@ function PoderCard({
   const periciasDisponiveis = contextoPrereq ? Object.entries(contextoPrereq.nomesPericias).map(([id, nome]) => ({ id: Number(id), nome })).sort((a,b) => a.nome.localeCompare(b.nome)) : [];
 
   return (
-    <div className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col ${estaExpandido ? '' : 'h-[190px]'}`}>
+    <div className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col`}>
       <div
         onClick={onToggle}
         className="flex cursor-pointer items-start justify-between gap-3 mb-2 min-h-[2.5rem]"
       >
         <div className="flex flex-col gap-1">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="font-bold text-zinc-200 group-hover:text-green-400 transition">{poder.Nome}</span>
+            <span className="font-bold text-zinc-200 group-hover:text-green-400 transition line-clamp-2">{poder.Nome}</span>
             {ehParanormal && paranormalData?.Elemento && (
               <span
                 className={`inline-block rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight ${

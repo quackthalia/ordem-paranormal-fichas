@@ -21,9 +21,15 @@ export function Collapse({ isOpen, children, className = '', previewHeight }: Co
     }
   }, [isOpen]);
 
+  const isOpenRef = useRef(isOpen);
+  useEffect(() => {
+    isOpenRef.current = isOpen;
+  }, [isOpen]);
+
   useEffect(() => {
     if (!contentRef.current) return;
     const resizeObserver = new ResizeObserver((entries) => {
+      if (!isOpenRef.current) return;
       for (const entry of entries) {
         setHeight(entry.target.scrollHeight);
       }
@@ -43,7 +49,7 @@ export function Collapse({ isOpen, children, className = '', previewHeight }: Co
         maxHeight: isOpen ? `${height}px` : (previewHeight !== undefined ? previewHeight : '0px'),
         opacity: (isOpen || previewHeight !== undefined) ? 1 : 0,
         overflow: (isFullyOpen && isOpen) ? 'visible' : 'hidden',
-        transition: (isFullyOpen && isOpen) ? 'max-height 0.01s linear, opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1)' : 'max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+        transition: (isFullyOpen && isOpen) ? 'max-height 0.01s linear, opacity 0.3s ease-in-out' : 'max-height 0.3s ease-in-out, opacity 0.3s ease-in-out',
         willChange: 'max-height, opacity'
       }}
     >

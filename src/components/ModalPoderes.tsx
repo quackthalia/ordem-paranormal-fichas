@@ -109,7 +109,7 @@ function PoderCard({
   const periciasDisponiveis = contextoPrereq ? Object.entries(contextoPrereq.nomesPericias).map(([id, nome]) => ({ id: Number(id), nome })).sort((a,b) => a.nome.localeCompare(b.nome)) : [];
 
   return (
-    <div className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col">
+    <div className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col ${estaExpandido ? '' : 'h-[190px]'}`}>
       <div
         onClick={onToggle}
         className="flex cursor-pointer items-start justify-between gap-3 mb-2 min-h-[2.5rem]"

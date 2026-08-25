@@ -28,3 +28,5 @@
 - **Cores de Treino na Tabela de Perícias**: As cores da tabela de perícias (`COR_TREINO` em `PericiasTable.tsx`) usam o prefixo `!` do Tailwind (ex: `!text-emerald-400`) para forçar a prioridade sobre as cores padrão do `CustomSelect`. Isso garante que o atributo e o número de treino fiquem coloridos de acordo com o nível de treino da perícia. NUNCA remover o `!`.
 
 - **Commit Automático**: Ao finalizar as tarefas solicitadas em um prompt do usuário, SEMPRE faça um commit no Git com as mudanças realizadas (ex: usando `run_command` com `git add .` e `git commit -m "..."`). As mensagens de commit devem ser curtas, descritivas e relativas ao que foi pedido/alterado.
+
+- **Reset de Estado nos Modais**: TODO modal da aplicação DEVE resetar completamente seu estado interno (filtros aplicados, abas selecionadas, blocos/cards expandidos, etc) sempre que for fechado e aberto novamente. NUNCA preserve o estado de um modal após ele ser fechado, para garantir uma experiência consistente e limpa toda vez que o usuário abri-lo.

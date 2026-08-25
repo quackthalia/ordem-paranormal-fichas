@@ -441,13 +441,10 @@ export const ModalPoderes: React.FC = () => {
   }, [abasDisponiveis, abaModalPoderes, setAbaModalPoderes]);
 
   useEffect(() => {
-    if (nexModalAberto === null) {
+    return () => {
       setPoderesModalExpandidos([]);
-      setBusca('');
-      setSubAbaElemento(null);
-      setRitualModalAbertoPara(null);
-    }
-  }, [nexModalAberto, setPoderesModalExpandidos]);
+    };
+  }, [setPoderesModalExpandidos]);
 
   const handleTabChange = useCallback((aba: AbaModalPoderes) => {
     if (scrollContainerRef.current) {

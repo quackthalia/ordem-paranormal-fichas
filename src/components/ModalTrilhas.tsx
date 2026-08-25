@@ -47,6 +47,7 @@ export function ModalTrilhas({
   const [abaAtual, setAbaAtual] = useState<'classe' | 'gerais'>('classe');
   const [habilidadesExpandidas, setHabilidadesExpandidas] = useState<number[]>([]);
   const [busca, setBusca] = useState('');
+  const [trilhasModalExpandidas, setTrilhasModalExpandidas] = useState<number[]>([]);
 
   const trilhasFiltradas = useMemo(() => {
     return trilhas.filter((t) => {
@@ -151,13 +152,13 @@ export function ModalTrilhas({
           <div className="flex flex-col md:flex-row gap-3 items-start">
             <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
               {trilhasFiltradas.filter((_, i) => i % 2 === 0).map((trilha) => {
-                const estaExpandida = trilhasExpandidas.includes(trilha.Codigo_Trilha);
+                const estaExpandida = trilhasModalExpandidas.includes(trilha.Codigo_Trilha);
                 const nexLevels = [10, 40, 65, 99];
 
                 return (
                   <div key={trilha.Codigo_Trilha} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col min-h-[190px]`}>
                     <div
-                      onClick={() => toggleTrilhaExpandida(trilha.Codigo_Trilha)}
+                      onClick={() => setTrilhasModalExpandidas(prev => prev.includes(trilha.Codigo_Trilha) ? prev.filter(i => i !== trilha.Codigo_Trilha) : [...prev, trilha.Codigo_Trilha])}
                       className="flex cursor-pointer justify-between items-start mb-2"
                     >
                       <div className="flex flex-col gap-1">
@@ -242,13 +243,13 @@ export function ModalTrilhas({
 
             <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
               {trilhasFiltradas.filter((_, i) => i % 2 !== 0).map((trilha) => {
-                const estaExpandida = trilhasExpandidas.includes(trilha.Codigo_Trilha);
+                const estaExpandida = trilhasModalExpandidas.includes(trilha.Codigo_Trilha);
                 const nexLevels = [10, 40, 65, 99];
 
                 return (
                   <div key={trilha.Codigo_Trilha} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col min-h-[190px]`}>
                     <div
-                      onClick={() => toggleTrilhaExpandida(trilha.Codigo_Trilha)}
+                      onClick={() => setTrilhasModalExpandidas(prev => prev.includes(trilha.Codigo_Trilha) ? prev.filter(i => i !== trilha.Codigo_Trilha) : [...prev, trilha.Codigo_Trilha])}
                       className="flex cursor-pointer justify-between items-start mb-2"
                     >
                       <div className="flex flex-col gap-1">

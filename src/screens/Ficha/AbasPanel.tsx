@@ -882,7 +882,7 @@ export const AbasPanel: React.FC = () => {
                                 </div>
                               </div>
               
-                              <Collapse isOpen={trilhasHook.trilhasExpandidas.includes(isVersatilidade ? t.Codigo_Trilha + 10000 : t.Codigo_Trilha)} previewHeight="4.5em">
+                              <Collapse isOpen={trilhasHook.trilhasExpandidas.includes(isVersatilidade ? t.Codigo_Trilha + 10000 : t.Codigo_Trilha)}>
                                 <div className="px-4 pt-4 pb-2 text-sm text-zinc-400">
                                   <div
                                     className="mb-4 text-zinc-300"
@@ -1595,7 +1595,7 @@ export const AbasPanel: React.FC = () => {
 
                               </div>
                             </Collapse>
-                            <Collapse isOpen={expandido} previewHeight="4.5em">
+                            <Collapse isOpen={expandido}>
                               <div className="px-4 pb-4 text-left text-sm leading-relaxed text-zinc-400">
                                 {/* Descrição formatada com versões dimmed */}
                                 <div className="text-sm leading-relaxed text-zinc-400">

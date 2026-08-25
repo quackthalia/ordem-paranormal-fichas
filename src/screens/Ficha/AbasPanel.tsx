@@ -1402,27 +1402,24 @@ export const AbasPanel: React.FC = () => {
                         const versoesDisponiveis: { value: VersaoRitual; label: string; disabled?: boolean; title?: string }[] = [
                           { 
                             value: 'normal', 
-                            label: reqNormal.atende ? 'Normal' : `Normal (${reqNormal.motivo})`,
-                            disabled: !reqNormal.atende,
-                            title: reqNormal.motivo
+                            label: 'Normal',
+                            disabled: !reqNormal.atende
                           },
                         ];
                         if (ritual.Tem_Discente) {
                           const req = verificarRequisitoRitual(ritual.Requisito_Discente, nex, classe, afinidadeAtiva, afinidadeEscolhida, ritual.Elemento_Ritual);
                           versoesDisponiveis.push({ 
                             value: 'discente', 
-                            label: req.atende ? 'Discente' : `Discente (${req.motivo})`,
-                            disabled: !req.atende,
-                            title: req.motivo
+                            label: 'Discente',
+                            disabled: !req.atende
                           });
                         }
                         if (ritual.Tem_Verdadeiro) {
                           const req = verificarRequisitoRitual(ritual.Requisito_Verdadeiro, nex, classe, afinidadeAtiva, afinidadeEscolhida, ritual.Elemento_Ritual);
                           versoesDisponiveis.push({ 
                             value: 'verdadeiro', 
-                            label: req.atende ? 'Verdadeiro' : `Verdadeiro (${req.motivo})`,
-                            disabled: !req.atende,
-                            title: req.motivo
+                            label: 'Verdadeiro',
+                            disabled: !req.atende
                           });
                         }
 
@@ -1533,7 +1530,7 @@ export const AbasPanel: React.FC = () => {
                                               }));
                                             }}
                                             className="cursor-pointer rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs font-bold text-zinc-200 outline-none transition hover:bg-zinc-800 focus:border-green-700"
-                                            options={versoesDisponiveis.map(v => ({ value: v.value, label: v.label, disabled: v.disabled, subtitle: v.title }))}
+                                            options={versoesDisponiveis.map(v => ({ value: v.value, label: v.label, disabled: v.disabled }))}
                                           />
                                         </div>
                                       )}
@@ -1616,7 +1613,7 @@ export const AbasPanel: React.FC = () => {
                                       return (
                                         <span
                                           key={i}
-                                          className={`block ${dimmed ? 'opacity-20' : ''} ${currentScope !== 'normal' && !dimmed ? 'text-zinc-300' : ''}`}
+                                          className={`block ${dimmed ? 'opacity-50' : ''} ${currentScope !== 'normal' && !dimmed ? 'text-zinc-300' : ''}`}
                                           style={{ transition: 'opacity 0.2s ease' }}
                                           dangerouslySetInnerHTML={{ __html: formatarDescricao(linha) }}
                                         />

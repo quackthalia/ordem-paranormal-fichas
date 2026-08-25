@@ -112,7 +112,7 @@ function PoderCard({
     <div className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col">
       <div
         onClick={onToggle}
-        className="flex cursor-pointer items-start justify-between gap-3 mb-2"
+        className="flex cursor-pointer items-start justify-between gap-3 mb-2 min-h-[2.5rem]"
       >
         <div className="flex flex-col gap-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -141,6 +141,13 @@ function PoderCard({
                 dangerouslySetInnerHTML={{ __html: formatarDescricao(poder.Descricao) }}
               />
             </Collapse>
+            <Collapse isOpen={estaExpandido}>
+              {poder.Fonte && (
+                <div className="mt-2 text-[0.6rem] uppercase tracking-wider text-zinc-600">
+                  Fonte: {poder.Fonte}
+                </div>
+              )}
+            </Collapse>
         </div>
         <button className="text-zinc-500 text-xs mt-1 shrink-0">
           {estaExpandido ? '▲' : '▼'}
@@ -168,11 +175,7 @@ function PoderCard({
             </div>
           )}
 
-          {poder.Fonte && (
-            <div className="mt-2 text-[0.6rem] uppercase tracking-wider text-zinc-600">
-              Fonte: {poder.Fonte}
-            </div>
-          )}
+
         </div>
       </Collapse>
 

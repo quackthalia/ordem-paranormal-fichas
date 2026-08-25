@@ -253,10 +253,10 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
 
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
           <div className="flex flex-col md:flex-row gap-3 items-start">
-            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+            <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
               {poderesFiltrados.filter((_, i) => i % 2 === 0).map(renderPoder)}
             </div>
-            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+            <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
               {poderesFiltrados.filter((_, i) => i % 2 !== 0).map(renderPoder)}
             </div>
           </div>

@@ -167,7 +167,7 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
                 >
                   {/* Cabeçalho do item */}
                   <div 
-                    className="flex items-start justify-between gap-2 mb-2 cursor-pointer"
+                    className="flex items-start justify-between gap-2 mb-2 cursor-pointer min-h-[2.5rem]"
                     onClick={() => toggleExpandir(item.Codigo_Item)}
                   >
                     <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
@@ -182,11 +182,6 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
                 <Collapse isOpen={isExpanded}>
                   <div className="mt-2 text-xs flex flex-col gap-2 mb-4">
                     {item.Dt_Item && <div><span className="font-bold text-green-400">DT:</span> {calcularDT(item.Dt_Item)}</div>}
-                    {item.Fonte_Item && (
-                      <div className="flex justify-between items-center mt-2 pt-2 border-t border-zinc-800/50">
-                        <span className="text-[10px] uppercase tracking-wider text-zinc-600">Fonte: {item.Fonte_Item}</span>
-                      </div>
-                    )}
                   </div>
                 </Collapse>
 
@@ -195,6 +190,13 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
                       <p className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none">
                         {formatarTexto(item.Desc_Item)}
                       </p>
+                    </Collapse>
+                    <Collapse isOpen={isExpanded}>
+                      {item.Fonte_Item && (
+                        <div className="flex justify-between items-center mt-2 pt-2 border-t border-zinc-800/50">
+                          <span className="text-[10px] uppercase tracking-wider text-zinc-600">Fonte: {item.Fonte_Item}</span>
+                        </div>
+                      )}
                     </Collapse>
                   </div>
 
@@ -323,10 +325,10 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
           };
             return (
               <div className="flex flex-col md:flex-row gap-3 items-start">
-                <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+                <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
                   {itensFiltrados.filter((_, i) => i % 2 === 0).map(renderItem)}
                 </div>
-                <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+                <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
                   {itensFiltrados.filter((_, i) => i % 2 !== 0).map(renderItem)}
                 </div>
               </div>

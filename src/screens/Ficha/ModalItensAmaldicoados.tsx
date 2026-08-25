@@ -160,7 +160,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
             </div>
           ) : (
             <div className="flex flex-col md:flex-row gap-3 items-start">
-              <div className="flex flex-col gap-3 flex-1 min-w-[200px]">
+              <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
                 {itensFiltrados.filter((_, i) => i % 2 === 0).map(item => {
                   const isExpanded = !!expandidos[item.Codigo_Item_Ama];
                   return (
@@ -168,7 +168,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                       key={item.Codigo_Item_Ama}
                       className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col"
                     >
-                      <div className="flex items-start justify-between gap-2 mb-2 cursor-pointer" onClick={() => toggleExpandir(String(item.Codigo_Item_Ama))}>
+                      <div className="flex items-start justify-between gap-2 mb-2 cursor-pointer min-h-[2.5rem]" onClick={() => toggleExpandir(String(item.Codigo_Item_Ama))}>
                         <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
                           {item.Nome_Ama}
                         </h3>
@@ -222,7 +222,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                   );
                 })}
               </div>
-              <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+              <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
                 {itensFiltrados.filter((_, i) => i % 2 !== 0).map(item => {
                   const isExpanded = !!expandidos[item.Codigo_Item_Ama];
                   return (
@@ -230,7 +230,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                       key={item.Codigo_Item_Ama}
                       className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col"
                     >
-                      <div className="flex items-start justify-between gap-2 mb-2 cursor-pointer" onClick={() => toggleExpandir(String(item.Codigo_Item_Ama))}>
+                      <div className="flex items-start justify-between gap-2 mb-2 cursor-pointer min-h-[2.5rem]" onClick={() => toggleExpandir(String(item.Codigo_Item_Ama))}>
                         <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
                           {item.Nome_Ama}
                         </h3>

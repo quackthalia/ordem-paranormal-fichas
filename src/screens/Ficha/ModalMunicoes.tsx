@@ -128,13 +128,13 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
             <div className="text-center text-zinc-500 italic p-4">Nenhuma munição encontrada.</div>
           ) : (
             <div className="flex flex-col md:flex-row gap-3 items-start">
-              <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+              <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
                 {municoesFiltradas.filter((_, i) => i % 2 === 0).map((municao) => (
                   <div 
                     key={municao.Codigo_Municao} 
                     className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col"
                   >
-                    <div className="flex items-start justify-between gap-2 mb-2 cursor-pointer">
+                    <div className="flex items-start justify-between gap-2 mb-2 cursor-pointer min-h-[2.5rem]">
                       <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
                         {municao.Nome_Item}
                       </h3>
@@ -176,13 +176,13 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
                   </div>
                 ))}
               </div>
-              <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+              <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
                 {municoesFiltradas.filter((_, i) => i % 2 !== 0).map((municao) => (
                   <div 
                     key={municao.Codigo_Municao} 
                     className="bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col"
                   >
-                    <div className="flex items-start justify-between gap-2 mb-2 cursor-pointer">
+                    <div className="flex items-start justify-between gap-2 mb-2 cursor-pointer min-h-[2.5rem]">
                       <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
                         {municao.Nome_Item}
                       </h3>

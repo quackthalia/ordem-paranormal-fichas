@@ -149,7 +149,7 @@ export function ModalTrilhas({
           )}
 
           <div className="flex flex-col md:flex-row gap-3 items-start">
-            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+            <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
               {trilhasFiltradas.filter((_, i) => i % 2 === 0).map((trilha) => {
                 const estaExpandida = trilhasExpandidas.includes(trilha.Codigo_Trilha);
                 const nexLevels = [10, 40, 65, 99];
@@ -240,7 +240,7 @@ export function ModalTrilhas({
               })}
             </div>
 
-            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+            <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
               {trilhasFiltradas.filter((_, i) => i % 2 !== 0).map((trilha) => {
                 const estaExpandida = trilhasExpandidas.includes(trilha.Codigo_Trilha);
                 const nexLevels = [10, 40, 65, 99];

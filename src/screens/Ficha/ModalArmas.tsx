@@ -208,7 +208,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
         {/* Lista de armas */}
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
           <div className="flex flex-col md:flex-row gap-3 items-start">
-            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+            <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
               {armasFiltradas.filter((_, i) => i % 2 === 0).map((arma: Arma) => {
                 const isExpanded = expandidos.includes(arma.Codigo_Arma);
                 const critico = formatarCritico(arma.Critico_Arma, arma.Multiplicador_Arma);
@@ -220,7 +220,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                   >
                     {/* Bloco fechado */}
                     <div
-                      className="flex items-start justify-between gap-2 mb-2 cursor-pointer"
+                      className="flex items-start justify-between gap-2 mb-2 cursor-pointer min-h-[2.5rem]"
                       onClick={() => toggleExpandir(arma.Codigo_Arma)}
                     >
                       <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">
@@ -314,7 +314,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                 );
               })}
             </div>
-            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+            <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
               {armasFiltradas.filter((_, i) => i % 2 !== 0).map((arma: Arma) => {
                 const isExpanded = expandidos.includes(arma.Codigo_Arma);
                 const critico = formatarCritico(arma.Critico_Arma, arma.Multiplicador_Arma);
@@ -326,7 +326,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                   >
                     {/* Bloco fechado */}
                     <div
-                      className="flex items-start justify-between gap-2 mb-2 cursor-pointer"
+                      className="flex items-start justify-between gap-2 mb-2 cursor-pointer min-h-[2.5rem]"
                       onClick={() => toggleExpandir(arma.Codigo_Arma)}
                     >
                       <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5">

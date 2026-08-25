@@ -155,7 +155,7 @@ export function ModalTrilhas({
                 const nexLevels = [10, 40, 65, 99];
 
                 return (
-                  <div key={trilha.Codigo_Trilha} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col`}>
+                  <div key={trilha.Codigo_Trilha} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col min-h-[220px]`}>
                     <div
                       onClick={() => toggleTrilhaExpandida(trilha.Codigo_Trilha)}
                       className="flex cursor-pointer justify-between items-start mb-2"
@@ -246,7 +246,7 @@ export function ModalTrilhas({
                 const nexLevels = [10, 40, 65, 99];
 
                 return (
-                  <div key={trilha.Codigo_Trilha} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col`}>
+                  <div key={trilha.Codigo_Trilha} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col min-h-[220px]`}>
                     <div
                       onClick={() => toggleTrilhaExpandida(trilha.Codigo_Trilha)}
                       className="flex cursor-pointer justify-between items-start mb-2"

@@ -331,7 +331,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
             const codigo = trilha.Codigo_Trilha;
             const estaExpandido = poderesExpandidos.includes(codigo);
             return (
-              <div key={codigo} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col`}>
+              <div key={codigo} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col min-h-[220px]`}>
                 <div
                   onClick={() => toggleExpandir(codigo)}
                   className="flex cursor-pointer items-center justify-between gap-3 transition"
@@ -449,7 +449,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
             }
 
             return (
-              <div key={codigo} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col`}>
+              <div key={codigo} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col min-h-[220px]`}>
                 <div
                   onClick={() => toggleExpandir(codigo as number)}
                   className="flex cursor-pointer items-start justify-between gap-3 transition"

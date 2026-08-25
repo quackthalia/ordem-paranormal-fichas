@@ -127,7 +127,7 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
               const blocked = !req.atende || alreadyHas || bloqRitual;
 
               return (
-                <div key={poder.codigo_poder} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col`}>
+                <div key={poder.codigo_poder} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col min-h-[220px]`}>
                   <div className="flex justify-between items-center cursor-pointer transition" onClick={() => setExpandidos(prev => prev.includes(poder.codigo_poder) ? prev.filter(id => id !== poder.codigo_poder) : [...prev, poder.codigo_poder])}>
                     <div className="flex flex-col gap-1">
                       <span className="font-bold text-zinc-200 group-hover:text-green-400 transition line-clamp-2">{poder.Nome}</span>

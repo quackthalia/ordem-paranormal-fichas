@@ -103,7 +103,8 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
         </div>
 
         {/* Filtros Avançados */}
-        {mostrarFiltrosAvançados && (
+        <Collapse isOpen={mostrarFiltrosAvançados}>
+
           <div className="flex flex-col gap-3 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px] relative z-50">
@@ -142,7 +143,8 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
               </div>
             </div>
           </div>
-        )}
+        
+        </Collapse>
 
         {/* Lista de proteções */}
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">

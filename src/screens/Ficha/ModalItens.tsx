@@ -136,7 +136,8 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
         </div>
 
         {/* Filtros Avançados */}
-        {mostrarFiltrosAvançados && (
+        <Collapse isOpen={mostrarFiltrosAvançados}>
+
           <div className="flex flex-wrap items-center gap-3 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
             <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
               <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Categoria</label>
@@ -152,7 +153,8 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
               />
             </div>
           </div>
-        )}
+        
+        </Collapse>
 
         {/* List */}
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">

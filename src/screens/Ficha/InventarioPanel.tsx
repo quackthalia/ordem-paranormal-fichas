@@ -1345,7 +1345,8 @@ function SortableArmaItem({
         </div>
       </div>
       
-      {isExpanded && (
+      <Collapse isOpen={isExpanded}>
+
         <div className="border-t border-zinc-800 px-3 py-3 text-xs flex flex-col gap-2 bg-zinc-950/80">
           <div>
             <span className="font-bold text-zinc-200">{arma.Proficiencia}</span>
@@ -1417,7 +1418,8 @@ function SortableArmaItem({
             )}
           </div>
         </div>
-      )}
+      
+      </Collapse>
     </div>
   );
 }
@@ -1495,7 +1497,8 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
         </div>
       </div>
 
-      {isExpanded && (
+      <Collapse isOpen={isExpanded}>
+
         <div className="border-t border-zinc-800 px-3 py-3 text-xs flex flex-col gap-2 bg-zinc-950/80">
           <div className="flex flex-col gap-1 text-xs text-zinc-300">
             <span><span className="text-yellow-400 font-bold">Categoria:</span> {calcularCategoriaFinal(municao.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes)}</span>
@@ -1560,7 +1563,8 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
             </button>
           </div>
         </div>
-      )}
+      
+      </Collapse>
     </div>
   );
 }
@@ -1674,7 +1678,8 @@ function SortableProtecaoItem({
         </div>
       </div>
 
-      {isExpanded && (
+      <Collapse isOpen={isExpanded}>
+
         <div className="border-t border-zinc-800 px-3 py-3 text-xs flex flex-col gap-2 bg-zinc-950/80">
           <div className="flex flex-col gap-1 text-xs text-zinc-300">
             <span><span className="text-blue-400 font-bold">Proficiência:</span> {protecao.Proficiencia}</span>
@@ -1732,7 +1737,8 @@ function SortableProtecaoItem({
             </button>
           </div>
         </div>
-      )}
+      
+      </Collapse>
     </div>
   );
 }

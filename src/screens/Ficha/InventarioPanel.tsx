@@ -863,8 +863,14 @@ export function InventarioPanel() {
                     toggleExpandir={toggleExpandir}
                     stringDT={calcularDT(item.arma.dt_item, item.arma.Categoria_Item?.toLowerCase().includes('explosivos') || item.arma.Nome_Item?.toLowerCase().includes('explosivo'))}
                     removerArma={armasHook?.removerArma || (() => {})}
-                    onEditar={() => setArmaEditandoId(item.id)}
-                  />
+                      onEditar={() => setArmaEditandoId(item.id)}
+                      onAddMunicao={() => {
+                        setMunicaoTargetArmaId(item.id);
+                        setMunicaoFiltroNome(item.arma.Nome_Item);
+                        setMunicaoFiltroCategoria(item.arma.Categoria_Item);
+                        setModalMunicoesAberto(true);
+                      }}
+                    />
                 ))}
               </SortableContext>
               
@@ -1175,17 +1181,19 @@ function SortableArmaItem({
   toggleExpandir,
   stringDT,
   removerArma,
-  onEditar,
-  isOverlay
-}: {
+    onEditar,
+    onAddMunicao,
+    isOverlay
+  }: {
   item: ArmaInventario;
   isExpanded: boolean;
   toggleExpandir: (id: string) => void;
   stringDT: string | null;
   removerArma: (id: string) => void;
-  onEditar?: () => void;
-  isOverlay?: boolean;
-}) {
+    onEditar?: () => void;
+    onAddMunicao?: () => void;
+    isOverlay?: boolean;
+  }) {
   const { id, arma } = item;
   const {
     attributes,

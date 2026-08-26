@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import type { Ritual, ClasseRPG } from '../types';
 import { sortPorElementoENome } from '../utils/rpgRules';
-import { Collapse }
-import { CustomSelect } from './CustomSelect'; from './Collapse';
+import { Collapse } from './Collapse';
+import { CustomSelect } from './CustomSelect';
 
 interface ModalRituaisProps {
   rituais: Ritual[];

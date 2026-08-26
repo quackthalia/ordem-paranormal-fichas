@@ -363,20 +363,61 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                     >
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2.5">
-                          <span className={`inline-flex items-center gap-1.5 rounded px-2 py-0.5 uppercase tracking-wider leading-tight ${
-                            (() => {
-                              const elStr = elementoSendoEscolhido.toLowerCase();
-                              if (elStr.includes('medo')) return 'bg-zinc-200/80 text-zinc-950 px-1';
-                              if (elStr.includes('sangue')) return 'text-red-500';
-                              if (elStr.includes('morte')) return 'bg-black/50 text-white px-1';
-                              if (elStr.includes('conhecimento')) return 'text-yellow-500';
-                              if (elStr.includes('energia')) return 'text-purple-500';
-                              return 'text-zinc-400';
-                            })()
-                          }`}>
-                            <span className="text-[9px] font-bold">{elementoSendoEscolhido}</span>
-                            <span className="text-[11px] font-black">{ritual.Circulo_Ritual}</span>
-                          </span>
+                          <span className="inline-flex items-center gap-1.5 rounded uppercase tracking-wider leading-tight">
+                              {(() => {
+                                const elStr = elementoSendoEscolhido;
+                                if (elStr.includes(' e ')) {
+                                  const partes = elStr.split(' e ');
+                                  const p1 = partes[0].trim();
+                                  const p2 = partes[1].trim();
+                                  
+                                  const c1 = (() => {
+                                    const l1 = p1.toLowerCase();
+                                    if(l1.includes('sangue')) return 'text-red-500';
+                                    if(l1.includes('conhecimento')) return 'text-yellow-500';
+                                    if(l1.includes('energia')) return 'text-purple-500';
+                                    if(l1.includes('morte')) return 'text-white bg-black/50 px-1 rounded';
+                                    if(l1.includes('medo')) return 'text-zinc-950 bg-zinc-200/80 px-1 rounded';
+                                    return 'text-zinc-400';
+                                  })();
+                                  
+                                  const c2 = (() => {
+                                    const l2 = p2.toLowerCase();
+                                    if(l2.includes('sangue')) return 'text-red-500';
+                                    if(l2.includes('conhecimento')) return 'text-yellow-500';
+                                    if(l2.includes('energia')) return 'text-purple-500';
+                                    if(l2.includes('morte')) return 'text-white bg-black/50 px-1 rounded';
+                                    if(l2.includes('medo')) return 'text-zinc-950 bg-zinc-200/80 px-1 rounded';
+                                    return 'text-zinc-400';
+                                  })();
+                                  
+                                  return (
+                                    <>
+                                      <span className={`text-[9px] font-bold ${c1}`}>{p1} <span className="text-zinc-400 font-normal lowercase">e</span></span>
+                                      <span className={`text-[9px] font-bold ${c2}`}>{p2}</span>
+                                      <span className={`text-[11px] font-black ${c2}`}>{ritual.Circulo_Ritual}</span>
+                                    </>
+                                  );
+                                }
+                                
+                                const c1 = (() => {
+                                  const l1 = elStr.toLowerCase();
+                                  if(l1.includes('sangue')) return 'text-red-500';
+                                  if(l1.includes('conhecimento')) return 'text-yellow-500';
+                                  if(l1.includes('energia')) return 'text-purple-500';
+                                  if(l1.includes('morte')) return 'text-white bg-black/50 px-1 rounded';
+                                  if(l1.includes('medo')) return 'text-zinc-950 bg-zinc-200/80 px-1 rounded';
+                                  return 'text-zinc-400';
+                                })();
+                                
+                                return (
+                                  <>
+                                    <span className={`text-[9px] font-bold ${c1}`}>{elStr}</span>
+                                    <span className={`text-[11px] font-black ${c1}`}>{ritual.Circulo_Ritual}</span>
+                                  </>
+                                );
+                              })()}
+                            </span>
                           <span className="font-bold text-zinc-200 group-hover:text-green-400 transition text-sm">{ritual.Nome_Ritual}</span>
                         </div>
                       </div>

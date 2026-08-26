@@ -114,7 +114,7 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
             </div>
             <button onClick={onFechar} className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100">&times;</button>
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-stretch gap-2">
             <input
               type="text"
               value={busca}
@@ -124,7 +124,7 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
             />
             <button 
               onClick={() => setMostrarFiltrosAvançados(!mostrarFiltrosAvançados)}
-              className={`rounded border px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition ${
+              className={`rounded border px-3 py-1.5 text-sm font-bold uppercase tracking-wider transition ${
                 mostrarFiltrosAvançados || filtroCategoria !== 'Todas'
                   ? 'border-green-800 bg-green-900/40 text-green-300'
                   : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'

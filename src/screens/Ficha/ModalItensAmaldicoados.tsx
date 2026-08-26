@@ -96,7 +96,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
             </div>
             <button onClick={fechar} className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100">&times;</button>
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-stretch gap-2">
             <input
               type="text"
               value={busca}
@@ -106,7 +106,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
             />
             <button 
               onClick={() => setMostrarFiltrosAvançados(!mostrarFiltrosAvançados)}
-              className={`rounded border px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition ${
+              className={`rounded border px-3 py-1.5 text-sm font-bold uppercase tracking-wider transition ${
                 mostrarFiltrosAvançados || categoriaSelecionada !== 'Todos' || elementoSelecionado !== 'Todos'
                   ? 'border-green-800 bg-green-900/40 text-green-300'
                   : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
@@ -226,7 +226,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                             adicionarItem(item);
                             fechar();
                           }}
-                          className="ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                          className="ml-auto shrink-0 px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
                         >
                           + Adicionar
                         </button>
@@ -288,7 +288,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                             adicionarItem(item);
                             fechar();
                           }}
-                          className="ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                          className="ml-auto shrink-0 px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
                         >
                           + Adicionar
                         </button>

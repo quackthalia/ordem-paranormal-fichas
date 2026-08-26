@@ -231,7 +231,7 @@ export function ModalTrilhas({
                     <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-3">
                       <button
                         onClick={(e) => { e.stopPropagation(); handleEscolher(trilha); }}
-                        className="ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                        className="ml-auto shrink-0 px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
                       >
                         Escolher
                       </button>
@@ -322,7 +322,7 @@ export function ModalTrilhas({
                     <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-3">
                       <button
                         onClick={(e) => { e.stopPropagation(); handleEscolher(trilha); }}
-                        className="ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                        className="ml-auto shrink-0 px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
                       >
                         Escolher
                       </button>

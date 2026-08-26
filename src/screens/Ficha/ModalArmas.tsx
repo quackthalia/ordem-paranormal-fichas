@@ -133,7 +133,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
             </div>
             <button onClick={onFechar} className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100">&times;</button>
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-stretch gap-2">
             <input
               type="text"
               value={busca}
@@ -143,7 +143,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
             />
             <button 
               onClick={() => setMostrarFiltrosAvançados(!mostrarFiltrosAvançados)}
-              className={`rounded border px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition ${
+              className={`rounded border px-3 py-1.5 text-sm font-bold uppercase tracking-wider transition ${
                 mostrarFiltrosAvançados || filtroTipo !== 'Todos' || filtroEmpunhadura !== 'Todas' || filtroAlcance !== 'Todos'
                   ? 'border-green-800 bg-green-900/40 text-green-300'
                   : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
@@ -297,9 +297,9 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                     </div>
 
                     <div className="flex flex-nowrap items-center gap-x-3 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2">
-                      <span><span className="text-zinc-500 font-semibold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (arma['Espaços_Item'] === 0.5 || String(arma['Espaços_Item']) === '0,5' || String(arma['Espaços_Item']) === '0.5')) ? 0.25 : arma['Espaços_Item']}</span>
-                      <span><span className="text-zinc-500 font-semibold">Categoria:</span> {arma.Categoria_Item}</span>
-                      {arma.Alcance_Item && <span><span className="text-zinc-500 font-semibold">Alcance:</span> {arma.Alcance_Item}</span>}
+                      <span className="truncate"><span className="text-zinc-500 font-semibold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (arma['Espaços_Item'] === 0.5 || String(arma['Espaços_Item']) === '0,5' || String(arma['Espaços_Item']) === '0.5')) ? 0.25 : arma['Espaços_Item']}</span>
+                      <span className="truncate"><span className="text-zinc-500 font-semibold">Categoria:</span> {arma.Categoria_Item}</span>
+                      {arma.Alcance_Item && <span className="truncate"><span className="text-zinc-500 font-semibold">Alcance:</span> {arma.Alcance_Item}</span>}
                       
                       <button
                         onClick={(e) => {
@@ -307,7 +307,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                           armasHook.adicionarArma(arma);
                           onFechar();
                         }}
-                        className="ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                        className="ml-auto shrink-0 px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
                       >
                         Adicionar
                       </button>
@@ -403,9 +403,9 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                     </div>
 
                     <div className="flex flex-nowrap items-center gap-x-3 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2">
-                      <span><span className="text-zinc-500 font-semibold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (arma['Espaços_Item'] === 0.5 || String(arma['Espaços_Item']) === '0,5' || String(arma['Espaços_Item']) === '0.5')) ? 0.25 : arma['Espaços_Item']}</span>
-                      <span><span className="text-zinc-500 font-semibold">Categoria:</span> {arma.Categoria_Item}</span>
-                      {arma.Alcance_Item && <span><span className="text-zinc-500 font-semibold">Alcance:</span> {arma.Alcance_Item}</span>}
+                      <span className="truncate"><span className="text-zinc-500 font-semibold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (arma['Espaços_Item'] === 0.5 || String(arma['Espaços_Item']) === '0,5' || String(arma['Espaços_Item']) === '0.5')) ? 0.25 : arma['Espaços_Item']}</span>
+                      <span className="truncate"><span className="text-zinc-500 font-semibold">Categoria:</span> {arma.Categoria_Item}</span>
+                      {arma.Alcance_Item && <span className="truncate"><span className="text-zinc-500 font-semibold">Alcance:</span> {arma.Alcance_Item}</span>}
                       
                       <button
                         onClick={(e) => {
@@ -413,7 +413,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                           armasHook.adicionarArma(arma);
                           onFechar();
                         }}
-                        className="ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                        className="ml-auto shrink-0 px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
                       >
                         Adicionar
                       </button>

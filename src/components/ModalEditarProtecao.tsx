@@ -113,7 +113,7 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="relative z-50">
+            <div >
               <label className="mb-1 block text-sm font-semibold text-zinc-300">Proficiência</label>
               <CustomSelect
                 value={proficiencia}
@@ -125,7 +125,7 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
                 wrapperClassName="w-full"
               />
             </div>
-            <div className="relative z-50">
+            <div >
               <label className="mb-1 block text-sm font-semibold text-zinc-300">Categoria</label>
               <CustomSelect
                 value={categoriaNumParaRoman(catFinal)}

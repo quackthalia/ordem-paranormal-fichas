@@ -215,7 +215,7 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
                   <div className="ml-auto">
                     {escolhendoPericia === item.Codigo_Item ? (
                       <div className="flex items-center gap-2 bg-zinc-950 p-1 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
-                        <div className="relative z-50">
+                        <div >
                           <CustomSelect
                             value=""
                             onChange={(val) => {

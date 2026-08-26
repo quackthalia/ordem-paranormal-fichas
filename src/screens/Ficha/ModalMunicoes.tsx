@@ -97,7 +97,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
         <Collapse isOpen={mostrarFiltrosAvançados} className="z-50">
 
           <div className="flex flex-wrap items-center gap-3 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
-            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px] relative z-50">
+            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px] ">
               <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Categoria</label>
               <CustomSelect
                 value={filtroCategoria}
@@ -110,7 +110,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
               />
             </div>
             
-            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px] relative z-50">
+            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px] ">
               <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Tipo de Arma</label>
               <CustomSelect
                 value={filtroTipo}

@@ -70,7 +70,7 @@ export function ModalEditarItemAmaldicoado({
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="relative z-50">
+            <div >
               <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">Elemento</label>
               <CustomSelect 
                 value={elemento}
@@ -87,7 +87,7 @@ export function ModalEditarItemAmaldicoado({
                 wrapperClassName="w-full"
               />
             </div>
-            <div className="relative z-50">
+            <div >
               <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">Categoria</label>
               <CustomSelect 
                 value={categoria}

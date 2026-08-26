@@ -353,7 +353,7 @@ export function ModalEditarItem({
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-5" onClick={(e) => e.stopPropagation()}>
           <div className="flex w-full max-w-sm flex-col overflow-hidden rounded border border-zinc-700 bg-zinc-900 p-5 shadow-2xl">
             <h3 className="mb-4 font-bold text-sm uppercase tracking-wider text-zinc-100">Escolha a Perícia (Função Adicional)</h3>
-            <div className="relative z-50 w-full mb-4">
+            <div className="w-full mb-4">
               <CustomSelect
                 value=""
                 onChange={val => {
@@ -395,7 +395,7 @@ export function ModalEditarItem({
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-5" onClick={(e) => e.stopPropagation()}>
           <div className="flex w-full max-w-sm flex-col overflow-hidden rounded border border-zinc-700 bg-zinc-900 p-5 shadow-2xl">
             <h3 className="mb-4 font-bold text-sm uppercase tracking-wider text-zinc-100">Qual perícia Aprimorar? (+5)</h3>
-            <div className="relative z-50 w-full mb-4">
+            <div className="w-full mb-4">
               <CustomSelect
                 value=""
                 onChange={val => {

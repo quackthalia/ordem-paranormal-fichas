@@ -194,7 +194,7 @@ export function ModalEditarArma({
             </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
-                <div className="relative z-50">
+                <div >
                   <InputLabel label="Proficiência" />
                   <CustomSelect
                     value={proficiencia}
@@ -208,7 +208,7 @@ export function ModalEditarArma({
                   />
                 </div>
 
-                <div className="relative z-50">
+                <div >
                   <InputLabel label="Tipo da Arma" />
                   <CustomSelect
                     value={tipoArma}
@@ -224,7 +224,7 @@ export function ModalEditarArma({
                   />
                 </div>
 
-                <div className="relative z-50">
+                <div >
                   <InputLabel label="Empunhadura" />
                   <CustomSelect
                     value={empunhadura}
@@ -241,7 +241,7 @@ export function ModalEditarArma({
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
-                <div className="relative z-50">
+                <div >
                   <InputLabel label="Tipo de Dano" />
                   <CustomSelect
                     value={tipoDano}
@@ -310,7 +310,7 @@ export function ModalEditarArma({
                   </div>
                 </div>
 
-                <div className="relative z-50">
+                <div >
                   <InputLabel label="Alcance" />
                   <CustomSelect
                     value={alcanceFinal}

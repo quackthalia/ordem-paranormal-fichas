@@ -1442,12 +1442,36 @@ function SortableArmaItem({
           </div>
         </div>
       
-      </Collapse>
-    </div>
-  );
-}
+              </Collapse>
+        
+        {municoesAcopladasList.length > 0 && (
+          <div className="flex flex-col border-t border-zinc-800 bg-zinc-950/40">
+            {municoesAcopladasList.map(minv => (
+              <div key={minv.id} className="flex items-center justify-between p-2 pl-8 border-b border-zinc-800/50 last:border-0 group">
+                <div className="flex items-center gap-2">
+                  <span className="text-zinc-600">↳</span>
+                  <span className="text-sm font-bold text-zinc-300">{minv.municao.Nome_Item}</span>
+                </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    armasHook?.desacoplarMunicao(item.id, minv.id);
+                    municoesHook?.removerMunicao(minv.id);
+                  }}
+                  title="Remover Munição"
+                  className="text-zinc-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition px-2"
+                >
+                  ✖
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
 
-interface SortableMunicaoItemProps {
+  interface SortableMunicaoItemProps {
   id: string;
   item: MunicaoInventario;
   isExpanded: boolean;

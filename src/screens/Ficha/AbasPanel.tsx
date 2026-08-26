@@ -1383,19 +1383,32 @@ export const AbasPanel: React.FC = () => {
                             ritualsByElement[finalElemento].push(ritual);
                           });
 
-                          return Object.keys(ritualsByElement).sort().map(elemento => {
+                                                    return Object.keys(ritualsByElement).sort((a, b) => {
+                            const order = ['sangue', 'morte', 'conhecimento', 'energia', 'medo'];
+                            const getOrder = (el) => {
+                              const lower = el.toLowerCase();
+                              for (let i = 0; i < order.length; i++) {
+                                if (lower.includes(order[i])) return i;
+                              }
+                              return 999;
+                            };
+                            const idxA = getOrder(a);
+                            const idxB = getOrder(b);
+                            if (idxA !== idxB) return idxA - idxB;
+                            return a.localeCompare(b);
+                          }).map(elemento => {
                             const ritualsOfElement = ritualsByElement[elemento];
                             const baseDT = 10 + (atributosFinais.PRE || 0) + calcularNivel(nex);
                             
                             return (
-                              <div key={elemento} className="mt-3 mb-2 flex flex-col gap-2.5 pl-3 border-l-2 border-zinc-800/40">
-                                <div className="flex items-center gap-2 mb-1 pr-1">
-                                    <span className="text-[0.55rem] font-bold uppercase tracking-wider text-zinc-600">↳</span>
-                                    <span className="text-[0.65rem] font-bold uppercase tracking-widest text-zinc-500">{elemento}</span>
-                                    <div className="h-px flex-1 bg-zinc-800/50"></div>
-                                    <span className="text-xs font-bold uppercase tracking-widest text-zinc-400" title="10 + PRE + Nível">DT {baseDT}</span>
-                                  </div>
-                                <div className="flex flex-col gap-2.5 pl-2">
+                              <div key={elemento} className="mt-2 mb-2 flex flex-col gap-2.5">
+                                <div className="flex items-center gap-1.5 mb-1 pl-0.5 pr-1">
+                                  <span className="text-[0.55rem] font-bold uppercase tracking-wider text-zinc-600 ml-1">↳</span>
+                                  <span className="text-[0.65rem] font-bold uppercase tracking-widest text-zinc-500">{elemento}</span>
+                                  <div className="h-px flex-1 bg-zinc-800/50"></div>
+                                  <span className="text-xs font-bold uppercase tracking-widest text-zinc-400" title="10 + PRE + Nível">DT {baseDT}</span>
+                                </div>
+                                <div className="flex flex-col gap-2.5">
                                 {ritualsOfElement.map(ritual => {
                         if (!ritual) return null;
                         

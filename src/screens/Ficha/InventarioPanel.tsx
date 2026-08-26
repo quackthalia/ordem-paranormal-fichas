@@ -1442,9 +1442,7 @@ function SortableArmaItem({
           </div>
         </div>
       
-              </Collapse>
-        
-        {municoesAcopladasList.length > 0 && (
+              {municoesAcopladasList.length > 0 && (
           <div className="flex flex-col border-t border-zinc-800 bg-zinc-950/40">
             {municoesAcopladasList.map(minv => (
               <div key={minv.id} className="flex items-center justify-between p-2 pl-8 border-b border-zinc-800/50 last:border-0 group">
@@ -1470,6 +1468,7 @@ function SortableArmaItem({
             ))}
           </div>
         )}
+        </Collapse>
       </div>
     );
   }

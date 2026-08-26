@@ -1367,7 +1367,34 @@ export const AbasPanel: React.FC = () => {
                           );
                         }
                       })}
-                      {rituaisAprendidosNesteCirculoFiltrados.map(ritual => {
+                      {(() => {
+                          const ritualsByElement = {};
+                          rituaisAprendidosNesteCirculoFiltrados.forEach(ritual => {
+                            if (!ritual) return;
+                            const isLista = ritual.Elemento_Ritual.toLowerCase() === 'lista' || ritual.Elemento_Ritual.toLowerCase() === 'varia';
+                            const elementoEscolhido = isLista ? (ritual.ElementoEscolhidoPermanente || 'Sangue') : ritual.Elemento_Ritual;
+                            
+                            let finalElemento = elementoEscolhido;
+                            if (elementoEscolhido.toLowerCase().includes(' e ')) {
+                                finalElemento = elementoEscolhido;
+                            }
+                            
+                            if (!ritualsByElement[finalElemento]) ritualsByElement[finalElemento] = [];
+                            ritualsByElement[finalElemento].push(ritual);
+                          });
+
+                          return Object.keys(ritualsByElement).sort().map(elemento => {
+                            const ritualsOfElement = ritualsByElement[elemento];
+                            const baseDT = 10 + (atributos.pre || 0) + calcularNivel(nex);
+                            
+                            return (
+                              <div key={elemento} className="mt-2 mb-2 flex flex-col gap-2.5">
+                                <div className="flex items-center gap-2 mb-1 pl-1 pr-1">
+                                  <span className="text-[0.65rem] font-bold uppercase tracking-widest text-zinc-500">{elemento}</span>
+                                  <div className="h-px flex-1 bg-zinc-800/50"></div>
+                                  <span className="text-[0.65rem] font-bold uppercase tracking-widest text-zinc-500" title="10 + PRE + Nível">DT {baseDT}</span>
+                                </div>
+                                {ritualsOfElement.map(ritual => {
                         if (!ritual) return null;
                         
                         // O código único na interface do usuário agora é uma combinação do código do ritual e a origem (para suportar o mesmo ritual pego mais de uma vez, caso aconteça)
@@ -1681,6 +1708,10 @@ export const AbasPanel: React.FC = () => {
                           </div>
                         );
                       })}
+                              </div>
+                            );
+                          });
+                        })()}
                     </div>
                   </div>
                 );

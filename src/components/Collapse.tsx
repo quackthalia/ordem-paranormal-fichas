@@ -5,9 +5,18 @@ interface CollapseProps {
   children: ReactNode;
   className?: string;
   previewHeight?: string | number;
+  duration?: string;
+  timingFunction?: string;
 }
 
-export function Collapse({ isOpen, children, className = '', previewHeight }: CollapseProps) {
+export function Collapse({ 
+  isOpen, 
+  children, 
+  className = '', 
+  previewHeight,
+  duration = '0.25s',
+  timingFunction = 'cubic-bezier(0.4, 0, 0.2, 1)'
+}: CollapseProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState<number>(0);
   const [isFullyOpen, setIsFullyOpen] = useState(isOpen);
@@ -49,7 +58,7 @@ export function Collapse({ isOpen, children, className = '', previewHeight }: Co
         maxHeight: isOpen ? `${height}px` : (previewHeight !== undefined ? previewHeight : '0px'),
         opacity: (isOpen || previewHeight !== undefined) ? 1 : 0,
         overflow: (isFullyOpen && isOpen) ? 'visible' : 'hidden',
-        transition: (isFullyOpen && isOpen) ? 'max-height 0.01s linear, opacity 0.35s ease-out' : 'max-height 0.35s ease-out, opacity 0.35s ease-out',
+        transition: (isFullyOpen && isOpen) ? `max-height 0.01s linear, opacity ${duration} ${timingFunction}` : `max-height ${duration} ${timingFunction}, opacity ${duration} ${timingFunction}`,
         willChange: 'max-height, opacity'
       }}
     >

@@ -203,7 +203,7 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
                     <div className="border-t border-zinc-800 px-5 py-4 text-left">
                       <p>
                         <strong className="text-green-500">{origem.Nome_Poder}. </strong>
-                        <span className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap min-h-[3.2em]" dangerouslySetInnerHTML={{ __html: formatarDescricao(origem.Descricao_Poder) }} />
+                        <span className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap min-h-[36px]" dangerouslySetInnerHTML={{ __html: formatarDescricao(origem.Descricao_Poder) }} />
                       </p>
                     </div>
                   </Collapse>

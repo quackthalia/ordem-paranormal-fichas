@@ -52,7 +52,7 @@ export const ModalAfinidade: React.FC<ModalAfinidadeProps> = ({
 
         {/* CONTEÚDO */}
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-          <p className="text-sm text-zinc-400 mb-6 leading-relaxed min-h-[3.2em]">
+          <p className="text-sm text-zinc-400 mb-6 leading-relaxed min-h-[36px]">
             Sua afinidade só será ativada na próxima vez que você <strong>transcender</strong> (escolher um poder paranormal).
             Até lá, sua conexão com o elemento permanece dormente.
           </p>

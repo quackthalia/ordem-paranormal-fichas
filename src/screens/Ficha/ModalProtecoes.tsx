@@ -193,8 +193,8 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                       
                       {protecao.Descricao_Protecao && (
                         <div className="flex flex-col gap-1 mt-1 mb-3">
-                          <Collapse isOpen={isExpanded} previewHeight="3.2em">
-                            <p className="text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none min-h-[3.2em]">{formatarTexto(protecao.Descricao_Protecao)}</p>
+                          <Collapse isOpen={isExpanded} previewHeight="36px">
+                            <p className="text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none min-h-[36px]">{formatarTexto(protecao.Descricao_Protecao)}</p>
                           </Collapse>
                         </div>
                       )}
@@ -263,8 +263,8 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                       
                       {protecao.Descricao_Protecao && (
                         <div className="flex flex-col gap-1 mt-1 mb-3">
-                          <Collapse isOpen={isExpanded} previewHeight="3.2em">
-                            <p className="text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none min-h-[3.2em]">{formatarTexto(protecao.Descricao_Protecao)}</p>
+                          <Collapse isOpen={isExpanded} previewHeight="36px">
+                            <p className="text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none min-h-[36px]">{formatarTexto(protecao.Descricao_Protecao)}</p>
                           </Collapse>
                         </div>
                       )}

@@ -283,8 +283,8 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                       </div>
 
                       <div className="flex flex-col gap-1 mt-1 mb-3">
-                            <Collapse isOpen={isExpanded} previewHeight="3.2em">
-                              <p className="text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none min-h-[3.2em]">{arma.Descricao_Item ? formatarTexto(arma.Descricao_Item) : 'Nenhuma descrição adicional.'}</p>
+                            <Collapse isOpen={isExpanded} previewHeight="36px">
+                              <p className="text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none min-h-[36px]">{arma.Descricao_Item ? formatarTexto(arma.Descricao_Item) : 'Nenhuma descrição adicional.'}</p>
                             </Collapse>
                           </div>
                         <Collapse isOpen={isExpanded}>
@@ -389,8 +389,8 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                       </div>
 
                       <div className="flex flex-col gap-1 mt-1 mb-3">
-                            <Collapse isOpen={isExpanded} previewHeight="3.2em">
-                              <p className="text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none min-h-[3.2em]">{arma.Descricao_Item ? formatarTexto(arma.Descricao_Item) : 'Nenhuma descrição adicional.'}</p>
+                            <Collapse isOpen={isExpanded} previewHeight="36px">
+                              <p className="text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none min-h-[36px]">{arma.Descricao_Item ? formatarTexto(arma.Descricao_Item) : 'Nenhuma descrição adicional.'}</p>
                             </Collapse>
                           </div>
                         <Collapse isOpen={isExpanded}>

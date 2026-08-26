@@ -173,7 +173,7 @@ export function ModalTrilhas({
                     </div>
 
                     <Collapse isOpen={estaExpandida} previewHeight="4.5em">
-                      <div className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: formatarDescricao(trilha.Descricao_Trilha) }} />
+                      <div className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap min-h-[4.5em]" dangerouslySetInnerHTML={{ __html: formatarDescricao(trilha.Descricao_Trilha) }} />
                     </Collapse>
 
                     <Collapse isOpen={estaExpandida}>
@@ -212,7 +212,7 @@ export function ModalTrilhas({
                               <Collapse isOpen={isHabExpanded}>
                                 <div className="px-3 py-2 border-t border-zinc-800/50 bg-zinc-950/80">
                                   <div
-                                    className="text-[11px] leading-relaxed text-zinc-400"
+                                    className="text-[11px] leading-relaxed text-zinc-400 min-h-[4.5em]"
                                     dangerouslySetInnerHTML={{ __html: formatarDescricao(descHab) }}
                                   />
                                 </div>
@@ -264,7 +264,7 @@ export function ModalTrilhas({
                     </div>
 
                     <Collapse isOpen={estaExpandida} previewHeight="4.5em">
-                      <div className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: formatarDescricao(trilha.Descricao_Trilha) }} />
+                      <div className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap min-h-[4.5em]" dangerouslySetInnerHTML={{ __html: formatarDescricao(trilha.Descricao_Trilha) }} />
                     </Collapse>
 
                     <Collapse isOpen={estaExpandida}>
@@ -303,7 +303,7 @@ export function ModalTrilhas({
                               <Collapse isOpen={isHabExpanded}>
                                 <div className="px-3 py-2 border-t border-zinc-800/50 bg-zinc-950/80">
                                   <div
-                                    className="text-[11px] leading-relaxed text-zinc-400"
+                                    className="text-[11px] leading-relaxed text-zinc-400 min-h-[4.5em]"
                                     dangerouslySetInnerHTML={{ __html: formatarDescricao(descHab) }}
                                   />
                                 </div>

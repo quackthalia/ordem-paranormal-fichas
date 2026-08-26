@@ -263,7 +263,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                         </div>
                       </Collapse>
                       <Collapse isOpen={expandido} previewHeight="4.5em">
-                        <div className="text-xs leading-relaxed text-zinc-400">
+                        <div className="text-xs leading-relaxed text-zinc-400 min-h-[4.5em]">
                           {ritual.Descricao_Ritual.split('\n').map((linha, idx) => (
                             <span key={idx} className="block mb-1" dangerouslySetInnerHTML={{ __html: formatarDescricao(linha) }} />
                           ))}
@@ -355,7 +355,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                         </div>
                       </Collapse>
                       <Collapse isOpen={expandido} previewHeight="4.5em">
-                        <div className="text-xs leading-relaxed text-zinc-400">
+                        <div className="text-xs leading-relaxed text-zinc-400 min-h-[4.5em]">
                           {ritual.Descricao_Ritual.split('\n').map((linha, idx) => (
                             <span key={idx} className="block mb-1" dangerouslySetInnerHTML={{ __html: formatarDescricao(linha) }} />
                           ))}

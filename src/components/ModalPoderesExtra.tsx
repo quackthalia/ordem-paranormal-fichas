@@ -375,7 +375,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
 
                 <Collapse isOpen={estaExpandido}>
                   <div className="border-t border-zinc-800 px-5 py-4 text-left">
-                    <div className="mb-4 text-sm leading-relaxed text-zinc-400" dangerouslySetInnerHTML={{ __html: formatarDescricao(trilha.Descricao_Trilha) }} />
+                    <div className="mb-4 text-sm leading-relaxed text-zinc-400 min-h-[3.2em]" dangerouslySetInnerHTML={{ __html: formatarDescricao(trilha.Descricao_Trilha) }} />
                     
                     {[10, 40, 65, 99].map(nexLvl => {
                       const habNameKey = `Nome_Habilidade_${nexLvl}` as keyof typeof trilha;
@@ -409,7 +409,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                               Escolher
                             </button>
                           </div>
-                          <div className="text-xs leading-relaxed text-zinc-500" dangerouslySetInnerHTML={{ __html: formatarDescricao(descHab) }} />
+                          <div className="text-xs leading-relaxed text-zinc-500 min-h-[3.2em]" dangerouslySetInnerHTML={{ __html: formatarDescricao(descHab) }} />
                         </div>
                       );
                     })}
@@ -600,7 +600,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                   <div className="border-t border-zinc-800/50 pt-3 mt-3 text-left">
                     
                     {ehParanormal && 'Afinidade' in poder && poder.Afinidade && (
-                      <p className="mt-3 text-[11px] leading-relaxed text-zinc-300">
+                      <p className="mt-3 text-[11px] leading-relaxed text-zinc-300 min-h-[3.2em]">
                         <strong className="text-zinc-100">Afinidade:</strong> {poder.Afinidade}
                       </p>
                     )}

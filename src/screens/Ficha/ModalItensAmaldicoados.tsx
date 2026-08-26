@@ -206,7 +206,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                       
                       <div className="flex-1 cursor-pointer" onClick={() => toggleExpandir(String(item.Codigo_Item_Ama))}>
                         <Collapse isOpen={isExpanded} previewHeight="4.5em">
-                          <p className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none">
+                          <p className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none min-h-[4.5em]">
                             {formatarTexto(item.Desc_Ama)}
                           </p>
                         </Collapse>
@@ -268,7 +268,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                       
                       <div className="flex-1 cursor-pointer" onClick={() => toggleExpandir(String(item.Codigo_Item_Ama))}>
                         <Collapse isOpen={isExpanded} previewHeight="4.5em">
-                          <p className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none">
+                          <p className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none min-h-[4.5em]">
                             {formatarTexto(item.Desc_Ama)}
                           </p>
                         </Collapse>

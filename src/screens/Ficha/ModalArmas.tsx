@@ -218,11 +218,11 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                 return (
                   <div 
                     key={arma.Codigo_Arma} 
-                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col min-h-[190px]`}
+                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col min-h-[220px]`}
                   >
                     {/* Bloco fechado */}
                     <div
-                      className="flex items-start justify-between gap-2 mb-2 cursor-pointer min-h-[2.5rem]"
+                      className="flex items-start justify-between gap-2 mb-2 cursor-pointer h-[3rem]"
                       onClick={() => toggleExpandir(arma.Codigo_Arma)}
                     >
                       <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 line-clamp-2">
@@ -279,21 +279,21 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                         <span className="italic">{arma.Empunhadura_Arma}</span>
                         <span className="text-zinc-600"> — </span>
                         <span className="italic">{arma.Tipo_Dano_Arma}</span>
-                        {arma.Fonte_Arma && (
-                          <>
-                            <span className="text-zinc-600"> — </span>
-                            <span className="text-zinc-500">Fonte: {arma.Fonte_Arma}</span>
-                          </>
-                        )}
+                        
                       </div>
 
-                      {arma.Descricao_Item && (
-                        <div className="flex flex-col gap-1 mt-1 mb-3">
-                          <Collapse isOpen={isExpanded} previewHeight="4.5em">
-                            <p className="text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none">{formatarTexto(arma.Descricao_Item)}</p>
-                          </Collapse>
-                        </div>
-                      )}
+                      <div className="flex flex-col gap-1 mt-1 mb-3">
+                            <Collapse isOpen={isExpanded} previewHeight="4.5em">
+                              <p className="text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none min-h-[4.5em]">{arma.Descricao_Item ? formatarTexto(arma.Descricao_Item) : 'Nenhuma descrição adicional.'}</p>
+                            </Collapse>
+                          </div>
+                        <Collapse isOpen={isExpanded}>
+                          {arma.Fonte_Arma && (
+                            <div className="flex justify-between items-center mb-2 pt-2 border-t border-zinc-800/50">
+                              <span className="text-[10px] uppercase tracking-wider text-zinc-600">Fonte: {arma.Fonte_Arma}</span>
+                            </div>
+                          )}
+                        </Collapse>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2">
@@ -324,11 +324,11 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                 return (
                   <div 
                     key={arma.Codigo_Arma} 
-                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col min-h-[190px]`}
+                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col min-h-[220px]`}
                   >
                     {/* Bloco fechado */}
                     <div
-                      className="flex items-start justify-between gap-2 mb-2 cursor-pointer min-h-[2.5rem]"
+                      className="flex items-start justify-between gap-2 mb-2 cursor-pointer h-[3rem]"
                       onClick={() => toggleExpandir(arma.Codigo_Arma)}
                     >
                       <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 line-clamp-2">
@@ -385,21 +385,21 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                         <span className="italic">{arma.Empunhadura_Arma}</span>
                         <span className="text-zinc-600"> — </span>
                         <span className="italic">{arma.Tipo_Dano_Arma}</span>
-                        {arma.Fonte_Arma && (
-                          <>
-                            <span className="text-zinc-600"> — </span>
-                            <span className="text-zinc-500">Fonte: {arma.Fonte_Arma}</span>
-                          </>
-                        )}
+                        
                       </div>
 
-                      {arma.Descricao_Item && (
-                        <div className="flex flex-col gap-1 mt-1 mb-3">
-                          <Collapse isOpen={isExpanded} previewHeight="4.5em">
-                            <p className="text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none">{formatarTexto(arma.Descricao_Item)}</p>
-                          </Collapse>
-                        </div>
-                      )}
+                      <div className="flex flex-col gap-1 mt-1 mb-3">
+                            <Collapse isOpen={isExpanded} previewHeight="4.5em">
+                              <p className="text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none min-h-[4.5em]">{arma.Descricao_Item ? formatarTexto(arma.Descricao_Item) : 'Nenhuma descrição adicional.'}</p>
+                            </Collapse>
+                          </div>
+                        <Collapse isOpen={isExpanded}>
+                          {arma.Fonte_Arma && (
+                            <div className="flex justify-between items-center mb-2 pt-2 border-t border-zinc-800/50">
+                              <span className="text-[10px] uppercase tracking-wider text-zinc-600">Fonte: {arma.Fonte_Arma}</span>
+                            </div>
+                          )}
+                        </Collapse>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2">

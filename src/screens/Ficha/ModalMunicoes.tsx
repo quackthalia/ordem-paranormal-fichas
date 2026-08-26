@@ -148,7 +148,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
                         <span className="italic text-zinc-400">{municao.Tipo_Arma}</span>
                       </div>
                       
-                      <p className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none min-h-[36px]">
+                      <p className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none min-h-[54px]">
                         {formatarTexto(municao.Descricao_Item)}
                       </p>
                     </div>
@@ -196,7 +196,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
                         <span className="italic text-zinc-400">{municao.Tipo_Arma}</span>
                       </div>
                       
-                      <p className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none min-h-[36px]">
+                      <p className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none min-h-[54px]">
                         {formatarTexto(municao.Descricao_Item)}
                       </p>
                     </div>

@@ -139,80 +139,54 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
               &times;
             </button>
           </div>
-          <input
-            type="text"
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-            placeholder="Buscar ritual..."
-            className="w-full rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700"
-          />
+          
+          <div className="flex items-stretch gap-2">
+            <input
+              type="text"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar ritual..."
+              className="flex-1 rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700"
+            />
+            <button 
+              onClick={() => setMostrarFiltrosAvançados(!mostrarFiltrosAvançados)}
+              className={`rounded border px-3 py-1.5 text-sm font-bold uppercase tracking-wider transition ${
+                mostrarFiltrosAvançados || filtroElemento !== 'Todos' || filtroCirculo !== 'Todos'
+                  ? 'border-green-800 bg-green-900/40 text-green-300'
+                  : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
+              }`}
+            >
+              Filtros
+            </button>
+          </div>
         </div>
-
-        {/* FILTROS (Abas Principais - Elementos) */}
-        <div className="flex flex-wrap border-b border-zinc-800 bg-zinc-950">
-          <button
-            onClick={() => setAbaElemento(null)}
-            className={`min-w-[70px] flex-1 px-1 py-2.5 text-xs font-bold uppercase tracking-wider transition ${
-              abaElemento === null
-                ? 'border-b-2 border-green-900 bg-zinc-900 text-zinc-100'
-                : 'border-b-2 border-transparent text-zinc-500 hover:bg-zinc-900/50 hover:text-zinc-300'
-            }`}
-          >
-            Todos
-          </button>
-          {ELEMENTOS.map(elem => {
-            const ativo = abaElemento === elem;
-            return (
-              <button
-                key={elem}
-                onClick={() => setAbaElemento(elem)}
-                className={`min-w-[70px] flex-1 px-1 py-2.5 text-xs font-bold uppercase tracking-wider transition ${
-                  ativo
-                    ? 'border-b-2 bg-zinc-900 text-zinc-100'
-                    : 'border-b-2 border-transparent text-zinc-500 hover:bg-zinc-900/50 hover:text-zinc-300'
-                }`}
-                style={{
-                  borderBottomColor: ativo ? (CORES_ELEMENTOS[elem.toLowerCase()] || '#888') : 'transparent',
-                }}
-              >
-                {elem}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* FILTROS (Abas Secundárias - Círculos) */}
-        <div className="flex gap-2 border-b border-zinc-800 bg-zinc-900 px-4 py-2">
-          <button
-            onClick={() => setAbaCirculo(null)}
-            className={`rounded px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider transition border ${
-              abaCirculo === null
-                ? 'bg-green-900/40 text-green-300 border-green-800'
-                : 'bg-zinc-800/60 text-zinc-500 border-zinc-700 hover:text-zinc-300'
-            }`}
-          >
-            Todos
-          </button>
-          {[1, 2, 3, 4].map(c => {
-            if (c > limiteCirculo) return null; // Não mostra filtros de círculos acima do permitido
-            const ativo = abaCirculo === c;
-            return (
-              <button
-                key={c}
-                onClick={() => setAbaCirculo(c)}
-                className={`rounded px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider transition border ${
-                  ativo
-                    ? 'bg-green-900/40 text-green-300 border-green-800'
-                    : 'bg-zinc-800/60 text-zinc-500 border-zinc-700 hover:text-zinc-300'
-                }`}
-              >
-                {c}º Círculo
-              </button>
-            );
-          })}
-        </div>
-
-        {/* LISTA DE RITUAIS */}
+  
+        <Collapse isOpen={mostrarFiltrosAvançados} duration="0.35s" timingFunction="ease-out">
+          <div className="flex flex-wrap items-center gap-3 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
+            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Elemento</label>
+              <CustomSelect
+                value={filtroElemento}
+                onChange={setFiltroElemento}
+                options={[{value: 'Todos', label: 'Todos'}, ...ELEMENTOS.map(e => ({value: e, label: e}))]}
+                wrapperClassName="w-full"
+              />
+            </div>
+            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Círculo</label>
+              <CustomSelect
+                value={filtroCirculo}
+                onChange={setFiltroCirculo}
+                options={[
+                  {value: 'Todos', label: 'Todos'},
+                  ...[1, 2, 3, 4].filter(c => c <= limiteCirculo).map(c => ({value: c.toString(), label: `${c}º Círculo`}))
+                ]}
+                wrapperClassName="w-full"
+              />
+            </div>
+          </div>
+        </Collapse>
+        
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
           <div className="flex flex-col md:flex-row gap-3 items-start">
             <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">

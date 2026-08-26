@@ -870,13 +870,11 @@ export const AbasPanel: React.FC = () => {
                           if (!t) return null;
 
                           const nexLevels = isVersatilidade ? [10] : [10, 40, 65, 99];
-                          const uniqueBlockId = isVersatilidade ? t.Codigo_Trilha + 10000 : t.Codigo_Trilha;
-                          const isExpanded = trilhasHook.trilhasExpandidas.includes(uniqueBlockId);
                           
                           return (
                             <div key={hab.id} className="mb-2 overflow-hidden rounded-r border-l-4 border-green-800 bg-zinc-900/50">
                               <div
-                                onClick={() => trilhasHook.toggleTrilhaExpandida(uniqueBlockId)}
+                                onClick={() => trilhasHook.toggleTrilhaExpandida(isVersatilidade ? t.Codigo_Trilha + 10000 : t.Codigo_Trilha)}
                                 className="flex cursor-pointer flex-col p-3 transition hover:bg-zinc-800"
                               >
                                 <div className="flex items-center justify-between">
@@ -894,81 +892,18 @@ export const AbasPanel: React.FC = () => {
                                     </div>
                                   </div>
                                   <span className="text-xs text-zinc-600">
-                                    {isExpanded ? '▲' : '▼'}
+                                    {trilhasHook.trilhasExpandidas.includes(isVersatilidade ? t.Codigo_Trilha + 10000 : t.Codigo_Trilha) ? '▲' : '▼'}
                                   </span>
                                 </div>
                               </div>
               
-                              <Collapse isOpen={isExpanded}>
+                              <Collapse isOpen={trilhasHook.trilhasExpandidas.includes(isVersatilidade ? t.Codigo_Trilha + 10000 : t.Codigo_Trilha)}>
                                 <div className="px-4 pb-4 pt-1 text-sm text-zinc-400">
                                   <div
                                     className="mb-4 text-zinc-400 text-left leading-relaxed text-sm"
                                     dangerouslySetInnerHTML={{ __html: formatarDescricao(isVersatilidade ? `Em ${regras['nex_experiencia'] ? 'Nível 10' : 'NEX 50%'}, escolha entre receber um poder de ${classe.toLowerCase()} ou o primeiro poder de uma trilha de ${classe.toLowerCase()} que não a sua.<br/><br/>Trilha Escolhida: <strong>${t.Nome_Trilha}</strong>` : t.Descricao_Trilha) }}
                                   />
                                   
-                                  <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-green-400 border-b border-zinc-800 pb-1">
-                                    {isVersatilidade ? 'Poder da Trilha' : 'Habilidades da Trilha'}
-                                  </h4>
-              
-                                  {nexLevels.map((nexLvl) => {
-                                    if (effectiveNex < nexLvl) return null;
-
-                                    const habNameKey = `Nome_Habilidade_${nexLvl}` as keyof typeof t;
-                                    const habDescKey = `Descricao_Habilidade_${nexLvl}` as keyof typeof t;
-                                    const nomeHab = t[habNameKey] as string;
-                                    const descHab = t[habDescKey] as string;
-              
-                                    if (!nomeHab) return null;
-              
-                                    const uniqueHabId = `trilha_${isVersatilidade ? 'versatilidade_' : ''}${t.Codigo_Trilha}_hab_${nexLvl}`;
-                                    const isHabExpanded = habilidadesExpandidas.includes(uniqueHabId);
-              
-                                    return (
-                                      <div key={nexLvl} className="mb-2 overflow-hidden rounded border border-zinc-800 bg-zinc-900/50">
-                                        <div
-                                          onClick={() => setHabilidadesExpandidas(prev => prev.includes(uniqueHabId) ? prev.filter(id => id !== uniqueHabId) : [...prev, uniqueHabId])}
-                                          className="flex cursor-pointer items-center justify-between px-3 py-2 transition hover:bg-zinc-800"
-                                        >
-                                          <span className="font-bold text-zinc-200 text-xs">
-                                            {regras['nex_experiencia'] ? `Nível ${calcularNivel(nexLvl)}` : `NEX ${nexLvl}%`} - <span className="text-zinc-400">{nomeHab}</span>
-                                          </span>
-                                          <span className="text-xs text-zinc-600">
-                                            {isHabExpanded ? '▲' : '▼'}
-                                          </span>
-                                        </div>
-                                        <Collapse isOpen={isHabExpanded}>
-                                          <div
-                                            className="px-3 pb-3 pt-1 text-xs text-zinc-400 text-left"
-                                            dangerouslySetInnerHTML={{ __html: formatarDescricao(descHab) }}
-                                          />
-                                        </Collapse>
-                                      </div>
-                                    );
-                                  })}
-                                  
-                                  {t.Fonte_Trilha && (
-                                     <div className="mt-3 flex justify-end">
-                                       <span className="text-[10px] uppercase tracking-wider text-zinc-600">Fonte: {t.Fonte_Trilha}</span>
-                                     </div>
-                                  )}
-
-                                  <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-zinc-800/50">
-                                    {!isVersatilidade && (
-                                      <button onClick={(e) => { e.stopPropagation(); setEditandoTrilha(true); }}
-                                        className="text-xs px-3 py-1.5 rounded bg-zinc-900 border border-zinc-700 hover:border-yellow-700 hover:bg-yellow-900/20 text-zinc-300 hover:text-yellow-400 transition-colors"
-                                      >Editar</button>
-                                    )}
-                                    <button onClick={(e) => { e.stopPropagation(); isVersatilidade ? trilhasHook.setVersatilidadeSelecionada(null) : trilhasHook.setTrilhaSelecionada(null); }}
-                                      className="text-xs text-green-500 hover:text-green-400 bg-green-950/30 hover:bg-green-900/50 px-3 py-1.5 rounded border border-green-900/50 transition-colors"
-                                    >Remover</button>
-                                  </div>
-                                </div>
-                              </Collapse>
-                            </div>
-                          );}}
-                                  />
-              
-                                    <div className="px-4 pb-4 text-sm text-zinc-400">
                                   <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-green-400 border-b border-zinc-800 pb-1">
                                     {isVersatilidade ? 'Poder da Trilha' : 'Habilidades da Trilha'}
                                   </h4>

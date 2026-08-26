@@ -57,7 +57,7 @@ export function useMunicoes() {
   }, [municoesInventario]);
 
   // Função utilitária para pegar munições compatíveis com uma arma baseada no Tipo_Arma da munição
-  const getMunicoesCompativeis = useCallback((armaNome: string, armaCategoria: string) => {
+  const getMunicoesCompativeis = useCallback((armaNome?: string, armaCategoria?: string) => {
     return municoes.filter(m => {
       const tipoMunicao = (m.Tipo_Arma || '').toLowerCase();
       
@@ -65,8 +65,8 @@ export function useMunicoes() {
       const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
       const tipoLimpo = removeAcentos(tipoMunicao);
-      const nomeLimpo = removeAcentos(armaNome.toLowerCase());
-      const catLimpo = removeAcentos(armaCategoria.toLowerCase());
+      const nomeLimpo = removeAcentos((armaNome || '').toLowerCase());
+      const catLimpo = removeAcentos((armaCategoria || '').toLowerCase());
 
       // Separa os tipos de arma suportados (ex: "Fuzil / Metralhadora" -> ["fuzil", "metralhadora"])
       const allowedTypes = tipoLimpo.split(/[\/,]+/).map(t => t.trim()).filter(Boolean);

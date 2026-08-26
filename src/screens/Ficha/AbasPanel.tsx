@@ -1390,14 +1390,11 @@ export const AbasPanel: React.FC = () => {
                             return (
                               <div key={elemento} className="mt-3 mb-2 flex flex-col gap-2.5 pl-3 border-l-2 border-zinc-800/40">
                                 <div className="flex items-center gap-2 mb-1 pr-1">
-                                  <span className="text-[0.55rem] font-bold uppercase tracking-wider text-zinc-600">↳</span>
-                                  <span className="text-xs font-bold uppercase tracking-widest text-zinc-400">{elemento}</span>
-                                  <div className="h-px flex-1 bg-zinc-800/50"></div>
-                                  <div className="flex flex-col items-end">
-                                    <span className="text-sm font-black uppercase tracking-widest text-zinc-300" title="10 + PRE + Nível">DT {baseDT}</span>
-                                    <span className="text-[0.5rem] font-bold text-zinc-600 uppercase tracking-widest">Base</span>
+                                    <span className="text-[0.55rem] font-bold uppercase tracking-wider text-zinc-600">↳</span>
+                                    <span className="text-[0.65rem] font-bold uppercase tracking-widest text-zinc-500">{elemento}</span>
+                                    <div className="h-px flex-1 bg-zinc-800/50"></div>
+                                    <span className="text-xs font-bold uppercase tracking-widest text-zinc-400" title="10 + PRE + Nível">DT {baseDT}</span>
                                   </div>
-                                </div>
                                 <div className="flex flex-col gap-2.5 pl-2">
                                 {ritualsOfElement.map(ritual => {
                         if (!ritual) return null;

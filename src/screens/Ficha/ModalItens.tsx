@@ -165,14 +165,14 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
               return (
                 <div 
                   key={item.Codigo_Item} 
-                  className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col min-h-[190px]`}
+                  className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col `}
                 >
                   {/* Cabeçalho do item */}
                   <div 
-                    className="flex items-start justify-between gap-2 mb-2 cursor-pointer min-h-[2.5rem]"
+                    className="flex items-start justify-between gap-2 mb-2 cursor-pointer "
                     onClick={() => toggleExpandir(item.Codigo_Item)}
                   >
-                    <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 line-clamp-2">
+                    <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 truncate">
                       {item.Nome_Item}
                     </h3>
                     
@@ -188,8 +188,8 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
                 </Collapse>
 
                   <div className="flex-1 cursor-pointer" onClick={() => toggleExpandir(item.Codigo_Item)}>
-                    <Collapse isOpen={isExpanded} previewHeight="4.5em">
-                      <p className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none min-h-[4.5em]">
+                    <Collapse isOpen={isExpanded} previewHeight="3.2em">
+                      <p className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none min-h-[3.2em]">
                         {formatarTexto(item.Desc_Item)}
                       </p>
                     </Collapse>
@@ -204,7 +204,7 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
 
 
 
-                <div className="flex flex-wrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 min-h-[32px]">
+                <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2 ">
                   <span className="text-zinc-500">
                     <span className="text-green-400 font-semibold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (item.Espacos_Itens === 0.5 || String(item.Espacos_Itens) === '0,5' || String(item.Espacos_Itens) === '0.5')) ? 0.25 : item.Espacos_Itens}
                   </span>

@@ -331,7 +331,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
             const codigo = trilha.Codigo_Trilha;
             const estaExpandido = poderesExpandidos.includes(codigo);
             return (
-              <div key={codigo} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col min-h-[190px]`}>
+              <div key={codigo} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col `}>
                 <div
                   onClick={() => toggleExpandir(codigo)}
                   className="flex cursor-pointer items-center justify-between gap-3 transition"
@@ -348,7 +348,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                     </span>
                   </div>
                 </div>
-                <div className="flex flex-wrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 mt-3">
+                <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2 mt-3">
                   <div className="flex flex-wrap items-center justify-end gap-3 w-full">
                     <button
                       onClick={(e) => {
@@ -449,14 +449,14 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
             }
 
             return (
-              <div key={codigo} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col min-h-[190px]`}>
+              <div key={codigo} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col `}>
                 <div
                   onClick={() => toggleExpandir(codigo as number)}
                   className="flex cursor-pointer items-start justify-between gap-3 transition"
                 >
                   <div className="flex flex-col gap-1 w-full">
                     <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-bold text-zinc-200 group-hover:text-green-400 transition line-clamp-2">{poder.Nome}</span>
+                    <span className="font-bold text-zinc-200 group-hover:text-green-400 transition truncate">{poder.Nome}</span>
                     {ehParanormal && 'Elemento' in poder && poder.Elemento && (
                       <span
                         className={`inline-block rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight ${
@@ -481,7 +481,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                     )}
                   </div>
                   <div 
-                    className={`text-[11px] text-zinc-400 mt-1 leading-relaxed ${estaExpandido ? 'whitespace-pre-wrap' : 'line-clamp-2'}`}
+                    className={`text-[11px] text-zinc-400 mt-1 leading-relaxed ${estaExpandido ? 'whitespace-pre-wrap' : 'truncate'}`}
                     dangerouslySetInnerHTML={{ __html: formatarDescricao(poder.Descricao) }} 
                   />
                 </div>
@@ -491,7 +491,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                     </span>
                   </div>
                 </div>
-                <div className="flex flex-wrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 mt-3">
+                <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2 mt-3">
                   <div className="flex flex-wrap items-center justify-end gap-3 w-full">
                     {escolhendoElementoId != null && escolhendoElementoId === codigo ? (
                       <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800">

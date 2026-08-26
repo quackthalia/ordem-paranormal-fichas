@@ -156,7 +156,7 @@ export function ModalTrilhas({
                 const nexLevels = [10, 40, 65, 99];
 
                 return (
-                  <div key={trilha.Codigo_Trilha} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col min-h-[190px]`}>
+                  <div key={trilha.Codigo_Trilha} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col `}>
                     <div
                       onClick={() => setTrilhasModalExpandidas(prev => prev.includes(trilha.Codigo_Trilha) ? prev.filter(i => i !== trilha.Codigo_Trilha) : [...prev, trilha.Codigo_Trilha])}
                       className="flex cursor-pointer justify-between items-start mb-2"
@@ -172,8 +172,8 @@ export function ModalTrilhas({
                       </span>
                     </div>
 
-                    <Collapse isOpen={estaExpandida} previewHeight="4.5em">
-                      <div className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap min-h-[4.5em]" dangerouslySetInnerHTML={{ __html: formatarDescricao(trilha.Descricao_Trilha) }} />
+                    <Collapse isOpen={estaExpandida} previewHeight="3.2em">
+                      <div className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap min-h-[3.2em]" dangerouslySetInnerHTML={{ __html: formatarDescricao(trilha.Descricao_Trilha) }} />
                     </Collapse>
 
                     <Collapse isOpen={estaExpandida}>
@@ -212,7 +212,7 @@ export function ModalTrilhas({
                               <Collapse isOpen={isHabExpanded}>
                                 <div className="px-3 py-2 border-t border-zinc-800/50 bg-zinc-950/80">
                                   <div
-                                    className="text-[11px] leading-relaxed text-zinc-400 min-h-[4.5em]"
+                                    className="text-[11px] leading-relaxed text-zinc-400 min-h-[3.2em]"
                                     dangerouslySetInnerHTML={{ __html: formatarDescricao(descHab) }}
                                   />
                                 </div>
@@ -228,7 +228,7 @@ export function ModalTrilhas({
                       </div>
                     </Collapse>
 
-                    <div className="flex flex-wrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-3">
+                    <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-3">
                       <button
                         onClick={(e) => { e.stopPropagation(); handleEscolher(trilha); }}
                         className="ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
@@ -247,7 +247,7 @@ export function ModalTrilhas({
                 const nexLevels = [10, 40, 65, 99];
 
                 return (
-                  <div key={trilha.Codigo_Trilha} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col min-h-[190px]`}>
+                  <div key={trilha.Codigo_Trilha} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col `}>
                     <div
                       onClick={() => setTrilhasModalExpandidas(prev => prev.includes(trilha.Codigo_Trilha) ? prev.filter(i => i !== trilha.Codigo_Trilha) : [...prev, trilha.Codigo_Trilha])}
                       className="flex cursor-pointer justify-between items-start mb-2"
@@ -263,8 +263,8 @@ export function ModalTrilhas({
                       </span>
                     </div>
 
-                    <Collapse isOpen={estaExpandida} previewHeight="4.5em">
-                      <div className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap min-h-[4.5em]" dangerouslySetInnerHTML={{ __html: formatarDescricao(trilha.Descricao_Trilha) }} />
+                    <Collapse isOpen={estaExpandida} previewHeight="3.2em">
+                      <div className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap min-h-[3.2em]" dangerouslySetInnerHTML={{ __html: formatarDescricao(trilha.Descricao_Trilha) }} />
                     </Collapse>
 
                     <Collapse isOpen={estaExpandida}>
@@ -303,7 +303,7 @@ export function ModalTrilhas({
                               <Collapse isOpen={isHabExpanded}>
                                 <div className="px-3 py-2 border-t border-zinc-800/50 bg-zinc-950/80">
                                   <div
-                                    className="text-[11px] leading-relaxed text-zinc-400 min-h-[4.5em]"
+                                    className="text-[11px] leading-relaxed text-zinc-400 min-h-[3.2em]"
                                     dangerouslySetInnerHTML={{ __html: formatarDescricao(descHab) }}
                                   />
                                 </div>
@@ -319,7 +319,7 @@ export function ModalTrilhas({
                       </div>
                     </Collapse>
 
-                    <div className="flex flex-wrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-3">
+                    <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-3">
                       <button
                         onClick={(e) => { e.stopPropagation(); handleEscolher(trilha); }}
                         className="ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"

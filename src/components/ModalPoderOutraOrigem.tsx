@@ -101,14 +101,14 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
               const bloqRitual = precisaEscolherRitual && rituaisAprendidos.length === 0;
 
               return (
-                <div key={origem.Codigo_Origem} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col min-h-[190px]`}>
+                <div key={origem.Codigo_Origem} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col `}>
                   <div className="flex justify-between items-center cursor-pointer transition">
                     <button onClick={(e) => { e.stopPropagation(); setExpandidos(prev => prev.includes(origem.Codigo_Origem) ? prev.filter(id => id !== origem.Codigo_Origem) : [...prev, origem.Codigo_Origem]); }} className="flex flex-1 items-center gap-3 bg-transparent text-left outline-none font-bold text-zinc-200 group-hover:text-green-400 transition">
                       <span className="text-sm font-bold text-zinc-200 group-hover:text-green-400 transition">{origem.Nome}</span>
                     </button>
                     <div className="flex items-center gap-3"><span className="text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span></div>
                   </div>
-                  <div className="flex flex-wrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 mt-3">
+                  <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2 mt-3">
                     <div className="flex items-center justify-end w-full gap-2">
                       {!alreadyHas && escolhendoElementoId === origem.Codigo_Origem ? (
                         <div className="flex gap-1 items-center bg-zinc-950 p-1 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>

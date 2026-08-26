@@ -218,14 +218,14 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                 return (
                   <div 
                     key={arma.Codigo_Arma} 
-                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col min-h-[220px]`}
+                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col `}
                   >
                     {/* Bloco fechado */}
                     <div
-                      className="flex items-start justify-between gap-2 mb-2 cursor-pointer h-[3rem]"
+                      className="flex items-start justify-between gap-2 mb-2 cursor-pointer "
                       onClick={() => toggleExpandir(arma.Codigo_Arma)}
                     >
-                      <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 line-clamp-2">
+                      <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 truncate">
                         {arma.Nome_Item}
                       </h3>
                       
@@ -259,7 +259,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                     </div>
                     
                     <div className="flex-1 cursor-pointer flex flex-col" onClick={() => toggleExpandir(arma.Codigo_Arma)}>
-                      <div className="flex items-center flex-wrap gap-4 text-xs text-zinc-300 mb-2">
+                      <div className="flex items-center flex-nowrap gap-3 text-xs overflow-hidden text-zinc-300 mb-2">
                         <span>
                           <span className="font-bold text-green-400">Dado:</span> {arma.Dano_Arma}
                         </span>
@@ -271,7 +271,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                         {arma.dt_item && <span><span className="font-bold text-green-400">DT:</span> {calcularDT(arma.dt_item, arma.Categoria_Item?.toLowerCase().includes('explosivos') || arma.Nome_Item?.toLowerCase().includes('explosivo'))}</span>}
                       </div>
                       
-                      <div className="text-[11px] mb-3 block text-zinc-400">
+                      <div className="text-[11px] mb-3 block text-zinc-400 truncate">
                         <span className="font-bold text-zinc-200">{arma.Proficiencia}</span>
                         <span className="text-zinc-600"> — </span>
                         <span className="italic">{arma.Tipo_Arma}</span>
@@ -283,8 +283,8 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                       </div>
 
                       <div className="flex flex-col gap-1 mt-1 mb-3">
-                            <Collapse isOpen={isExpanded} previewHeight="4.5em">
-                              <p className="text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none min-h-[4.5em]">{arma.Descricao_Item ? formatarTexto(arma.Descricao_Item) : 'Nenhuma descrição adicional.'}</p>
+                            <Collapse isOpen={isExpanded} previewHeight="3.2em">
+                              <p className="text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none min-h-[3.2em]">{arma.Descricao_Item ? formatarTexto(arma.Descricao_Item) : 'Nenhuma descrição adicional.'}</p>
                             </Collapse>
                           </div>
                         <Collapse isOpen={isExpanded}>
@@ -296,7 +296,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                         </Collapse>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2">
+                    <div className="flex flex-nowrap items-center gap-x-3 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2">
                       <span><span className="text-zinc-500 font-semibold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (arma['Espaços_Item'] === 0.5 || String(arma['Espaços_Item']) === '0,5' || String(arma['Espaços_Item']) === '0.5')) ? 0.25 : arma['Espaços_Item']}</span>
                       <span><span className="text-zinc-500 font-semibold">Categoria:</span> {arma.Categoria_Item}</span>
                       {arma.Alcance_Item && <span><span className="text-zinc-500 font-semibold">Alcance:</span> {arma.Alcance_Item}</span>}
@@ -324,14 +324,14 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                 return (
                   <div 
                     key={arma.Codigo_Arma} 
-                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col min-h-[220px]`}
+                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col `}
                   >
                     {/* Bloco fechado */}
                     <div
-                      className="flex items-start justify-between gap-2 mb-2 cursor-pointer h-[3rem]"
+                      className="flex items-start justify-between gap-2 mb-2 cursor-pointer "
                       onClick={() => toggleExpandir(arma.Codigo_Arma)}
                     >
-                      <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 line-clamp-2">
+                      <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 truncate">
                         {arma.Nome_Item}
                       </h3>
                       
@@ -365,7 +365,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                     </div>
                     
                     <div className="flex-1 cursor-pointer flex flex-col" onClick={() => toggleExpandir(arma.Codigo_Arma)}>
-                      <div className="flex items-center flex-wrap gap-4 text-xs text-zinc-300 mb-2">
+                      <div className="flex items-center flex-nowrap gap-3 text-xs overflow-hidden text-zinc-300 mb-2">
                         <span>
                           <span className="font-bold text-green-400">Dado:</span> {arma.Dano_Arma}
                         </span>
@@ -377,7 +377,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                         {arma.dt_item && <span><span className="font-bold text-green-400">DT:</span> {calcularDT(arma.dt_item, arma.Categoria_Item?.toLowerCase().includes('explosivos') || arma.Nome_Item?.toLowerCase().includes('explosivo'))}</span>}
                       </div>
                       
-                      <div className="text-[11px] mb-3 block text-zinc-400">
+                      <div className="text-[11px] mb-3 block text-zinc-400 truncate">
                         <span className="font-bold text-zinc-200">{arma.Proficiencia}</span>
                         <span className="text-zinc-600"> — </span>
                         <span className="italic">{arma.Tipo_Arma}</span>
@@ -389,8 +389,8 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                       </div>
 
                       <div className="flex flex-col gap-1 mt-1 mb-3">
-                            <Collapse isOpen={isExpanded} previewHeight="4.5em">
-                              <p className="text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none min-h-[4.5em]">{arma.Descricao_Item ? formatarTexto(arma.Descricao_Item) : 'Nenhuma descrição adicional.'}</p>
+                            <Collapse isOpen={isExpanded} previewHeight="3.2em">
+                              <p className="text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none min-h-[3.2em]">{arma.Descricao_Item ? formatarTexto(arma.Descricao_Item) : 'Nenhuma descrição adicional.'}</p>
                             </Collapse>
                           </div>
                         <Collapse isOpen={isExpanded}>
@@ -402,7 +402,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                         </Collapse>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2">
+                    <div className="flex flex-nowrap items-center gap-x-3 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2">
                       <span><span className="text-zinc-500 font-semibold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (arma['Espaços_Item'] === 0.5 || String(arma['Espaços_Item']) === '0,5' || String(arma['Espaços_Item']) === '0.5')) ? 0.25 : arma['Espaços_Item']}</span>
                       <span><span className="text-zinc-500 font-semibold">Categoria:</span> {arma.Categoria_Item}</span>
                       {arma.Alcance_Item && <span><span className="text-zinc-500 font-semibold">Alcance:</span> {arma.Alcance_Item}</span>}

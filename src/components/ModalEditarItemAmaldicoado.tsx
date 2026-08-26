@@ -128,7 +128,7 @@ export function ModalEditarItemAmaldicoado({
             <InputOtimizado 
               value={descricao}
               onChange={setDescricao}
-              className="w-full bg-zinc-900 border border-zinc-800 rounded p-2 text-zinc-200 outline-none focus:border-green-500/50 transition-colors min-h-[120px]"
+              className="w-full bg-zinc-900 border border-zinc-800 rounded p-2 text-zinc-200 outline-none focus:border-green-500/50 transition-colors "
               multiline
             />
           </div>

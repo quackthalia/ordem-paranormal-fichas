@@ -182,7 +182,7 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
                 contentEditable
                 suppressContentEditableWarning
                 onBlur={(e) => setDescricao(e.currentTarget.innerHTML)}
-                className="w-full p-3 text-sm text-zinc-100 outline-none overflow-y-auto min-h-[100px] max-h-[250px]"
+                className="w-full p-3 text-sm text-zinc-100 outline-none overflow-y-auto  max-h-[250px]"
               />
             </div>
           </div>

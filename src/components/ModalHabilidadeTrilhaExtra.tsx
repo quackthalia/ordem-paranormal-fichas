@@ -106,14 +106,14 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
                               <span className="text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
                             </div>
                             
-                            <Collapse isOpen={isExpanded} previewHeight="4.5em">
+                            <Collapse isOpen={isExpanded} previewHeight="3.2em">
                               <div 
-                                className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap min-h-[4.5em]" 
+                                className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap min-h-[3.2em]" 
                                 dangerouslySetInnerHTML={{ __html: formatarDescricao(descricao) }} 
                               />
                             </Collapse>
                             
-                            <div className="flex flex-wrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2">
+                            <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2">
                               {meetsNex ? (
                                 <button
                                   onClick={(e) => {
@@ -161,14 +161,14 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
                               <span className="text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
                             </div>
                             
-                            <Collapse isOpen={isExpanded} previewHeight="4.5em">
+                            <Collapse isOpen={isExpanded} previewHeight="3.2em">
                               <div 
-                                className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap min-h-[4.5em]" 
+                                className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap min-h-[3.2em]" 
                                 dangerouslySetInnerHTML={{ __html: formatarDescricao(descricao) }} 
                               />
                             </Collapse>
                             
-                            <div className="flex flex-wrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2">
+                            <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2">
                               {meetsNex ? (
                                 <button
                                   onClick={(e) => {

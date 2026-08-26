@@ -109,14 +109,14 @@ function PoderCard({
   const periciasDisponiveis = contextoPrereq ? Object.entries(contextoPrereq.nomesPericias).map(([id, nome]) => ({ id: Number(id), nome })).sort((a,b) => a.nome.localeCompare(b.nome)) : [];
 
   return (
-    <div className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col min-h-[170px]`}>
+    <div className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col `}>
       <div
         onClick={onToggle}
-        className="flex cursor-pointer items-start justify-between gap-3 mb-2 min-h-[2.5rem]"
+        className="flex cursor-pointer items-start justify-between gap-3 mb-2 "
       >
         <div className="flex flex-col gap-1">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="font-bold text-zinc-200 group-hover:text-green-400 transition line-clamp-2">{poder.Nome}</span>
+            <span className="font-bold text-zinc-200 group-hover:text-green-400 transition truncate">{poder.Nome}</span>
             {ehParanormal && paranormalData?.Elemento && (
               <span
                 className={`inline-block rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight ${
@@ -179,7 +179,7 @@ function PoderCard({
         </div>
       </Collapse>
 
-      <div className="flex flex-wrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-3 mt-3">
+      <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-3 mt-3">
         <div className="ml-auto flex items-center gap-2">
           {escolhendoElemento ? (
             <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800">

@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import type { Ritual, ClasseRPG } from '../types';
 import { sortPorElementoENome } from '../utils/rpgRules';
-import { Collapse } from './Collapse';
+import { Collapse }
+import { CustomSelect } from './CustomSelect'; from './Collapse';
 
 interface ModalRituaisProps {
   rituais: Ritual[];
@@ -71,8 +72,9 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
     return () => { document.body.style.overflow = 'unset'; };
   }, []);
 
-  const [abaElemento, setAbaElemento] = useState<string | null>(null);
-  const [abaCirculo, setAbaCirculo] = useState<number | null>(null);
+  const [filtroElemento, setFiltroElemento] = useState<string>('Todos');
+  const [mostrarFiltrosAvançados, setMostrarFiltrosAvançados] = useState(false);
+  const [filtroCirculo, setFiltroCirculo] = useState<string>('Todos');
   
   const [escolhendoElementoId, setEscolhendoElementoId] = useState<number | null>(null);
   const [expandidos, setExpandidos] = useState<number[]>([]);
@@ -89,19 +91,19 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
       if (r.Circulo_Ritual > limiteCirculo) return false;
       
       // Regra 3: Elemento Selecionado
-      if (abaElemento) {
+      if (filtroElemento !== 'Todos') {
         const isVaria = r.Elemento_Ritual.toLowerCase() === 'lista' || r.Elemento_Ritual.toLowerCase() === 'varia';
-        if (abaElemento === 'Varia') {
+        if (filtroElemento === 'Varia') {
           if (!isVaria) return false;
         } else {
           // Se for filtro ex: Sangue. Um ritual de Lista NÃO aparece em Sangue, ele só aparece em Varia.
-          if (isVaria || !r.Elemento_Ritual.toLowerCase().includes(abaElemento.toLowerCase())) return false;
+          if (isVaria || !r.Elemento_Ritual.toLowerCase().includes(filtroElemento.toLowerCase())) return false;
         }
       }
       
       // Regra 4: Círculo Selecionado
-      if (abaCirculo !== null) {
-        if (r.Circulo_Ritual !== abaCirculo) return false;
+      if (filtroCirculo !== 'Todos') {
+        if (r.Circulo_Ritual !== parseInt(filtroCirculo)) return false;
       }
       
       // Regra 5: Busca por nome
@@ -112,7 +114,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
 
       return true;
     }).sort((a, b) => sortPorElementoENome(a, b, r => r?.Elemento_Ritual, r => r?.Nome_Ritual));
-  }, [rituais, abaElemento, abaCirculo, limiteCirculo, rituaisAprendidosIds, busca]);
+  }, [rituais, filtroElemento, filtroCirculo, limiteCirculo, rituaisAprendidosIds, busca]);
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onClose}>
@@ -230,20 +232,61 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                     >
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2.5">
-                          <span className={`inline-flex items-center gap-1.5 rounded px-2 py-0.5 uppercase tracking-wider leading-tight ${
-                            (() => {
-                              const elStr = elementoSendoEscolhido.toLowerCase();
-                              if (elStr.includes('medo')) return 'bg-zinc-200/80 text-zinc-950 px-1';
-                              if (elStr.includes('sangue')) return 'text-red-500';
-                              if (elStr.includes('morte')) return 'bg-black/50 text-white px-1';
-                              if (elStr.includes('conhecimento')) return 'text-yellow-500';
-                              if (elStr.includes('energia')) return 'text-purple-500';
-                              return 'text-zinc-400';
-                            })()
-                          }`}>
-                            <span className="text-[9px] font-bold">{elementoSendoEscolhido}</span>
-                            <span className="text-[11px] font-black">{ritual.Circulo_Ritual}</span>
-                          </span>
+                          <span className="inline-flex items-center gap-1.5 rounded uppercase tracking-wider leading-tight">
+                              {(() => {
+                                const elStr = elementoSendoEscolhido;
+                                if (elStr.includes(' e ')) {
+                                  const partes = elStr.split(' e ');
+                                  const p1 = partes[0].trim();
+                                  const p2 = partes[1].trim();
+                                  
+                                  const c1 = (() => {
+                                    const l1 = p1.toLowerCase();
+                                    if(l1.includes('sangue')) return 'text-red-500';
+                                    if(l1.includes('conhecimento')) return 'text-yellow-500';
+                                    if(l1.includes('energia')) return 'text-purple-500';
+                                    if(l1.includes('morte')) return 'text-white bg-black/50 px-1 rounded';
+                                    if(l1.includes('medo')) return 'text-zinc-950 bg-zinc-200/80 px-1 rounded';
+                                    return 'text-zinc-400';
+                                  })();
+                                  
+                                  const c2 = (() => {
+                                    const l2 = p2.toLowerCase();
+                                    if(l2.includes('sangue')) return 'text-red-500';
+                                    if(l2.includes('conhecimento')) return 'text-yellow-500';
+                                    if(l2.includes('energia')) return 'text-purple-500';
+                                    if(l2.includes('morte')) return 'text-white bg-black/50 px-1 rounded';
+                                    if(l2.includes('medo')) return 'text-zinc-950 bg-zinc-200/80 px-1 rounded';
+                                    return 'text-zinc-400';
+                                  })();
+                                  
+                                  return (
+                                    <>
+                                      <span className={`text-[9px] font-bold ${c1}`}>{p1} <span className="text-zinc-400 font-normal lowercase">e</span></span>
+                                      <span className={`text-[9px] font-bold ${c2}`}>{p2}</span>
+                                      <span className={`text-[11px] font-black ${c2}`}>{ritual.Circulo_Ritual}</span>
+                                    </>
+                                  );
+                                }
+                                
+                                const c1 = (() => {
+                                  const l1 = elStr.toLowerCase();
+                                  if(l1.includes('sangue')) return 'text-red-500';
+                                  if(l1.includes('conhecimento')) return 'text-yellow-500';
+                                  if(l1.includes('energia')) return 'text-purple-500';
+                                  if(l1.includes('morte')) return 'text-white bg-black/50 px-1 rounded';
+                                  if(l1.includes('medo')) return 'text-zinc-950 bg-zinc-200/80 px-1 rounded';
+                                  return 'text-zinc-400';
+                                })();
+                                
+                                return (
+                                  <>
+                                    <span className={`text-[9px] font-bold ${c1}`}>{elStr}</span>
+                                    <span className={`text-[11px] font-black ${c1}`}>{ritual.Circulo_Ritual}</span>
+                                  </>
+                                );
+                              })()}
+                            </span>
                           <span className="font-bold text-zinc-200 group-hover:text-green-400 transition text-sm">{ritual.Nome_Ritual}</span>
                         </div>
                       </div>
@@ -262,8 +305,8 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                           {ritual.Resistencia_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Resistência: </span><span className="text-zinc-300">{ritual.Resistencia_Ritual?.split('/')[0].trim()}</span></div>}
                         </div>
                       </Collapse>
-                      <Collapse isOpen={expandido} previewHeight="36px">
-                        <div className="text-xs leading-relaxed text-zinc-400 min-h-[36px]">
+                      <Collapse isOpen={expandido} previewHeight="54px">
+                        <div className="text-xs leading-relaxed text-zinc-400 min-h-[54px]">
                           {ritual.Descricao_Ritual.split('\n').map((linha, idx) => (
                             <span key={idx} className="block mb-1" dangerouslySetInnerHTML={{ __html: formatarDescricao(linha) }} />
                           ))}
@@ -354,8 +397,8 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                           {ritual.Resistencia_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Resistência: </span><span className="text-zinc-300">{ritual.Resistencia_Ritual?.split('/')[0].trim()}</span></div>}
                         </div>
                       </Collapse>
-                      <Collapse isOpen={expandido} previewHeight="36px">
-                        <div className="text-xs leading-relaxed text-zinc-400 min-h-[36px]">
+                      <Collapse isOpen={expandido} previewHeight="54px">
+                        <div className="text-xs leading-relaxed text-zinc-400 min-h-[54px]">
                           {ritual.Descricao_Ritual.split('\n').map((linha, idx) => (
                             <span key={idx} className="block mb-1" dangerouslySetInnerHTML={{ __html: formatarDescricao(linha) }} />
                           ))}

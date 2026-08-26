@@ -140,7 +140,7 @@ function obterValorVersao(
 export const AbasPanel: React.FC = () => {
   const {
     abaDireita, setAbaDireita,
-    classe, nex,
+    atributos, classe, nex,
     poderesHook,
     origensHook,
     filtroHabilidades, setFiltroHabilidades,

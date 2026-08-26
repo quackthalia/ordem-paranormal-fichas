@@ -1042,7 +1042,7 @@ export function InventarioPanel() {
             <DragOverlay>
               {activeDragItem?.fullItem ? (
                 <div className="w-full">
-                  {activeDragItem.type === 'arma' && <SortableArmaItem item={activeDragItem.fullItem} isExpanded={false} toggleExpandir={() => {}} removerArma={() => {}} stringDT={activeDragItem.stringDT || null} isOverlay />}
+                  {activeDragItem.type === 'arma' && <SortableArmaItem item={activeDragItem.fullItem} isExpanded={false} toggleExpandir={() => {}} removerArma={() => {}} stringDT={activeDragItem.stringDT || null} isOverlay onAddMunicao={() => {}} />}
                   {activeDragItem.type === 'protecao' && <SortableProtecaoItem item={activeDragItem.fullItem} isExpanded={false} toggleExpandir={() => {}} removerProtecao={() => {}} toggleEquipado={() => {}} isOverlay />}
                   {activeDragItem.type === 'item' && <SortableItemGeral item={activeDragItem.fullItem} isExpanded={false} toggleExpandir={() => {}} removerItem={() => {}} stringDT={null} toggleEquipado={() => {}} isOverlay />}
                   {activeDragItem.type === 'municao' && <SortableMunicaoItem id={activeDragItem.id} item={activeDragItem.fullItem} isExpanded={false} toggleExpandir={() => {}} removerItem={() => {}} isOverlay />}
@@ -1403,14 +1403,8 @@ function SortableArmaItem({
                           if (compativeis.length === 1) {
                             const idM = municoesHook?.adicionarMunicao(compativeis[0]);
                             if (idM) armasHook?.acoplarMunicao(id, idM);
-                          } else {
-                            if ((window as any)._inventarioPanelSetters) {
-                              const setters = (window as any)._inventarioPanelSetters;
-                              setters.setMunicaoTargetArmaId(id);
-                              setters.setMunicaoFiltroNome(arma.Nome_Item);
-                              setters.setMunicaoFiltroCategoria(arma.Categoria_Item);
-                              setters.setModalMunicoesAberto(true);
-                            }
+                          } else if (onAddMunicao) {
+                            onAddMunicao();
                           }
                         }}
                         className="text-xs px-3 py-1.5 rounded bg-zinc-900 border border-zinc-700 hover:border-blue-700 hover:bg-blue-900/20 text-zinc-300 hover:text-blue-400 transition-colors"

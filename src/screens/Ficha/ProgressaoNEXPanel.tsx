@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRPG } from '../../context/RPGContext';
 import { ToolbarFormato } from '../../components/ToolbarFormato';
 import { obterCorBadge } from '../../utils/rpgRules';
@@ -70,6 +70,16 @@ const ProgressaoBlock = ({ item, nexPatamar }: { item: ProgressaoNexItem, nexPat
   const podeTranscender = [25, 35, 50, 60, 75, 90].includes(nexPatamar);
   const temPoderEscolhido = !!poderesHook.poderesEscolhidos[chaveTranscender];
   const poder = poderesHook.poderesEscolhidos[chaveTranscender];
+
+  
+  useEffect(() => {
+    if (isEditing) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [isEditing]);
 
   const handleEditClick = () => {
     setEditText(progressaoNexEditados[item.Codigo_Progrecao] || item.Desc_Progrecao);

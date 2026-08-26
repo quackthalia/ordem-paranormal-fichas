@@ -178,6 +178,16 @@ export const AbasPanel: React.FC = () => {
 
   const { poderClasse, poderesClasse, poderesEscolhidos, poderesParanormais, removerPoder, listaPoderesUtilidade, escolherPoderExtra } = poderesHook;
   const { origemSelecionada } = origensHook;
+
+  React.useEffect(() => {
+    if (ritualEditandoOrigem) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [ritualEditandoOrigem]);
+
   const { afinidadeEscolhida, afinidadeAtiva, nivel, regrasAutomaticasAtivas } = useRPG();
   const effectiveNex = regras['nex_experiencia'] ? (nivel * 5) : nex;
 

@@ -1395,16 +1395,39 @@ function SortableArmaItem({
           
           <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-zinc-800/50">
             {id !== 'coronhada-virtual' && (
-              <>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEditar?.();
-                  }}
-                  className="text-xs px-3 py-1.5 rounded bg-zinc-900 border border-zinc-700 hover:border-yellow-700 hover:bg-yellow-900/20 text-zinc-300 hover:text-yellow-400 transition-colors"
-                >
-                  Editar
-                </button>
+                <>
+                  {arma.Capacidade_Municao != null && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const compativeis = municoesHook?.getMunicoesCompativeis?.(arma.Nome_Item, arma.Categoria_Item) || [];
+                        if (compativeis.length === 1) {
+                          const idM = municoesHook?.adicionarMunicao(compativeis[0]);
+                          if (idM) armasHook?.acoplarMunicao(id, idM);
+                        } else {
+                          if ((window as any)._inventarioPanelSetters) {
+                            const setters = (window as any)._inventarioPanelSetters;
+                            setters.setMunicaoTargetArmaId(id);
+                            setters.setMunicaoFiltroNome(arma.Nome_Item);
+                            setters.setMunicaoFiltroCategoria(arma.Categoria_Item);
+                            setters.setModalMunicoesAberto(true);
+                          }
+                        }
+                      }}
+                      className="text-xs px-3 py-1.5 rounded bg-zinc-900 border border-zinc-700 hover:border-blue-700 hover:bg-blue-900/20 text-zinc-300 hover:text-blue-400 transition-colors"
+                    >
+                      + Munição
+                    </button>
+                  )}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEditar?.();
+                    }}
+                    className="text-xs px-3 py-1.5 rounded bg-zinc-900 border border-zinc-700 hover:border-yellow-700 hover:bg-yellow-900/20 text-zinc-300 hover:text-yellow-400 transition-colors"
+                  >
+                    Editar
+                  </button>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();

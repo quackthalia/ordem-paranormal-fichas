@@ -25,8 +25,8 @@ export function ModificacoesSelector({
   useEffect(() => {
     if (selecionando && dropdownRef.current) {
       setTimeout(() => {
-        dropdownRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }, 150);
+        dropdownRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
     }
   }, [selecionando]);
 

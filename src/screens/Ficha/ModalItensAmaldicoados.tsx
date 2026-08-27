@@ -33,15 +33,14 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
   const itensFiltrados = useMemo(() => {
     return itens.filter(item => {
       const matchBusca = item.Nome_Ama.toLowerCase().includes(busca.toLowerCase());
-      const matchCat = categoriaSelecionada === 'Todos' || item.Categoria_Ama === categoriaSelecionada;
       
       let matchElemento = true;
-      if (elementoSelecionado !== 'Todos') {
+      if (abaElemento) {
         const itemEl = item.Elemento_Ama?.toLowerCase() || '';
-        matchElemento = itemEl.includes(elementoSelecionado.toLowerCase());
+        matchElemento = itemEl.includes(abaElemento.toLowerCase());
       }
 
-      return matchBusca && matchCat && matchElemento;
+      return matchBusca && matchElemento;
     }).sort((a, b) => {
       const elementOrder: Record<string, number> = {
         'sangue': 1,

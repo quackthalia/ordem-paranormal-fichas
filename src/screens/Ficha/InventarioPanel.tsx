@@ -36,6 +36,17 @@ import { SortableItemAmaldicoado } from '../../components/SortableItemAmaldicoad
 
 import { formatarTexto } from '../../utils/formatters';
 import { calcularCategoriaFinal } from '../../utils/rpgRules';
+
+  const getCorElementoTexto = (elemento: string) => {
+    const e = elemento.toLowerCase();
+    if (e.includes('sangue')) return 'text-red-500';
+    if (e.includes('morte')) return 'text-zinc-400 font-bold';
+    if (e.includes('energia')) return 'text-purple-500';
+    if (e.includes('conhec')) return 'text-yellow-500';
+    if (e.includes('medo')) return 'text-white';
+    return 'text-zinc-400';
+  };
+
 const restrictToTopAndVerticalAxis: Modifier = ({ transform, activeNodeRect }) => {
   if (!activeNodeRect) {
     return { ...transform, x: 0 };
@@ -104,6 +115,7 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
 
   const [expandirMods, setExpandirMods] = useState(false);
   const modsAtuais = (item.modificacoes || []).map(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)).filter(Boolean) as any[];
+    const maldicoesAtuais = (item.maldicoes || []).map(id => maldicoesHook?.maldicoes.find(m => m.Codigo_Mald === id)).filter(Boolean) as any[];
 
   const {
     attributes,
@@ -192,6 +204,21 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
                 </span>
               </div>
             )}
+              {maldicoesAtuais.length > 0 && (
+                <div className="flex items-center mt-1 min-w-0">
+                  <span className="text-[11px] text-zinc-400 truncate italic flex gap-1">
+                    {maldicoesAtuais.map((m: any, i: number) => {
+                      const cor = getCorElementoTexto(m.Elemento_Mald);
+                      return (
+                        <React.Fragment key={m.Codigo_Mald}>
+                          {i > 0 && <span>•</span>}
+                          <span className={cor}>{m.Nome_Mald}</span>
+                        </React.Fragment>
+                      )
+                    })}
+                  </span>
+                </div>
+              )}
           </div>
         </div>
 
@@ -249,6 +276,21 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
                 </Collapse>
               </div>
             )}
+              {maldicoesAtuais.length > 0 && (
+                <div className="flex items-center mt-1 min-w-0">
+                  <span className="text-[11px] text-zinc-400 truncate italic flex gap-1">
+                    {maldicoesAtuais.map((m: any, i: number) => {
+                      const cor = getCorElementoTexto(m.Elemento_Mald);
+                      return (
+                        <React.Fragment key={m.Codigo_Mald}>
+                          {i > 0 && <span>•</span>}
+                          <span className={cor}>{m.Nome_Mald}</span>
+                        </React.Fragment>
+                      )
+                    })}
+                  </span>
+                </div>
+              )}
 
               {((item.maldicoes || []).length > 0) && (
                 <div className="mt-2 border border-zinc-800 rounded bg-zinc-900/50 overflow-hidden">
@@ -1251,6 +1293,7 @@ function SortableArmaItem({
   const [expandirMods, setExpandirMods] = useState(false);
 
   const modsAtuais = (item.modificacoes || []).map(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)).filter(Boolean) as any[];
+    const maldicoesAtuais = (item.maldicoes || []).map(id => maldicoesHook?.maldicoes.find(m => m.Codigo_Mald === id)).filter(Boolean) as any[];
 
   const municoesAcopladasList = (item.municoesAcopladas || []).map(mid => {
     return municoesHook?.municoesInventario.find(m => m.id === mid);
@@ -1353,6 +1396,21 @@ function SortableArmaItem({
                 </span>
               </div>
             )}
+              {maldicoesAtuais.length > 0 && (
+                <div className="flex items-center mt-1 min-w-0">
+                  <span className="text-[11px] text-zinc-400 truncate italic flex gap-1">
+                    {maldicoesAtuais.map((m: any, i: number) => {
+                      const cor = getCorElementoTexto(m.Elemento_Mald);
+                      return (
+                        <React.Fragment key={m.Codigo_Mald}>
+                          {i > 0 && <span>•</span>}
+                          <span className={cor}>{m.Nome_Mald}</span>
+                        </React.Fragment>
+                      )
+                    })}
+                  </span>
+                </div>
+              )}
           </div>
           
           <div className="flex items-center gap-3 flex-shrink-0">
@@ -1435,6 +1493,21 @@ function SortableArmaItem({
                     ))}
                   </div>
                 )}
+              {maldicoesAtuais.length > 0 && (
+                <div className="flex items-center mt-1 min-w-0">
+                  <span className="text-[11px] text-zinc-400 truncate italic flex gap-1">
+                    {maldicoesAtuais.map((m: any, i: number) => {
+                      const cor = getCorElementoTexto(m.Elemento_Mald);
+                      return (
+                        <React.Fragment key={m.Codigo_Mald}>
+                          {i > 0 && <span>•</span>}
+                          <span className={cor}>{m.Nome_Mald}</span>
+                        </React.Fragment>
+                      )
+                    })}
+                  </span>
+                </div>
+              )}
               </div>
             )}
           </div>
@@ -1530,6 +1603,7 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
   const { modificacoesHook, maldicoesHook, regrasAutomaticasAtivas, regras } = useRPG();
   const [expandirMods, setExpandirMods] = useState(false);
   const modsAtuais = (item.modificacoes || []).map(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)).filter(Boolean) as any[];
+    const maldicoesAtuais = (item.maldicoes || []).map(id => maldicoesHook?.maldicoes.find(m => m.Codigo_Mald === id)).filter(Boolean) as any[];
 
   const style = isOverlay ? {} : {
     transform: CSS.Translate.toString(transform),
@@ -1578,6 +1652,21 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
                 </span>
               </div>
             )}
+              {maldicoesAtuais.length > 0 && (
+                <div className="flex items-center mt-1 min-w-0">
+                  <span className="text-[11px] text-zinc-400 truncate italic flex gap-1">
+                    {maldicoesAtuais.map((m: any, i: number) => {
+                      const cor = getCorElementoTexto(m.Elemento_Mald);
+                      return (
+                        <React.Fragment key={m.Codigo_Mald}>
+                          {i > 0 && <span>•</span>}
+                          <span className={cor}>{m.Nome_Mald}</span>
+                        </React.Fragment>
+                      )
+                    })}
+                  </span>
+                </div>
+              )}
           </div>
           
           <div className="flex items-center gap-3 flex-shrink-0">
@@ -1618,6 +1707,21 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
                     ))}
                   </div>
                 )}
+              {maldicoesAtuais.length > 0 && (
+                <div className="flex items-center mt-1 min-w-0">
+                  <span className="text-[11px] text-zinc-400 truncate italic flex gap-1">
+                    {maldicoesAtuais.map((m: any, i: number) => {
+                      const cor = getCorElementoTexto(m.Elemento_Mald);
+                      return (
+                        <React.Fragment key={m.Codigo_Mald}>
+                          {i > 0 && <span>•</span>}
+                          <span className={cor}>{m.Nome_Mald}</span>
+                        </React.Fragment>
+                      )
+                    })}
+                  </span>
+                </div>
+              )}
               </div>
             )}
           </div>
@@ -1682,6 +1786,7 @@ function SortableProtecaoItem({
   const [expandirMods, setExpandirMods] = useState(false);
 
   const modsAtuais = (item.modificacoes || []).map(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)).filter(Boolean) as any[];
+    const maldicoesAtuais = (item.maldicoes || []).map(id => maldicoesHook?.maldicoes.find(m => m.Codigo_Mald === id)).filter(Boolean) as any[];
 
   const style = isOverlay ? {} : {
     transform: CSS.Translate.toString(transform),
@@ -1734,6 +1839,21 @@ function SortableProtecaoItem({
                 </span>
               </div>
             )}
+              {maldicoesAtuais.length > 0 && (
+                <div className="flex items-center mt-1 min-w-0">
+                  <span className="text-[11px] text-zinc-400 truncate italic flex gap-1">
+                    {maldicoesAtuais.map((m: any, i: number) => {
+                      const cor = getCorElementoTexto(m.Elemento_Mald);
+                      return (
+                        <React.Fragment key={m.Codigo_Mald}>
+                          {i > 0 && <span>•</span>}
+                          <span className={cor}>{m.Nome_Mald}</span>
+                        </React.Fragment>
+                      )
+                    })}
+                  </span>
+                </div>
+              )}
           </div>
         </div>
         
@@ -1801,6 +1921,21 @@ function SortableProtecaoItem({
                     ))}
                   </div>
                 )}
+              {maldicoesAtuais.length > 0 && (
+                <div className="flex items-center mt-1 min-w-0">
+                  <span className="text-[11px] text-zinc-400 truncate italic flex gap-1">
+                    {maldicoesAtuais.map((m: any, i: number) => {
+                      const cor = getCorElementoTexto(m.Elemento_Mald);
+                      return (
+                        <React.Fragment key={m.Codigo_Mald}>
+                          {i > 0 && <span>•</span>}
+                          <span className={cor}>{m.Nome_Mald}</span>
+                        </React.Fragment>
+                      )
+                    })}
+                  </span>
+                </div>
+              )}
               </div>
             )}
           </div>

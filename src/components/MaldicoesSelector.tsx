@@ -20,6 +20,7 @@ export function MaldicoesSelector({
   podeAdicionar
 }: MaldicoesSelectorProps) {
   const [selecionando, setSelecionando] = useState(false);
+  const [subAbaElemento, setSubAbaElemento] = useState<string | null>(null);
 
   // Mapeia os IDs aplicados de volta para os objetos Maldicao
   const aplicadas = maldicoesAplicadas
@@ -43,7 +44,13 @@ export function MaldicoesSelector({
     if (elementoOpcao === 'energia' && temConhecimento) return false;
     if (elementoOpcao.includes('conhec') && temEnergia) return false;
 
+    
+    if (subAbaElemento) {
+      if (!opcao.Elemento_Mald.trim().toLowerCase().includes(subAbaElemento.toLowerCase())) return false;
+    }
+
     return true;
+  
   });
 
   
@@ -76,6 +83,35 @@ export function MaldicoesSelector({
 
       <Collapse isOpen={selecionando}>
         <div className="rounded border border-indigo-900 bg-zinc-950 p-2 shadow-lg mb-2">
+          <div className="flex flex-wrap items-center gap-2 border-b border-zinc-800 pb-2 mb-2 px-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Filtro:</span>
+            <button
+              onClick={() => setSubAbaElemento(null)}
+              className={`rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider transition ${
+                subAbaElemento === null
+                  ? 'bg-green-900/40 text-green-300 border border-green-800'
+                  : 'bg-zinc-800/60 text-zinc-500 border border-zinc-700 hover:text-zinc-300'
+              }`}
+            >
+              Todos
+            </button>
+            {['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo'].map(elem => {
+              const ativo = subAbaElemento === elem;
+              return (
+                <button
+                  key={elem}
+                  onClick={() => setSubAbaElemento(elem)}
+                  className={`rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider transition border ${
+                    ativo
+                      ? 'bg-green-900/40 text-green-300 border-green-800'
+                      : 'bg-zinc-800/60 text-zinc-500 border-zinc-700 hover:text-zinc-300'
+                  }`}
+                >
+                  {elem}
+                </button>
+              );
+            })}
+          </div>
           <div className="text-[10px] font-bold text-zinc-500 mb-2 uppercase tracking-wider px-2">
             Selecione uma maldição
           </div>

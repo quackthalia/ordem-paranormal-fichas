@@ -18,7 +18,7 @@ export const BonusCondicionaisPanel: React.FC = () => {
       <div className="flex flex-col p-4 gap-4">
         {/* CONDICIONAIS */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold ml-1 mb-1">Situações Específicas</label>
+          <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold ml-1 mb-1">Condicionais</label>
           <div className="flex flex-col gap-1">
             {regrasAutomaticasAtivas.has(30) && (
               <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">

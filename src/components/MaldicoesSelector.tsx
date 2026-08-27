@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import type { Maldicao } from '../types';
 import { Collapse } from './Collapse';
 
@@ -64,7 +64,11 @@ export function MaldicoesSelector({
           type="button"
           onClick={() => setSelecionando(!selecionando)}
           disabled={!podeAdicionar && !selecionando}
-          className={\px-4 py-1.5 text-xs font-bold text-white rounded transition \\}
+          className={`px-4 py-1.5 text-xs font-bold text-white rounded transition ${
+            !podeAdicionar && !selecionando 
+              ? 'bg-zinc-800 cursor-not-allowed text-zinc-500' 
+              : 'bg-indigo-700 hover:bg-indigo-600'
+          }`}
         >
           {selecionando ? 'Cancelar' : 'Adicionar'}
         </button>
@@ -88,11 +92,11 @@ export function MaldicoesSelector({
                       onAdd(opcao.Codigo_Mald);
                       setSelecionando(false);
                     }}
-                    className={\lex flex-col px-3 py-2 rounded border cursor-pointer transition-colors hover:bg-opacity-50 \\}
+                    className={`flex flex-col px-3 py-2 rounded border cursor-pointer transition-colors hover:bg-opacity-50 ${cores.split(' ').filter(c => c.startsWith('border') || c.startsWith('bg')).join(' ')}`}
                   >
                     <div className="flex justify-between items-center">
-                      <span className={\ont-bold text-sm \\}>{opcao.Nome_Mald}</span>
-                      <span className={\	ext-[10px] px-1.5 py-0.5 rounded border uppercase tracking-widest \\}>{opcao.Elemento_Mald}</span>
+                      <span className={`font-bold text-sm ${cores.split(' ').find(c => c.startsWith('text'))}`}>{opcao.Nome_Mald}</span>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded border uppercase tracking-widest ${cores}`}>{opcao.Elemento_Mald}</span>
                     </div>
                     <span className="text-xs text-zinc-400 mt-1">{opcao.Descricao_Mald}</span>
                     {opcao.Efeito && (
@@ -116,14 +120,14 @@ export function MaldicoesSelector({
             const cores = getCorElemento(mod.Elemento_Mald);
             return (
               <div 
-                key={\\-\\}
+                key={`${mod.Codigo_Mald}-${index}`}
                 className="flex items-center justify-between p-4 bg-zinc-900/50 border-l-[3px] border-zinc-800"
                 style={{ borderLeftColor: cores.includes('text-red') ? '#f87171' : cores.includes('text-purple') ? '#c084fc' : cores.includes('text-amber') ? '#fbbf24' : cores.includes('text-zinc') ? '#a1a1aa' : '#ffffff' }}
               >
                 <div className="flex flex-col gap-1 flex-1 pr-6">
                   <div className="flex items-center gap-2">
-                    <span className={\ont-bold text-[15px] \\}>{mod.Nome_Mald}</span>
-                    <span className={\	ext-[10px] px-1.5 py-0.5 rounded border uppercase tracking-widest \\}>{mod.Elemento_Mald}</span>
+                    <span className={`font-bold text-[15px] ${cores.split(' ').find(c => c.startsWith('text'))}`}>{mod.Nome_Mald}</span>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded border uppercase tracking-widest ${cores}`}>{mod.Elemento_Mald}</span>
                   </div>
                   <p className="text-sm text-zinc-400 leading-relaxed">
                     {mod.Descricao_Mald}

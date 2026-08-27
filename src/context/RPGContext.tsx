@@ -21,6 +21,7 @@ import { useProtecoes } from '../hooks/useProtecoes';
 import { useItens } from '../hooks/useItens';
 import { useItensAmaldicoados } from '../hooks/useItensAmaldicoados';
 import { calcularBonusVestimentas, type VestimentasBonus } from '../utils/vestimentasRules';
+import { calcularBonusMaldicoes, type MaldicoesBonusGlobais } from '../utils/maldicoesRules';
 import { useModificacoes } from '../hooks/useModificacoes';
 import { useMaldicoes } from '../hooks/useMaldicoes';
 import { capMaximoAtributo, pontosIniciaisPorNex, calcularStatusBase } from '../utils/rpgRules';
@@ -51,6 +52,7 @@ interface RPGContextType {
   itensHook: ReturnType<typeof useItens>;
   itensAmaldicoadosHook: ReturnType<typeof useItensAmaldicoados>;
   bonusVestimentas: VestimentasBonus;
+  bonusMaldicoes: MaldicoesBonusGlobais;
   toggleVestimentaGeral: (id: string, isAmaldicoado: boolean) => void;
   modificacoesHook: ReturnType<typeof useModificacoes>;
   maldicoesHook: ReturnType<typeof useMaldicoes>;
@@ -338,12 +340,12 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const atributosBaseComBonus = useMemo(() => {
     const obj = { ...atributos };
     (Object.keys(obj) as AtributoKey[]).forEach(k => {
-      obj[k] += bonusAtributos[k];
+      obj[k] += bonusAtributos[k] + (bonusMaldicoes.atributos[k] || 0);
     });
     return obj;
   }, [atributos, bonusAtributos]);
 
-  const status = useStatus(classe, nex, nivel, atributosBaseComBonus, paranormalPenalty, regrasAutomaticasAtivas, bonusVestimentas.pv, bonusVestimentas.pe);
+  const status = useStatus(classe, nex, nivel, atributosBaseComBonus, paranormalPenalty, regrasAutomaticasAtivas, bonusVestimentas.pv + bonusMaldicoes.pv, bonusVestimentas.pe + bonusMaldicoes.pe);
 
   const atributosFinais = useMemo(() => {
     const obj = { ...atributosBaseComBonus };
@@ -427,7 +429,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     regrasAutomaticasAtivas, 
     poderesHook.poderesEscolhidos,
     origensHook.origemSelecionada,
-    bonusVestimentas.pericias
+    (() => { const comb = {...bonusVestimentas.pericias}; Object.keys(bonusMaldicoes.pericias || {}).forEach(k => { comb[k] = (comb[k] || 0) + bonusMaldicoes.pericias[k]; }); return comb; })()
   );
 
   // ============================================================
@@ -502,7 +504,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     return acc + defVal;
   }, 0);
 
-  const defesaTotal = 10 + atributos.AGI + bonusAtributos.AGI + defEquip + defOutros + defOutrosBonusRegra4 + defOutrosBonusRegra12 + defOutrosBonusRegra21 + defOutrosBonusRegra25 + totalDefesaProtecoes;
+  const defesaTotal = 10 + atributos.AGI + bonusAtributos.AGI + defEquip + defOutros + defOutrosBonusRegra4 + defOutrosBonusRegra12 + defOutrosBonusRegra21 + defOutrosBonusRegra25 + totalDefesaProtecoes + (bonusVestimentas?.defesa || 0) + (bonusMaldicoes?.defesa || 0);
 
   // ============================================================
   // UTILITÁRIOS
@@ -543,7 +545,8 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     bonusAtributos, setBonusAtributos,
     pontosRestantes, alterarAtributo,
     status, periciasHook, poderesHook, origensHook, trilhasHook, rituaisHook, inventarioHook, armasHook, municoesHook, protecoesHook, itensHook, itensAmaldicoadosHook, toggleVestimentaGeral, modificacoesHook, maldicoesHook, bonusVestimentas,
-    abaDireita, setAbaDireita,
+      bonusMaldicoes,
+      abaDireita, setAbaDireita,
     abaModalPoderes, setAbaModalPoderes,
     tipoModalPoderes, setTipoModalPoderes,
     defEquip, setDefEquip,

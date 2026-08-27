@@ -176,7 +176,7 @@ function DefesaPanel() {
                   const bonusRegra21 = (regrasAutomaticasAtivas.has(21) && temProtecaoPesada) ? 2 : 0;
                   const temProtecaoLeve = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('leve')) || false;
                   const bonusRegra25 = (regrasAutomaticasAtivas.has(25) && temProtecaoLeve) ? 2 : 0;
-                  return defOutros + defOutrosBonusRegra + bonusRegra21 + bonusRegra25 + totalDefesaProtecoes || '';
+                  return defOutros + defOutrosBonusRegra + bonusRegra21 + bonusRegra25 + totalDefesaProtecoes + (bonusVestimentas?.defesa || 0) + (bonusMaldicoes?.defesa || 0) || '';
                 })()}
                 placeholder="0"
                 title="Outros bônus de defesa"
@@ -235,12 +235,12 @@ function ProtecoesPanel() {
     imunidades, setImunidades,
     vulnerabilidades, setVulnerabilidades,
     regrasAutomaticasAtivas, atributosFinais, poderesHook, rituaisHook, periciasHook, status,
-    protecoesHook, modificacoesHook, bonusVestimentas
+    protecoesHook, modificacoesHook, bonusVestimentas, bonusMaldicoes
   } = useRPG();
   const [mostrarOutros, setMostrarOutros] = React.useState(false);
 
   const protecoesExtras: string[] = [];
-  const resistenciasExtras: string[] = [...(bonusVestimentas?.resistenciasExtras || [])];
+  const resistenciasExtras: string[] = [...(bonusVestimentas, bonusMaldicoes?.resistenciasExtras || [])];
   
   // REGRA 5: Resistência Mental +INT
   if (regrasAutomaticasAtivas.has(5) && atributosFinais.INT > 0) {

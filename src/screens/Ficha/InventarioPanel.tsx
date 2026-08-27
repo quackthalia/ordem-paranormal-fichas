@@ -1284,7 +1284,27 @@ function SortableArmaItem({
       }
     }
 
-    // Mods das munições acopladas
+    
+      // Maldições da arma
+      for (const mald of maldicoesAtuais) {
+        const nomeM = mald.Nome_Mald.trim().toLowerCase();
+        if (nomeM === 'erosiva') {
+          danoSecundario = danoSecundario ? `${danoSecundario} + 1d8` : '+1d8';
+        }
+        if (nomeM === 'lancinante') {
+          dano = `*${dano}`;
+        }
+        if (nomeM === 'predadora') {
+          critico -= 1;
+          const ord = ['Curto', 'Médio', 'Longo', 'Extremo', 'Ilimitado'];
+          const idx = ord.indexOf(alcance);
+          if (idx !== -1 && idx < ord.length - 1) {
+            alcance = ord[idx + 1];
+          }
+        }
+      }
+
+      // Mods das munições acopladas
     for (const mun of municoesAcopladasList) {
       const munMods = (mun.modificacoes || []).map((id: number) => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)).filter(Boolean) as any[];
       for (const mMod of munMods) {

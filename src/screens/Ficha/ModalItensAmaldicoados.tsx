@@ -115,7 +115,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
             >
               Todos
             </button>
-            {['Sangue', 'Conhecimento', 'Energia', 'Morte', 'Varia'].map(elem => {
+            {['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo', 'Varia'].map(elem => {
               const ativo = abaElemento === elem;
               return (
                 <button

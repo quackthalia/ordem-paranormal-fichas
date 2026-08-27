@@ -251,10 +251,10 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
             )}
 
               {((item.maldicoes || []).length > 0) && (
-                <div className="mt-2 border border-indigo-900/50 rounded bg-indigo-950/20 overflow-hidden">
-                  <div className="px-2 py-1.5 bg-indigo-950/40 flex justify-between items-center cursor-pointer hover:bg-indigo-950/60 transition" onClick={(e) => { e.stopPropagation(); setExpandirMods(!expandirMods); }}>
+                <div className="mt-2 border border-zinc-800 rounded bg-zinc-900/50 overflow-hidden">
+                  <div className="px-2 py-1.5 bg-zinc-800/40 flex justify-between items-center cursor-pointer hover:bg-zinc-800/60 transition" onClick={(e) => { e.stopPropagation(); setExpandirMods(!expandirMods); }}>
                     <div className="flex flex-wrap gap-1 items-center">
-                      <span className="text-[11px] font-bold text-indigo-300 uppercase tracking-wider mr-1">Maldições</span>
+                      <span className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mr-1">Maldições</span>
                       {!expandirMods && (item.maldicoes || []).map((id: number) => {
                         const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
                         if (!m) return null;
@@ -264,13 +264,13 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
                     </div>
                   </div>
                   <Collapse isOpen={expandirMods}>
-                    <div className="px-2 pb-2 pt-1 flex flex-col gap-1.5 border-t border-indigo-900/30">
+                    <div className="px-2 pb-2 pt-1 flex flex-col gap-1.5 border-t border-zinc-800/30">
                       {(item.maldicoes || []).map((id: number) => {
                         const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
                         if (!m) return null;
                         const cores = getCorElemento(m.Elemento_Mald);
                         return (
-                          <div key={m.Codigo_Mald} className={`flex flex-col gap-0.5 pb-1 border-b border-indigo-900/20 last:border-0 last:pb-0 ${cores.split(' ').find(c => c.startsWith('text'))}`}>
+                          <div key={m.Codigo_Mald} className={`flex flex-col gap-0.5 pb-1 border-b border-zinc-800/30 last:border-0 last:pb-0 ${cores.split(' ').find(c => c.startsWith('text'))}`}>
                             <div className="flex gap-1 items-center"><span className="font-bold text-xs">{m.Nome_Mald}</span><span className={`text-[9px] px-1 py-0 rounded border uppercase tracking-widest ${cores}`}>{m.Elemento_Mald}</span></div>
                             <span className="text-[10px] opacity-80 leading-tight">{m.Descricao_Mald}</span>
                           </div>

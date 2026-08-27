@@ -34,9 +34,8 @@ export function ModificacoesSelector({
   });
 
   return (
-    <div className="flex flex-col gap-3 mt-4">
-      <div className="flex items-center justify-between">
-        <h4 className="text-sm font-bold text-zinc-100">Melhorias</h4>
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center justify-end">
         <button
           type="button"
           onClick={() => setSelecionando(!selecionando)}

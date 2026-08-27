@@ -46,20 +46,20 @@ export function MaldicoesSelector({
     return true;
   });
 
+  
   const getCorElemento = (elemento: string) => {
-    const e = elemento.trim().toLowerCase();
-    if (e === 'morte') return 'text-zinc-400 border-zinc-600 bg-zinc-900/50';
-    if (e === 'sangue') return 'text-red-400 border-red-800 bg-red-950/30';
-    if (e === 'energia') return 'text-purple-400 border-purple-800 bg-purple-950/30';
-    if (e.includes('conhec')) return 'text-amber-400 border-amber-800 bg-amber-950/30';
-    if (e === 'medo') return 'text-white border-white/50 bg-white/10';
-    return 'text-zinc-400 border-zinc-700 bg-zinc-800';
+    const elStr = elemento.trim().toLowerCase();
+    if (elStr.includes('medo')) return 'bg-zinc-200/80 text-zinc-950 px-2';
+    if (elStr.includes('sangue')) return 'text-red-500';
+    if (elStr.includes('morte')) return 'bg-black/50 text-white px-2 border border-zinc-700';
+    if (elStr.includes('conhecimento')) return 'text-yellow-500';
+    if (elStr.includes('energia')) return 'text-purple-500';
+    return 'text-zinc-400';
   };
 
   return (
-    <div className="flex flex-col gap-3 mt-4">
-      <div className="flex items-center justify-between">
-        <h4 className="text-sm font-bold text-zinc-100">Maldições</h4>
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center justify-end">
         <button
           type="button"
           onClick={() => setSelecionando(!selecionando)}
@@ -92,11 +92,11 @@ export function MaldicoesSelector({
                       onAdd(opcao.Codigo_Mald);
                       setSelecionando(false);
                     }}
-                    className={`flex flex-col px-3 py-2 rounded border cursor-pointer transition-colors hover:bg-opacity-50 ${cores.split(' ').filter(c => c.startsWith('border') || c.startsWith('bg')).join(' ')}`}
+                    className="flex flex-col px-3 py-2 rounded bg-transparent hover:bg-zinc-900 border border-transparent hover:border-indigo-800 cursor-pointer transition-colors"
                   >
                     <div className="flex justify-between items-center">
-                      <span className={`font-bold text-sm ${cores.split(' ').find(c => c.startsWith('text'))}`}>{opcao.Nome_Mald}</span>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded border uppercase tracking-widest ${cores}`}>{opcao.Elemento_Mald}</span>
+                      <span className="font-bold text-zinc-200 text-sm">{opcao.Nome_Mald}</span>
+                      <span className={`inline-block rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight ${cores}`}>{opcao.Elemento_Mald}</span>
                     </div>
                     <span className="text-xs text-zinc-400 mt-1">{opcao.Descricao_Mald}</span>
                     {opcao.Efeito && (
@@ -121,13 +121,12 @@ export function MaldicoesSelector({
             return (
               <div 
                 key={`${mod.Codigo_Mald}-${index}`}
-                className="flex items-center justify-between p-4 bg-zinc-900/50 border-l-[3px] border-zinc-800"
-                style={{ borderLeftColor: cores.includes('text-red') ? '#f87171' : cores.includes('text-purple') ? '#c084fc' : cores.includes('text-amber') ? '#fbbf24' : cores.includes('text-zinc') ? '#a1a1aa' : '#ffffff' }}
+                className="flex items-center justify-between p-4 bg-zinc-900/50 border-l-[3px] border-l-indigo-600"
               >
                 <div className="flex flex-col gap-1 flex-1 pr-6">
                   <div className="flex items-center gap-2">
-                    <span className={`font-bold text-[15px] ${cores.split(' ').find(c => c.startsWith('text'))}`}>{mod.Nome_Mald}</span>
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded border uppercase tracking-widest ${cores}`}>{mod.Elemento_Mald}</span>
+                    <span className="font-bold text-zinc-100 text-[15px]">{mod.Nome_Mald}</span>
+                    <span className={`inline-block rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight ${cores}`}>{mod.Elemento_Mald}</span>
                   </div>
                   <p className="text-sm text-zinc-400 leading-relaxed">
                     {mod.Descricao_Mald}

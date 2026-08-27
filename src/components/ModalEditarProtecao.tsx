@@ -203,8 +203,25 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
             </div>
           </div>
 
-          <div className="mt-4 border-t border-zinc-800 pt-4">
-            <ModificacoesSelector
+          <div className="mt-6 border-t border-zinc-800 pt-4">
+            <div className="flex gap-2 mb-4 border-b border-zinc-800 pb-2">
+              <button
+                type="button"
+                onClick={() => setAbaAprimoramento('modificacoes')}
+                className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded transition ${abaAprimoramento === 'modificacoes' ? 'bg-green-900/40 text-green-400 border border-green-800/50' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50 border border-transparent'}`}
+              >
+                Modificações
+              </button>
+              <button
+                type="button"
+                onClick={() => setAbaAprimoramento('maldicoes')}
+                className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded transition ${abaAprimoramento === 'maldicoes' ? 'bg-indigo-900/40 text-indigo-400 border border-indigo-800/50' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50 border border-transparent'}`}
+              >
+                Maldições
+              </button>
+            </div>
+            {abaAprimoramento === 'modificacoes' && (
+              <ModificacoesSelector
               modificacoesAplicadas={modificacoes}
               opcoesModificacoes={getOpcoesModificacoes()}
               todasModificacoes={modificacoesHook.modificacoes}
@@ -212,10 +229,9 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
               onRemove={handleRemoveMod}
               podeAdicionar={podeAdicionarMod}
             />
-          </div>
-
-          <div className="mt-4 border-t border-zinc-800 pt-4">
-            <MaldicoesSelector
+            )}
+            {abaAprimoramento === 'maldicoes' && (
+              <MaldicoesSelector
               maldicoesAplicadas={maldicoes}
               opcoesMaldicoes={getOpcoesMaldicoes()}
               todasMaldicoes={maldicoesHook.maldicoes}
@@ -223,6 +239,7 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
               onRemove={handleRemoveMald}
               podeAdicionar={podeAdicionarMald}
             />
+            )}
           </div>
 
         </div>

@@ -1582,6 +1582,7 @@ export const AbasPanel: React.FC = () => {
                                                 [chaveUnica]: val as VersaoRitual,
                                               }));
                                             }}
+                                            wrapperClassName="w-[120px]"
                                             className="cursor-pointer rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs font-bold text-zinc-200 outline-none transition hover:bg-zinc-800 focus:border-green-700"
                                             options={versoesDisponiveis.map(v => ({ value: v.value, label: v.label, disabled: v.disabled }))}
                                           />

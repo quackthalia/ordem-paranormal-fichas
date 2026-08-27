@@ -399,6 +399,11 @@ export function calcularCategoriaFinal(categoriaBase: string | number | null | u
     }
   }
 
-  const total = baseNum + modificador;
+  let custoMaldicoes = 0;
+  if (maldicoesIds && maldicoesIds.length > 0) {
+    custoMaldicoes = 2 + (maldicoesIds.length - 1);
+  }
+
+  const total = baseNum + modificador + custoMaldicoes;
   return categoriaNumParaRoman(Math.min(Math.max(0, total), 4));
 }

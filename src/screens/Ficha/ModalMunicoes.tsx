@@ -154,8 +154,8 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
                         <span className="italic text-zinc-400">{municao.Tipo_Arma}</span>
                       </div>
                       
-                      <Collapse isOpen={!!expandidos[String(municao.Codigo_Municao)]} previewHeight="36px">
-                        <p className="text-[11px] text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none min-h-[36px]">
+                      <Collapse isOpen={!!expandidos[String(municao.Codigo_Municao)]} previewHeight="4.5em">
+                        <p className="text-[11px] text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none min-h-[4.5em]">
                           {formatarTexto(municao.Descricao_Item)}
                         </p>
                       </Collapse>
@@ -205,8 +205,8 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
                         <span className="italic text-zinc-400">{municao.Tipo_Arma}</span>
                       </div>
                       
-                      <Collapse isOpen={!!expandidos[String(municao.Codigo_Municao)]} previewHeight="36px">
-                        <p className="text-[11px] text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none min-h-[36px]">
+                      <Collapse isOpen={!!expandidos[String(municao.Codigo_Municao)]} previewHeight="4.5em">
+                        <p className="text-[11px] text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none min-h-[4.5em]">
                           {formatarTexto(municao.Descricao_Item)}
                         </p>
                       </Collapse>

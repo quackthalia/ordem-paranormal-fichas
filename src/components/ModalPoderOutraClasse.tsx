@@ -224,7 +224,7 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
                   </div>
                   <Collapse isOpen={isExpanded}>
                     <div className="border-t border-zinc-800 px-5 py-4 text-left">
-                      <div className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap min-h-[36px]" dangerouslySetInnerHTML={{ __html: formatarDescricao(poder.Descricao) }} />
+                      <div className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap min-h-[4.5em]" dangerouslySetInnerHTML={{ __html: formatarDescricao(poder.Descricao) }} />
                       {poder.PreRequisitos && (
                         <div className="mt-4 p-2 rounded bg-amber-500/10 text-xs italic text-amber-500 border border-amber-500/20">Pré-requisitos: {formatarTextoPreRequisitos(poder.PreRequisitos, contextoPrereq.nomesPericias)}</div>
                       )}

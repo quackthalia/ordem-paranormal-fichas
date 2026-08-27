@@ -135,9 +135,9 @@ function PoderCard({
               </span>
             )}
           </div>
-            <Collapse isOpen={estaExpandido} previewHeight="36px">
+            <Collapse isOpen={estaExpandido} previewHeight="4.5em">
               <div 
-                className="text-xs text-zinc-400 mt-1 leading-relaxed whitespace-pre-wrap min-h-[36px]"
+                className="text-xs text-zinc-400 mt-1 leading-relaxed whitespace-pre-wrap min-h-[4.5em]"
                 dangerouslySetInnerHTML={{ __html: formatarDescricao(poder.Descricao) }}
               />
             </Collapse>
@@ -158,7 +158,7 @@ function PoderCard({
         <div className="mt-3 text-left border-t border-zinc-800/50 pt-3">
 
           {ehParanormal && paranormalData?.Afinidade && (
-            <p className="mt-3 text-xs leading-relaxed text-zinc-300 min-h-[36px]">
+            <p className="mt-3 text-xs leading-relaxed text-zinc-300 min-h-[4.5em]">
               <strong className="text-green-400 font-bold">Afinidade:</strong> {paranormalData.Afinidade}
             </p>
           )}

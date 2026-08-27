@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useRPG } from '../context/RPGContext';
 import type { ItemAmaldicoadoInventario } from '../types';
 import { formatarTexto } from '../utils/formatters';
+import { Collapse } from './Collapse';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
@@ -137,7 +138,7 @@ export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, remo
         </div>
       </div>
       
-      {isExpanded && (
+      <Collapse isOpen={isExpanded}>
         <div className="border-t border-zinc-800 px-3 py-3 text-xs bg-zinc-950/80 flex flex-col gap-2 relative z-10" onClick={e => e.stopPropagation()}>
           <div className="flex flex-col gap-1 mt-1">
             <span><span className="text-green-400 font-bold">Categoria:</span> {item.item.Categoria_Ama}</span>
@@ -152,8 +153,7 @@ export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, remo
           {item.item.Fonte_Ama && (
             <div className="mt-2 pt-2 border-t border-zinc-800/50">
               <span className="text-[10px] uppercase tracking-wider text-zinc-600">Fonte: {item.item.Fonte_Ama}</span>
-            </div>
-          )}
+            </Collapse>
           <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-zinc-800/50">
             {onEditar && (
               <button

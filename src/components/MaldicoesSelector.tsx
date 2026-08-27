@@ -59,11 +59,11 @@ export function MaldicoesSelector({
           type="button"
           onClick={() => setSelecionando(true)}
           disabled={!podeAdicionar}
-          className={\`w-full flex items-center justify-center gap-2 py-3 rounded-lg border-2 border-dashed transition-all \${
+          className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg border-2 border-dashed transition-all ${
             podeAdicionar 
               ? 'border-indigo-900/60 hover:border-indigo-600 text-indigo-400 hover:text-indigo-300 hover:bg-indigo-950/20' 
               : 'border-zinc-800 text-zinc-700 cursor-not-allowed bg-zinc-900/20'
-          }\`}
+          }`}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
             <path d="M12 5v14M5 12h14"/>
@@ -98,11 +98,11 @@ export function MaldicoesSelector({
                   <button
                     key={elem}
                     onClick={() => setSubAbaElemento(elem)}
-                    className={\`rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider transition border \${
+                    className={`rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider transition border ${
                       ativo
                         ? getCorElemento(elem === 'Todos' ? 'varia' : elem)
                         : 'bg-zinc-800/40 text-zinc-500 border-zinc-700/50 hover:bg-zinc-800 hover:text-zinc-300'
-                    }\`}
+                    }`}
                   >
                     {elem}
                   </button>
@@ -147,7 +147,7 @@ export function MaldicoesSelector({
                           />
                         </div>
                       ) : (
-                        <span className={\`inline-block border rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight flex-shrink-0 \${cores}\`}>
+                        <span className={`inline-block border rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight flex-shrink-0 ${cores}`}>
                           {opcao.Elemento_Mald}
                         </span>
                       )}
@@ -177,13 +177,13 @@ export function MaldicoesSelector({
           
           return (
             <div 
-              key={\`\${mod.Codigo_Mald}-\${index}\`}
+              key={`${mod.Codigo_Mald}-${index}`}
               className="group flex items-start justify-between p-3 bg-zinc-900/40 hover:bg-zinc-900/60 border border-zinc-800 hover:border-indigo-900/50 rounded-lg transition-all"
             >
               <div className="flex flex-col gap-1.5 pr-4">
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-zinc-200 text-[13px]">{mod.Nome_Mald}</span>
-                  <span className={\`inline-block border rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight flex-shrink-0 \${cores}\`}>
+                  <span className={`inline-block border rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight flex-shrink-0 ${cores}`}>
                     {elementoReal}
                   </span>
                 </div>

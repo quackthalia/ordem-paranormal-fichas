@@ -1517,7 +1517,7 @@ function SortableArmaItem({
           </div>
           
           <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-zinc-800/50">
-            {id !== 'coronhada-virtual' && (
+            {id !== 'coronhada-virtual' && !(arma.Tipo_Arma || '').toLowerCase().includes('corpo a corpo') && !(arma.Tipo_Arma || '').toLowerCase().includes('arremesso') && (
                 <>
                   <button
                         onClick={(e) => {

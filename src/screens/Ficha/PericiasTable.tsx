@@ -112,7 +112,7 @@ export const PericiasTable: React.FC = () => {
       </div>
 
       {/* TABELA */}
-      <div className="overflow-x-auto">
+      <div className="w-full">
         <table className="w-full border-collapse text-zinc-100">
           <thead>
             <tr className="border-b border-zinc-700 text-xs uppercase tracking-wider text-zinc-500">

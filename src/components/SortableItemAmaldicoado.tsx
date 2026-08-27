@@ -153,7 +153,8 @@ export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, remo
           {item.item.Fonte_Ama && (
             <div className="mt-2 pt-2 border-t border-zinc-800/50">
               <span className="text-[10px] uppercase tracking-wider text-zinc-600">Fonte: {item.item.Fonte_Ama}</span>
-            </Collapse>
+            </div>
+          )}
           <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-zinc-800/50">
             {onEditar && (
               <button
@@ -175,9 +176,9 @@ export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, remo
             >
               Remover
             </button>
-          </div>
+                    </div>
         </div>
-      )}
+      </Collapse>
     </div>
   );
 }

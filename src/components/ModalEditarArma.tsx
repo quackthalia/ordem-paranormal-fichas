@@ -104,25 +104,14 @@ export function ModalEditarArma({
 
     // Calcula o custo das maldições
     let custoMaldicoes = 0;
-    const maldicoesPorElemento: Record<string, number> = {};
-    
-    maldicoes.forEach(id => {
-      const maldicao = maldicoesHook.maldicoes.find(m => m.Codigo_Mald === id);
-      if (maldicao) {
-        const el = maldicao.Elemento_Mald.trim().toLowerCase();
-        if (!maldicoesPorElemento[el]) {
-          maldicoesPorElemento[el] = 1;
-          custoMaldicoes += 2; // Primeira maldição do elemento custa +2
-        } else {
-          maldicoesPorElemento[el] += 1;
-          custoMaldicoes += 1; // Maldições adicionais do MESMO elemento custam +1
-        }
-      }
-    });
+    if (maldicoes.length > 0) {
+      custoMaldicoes = 2 + (maldicoes.length - 1);
+    }
 
     const catFinal = catNum + modificador + custoMaldicoes;
     const podeAdicionarMod = catFinal < 4;
-    const podeAdicionarMald = catFinal < 4;
+    const custoProximaMaldicao = maldicoes.length === 0 ? 2 : 1;
+    const podeAdicionarMald = (catFinal + custoProximaMaldicao) <= 4;
 
   
     const handleAddMald = (id: number) => {

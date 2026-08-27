@@ -197,24 +197,19 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
                 <span><span className="font-bold text-green-400">DT:</span> {stringDT}</span>
               </div>
             )}
-            {modsAtuais.length > 0 && (
-              <div className="flex items-center mt-1 min-w-0">
-                <span className="text-[11px] text-zinc-400 truncate italic">
-                  {modsAtuais.map(m => m.Nome_Modif).join(' • ')}
-                </span>
-              </div>
-            )}
-              {maldicoesAtuais.length > 0 && (
+            {(modsAtuais.length > 0 || maldicoesAtuais.length > 0) && (
                 <div className="flex items-center mt-1 min-w-0">
-                  <span className="text-[11px] text-zinc-400 truncate italic flex gap-1">
+                  <span className="text-[11px] text-zinc-400 truncate italic">
+                    {modsAtuais.length > 0 && modsAtuais.map(m => m.Nome_Modif).join(' • ')}
+                    {modsAtuais.length > 0 && maldicoesAtuais.length > 0 && <span> • </span>}
                     {maldicoesAtuais.map((m: any, i: number) => {
-                      const cor = getCorElementoTexto(m.Elemento_Mald);
-                      return (
-                        <React.Fragment key={m.Codigo_Mald}>
-                          {i > 0 && <span>•</span>}
-                          <span className={cor}>{m.Nome_Mald}</span>
-                        </React.Fragment>
-                      )
+                        const cor = getCorElementoTexto(m.Elemento_Mald);
+                        return (
+                          <span key={m.Codigo_Mald}>
+                            {i > 0 && <span> • </span>}
+                            <span className={cor}>{m.Nome_Mald}</span>
+                          </span>
+                        )
                     })}
                   </span>
                 </div>
@@ -276,21 +271,7 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
                 </Collapse>
               </div>
             )}
-              {maldicoesAtuais.length > 0 && (
-                <div className="flex items-center mt-1 min-w-0">
-                  <span className="text-[11px] text-zinc-400 truncate italic flex gap-1">
-                    {maldicoesAtuais.map((m: any, i: number) => {
-                      const cor = getCorElementoTexto(m.Elemento_Mald);
-                      return (
-                        <React.Fragment key={m.Codigo_Mald}>
-                          {i > 0 && <span>•</span>}
-                          <span className={cor}>{m.Nome_Mald}</span>
-                        </React.Fragment>
-                      )
-                    })}
-                  </span>
-                </div>
-              )}
+              
 
               {((item.maldicoes || []).length > 0) && (
                 <div className="mt-2 border border-zinc-800 rounded bg-zinc-900/50 overflow-hidden">
@@ -1389,24 +1370,19 @@ function SortableArmaItem({
               <span><span className="font-bold text-zinc-400">Crítico:</span> {formatarCritico(stats.critico, stats.multiplicador)}</span>
               {stringDT && <span><span className="font-bold text-green-400">DT:</span> {stringDT}</span>}
             </div>
-            {modsAtuais.length > 0 && (
-              <div className="flex items-center mt-1 min-w-0">
-                <span className="text-[11px] text-zinc-400 truncate italic">
-                  {modsAtuais.map(m => m.Nome_Modif).join(' • ')}
-                </span>
-              </div>
-            )}
-              {maldicoesAtuais.length > 0 && (
+            {(modsAtuais.length > 0 || maldicoesAtuais.length > 0) && (
                 <div className="flex items-center mt-1 min-w-0">
-                  <span className="text-[11px] text-zinc-400 truncate italic flex gap-1">
+                  <span className="text-[11px] text-zinc-400 truncate italic">
+                    {modsAtuais.length > 0 && modsAtuais.map(m => m.Nome_Modif).join(' • ')}
+                    {modsAtuais.length > 0 && maldicoesAtuais.length > 0 && <span> • </span>}
                     {maldicoesAtuais.map((m: any, i: number) => {
-                      const cor = getCorElementoTexto(m.Elemento_Mald);
-                      return (
-                        <React.Fragment key={m.Codigo_Mald}>
-                          {i > 0 && <span>•</span>}
-                          <span className={cor}>{m.Nome_Mald}</span>
-                        </React.Fragment>
-                      )
+                        const cor = getCorElementoTexto(m.Elemento_Mald);
+                        return (
+                          <span key={m.Codigo_Mald}>
+                            {i > 0 && <span> • </span>}
+                            <span className={cor}>{m.Nome_Mald}</span>
+                          </span>
+                        )
                     })}
                   </span>
                 </div>
@@ -1493,21 +1469,7 @@ function SortableArmaItem({
                     ))}
                   </div>
                 )}
-              {maldicoesAtuais.length > 0 && (
-                <div className="flex items-center mt-1 min-w-0">
-                  <span className="text-[11px] text-zinc-400 truncate italic flex gap-1">
-                    {maldicoesAtuais.map((m: any, i: number) => {
-                      const cor = getCorElementoTexto(m.Elemento_Mald);
-                      return (
-                        <React.Fragment key={m.Codigo_Mald}>
-                          {i > 0 && <span>•</span>}
-                          <span className={cor}>{m.Nome_Mald}</span>
-                        </React.Fragment>
-                      )
-                    })}
-                  </span>
-                </div>
-              )}
+              
               </div>
             )}
           </div>
@@ -1645,24 +1607,19 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
                 <span><span className="font-bold text-zinc-400">Quantidade:</span> {municao.contagem_municao}</span>
               )}
             </div>
-            {modsAtuais.length > 0 && (
-              <div className="flex items-center mt-1 min-w-0">
-                <span className="text-[11px] text-zinc-400 truncate italic">
-                  {modsAtuais.map(m => m.Nome_Modif).join(' • ')}
-                </span>
-              </div>
-            )}
-              {maldicoesAtuais.length > 0 && (
+            {(modsAtuais.length > 0 || maldicoesAtuais.length > 0) && (
                 <div className="flex items-center mt-1 min-w-0">
-                  <span className="text-[11px] text-zinc-400 truncate italic flex gap-1">
+                  <span className="text-[11px] text-zinc-400 truncate italic">
+                    {modsAtuais.length > 0 && modsAtuais.map(m => m.Nome_Modif).join(' • ')}
+                    {modsAtuais.length > 0 && maldicoesAtuais.length > 0 && <span> • </span>}
                     {maldicoesAtuais.map((m: any, i: number) => {
-                      const cor = getCorElementoTexto(m.Elemento_Mald);
-                      return (
-                        <React.Fragment key={m.Codigo_Mald}>
-                          {i > 0 && <span>•</span>}
-                          <span className={cor}>{m.Nome_Mald}</span>
-                        </React.Fragment>
-                      )
+                        const cor = getCorElementoTexto(m.Elemento_Mald);
+                        return (
+                          <span key={m.Codigo_Mald}>
+                            {i > 0 && <span> • </span>}
+                            <span className={cor}>{m.Nome_Mald}</span>
+                          </span>
+                        )
                     })}
                   </span>
                 </div>
@@ -1707,21 +1664,7 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
                     ))}
                   </div>
                 )}
-              {maldicoesAtuais.length > 0 && (
-                <div className="flex items-center mt-1 min-w-0">
-                  <span className="text-[11px] text-zinc-400 truncate italic flex gap-1">
-                    {maldicoesAtuais.map((m: any, i: number) => {
-                      const cor = getCorElementoTexto(m.Elemento_Mald);
-                      return (
-                        <React.Fragment key={m.Codigo_Mald}>
-                          {i > 0 && <span>•</span>}
-                          <span className={cor}>{m.Nome_Mald}</span>
-                        </React.Fragment>
-                      )
-                    })}
-                  </span>
-                </div>
-              )}
+              
               </div>
             )}
           </div>
@@ -1832,24 +1775,19 @@ function SortableProtecaoItem({
                 })()
               }</span>
             </div>
-            {modsAtuais.length > 0 && (
-              <div className="flex items-center mt-1 min-w-0">
-                <span className="text-[11px] text-zinc-400 truncate italic">
-                  {modsAtuais.map(m => m.Nome_Modif).join(' • ')}
-                </span>
-              </div>
-            )}
-              {maldicoesAtuais.length > 0 && (
+            {(modsAtuais.length > 0 || maldicoesAtuais.length > 0) && (
                 <div className="flex items-center mt-1 min-w-0">
-                  <span className="text-[11px] text-zinc-400 truncate italic flex gap-1">
+                  <span className="text-[11px] text-zinc-400 truncate italic">
+                    {modsAtuais.length > 0 && modsAtuais.map(m => m.Nome_Modif).join(' • ')}
+                    {modsAtuais.length > 0 && maldicoesAtuais.length > 0 && <span> • </span>}
                     {maldicoesAtuais.map((m: any, i: number) => {
-                      const cor = getCorElementoTexto(m.Elemento_Mald);
-                      return (
-                        <React.Fragment key={m.Codigo_Mald}>
-                          {i > 0 && <span>•</span>}
-                          <span className={cor}>{m.Nome_Mald}</span>
-                        </React.Fragment>
-                      )
+                        const cor = getCorElementoTexto(m.Elemento_Mald);
+                        return (
+                          <span key={m.Codigo_Mald}>
+                            {i > 0 && <span> • </span>}
+                            <span className={cor}>{m.Nome_Mald}</span>
+                          </span>
+                        )
                     })}
                   </span>
                 </div>
@@ -1921,21 +1859,7 @@ function SortableProtecaoItem({
                     ))}
                   </div>
                 )}
-              {maldicoesAtuais.length > 0 && (
-                <div className="flex items-center mt-1 min-w-0">
-                  <span className="text-[11px] text-zinc-400 truncate italic flex gap-1">
-                    {maldicoesAtuais.map((m: any, i: number) => {
-                      const cor = getCorElementoTexto(m.Elemento_Mald);
-                      return (
-                        <React.Fragment key={m.Codigo_Mald}>
-                          {i > 0 && <span>•</span>}
-                          <span className={cor}>{m.Nome_Mald}</span>
-                        </React.Fragment>
-                      )
-                    })}
-                  </span>
-                </div>
-              )}
+              
               </div>
             )}
           </div>

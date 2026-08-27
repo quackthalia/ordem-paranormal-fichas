@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import type { Ritual } from '../types';
 import { sortPorElementoENome } from '../utils/rpgRules';
 import { Collapse } from './Collapse';
+import { CustomSelect } from './CustomSelect';
 
 const BANNED_RITUAIS = [10, 17, 49, 53, 64, 116];
 

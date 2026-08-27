@@ -179,7 +179,7 @@ export function ModalEditarArma({
       Tipo_Arma: tipoArma,
       Empunhadura_Arma: empunhadura,
       Tipo_Dano_Arma: tipoDano,
-    }, modificacoes);
+    }, modificacoes, maldicoes);
     onClose();
   };
 

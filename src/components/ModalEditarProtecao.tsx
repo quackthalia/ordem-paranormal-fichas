@@ -11,7 +11,7 @@ import { categoriaRomanParaNum, categoriaNumParaRoman } from '../utils/rpgRules'
 interface ModalEditarProtecaoProps {
   protecao: ProtecaoInventario | null;
   onClose: () => void;
-  onSave: (id: string, novosDados: any, modificacoes?: number[]) => void;
+  onSave: (id: string, novosDados: any, modificacoes?: number[], maldicoes?: number[]) => void;
 }
 
 export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarProtecaoProps) {
@@ -260,7 +260,7 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
                 Defesa_Protecao: defesa,
                 Espacos_Protecao: getEspacoNumber(espacos),
                 Categoria_Protecao: categoria
-              }, modificacoes);
+              }, modificacoes, maldicoes);
               onClose();
             }}
             className="rounded bg-green-800 px-5 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg transition hover:bg-green-700"

@@ -86,7 +86,7 @@ export function ModalEditarMunicao({ itemInventario, onSave, onClose }: ModalEdi
       Descricao_Item: editorDesc.current?.innerHTML || descricao,
       Categoria_Item: categoria,
       'Espaços_Item': getEspacoNumber(espacos),
-    }, modificacoes);
+    }, modificacoes, maldicoes);
   };
 
   const InputLabel = ({ label }: { label: string }) => (

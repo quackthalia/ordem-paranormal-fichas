@@ -181,7 +181,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
 
         {/* FILTROS (Abas Secundárias - Círculos) */}
         <div className="flex flex-wrap items-center gap-2 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Círculos:</span>>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Círculos:</span>
           <button
             onClick={() => setAbaCirculo(null)}
             className={`rounded px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider transition border ${

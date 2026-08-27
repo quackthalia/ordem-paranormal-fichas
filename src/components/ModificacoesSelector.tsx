@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { Modificacao } from '../types';
+import { Collapse } from './Collapse';
 
 interface ModificacoesSelectorProps {
   modificacoesAplicadas: number[];
@@ -8,7 +9,6 @@ interface ModificacoesSelectorProps {
   onAdd: (id: number) => void;
   onRemove: (index: number) => void;
   podeAdicionar: boolean;
-  permiteDuplicadas?: (codigo: number) => boolean;
 }
 
 export function ModificacoesSelector({
@@ -17,47 +17,60 @@ export function ModificacoesSelector({
   todasModificacoes = [],
   onAdd,
   onRemove,
-  podeAdicionar,
-  permiteDuplicadas
+  podeAdicionar
 }: ModificacoesSelectorProps) {
   const [selecionando, setSelecionando] = useState(false);
 
-  // Mapeia os IDs aplicados de volta para os objetos Modificacao
   const aplicadas = modificacoesAplicadas
     .map(id => todasModificacoes.find(m => m.Codigo_Modif === id))
-    .filter((m): m is Modificacao => m !== undefined);
+    .filter(Boolean) as Modificacao[];
 
-  // Filtra opções que já foram aplicadas (se a modificação não permitir duplicatas)
-  const opcoesDisponiveis = opcoesModificacoes.filter((opcao) => {
-    if (permiteDuplicadas?.(opcao.Codigo_Modif)) return true;
-    return !modificacoesAplicadas.includes(opcao.Codigo_Modif);
-  });
+  const opcoesDisponiveis = opcoesModificacoes.filter(
+    op => !modificacoesAplicadas.includes(op.Codigo_Modif)
+  );
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-end">
+      {/* Botão de Adicionar (Dashed) */}
+      {!selecionando && (
         <button
           type="button"
-          onClick={() => setSelecionando(!selecionando)}
-          disabled={!podeAdicionar && !selecionando}
-          className={`px-4 py-1.5 text-xs font-bold text-white rounded transition ${
-            !podeAdicionar && !selecionando 
-              ? 'bg-zinc-800 cursor-not-allowed text-zinc-500' 
-              : 'bg-green-700 hover:bg-green-600'
-          }`}
+          onClick={() => setSelecionando(true)}
+          disabled={!podeAdicionar}
+          className={\`w-full flex items-center justify-center gap-2 py-3 rounded-lg border-2 border-dashed transition-all \${
+            podeAdicionar 
+              ? 'border-zinc-700 hover:border-zinc-500 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/30' 
+              : 'border-zinc-800 text-zinc-700 cursor-not-allowed bg-zinc-900/20'
+          }\`}
         >
-          {selecionando ? 'Cancelar' : 'Adicionar'}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          <span className="text-xs font-bold uppercase tracking-wider">
+            {podeAdicionar ? 'Adicionar Modificação' : 'Limite Atingido'}
+          </span>
         </button>
-      </div>
+      )}
 
-      {selecionando && (
-        <div className="rounded border border-green-900 bg-zinc-950 p-2 shadow-lg mb-2 animate-in slide-in-from-top-1 fade-in duration-200">
-          <div className="text-[10px] font-bold text-zinc-500 mb-2 uppercase tracking-wider px-2">
-            Selecione uma modificação
+      {/* Painel de Seleção */}
+      <Collapse isOpen={selecionando}>
+        <div className="flex flex-col border border-zinc-700/60 bg-zinc-900/80 rounded-lg overflow-hidden shadow-xl mb-1">
+          <div className="flex items-center justify-between px-3 py-2 border-b border-zinc-800 bg-zinc-950/50">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Selecionar Modificação</span>
+            <button 
+              type="button" 
+              onClick={() => setSelecionando(false)}
+              className="text-zinc-500 hover:text-zinc-300 p-1 rounded hover:bg-zinc-800 transition-colors"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </button>
           </div>
-          <div className="flex flex-col gap-1">
+          
+          <div className="flex flex-col max-h-[220px] overflow-y-auto custom-scrollbar p-1">
             {opcoesDisponiveis.length === 0 ? (
-              <p className="text-xs text-zinc-500 italic px-2 pb-2">Nenhuma modificação disponível.</p>
+              <p className="text-xs text-zinc-500 italic p-3 text-center">Nenhuma modificação disponível.</p>
             ) : (
               opcoesDisponiveis.map(opcao => (
                 <div 
@@ -66,42 +79,42 @@ export function ModificacoesSelector({
                     onAdd(opcao.Codigo_Modif);
                     setSelecionando(false);
                   }}
-                  className="flex flex-col px-3 py-2 rounded bg-transparent hover:bg-zinc-900 border border-transparent hover:border-green-800 cursor-pointer transition-colors"
+                  className="flex flex-col px-3 py-2.5 rounded-md hover:bg-zinc-800/80 cursor-pointer transition-colors group"
                 >
-                  <span className="font-bold text-zinc-200 text-sm">{opcao.Nome_Modif}</span>
-                  <span className="text-xs text-zinc-500 mt-1">{opcao.Descricao_Modif}</span>
+                  <span className="font-bold text-zinc-200 text-sm group-hover:text-white transition-colors">{opcao.Nome_Modif}</span>
+                  <span className="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">{opcao.Descricao_Modif}</span>
                 </div>
               ))
             )}
           </div>
         </div>
-      )}
+      </Collapse>
 
-      <div className="flex flex-col gap-2 rounded bg-zinc-950 border border-zinc-900 min-h-[56px]">
-        {aplicadas.length === 0 ? (
-          <div className="h-full min-h-[56px] w-full" />
-        ) : (
-          aplicadas.map((mod, index) => (
-            <div 
-              key={`${mod.Codigo_Modif}-${index}`}
-              className="flex items-center justify-between p-4 bg-zinc-900/50 border-l-[3px] border-l-green-600"
-            >
-              <div className="flex flex-col gap-1 flex-1 pr-6">
-                <span className="font-bold text-zinc-100 text-[15px]">{mod.Nome_Modif}</span>
-                <p className="text-sm text-zinc-400 leading-relaxed">
-                  {mod.Descricao_Modif}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => onRemove(index)}
-                className="px-4 py-1.5 text-xs font-bold text-zinc-300 hover:text-white bg-zinc-800 hover:bg-green-700 rounded transition-colors flex-shrink-0"
-              >
-                Remover
-              </button>
+      {/* Lista de Modificações Aplicadas */}
+      <div className="flex flex-col gap-2 mt-1">
+        {aplicadas.map((mod, index) => (
+          <div 
+            key={\`\${mod.Codigo_Modif}-\${index}\`}
+            className="group flex items-start justify-between p-3 bg-zinc-900/40 hover:bg-zinc-900/60 border border-zinc-800 hover:border-zinc-700 rounded-lg transition-all"
+          >
+            <div className="flex flex-col gap-1 pr-4">
+              <span className="font-bold text-zinc-200 text-[13px]">{mod.Nome_Modif}</span>
+              <p className="text-[11px] text-zinc-400 leading-relaxed">
+                {mod.Descricao_Modif}
+              </p>
             </div>
-          ))
-        )}
+            <button
+              type="button"
+              onClick={() => onRemove(index)}
+              title="Remover"
+              className="text-zinc-600 hover:text-red-400 p-1.5 opacity-60 group-hover:opacity-100 hover:bg-red-950/30 rounded transition-all flex-shrink-0"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6"/>
+              </svg>
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );

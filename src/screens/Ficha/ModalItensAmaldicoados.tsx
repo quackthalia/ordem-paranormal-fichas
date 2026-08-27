@@ -19,10 +19,8 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
       return () => { document.body.style.overflow = 'unset'; };
     } else {
       setBusca('');
-      setCategoriaSelecionada('Todos');
-      setElementoSelecionado('Todos');
+      setAbaElemento(null);
       setExpandidos({});
-      setMostrarFiltrosAvançados(false);
     }
   }, [aberto]);
   

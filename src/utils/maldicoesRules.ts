@@ -66,7 +66,6 @@ export function calcularBonusMaldicoes(
     // Proteção Elemental
     if (id === 35 && elem) {
       resistenciasExtras.push(elem + ' 10');
-    } 10\`);
     }
 
     // Sombria

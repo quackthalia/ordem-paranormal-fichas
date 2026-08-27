@@ -240,7 +240,7 @@ function ProtecoesPanel() {
   const [mostrarOutros, setMostrarOutros] = React.useState(false);
 
   const protecoesExtras: string[] = [];
-  const resistenciasExtras: string[] = [...(bonusVestimentas, bonusMaldicoes?.resistenciasExtras || [])];
+  const resistenciasExtras: string[] = [...(bonusVestimentas?.resistenciasExtras || []), ...(bonusMaldicoes?.resistenciasExtras || [])];
   
   // REGRA 5: Resistência Mental +INT
   if (regrasAutomaticasAtivas.has(5) && atributosFinais.INT > 0) {

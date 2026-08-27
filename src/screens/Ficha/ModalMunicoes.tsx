@@ -25,6 +25,11 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
   const [busca, setBusca] = useState('');
   
   const [mostrarFiltrosAvançados, setMostrarFiltrosAvançados] = useState(false);
+  const [expandidos, setExpandidos] = useState<Record<string, boolean>>({});
+  
+  const toggleExpandir = (id: string) => {
+    setExpandidos(prev => ({...prev, [id]: !prev[id]}));
+  };
   const [filtroCategoria, setFiltroCategoria] = useState<string>('Todas');
   const [filtroTipo, setFiltroTipo] = useState<string>('Todos');
 
@@ -135,9 +140,10 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
                 {municoesFiltradas.filter((_, i) => i % 2 === 0).map((municao) => (
                   <div 
                     key={municao.Codigo_Municao} 
-                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col `}
+                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col cursor-pointer`}
+                    onClick={() => toggleExpandir(String(municao.Codigo_Municao))}
                   >
-                    <div className="flex items-start justify-between gap-2 mb-2 cursor-pointer ">
+                    <div className="flex items-start justify-between gap-2 mb-2">
                       <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 truncate">
                         {municao.Nome_Item}
                       </h3>
@@ -148,9 +154,11 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
                         <span className="italic text-zinc-400">{municao.Tipo_Arma}</span>
                       </div>
                       
-                      <p className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none min-h-[54px]">
-                        {formatarTexto(municao.Descricao_Item)}
-                      </p>
+                      <Collapse isOpen={!!expandidos[String(municao.Codigo_Municao)]} previewHeight="36px">
+                        <p className="text-[11px] text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none min-h-[36px]">
+                          {formatarTexto(municao.Descricao_Item)}
+                        </p>
+                      </Collapse>
                     </div>
 
                     <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2">
@@ -183,9 +191,10 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
                 {municoesFiltradas.filter((_, i) => i % 2 !== 0).map((municao) => (
                   <div 
                     key={municao.Codigo_Municao} 
-                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col `}
+                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col cursor-pointer`}
+                    onClick={() => toggleExpandir(String(municao.Codigo_Municao))}
                   >
-                    <div className="flex items-start justify-between gap-2 mb-2 cursor-pointer ">
+                    <div className="flex items-start justify-between gap-2 mb-2">
                       <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 truncate">
                         {municao.Nome_Item}
                       </h3>
@@ -196,9 +205,11 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
                         <span className="italic text-zinc-400">{municao.Tipo_Arma}</span>
                       </div>
                       
-                      <p className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none min-h-[54px]">
-                        {formatarTexto(municao.Descricao_Item)}
-                      </p>
+                      <Collapse isOpen={!!expandidos[String(municao.Codigo_Municao)]} previewHeight="36px">
+                        <p className="text-[11px] text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none min-h-[36px]">
+                          {formatarTexto(municao.Descricao_Item)}
+                        </p>
+                      </Collapse>
                     </div>
 
                     <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2">

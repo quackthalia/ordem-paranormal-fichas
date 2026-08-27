@@ -72,7 +72,7 @@ export function calcularBonusMaldicoes(
     if (id === 15) {
       pericias['Furtividade'] = (pericias['Furtividade'] || 0) + 5;
     }
-    // Lépida
+    // Lepida
     else if (id === 17) {
       pericias['Atletismo'] = (pericias['Atletismo'] || 0) + 10;
       deslocamento += 3;
@@ -109,12 +109,12 @@ export function calcularBonusMaldicoes(
     else if (id === 30) {
       bonusDT += 1;
     }
-    // Cinética
+    // Cinetica
     else if (id === 16) {
       defesa += 2;
       resistenciasExtras.push('Dano 2 (ou 5 se pesada)');
     }
-    // Letárgica
+    // Letargica
     else if (id === 19) {
       defesa += 2;
     }
@@ -122,7 +122,7 @@ export function calcularBonusMaldicoes(
     else if (id === 28) {
       defesa += 5;
     }
-    // Profética
+    // Profetica
     else if (id === 14) {
       resistenciasExtras.push('Conhecimento 10');
     }

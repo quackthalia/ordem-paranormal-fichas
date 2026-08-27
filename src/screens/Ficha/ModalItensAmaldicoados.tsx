@@ -72,7 +72,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
       if (rankA !== rankB) return rankA - rankB;
       return a.Nome_Ama.localeCompare(b.Nome_Ama);
     });
-  }, [itens, busca, categoriaSelecionada, elementoSelecionado]);
+  }, [itens, busca, abaElemento]);
 
   const toggleExpandir = (id: string) => {
     setExpandidos(prev => ({ ...prev, [id]: !prev[id] }));
@@ -104,57 +104,47 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
               placeholder="Buscar item amaldiçoado..."
               className="flex-1 rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700"
             />
-            <button 
-              onClick={() => setMostrarFiltrosAvançados(!mostrarFiltrosAvançados)}
-              className={`rounded border px-3 py-1.5 text-sm font-bold uppercase tracking-wider transition ${
-                mostrarFiltrosAvançados || categoriaSelecionada !== 'Todos' || elementoSelecionado !== 'Todos'
-                  ? 'border-green-800 bg-green-900/40 text-green-300'
-                  : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
+            </div>
+          </div>
+
+          {/* Sub Aba Elementos */}
+          <div className="flex flex-wrap items-center gap-2 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Elementos:</span>
+            <button
+              onClick={() => setAbaElemento(null)}
+              className={`rounded px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider transition ${
+                abaElemento === null
+                  ? 'bg-green-900/40 text-green-300 border border-green-800'
+                  : 'bg-zinc-800/60 text-zinc-500 border border-zinc-700 hover:text-zinc-300'
               }`}
             >
-              Filtros
+              Todos
             </button>
+            {['Sangue', 'Conhecimento', 'Energia', 'Morte', 'Varia'].map(elem => {
+              const ativo = abaElemento === elem;
+              return (
+                <button
+                  key={elem}
+                  onClick={() => setAbaElemento(elem)}
+                  className={`rounded px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider transition border ${
+                    ativo
+                      ? (() => {
+                          const elStr = elem.toLowerCase();
+                          if (elStr.includes('medo')) return 'border-zinc-500 bg-zinc-200/80 text-zinc-950 px-3';
+                          if (elStr.includes('sangue')) return 'border-red-900 bg-red-950/20 text-red-500';
+                          if (elStr.includes('morte')) return 'border-zinc-700 bg-black/50 text-white px-3';
+                          if (elStr.includes('conhecimento')) return 'border-yellow-900 bg-yellow-950/20 text-yellow-500';
+                          if (elStr.includes('energia')) return 'border-purple-900 bg-purple-950/20 text-purple-500';
+                          return 'border-zinc-600 text-zinc-100';
+                        })()
+                      : 'border-zinc-700 text-zinc-500 hover:text-zinc-300'
+                  }`}
+                >
+                  {elem}
+                </button>
+              );
+            })}
           </div>
-        </div>
-
-        <Collapse isOpen={mostrarFiltrosAvançados} className="z-50">
-
-          <div className="flex flex-wrap items-center gap-3 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
-            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px] ">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Categoria</label>
-              <CustomSelect
-                value={categoriaSelecionada}
-                onChange={setCategoriaSelecionada}
-                options={[
-                  { value: 'Todos', label: 'Todas Categorias' },
-                  { value: 'I', label: 'I' },
-                  { value: 'II', label: 'II' },
-                  { value: 'III', label: 'III' },
-                  { value: 'IV', label: 'IV' }
-                ]}
-                wrapperClassName="w-full"
-              />
-            </div>
-            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px] ">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Elemento</label>
-              <CustomSelect
-                value={elementoSelecionado}
-                onChange={setElementoSelecionado}
-                options={[
-                  { value: 'Todos', label: 'Todos Elementos' },
-                  { value: 'Conhecimento', label: 'Conhecimento' },
-                  { value: 'Energia', label: 'Energia' },
-                  { value: 'Medo', label: 'Medo' },
-                  { value: 'Morte', label: 'Morte' },
-                  { value: 'Sangue', label: 'Sangue' },
-                  { value: 'Varia', label: 'Varia' }
-                ]}
-                wrapperClassName="w-full"
-              />
-            </div>
-          </div>
-        
-        </Collapse>
 
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
           {loading ? (

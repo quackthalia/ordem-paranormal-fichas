@@ -163,8 +163,9 @@ export const ModalRituaisExtra: React.FC<ModalRituaisExtraProps> = ({
           </div>
           
           <div className="flex flex-wrap items-center gap-2 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
-            <button
-              onClick={() => setAbaCirculo(null)}
+              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Círculos:</span>
+              <button
+                onClick={() => setAbaCirculo(null)}
               className={`rounded px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition border ${
                 abaCirculo === null
                   ? 'bg-green-900/40 text-green-300 border-green-800'

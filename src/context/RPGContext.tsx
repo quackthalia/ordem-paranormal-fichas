@@ -245,6 +245,10 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     return calcularBonusVestimentas(itensAmaldicoadosHook.itensAmaldicoadosInventario);
   }, [itensAmaldicoadosHook.itensAmaldicoadosInventario]);
 
+  const bonusMaldicoes = useMemo(() => {
+    return calcularBonusMaldicoes(armasHook.armasInventario, protecoesHook.protecoesInventario, itensHook.itensInventario, municoesHook.municoesInventario, maldicoesHook.maldicoes);
+  }, [armasHook.armasInventario, protecoesHook.protecoesInventario, itensHook.itensInventario, municoesHook.municoesInventario, maldicoesHook.maldicoes]);
+
 
   const toggleVestimentaGeral = useCallback((id: string, isAmaldicoado: boolean) => {
     const maxVestimentas = regrasAutomaticasAtivas.has(23) ? 3 : 2;

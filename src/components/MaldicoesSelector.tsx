@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
 import type { Maldicao } from '../types';
 import { Collapse } from './Collapse';
+import { CustomSelect } from './CustomSelect';
 
 interface MaldicoesSelectorProps {
   maldicoesAplicadas: number[];
+  maldicoesElementos?: Record<number, string>;
   opcoesMaldicoes: Maldicao[];
   todasMaldicoes: Maldicao[];
-  onAdd: (id: number) => void;
+  onAdd: (id: number, elementoVaria?: string) => void;
   onRemove: (index: number) => void;
   podeAdicionar: boolean;
 }
 
 export function MaldicoesSelector({
   maldicoesAplicadas = [],
+  maldicoesElementos = {},
   opcoesMaldicoes = [],
   todasMaldicoes = [],
   onAdd,
@@ -20,6 +23,7 @@ export function MaldicoesSelector({
   podeAdicionar
 }: MaldicoesSelectorProps) {
   const [selecionando, setSelecionando] = useState(false);
+  const [elementosVaria, setElementosVaria] = useState<Record<number, string>>({});
   const [subAbaElemento, setSubAbaElemento] = useState<string | null>(null);
 
   // Mapeia os IDs aplicados de volta para os objetos Maldicao
@@ -132,7 +136,24 @@ export function MaldicoesSelector({
                   >
                     <div className="flex justify-between items-center">
                       <span className="font-bold text-zinc-200 text-sm">{opcao.Nome_Mald}</span>
-                      <span className={`inline-block rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight ${cores}`}>{opcao.Elemento_Mald}</span>
+                      {(opcao.Elemento_Mald?.toLowerCase() === 'varia' || opcao.Elemento_Mald?.toLowerCase() === 'lista') ? (
+                          <div className="flex gap-2" onClick={e => e.stopPropagation()}>
+                            <CustomSelect 
+                              value={elementosVaria[opcao.Codigo_Mald] || 'Sangue'}
+                              onChange={val => setElementosVaria(prev => ({ ...prev, [opcao.Codigo_Mald]: val }))}
+                              options={[
+                                { value: 'Sangue', label: 'Sangue' },
+                                { value: 'Morte', label: 'Morte' },
+                                { value: 'Conhecimento', label: 'Conhecimento' },
+                                { value: 'Energia', label: 'Energia' },
+                                { value: 'Medo', label: 'Medo' }
+                              ]}
+                              className="w-32 py-1 !text-xs !bg-zinc-950"
+                            />
+                          </div>
+                        ) : (
+                          <span className={`inline-block rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight ${cores}`}>{opcao.Elemento_Mald}</span>
+                        )}
                     </div>
                     <span className="text-xs text-zinc-400 mt-1">{opcao.Descricao_Mald}</span>
                     {opcao.Efeito && (
@@ -162,7 +183,15 @@ export function MaldicoesSelector({
                 <div className="flex flex-col gap-1 flex-1 pr-6">
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-zinc-100 text-[15px]">{mod.Nome_Mald}</span>
-                    <span className={`inline-block rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight ${cores}`}>{mod.Elemento_Mald}</span>
+                    {(mod.Elemento_Mald?.toLowerCase() === 'varia' || mod.Elemento_Mald?.toLowerCase() === 'lista') && maldicoesElementos && maldicoesElementos[mod.Codigo_Mald] ? (
+                        <span className={`inline-block rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight ${getCorElemento(maldicoesElementos[mod.Codigo_Mald])}`}>
+                          {maldicoesElementos[mod.Codigo_Mald]}
+                        </span>
+                      ) : (
+                        <span className={`inline-block rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight ${cores}`}>
+                          {mod.Elemento_Mald}
+                        </span>
+                      )}
                   </div>
                   <p className="text-sm text-zinc-400 leading-relaxed">
                     {mod.Descricao_Mald}

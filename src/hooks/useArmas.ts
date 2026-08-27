@@ -134,7 +134,7 @@ export function useArmas() {
     }));
   };
 
-  const editarArma = (idArma: string, novosDados: Partial<Arma>, novasModificacoes?: number[], novasMaldicoes?: number[]) => {
+  const editarArma = (id: string, novosDados: Partial<Arma>, novasModificacoes?: number[], novasMaldicoes?: number[], novasMaldicoesElementos?: Record<number, string>) => {
     setArmasInventario(prev => prev.map(item => {
       if (item.id === idArma) {
         const ret: ArmaInventario = {
@@ -146,6 +146,9 @@ export function useArmas() {
         }
         if (novasMaldicoes !== undefined) {
           ret.maldicoes = novasMaldicoes;
+        }
+        if (novasMaldicoesElementos !== undefined) {
+          ret.maldicoes_elementos = novasMaldicoesElementos;
         }
         return ret;
       }

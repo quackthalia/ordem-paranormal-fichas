@@ -45,6 +45,9 @@ export function useProtecoes() {
         if (novasMaldicoes !== undefined) {
           ret.maldicoes = novasMaldicoes;
         }
+        if (novasMaldicoesElementos !== undefined) {
+          ret.maldicoes_elementos = novasMaldicoesElementos;
+        }
         return ret;
       }
       return item;

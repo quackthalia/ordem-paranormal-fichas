@@ -11,7 +11,7 @@ import { categoriaRomanParaNum, categoriaNumParaRoman } from '../utils/rpgRules'
 interface ModalEditarProtecaoProps {
   protecao: ProtecaoInventario | null;
   onClose: () => void;
-  onSave: (id: string, novosDados: any, modificacoes?: number[], maldicoes?: number[]) => void;
+  onSave: (id: string, novosDados: any, modificacoes?: number[], maldicoes?: number[], maldicoesElementos?: Record<number, string>) => void;
 }
 
 export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarProtecaoProps) {
@@ -47,14 +47,27 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
   const espacosFinais = temDiscreto ? Math.max(0, baseEspacos - 1) : baseEspacos;
 
   
-    const handleAddMald = (id: number) => {
+    const handleAddMald = (id: number, elementoVaria?: string) => {
       if (podeAdicionarMald) {
         setMaldicoes(prev => [...prev, id]);
+        if (elementoVaria) {
+          setMaldicoesElementos(prev => ({ ...prev, [id]: elementoVaria }));
+        }
       }
     };
   
     const handleRemoveMald = (index: number) => {
-      setMaldicoes(prev => prev.filter((_, i) => i !== index));
+      setMaldicoes(prev => {
+        const removedId = prev[index];
+        if (removedId !== undefined) {
+          setMaldicoesElementos(elemPrev => {
+            const copy = { ...elemPrev };
+            delete copy[removedId];
+            return copy;
+          });
+        }
+        return prev.filter((_, i) => i !== index);
+      });
     };
 
     const getOpcoesMaldicoes = () => {
@@ -235,6 +248,7 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
               maldicoesAplicadas={maldicoes}
               opcoesMaldicoes={getOpcoesMaldicoes()}
               todasMaldicoes={maldicoesHook.maldicoes}
+              maldicoesElementos={maldicoesElementos}
               onAdd={handleAddMald}
               onRemove={handleRemoveMald}
               podeAdicionar={podeAdicionarMald}
@@ -260,7 +274,7 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
                 Defesa_Protecao: defesa,
                 Espacos_Protecao: getEspacoNumber(espacos),
                 Categoria_Protecao: categoria
-              }, modificacoes, maldicoes);
+              }, modificacoes, maldicoes, maldicoesElementos);
               onClose();
             }}
             className="rounded bg-green-800 px-5 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg transition hover:bg-green-700"

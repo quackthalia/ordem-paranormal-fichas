@@ -1123,8 +1123,8 @@ export function InventarioPanel() {
       {armaEditandoId && (
         <ModalEditarArma
           armaInventario={armasHook?.armasInventario.find(a => a.id === armaEditandoId)!}
-          onSave={(novosDados, modificacoes, maldicoes) => {
-            armasHook?.editarArma(armaEditandoId, novosDados, modificacoes, maldicoes);
+          onSave={(, modificacoes, maldicoes, maldicoesElementos) => {
+            armasHook?.editar(, modificacoes, maldicoes, maldicoesElementos);
           }}
           onClose={() => setArmaEditandoId(null)}
         />
@@ -1156,8 +1156,8 @@ export function InventarioPanel() {
       {protecaoEditandoId && (
         <ModalEditarProtecao
           protecao={protecoesHook?.protecoesInventario.find(p => p.id === protecaoEditandoId)!}
-          onSave={(id, novosDados, modificacoes, maldicoes) => {
-            protecoesHook?.editarProtecao(id, novosDados, modificacoes, maldicoes);
+          onSave={(, modificacoes, maldicoes, maldicoesElementos) => {
+            protecoesHook?.editar(, modificacoes, maldicoes, maldicoesElementos);
           }}
           onClose={() => setProtecaoEditandoId(null)}
         />
@@ -1166,8 +1166,8 @@ export function InventarioPanel() {
       {editingItem?.tipo === 'item' && getItemParaEditar() && (
         <ModalEditarItem
           itemInventario={getItemParaEditar()!}
-          onSave={(itemEditado, modificacoes, maldicoes) => {
-            itensHook.editarItem(editingItem.id, itemEditado, modificacoes, maldicoes);
+          onSave={(, modificacoes, maldicoes, maldicoesElementos) => {
+            itensHook.editar(, modificacoes, maldicoes, maldicoesElementos);
             setEditingItem(null);
           }}
           onClose={() => setEditingItem(null)}

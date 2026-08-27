@@ -15,7 +15,7 @@ export function ModalEditarArma({
   onClose,
 }: {
   armaInventario: ArmaInventario;
-  onSave: (novosDados: Partial<Arma>, modificacoes?: number[], maldicoes?: number[]) => void;
+  onSave: (novosDados: Partial<Arma>, modificacoes?: number[], maldicoes?: number[], maldicoesElementos?: Record<number, string>) => void;
   onClose: () => void;
 }) {
   React.useEffect(() => {
@@ -48,6 +48,7 @@ export function ModalEditarArma({
   const { modificacoesHook, maldicoesHook } = useRPG();
   const [modificacoes, setModificacoes] = useState<number[]>(armaInventario.modificacoes || []);
   const [maldicoes, setMaldicoes] = useState<number[]>(armaInventario.maldicoes || []);
+  const [maldicoesElementos, setMaldicoesElementos] = useState<Record<number, string>>(armaInventario.maldicoes_elementos || {});
   const [abaAprimoramento, setAbaAprimoramento] = useState<'modificacoes' | 'maldicoes'>('modificacoes');
 
   const editorDesc = useRef<HTMLDivElement | null>(null);
@@ -115,14 +116,27 @@ export function ModalEditarArma({
     const podeAdicionarMald = (catFinal + custoProximaMaldicao) <= 4;
 
   
-    const handleAddMald = (id: number) => {
+    const handleAddMald = (id: number, elementoVaria?: string) => {
       if (podeAdicionarMald) {
         setMaldicoes(prev => [...prev, id]);
+        if (elementoVaria) {
+          setMaldicoesElementos(prev => ({ ...prev, [id]: elementoVaria }));
+        }
       }
     };
   
     const handleRemoveMald = (index: number) => {
-      setMaldicoes(prev => prev.filter((_, i) => i !== index));
+      setMaldicoes(prev => {
+        const removedId = prev[index];
+        if (removedId !== undefined) {
+          setMaldicoesElementos(elemPrev => {
+            const copy = { ...elemPrev };
+            delete copy[removedId];
+            return copy;
+          });
+        }
+        return prev.filter((_, i) => i !== index);
+      });
     };
 
     const getOpcoesMaldicoes = () => {
@@ -179,7 +193,7 @@ export function ModalEditarArma({
       Tipo_Arma: tipoArma,
       Empunhadura_Arma: empunhadura,
       Tipo_Dano_Arma: tipoDano,
-    }, modificacoes, maldicoes);
+    }, modificacoes, maldicoes, maldicoesElementos);
     onClose();
   };
 
@@ -468,6 +482,7 @@ export function ModalEditarArma({
               maldicoesAplicadas={maldicoes}
               opcoesMaldicoes={getOpcoesMaldicoes()}
               todasMaldicoes={maldicoesHook.maldicoes}
+              maldicoesElementos={maldicoesElementos}
               onAdd={handleAddMald}
               onRemove={handleRemoveMald}
               podeAdicionar={podeAdicionarMald}

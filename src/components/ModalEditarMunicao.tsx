@@ -45,14 +45,27 @@ export function ModalEditarMunicao({ itemInventario, onSave, onClose }: ModalEdi
   const podeAdicionarMod = catFinal < 4;
 
   
-    const handleAddMald = (id: number) => {
+    const handleAddMald = (id: number, elementoVaria?: string) => {
       if (podeAdicionarMald) {
         setMaldicoes(prev => [...prev, id]);
+        if (elementoVaria) {
+          setMaldicoesElementos(prev => ({ ...prev, [id]: elementoVaria }));
+        }
       }
     };
   
     const handleRemoveMald = (index: number) => {
-      setMaldicoes(prev => prev.filter((_, i) => i !== index));
+      setMaldicoes(prev => {
+        const removedId = prev[index];
+        if (removedId !== undefined) {
+          setMaldicoesElementos(elemPrev => {
+            const copy = { ...elemPrev };
+            delete copy[removedId];
+            return copy;
+          });
+        }
+        return prev.filter((_, i) => i !== index);
+      });
     };
 
     const getOpcoesMaldicoes = () => {
@@ -86,7 +99,7 @@ export function ModalEditarMunicao({ itemInventario, onSave, onClose }: ModalEdi
       Descricao_Item: editorDesc.current?.innerHTML || descricao,
       Categoria_Item: categoria,
       'Espaços_Item': getEspacoNumber(espacos),
-    }, modificacoes, maldicoes);
+    }, modificacoes, maldicoes, maldicoesElementos);
   };
 
   const InputLabel = ({ label }: { label: string }) => (
@@ -208,6 +221,7 @@ export function ModalEditarMunicao({ itemInventario, onSave, onClose }: ModalEdi
               maldicoesAplicadas={maldicoes}
               opcoesMaldicoes={getOpcoesMaldicoes()}
               todasMaldicoes={maldicoesHook.maldicoes}
+              maldicoesElementos={maldicoesElementos}
               onAdd={handleAddMald}
               onRemove={handleRemoveMald}
               podeAdicionar={podeAdicionarMald}

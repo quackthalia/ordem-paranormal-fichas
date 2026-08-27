@@ -15,7 +15,7 @@ export function ModalEditarItem({
   onClose,
 }: {
   itemInventario: ItemGeralInventario;
-  onSave: (novosDados: Partial<ItemGeral>, modificacoes?: number[], maldicoes?: number[]) => void;
+  onSave: (novosDados: Partial<ItemGeral>, modificacoes?: number[], maldicoes?: number[], maldicoesElementos?: Record<number, string>) => void;
   onClose: () => void;
 }) {
   React.useEffect(() => {
@@ -35,6 +35,7 @@ export function ModalEditarItem({
   const { modificacoesHook, periciasHook } = useRPG();
   const [modificacoes, setModificacoes] = useState<number[]>(itemInventario.modificacoes || []);
   const [maldicoes, setMaldicoes] = useState<number[]>(itemInventario.maldicoes || []);
+  const [maldicoesElementos, setMaldicoesElementos] = useState<Record<number, string>>(itemObj.maldicoes_elementos || {});
   const [abaAprimoramento, setAbaAprimoramento] = useState<'modificacoes' | 'maldicoes'>('modificacoes');
   const [escolhendoFuncaoAdicional, setEscolhendoFuncaoAdicional] = useState<number | null>(null);
   const [escolhendoAprimorado, setEscolhendoAprimorado] = useState<number | null>(null);
@@ -94,18 +95,31 @@ export function ModalEditarItem({
   const podeAdicionarMod = catFinal < 4;
 
   
-    const handleAddMald = (id: number) => {
+    const handleAddMald = (id: number, elementoVaria?: string) => {
       if (podeAdicionarMald) {
         setMaldicoes(prev => [...prev, id]);
+        if (elementoVaria) {
+          setMaldicoesElementos(prev => ({ ...prev, [id]: elementoVaria }));
+        }
       }
     };
   
     const handleRemoveMald = (index: number) => {
-      setMaldicoes(prev => prev.filter((_, i) => i !== index));
+      setMaldicoes(prev => {
+        const removedId = prev[index];
+        if (removedId !== undefined) {
+          setMaldicoesElementos(elemPrev => {
+            const copy = { ...elemPrev };
+            delete copy[removedId];
+            return copy;
+          });
+        }
+        return prev.filter((_, i) => i !== index);
+      });
     };
 
     const getOpcoesMaldicoes = () => {
-      return maldicoesHook.maldicoes.filter(m => ['acessórios'].includes(m.Categoria_Mald.trim().toLowerCase()));
+      return maldicoesHook.maldicoes.filter(m => m.Categoria_Mald.trim().toLowerCase().includes('vestiment') || m.Categoria_Mald.trim().toLowerCase().includes('utens') || m.Categoria_Mald.trim().toLowerCase().includes('acess'));
     };
 
     const handleAddMod = (id: number) => {
@@ -226,7 +240,7 @@ export function ModalEditarItem({
       Espacos_Itens: getEspacoNumber(espacos),
       Dt_Item: dt,
       Grupo_Item: grupo,
-      }, modificacoes, maldicoes);
+      }, modificacoes, maldicoes, maldicoesElementos);
       onClose();
   };
 
@@ -356,6 +370,7 @@ export function ModalEditarItem({
               maldicoesAplicadas={maldicoes}
               opcoesMaldicoes={getOpcoesMaldicoes()}
               todasMaldicoes={maldicoesHook.maldicoes}
+              maldicoesElementos={maldicoesElementos}
               onAdd={handleAddMald}
               onRemove={handleRemoveMald}
               podeAdicionar={podeAdicionarMald}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import type { Modificacao } from '../types';
 import { Collapse } from './Collapse';
 
@@ -20,6 +20,15 @@ export function ModificacoesSelector({
   podeAdicionar
 }: ModificacoesSelectorProps) {
   const [selecionando, setSelecionando] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (selecionando && dropdownRef.current) {
+      setTimeout(() => {
+        dropdownRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 150);
+    }
+  }, [selecionando]);
 
   const aplicadas = modificacoesAplicadas
     .map(id => todasModificacoes.find(m => m.Codigo_Modif === id))
@@ -54,7 +63,7 @@ export function ModificacoesSelector({
 
       {/* Painel de Seleção */}
       <Collapse isOpen={selecionando}>
-        <div className="flex flex-col border border-zinc-700/60 bg-zinc-900/80 rounded-lg overflow-hidden shadow-xl mb-1">
+        <div ref={dropdownRef} className="flex flex-col border border-zinc-700/60 bg-zinc-900/80 rounded-lg overflow-hidden shadow-xl mb-1">
           <div className="flex items-center justify-between px-3 py-2 border-b border-zinc-800 bg-zinc-950/50">
             <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Selecionar Modificação</span>
             <button 

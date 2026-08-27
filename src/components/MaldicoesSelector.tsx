@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import type { Maldicao } from '../types';
 import { Collapse } from './Collapse';
 import { CustomSelect } from './CustomSelect';
@@ -23,6 +23,15 @@ export function MaldicoesSelector({
   podeAdicionar
 }: MaldicoesSelectorProps) {
   const [selecionando, setSelecionando] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (selecionando && dropdownRef.current) {
+      setTimeout(() => {
+        dropdownRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 150);
+    }
+  }, [selecionando]);
   const [subAbaElemento, setSubAbaElemento] = useState('Todos');
   const [elementosVaria, setElementosVaria] = useState<Record<number, string>>({});
 
@@ -76,7 +85,7 @@ export function MaldicoesSelector({
 
       {/* Painel de Seleção */}
       <Collapse isOpen={selecionando}>
-        <div className="flex flex-col border border-indigo-900/40 bg-zinc-900/80 rounded-lg overflow-hidden shadow-xl mb-1">
+        <div ref={dropdownRef} className="flex flex-col border border-indigo-900/40 bg-zinc-900/80 rounded-lg overflow-hidden shadow-xl mb-1">
           <div className="flex flex-col border-b border-zinc-800 bg-zinc-950/50">
             <div className="flex items-center justify-between px-3 py-2">
               <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Selecionar Maldição</span>

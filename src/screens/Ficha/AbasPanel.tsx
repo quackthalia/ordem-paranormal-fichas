@@ -1856,7 +1856,7 @@ export const AbasPanel: React.FC = () => {
               <div className="bg-zinc-800 p-3 border-b border-zinc-700 font-bold text-zinc-200 flex justify-between items-center">
                 <span>Personalizar Ritual</span>
               </div>
-              <div className="p-4 flex flex-col gap-4 overflow-y-auto">
+              <div className="p-4 flex flex-col gap-4 overflow-y-auto custom-scrollbar">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-bold uppercase tracking-wider text-zinc-400">Nome Personalizado</label>
                   <InputOtimizado
@@ -1924,7 +1924,7 @@ export const AbasPanel: React.FC = () => {
                     }}
                     contentEditable
                     onBlur={(e) => setRitualDescricaoEditando(e.currentTarget.innerHTML)}
-                    className="min-h-[200px] w-full rounded-b border border-zinc-700 bg-zinc-950 p-3 text-sm leading-relaxed text-zinc-300 focus:border-green-700 focus:outline-none flex-1 overflow-y-auto"
+                    className="min-h-[200px] w-full rounded-b border border-zinc-700 bg-zinc-950 p-3 text-sm leading-relaxed text-zinc-300 focus:border-green-700 focus:outline-none flex-1 overflow-y-auto custom-scrollbar"
                   />
                 </div>
               </div>

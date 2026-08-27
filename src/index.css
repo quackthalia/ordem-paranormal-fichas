@@ -68,3 +68,7 @@ button {
 *::-webkit-scrollbar-track {
   background: transparent;
 }
+
+.custom-scrollbar {
+  scrollbar-gutter: stable;
+}

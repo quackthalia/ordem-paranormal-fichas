@@ -167,7 +167,7 @@ const ProgressaoBlock = ({ item, nexPatamar }: { item: ProgressaoNexItem, nexPat
                       }}
                       contentEditable
                       onBlur={(e) => setEditText(e.currentTarget.innerHTML)}
-                      className="min-h-48 overflow-y-auto rounded-b border border-zinc-700 bg-zinc-950 p-3 text-left text-sm leading-relaxed text-zinc-100 outline-none focus:border-green-700"
+                      className="min-h-48 overflow-y-auto custom-scrollbar rounded-b border border-zinc-700 bg-zinc-950 p-3 text-left text-sm leading-relaxed text-zinc-100 outline-none focus:border-green-700"
                     />
                   </div>
                 </div>

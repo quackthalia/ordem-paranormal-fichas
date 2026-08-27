@@ -32,3 +32,5 @@
 - **Commit Automático**: Ao finalizar as tarefas solicitadas em um prompt do usuário, SEMPRE faça um commit no Git com as mudanças realizadas (ex: usando `run_command` com `git add .` e `git commit -m "..."`). As mensagens de commit devem ser curtas, descritivas e relativas ao que foi pedido/alterado.
 
 - **Reset de Estado nos Modais**: TODO modal da aplicação DEVE resetar completamente seu estado interno (filtros aplicados, abas selecionadas, blocos/cards expandidos, etc) sempre que for fechado e aberto novamente. NUNCA preserve o estado de um modal após ele ser fechado, para garantir uma experiência consistente e limpa toda vez que o usuário abri-lo.
+
+- **Scrollbars sem Layout Shift**: TODOS os contedos rol�veis (ex: modais, dropdowns, listas) que usam `overflow-auto` ou `overflow-y-auto` DEVEM incluir a classe `custom-scrollbar`. Essa classe aplica `scrollbar-gutter: stable`, o que reserva espao para o scrollbar e impede que o aparecimento/desaparecimento dele empurre o contedo pro lado, quebrando o layout.

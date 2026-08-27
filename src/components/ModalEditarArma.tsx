@@ -404,7 +404,7 @@ export function ModalEditarArma({
                 contentEditable
                 suppressContentEditableWarning
                 onBlur={(e) => setDescricao(e.currentTarget.innerHTML)}
-                className="w-full p-3 text-sm text-zinc-100 outline-none overflow-y-auto  max-h-[250px]"
+                className="w-full p-3 text-sm text-zinc-100 outline-none overflow-y-auto custom-scrollbar max-h-[250px]"
               />
             </div>
           </div>

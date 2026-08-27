@@ -11,7 +11,7 @@ export const BonusCondicionaisPanel: React.FC = () => {
   } = useRPG();
 
   return (
-    <div className="flex flex-col rounded-md border border-zinc-700 bg-zinc-900 shadow-xl overflow-hidden animate-in slide-in-from-top-2 fade-in duration-200">
+    <div className="flex flex-col rounded-md border border-zinc-700 bg-zinc-900 shadow-xl overflow-hidden ">
       <h4 className="bg-zinc-950 px-4 py-2 text-center font-display tracking-widest text-zinc-300 uppercase border-b border-zinc-800">
         Modificadores de Dados
       </h4>

@@ -2,6 +2,7 @@ import React from 'react';
 import { useRPG } from '../../context/RPGContext';
 import type { AtributoKey } from '../../types';
 import { CustomSelect } from '../../components/CustomSelect';
+import { Collapse } from '../../components/Collapse';
 import { BonusCondicionaisPanel } from './BonusCondicionaisPanel';
 
 // Cores por grau de treino: destreinado → treinado → veterano → expert
@@ -29,21 +30,7 @@ export const PericiasTable: React.FC = () => {
 
   const [periciaAberta, setPericiaAberta] = React.useState<{ nome: string; descricao: string } | null>(null);
   const [mostrarBonus, setMostrarBonus] = React.useState(false);
-  const popoverRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
-        setMostrarBonus(false);
-      }
-    };
-    if (mostrarBonus) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [mostrarBonus]);
+  
 
   
 
@@ -66,9 +53,23 @@ export const PericiasTable: React.FC = () => {
 
   return (
     <div className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-6 h-full flex flex-col">
-      <h3 className="font-display mb-2 border-b border-zinc-800 pb-1 text-center text-lg uppercase tracking-[0.2em] text-zinc-300">
-        Perícias
-      </h3>
+      <div className="flex items-center justify-between mb-2 border-b border-zinc-800 pb-1">
+        <h3 className="font-display text-lg uppercase tracking-[0.2em] text-zinc-300 ml-4 flex-1 text-center">
+          Perícias
+        </h3>
+        <button
+          onClick={() => setMostrarBonus(!mostrarBonus)}
+          className={`rounded px-2 py-1 transition text-xs ${mostrarBonus ? 'bg-green-900/50 text-green-100 border-green-800/50' : 'bg-zinc-800/50 text-zinc-400 hover:text-zinc-200'} border border-zinc-700/50 flex items-center gap-2`}
+        >
+          Bônus de Dados {mostrarBonus ? '▲' : '▼'}
+        </button>
+      </div>
+      
+      <Collapse isOpen={mostrarBonus}>
+        <div className="mb-4">
+          <BonusCondicionaisPanel />
+        </div>
+      </Collapse>
 
       {/* PAINEL DE REGRAS E BÔNUS */}
       <div className="mb-2 flex flex-col rounded border border-zinc-800 bg-zinc-950/80 px-3 py-1.5 text-xs">
@@ -83,19 +84,7 @@ export const PericiasTable: React.FC = () => {
               />
               {regrasAtivas ? 'Regras Ativas' : 'Modo Livre'}
             </label>
-            <div className="relative" ref={popoverRef}>
-              <button
-                onClick={() => setMostrarBonus(!mostrarBonus)}
-                className={`rounded px-2 py-1 transition ${mostrarBonus ? 'bg-green-900/50 text-green-100 border-green-800/50' : 'bg-zinc-800/50 text-zinc-400 hover:text-zinc-200'} border border-zinc-700/50 flex items-center gap-2`}
-              >
-                Bônus de Dados {mostrarBonus ? '▲' : '▼'}
-              </button>
-              {mostrarBonus && (
-                <div className="absolute left-0 top-full mt-2 z-50 w-[350px]">
-                  <BonusCondicionaisPanel />
-                </div>
-              )}
-            </div>
+            
             
           </div>
 

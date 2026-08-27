@@ -42,6 +42,9 @@ export function useProtecoes() {
         if (novasModificacoes !== undefined) {
           ret.modificacoes = novasModificacoes;
         }
+        if (novasMaldicoes !== undefined) {
+          ret.maldicoes = novasMaldicoes;
+        }
         return ret;
       }
       return item;

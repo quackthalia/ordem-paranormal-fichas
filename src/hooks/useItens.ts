@@ -54,6 +54,9 @@ export function useItens(maxVestimentas: number = 2) {
         if (novasModificacoes !== undefined) {
           ret.modificacoes = novasModificacoes;
         }
+        if (novasMaldicoes !== undefined) {
+          ret.maldicoes = novasMaldicoes;
+        }
         return ret;
       }
       return item;

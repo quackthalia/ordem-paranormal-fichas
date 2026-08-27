@@ -52,7 +52,7 @@ export const PericiasTable: React.FC = () => {
   };
 
   return (
-    <div className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-6 h-full flex flex-col">
+    <div className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-6">
       <div className="flex items-center justify-between mb-2 border-b border-zinc-800 pb-1">
         <h3 className="font-display text-lg uppercase tracking-[0.2em] text-zinc-300 ml-4 flex-1 text-center">
           Perícias
@@ -112,7 +112,7 @@ export const PericiasTable: React.FC = () => {
       </div>
 
       {/* TABELA */}
-      <div className="overflow-x-auto flex-1">
+      <div className="overflow-x-auto">
         <table className="w-full border-collapse text-zinc-100">
           <thead>
             <tr className="border-b border-zinc-700 text-xs uppercase tracking-wider text-zinc-500">

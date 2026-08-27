@@ -6,6 +6,7 @@ import { AbasPanel } from './AbasPanel';
 import { ModalPoderes } from '../../components/ModalPoderes';
 import { obterCorBadge } from '../../utils/rpgRules';
 import { CharacterHeader } from './CharacterHeader';
+import { BonusCondicionaisPanel } from './BonusCondicionaisPanel';
 
 export const FichaScreen: React.FC = () => {
   const {

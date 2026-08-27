@@ -103,7 +103,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
         </div>
 
         {/* Filtros Avançados */}
-        <Collapse isOpen={mostrarFiltrosAvançados} className="z-50" duration="0.35s" timingFunction="ease-out">
+        <Collapse isOpen={mostrarFiltrosAvançados} className="z-50">
 
           <div className="flex flex-col gap-3 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
             <div className="flex flex-wrap items-center gap-3">

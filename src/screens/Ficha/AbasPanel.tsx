@@ -1456,7 +1456,7 @@ export const AbasPanel: React.FC = () => {
                           { 
                             value: 'normal', 
                             label: 'Normal',
-                            
+                            disabled: !reqNormal.atende
                           },
                         ];
                         if (ritual.Tem_Discente) {
@@ -1464,7 +1464,7 @@ export const AbasPanel: React.FC = () => {
                           versoesDisponiveis.push({ 
                             value: 'discente', 
                             label: 'Discente',
-                            
+                            disabled: !req.atende
                           });
                         }
                         if (ritual.Tem_Verdadeiro) {
@@ -1472,7 +1472,7 @@ export const AbasPanel: React.FC = () => {
                           versoesDisponiveis.push({ 
                             value: 'verdadeiro', 
                             label: 'Verdadeiro',
-                            
+                            disabled: !req.atende
                           });
                         }
 

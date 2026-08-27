@@ -412,7 +412,7 @@ export function InventarioPanel() {
   }, []);
 
   const patentesDisponiveis: Patente[] = ['Recruta', 'Operador', 'Agente Especial', 'Oficial de Operações', 'Agente de Elite'];
-  const creditosDisponiveis: LimiteCredito[] = ['Baixo', 'Médio', 'Alto', 'Ilimitado'];
+  const creditosDisponiveis: LimiteCredito[] = ['Baixo', 'Medio', 'Alto', 'Ilimitado'];
 
   const toggleExpandir = (id: string) => {
     setExpandidos(prev => ({ ...prev, [id]: !prev[id] }));
@@ -1275,8 +1275,8 @@ function SortableArmaItem({
       if (nome === 'mira laser' || nome === 'perigosa') {
         critico -= 2;
       }
-      if (nome === 'mira telescópica') {
-        const ord = ['Curto', 'Médio', 'Longo', 'Extremo', 'Ilimitado'];
+      if (nome === 'mira telescopica') {
+        const ord = ['Curto', 'Medio', 'Longo', 'Extremo', 'Ilimitado'];
         const idx = ord.indexOf(alcance);
         if (idx !== -1 && idx < ord.length - 1) {
           alcance = ord[idx + 1];
@@ -1296,7 +1296,7 @@ function SortableArmaItem({
         }
         if (nomeM === 'predadora') {
           critico -= 1;
-          const ord = ['Curto', 'Médio', 'Longo', 'Extremo', 'Ilimitado'];
+          const ord = ['Curto', 'Medio', 'Longo', 'Extremo', 'Ilimitado'];
           const idx = ord.indexOf(alcance);
           if (idx !== -1 && idx < ord.length - 1) {
             alcance = ord[idx + 1];

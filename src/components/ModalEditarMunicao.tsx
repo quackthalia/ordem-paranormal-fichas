@@ -186,6 +186,18 @@ export function ModalEditarMunicao({ itemInventario, onSave, onClose }: ModalEdi
               podeAdicionar={podeAdicionarMod}
             />
           </div>
+
+          <div className="mt-4 border-t border-zinc-800 pt-4">
+            <MaldicoesSelector
+              maldicoesAplicadas={maldicoes}
+              opcoesMaldicoes={getOpcoesMaldicoes()}
+              todasMaldicoes={maldicoesHook.maldicoes}
+              onAdd={handleAddMald}
+              onRemove={handleRemoveMald}
+              podeAdicionar={podeAdicionarMald}
+            />
+          </div>
+
         </div>
 
         <div className="border-t border-zinc-800 bg-zinc-950 px-6 py-4 flex justify-end gap-3">

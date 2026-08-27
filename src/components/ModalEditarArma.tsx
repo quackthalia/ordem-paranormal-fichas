@@ -445,6 +445,18 @@ export function ModalEditarArma({
               podeAdicionar={podeAdicionarMod}
             />
           </div>
+
+          <div className="mt-4 border-t border-zinc-800 pt-4">
+            <MaldicoesSelector
+              maldicoesAplicadas={maldicoes}
+              opcoesMaldicoes={getOpcoesMaldicoes()}
+              todasMaldicoes={maldicoesHook.maldicoes}
+              onAdd={handleAddMald}
+              onRemove={handleRemoveMald}
+              podeAdicionar={podeAdicionarMald}
+            />
+          </div>
+
         </div>
 
         <div className="flex justify-end gap-3 border-t border-zinc-800 bg-zinc-900/50 p-4">

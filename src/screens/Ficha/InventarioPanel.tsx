@@ -1443,13 +1443,11 @@ function SortableArmaItem({
         </div>
       
               {municoesAcopladasList.length > 0 && (
-          <div className="flex flex-col border-t border-zinc-800 bg-zinc-950/40">
+          <div className="flex flex-wrap items-center gap-2 px-3 pt-3 pb-1 border-t border-zinc-800/50 bg-zinc-900/30">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Munições:</span>
             {municoesAcopladasList.map(minv => (
-              <div key={minv.id} className="flex items-center justify-between p-2 pl-8 border-b border-zinc-800/50 last:border-0 group">
-                <div className="flex items-center gap-2">
-                  <span className="text-zinc-600">↳</span>
-                  <span className="text-sm font-bold text-zinc-300">{minv.municao.Nome_Item}</span>
-                </div>
+              <div key={minv.id} className="flex items-center gap-1 bg-yellow-950/40 border border-yellow-900/50 rounded-full pl-2 pr-1 py-0.5 group">
+                <span className="text-[11px] font-bold text-yellow-500/90 truncate max-w-[150px]">{minv.municao.Nome_Item}</span>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -1457,9 +1455,9 @@ function SortableArmaItem({
                     municoesHook?.removerMunicao(minv.id);
                   }}
                   title="Remover Munição"
-                  className="text-zinc-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition px-2"
+                  className="flex items-center justify-center w-4 h-4 rounded-full text-yellow-700 hover:text-yellow-400 hover:bg-yellow-900/50 transition-colors"
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
                     <line x1="6" y1="6" x2="18" y2="18"></line>
                   </svg>

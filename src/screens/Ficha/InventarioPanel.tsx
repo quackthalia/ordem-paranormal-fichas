@@ -90,7 +90,7 @@ export const calcularEspacosFinais = (espacoBase: number | string, modificacoesI
 };
 
 function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stringDT, onEditar, toggleEquipado, isOverlay }: SortableItemGeralProps) {
-  const { modificacoesHook, regrasAutomaticasAtivas } = useRPG();
+  const { maldicoesHook, modificacoesHook, regrasAutomaticasAtivas } = useRPG();
   
   const getCorElemento = (elemento: string) => {
     const e = elemento.trim().toLowerCase();
@@ -320,7 +320,7 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
 }
 
 export function InventarioPanel() {
-  const { inventarioHook, atributosFinais, regrasAutomaticasAtivas, armasHook, municoesHook, protecoesHook, itensHook, itensAmaldicoadosHook, toggleVestimentaGeral, status, modificacoesHook, proficienciasTotais } = useRPG();
+  const { maldicoesHook, inventarioHook, atributosFinais, regrasAutomaticasAtivas, armasHook, municoesHook, protecoesHook, itensHook, itensAmaldicoadosHook, toggleVestimentaGeral, status, modificacoesHook, proficienciasTotais } = useRPG();
   const {
     prestigio, setPrestigio,
     patente, setPatenteManual,
@@ -1246,7 +1246,7 @@ function SortableArmaItem({
     isDragging,
   } = useSortable({ id, data: { type: 'arma' } });
 
-  const { municoesHook, armasHook, proficienciasTotais, modificacoesHook, atributosFinais, status, regrasAutomaticasAtivas, regras } = useRPG();
+  const { municoesHook, armasHook, proficienciasTotais, modificacoesHook, maldicoesHook, atributosFinais, status, regrasAutomaticasAtivas, regras } = useRPG();
   const hasProficiencia = proficienciasTotais.includes(arma.Proficiencia);
   const [expandirMods, setExpandirMods] = useState(false);
 
@@ -1527,7 +1527,7 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
   const { municao } = item;
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id, data: { type: 'municao' } });
 
-  const { modificacoesHook, regrasAutomaticasAtivas, regras } = useRPG();
+  const { modificacoesHook, maldicoesHook, regrasAutomaticasAtivas, regras } = useRPG();
   const [expandirMods, setExpandirMods] = useState(false);
   const modsAtuais = (item.modificacoes || []).map(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)).filter(Boolean) as any[];
 
@@ -1677,7 +1677,7 @@ function SortableProtecaoItem({
 }) {
   const { id, protecao, equipado } = item;
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id, data: { type: 'protecao' } });
-  const { proficienciasTotais, modificacoesHook, regrasAutomaticasAtivas } = useRPG();
+  const { proficienciasTotais, modificacoesHook, maldicoesHook, regrasAutomaticasAtivas } = useRPG();
   const hasProficiencia = protecao.Proficiencia === 'Nenhuma' || proficienciasTotais.includes(protecao.Proficiencia);
   const [expandirMods, setExpandirMods] = useState(false);
 

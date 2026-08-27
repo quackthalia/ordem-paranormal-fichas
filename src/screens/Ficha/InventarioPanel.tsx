@@ -91,6 +91,17 @@ export const calcularEspacosFinais = (espacoBase: number | string, modificacoesI
 
 function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stringDT, onEditar, toggleEquipado, isOverlay }: SortableItemGeralProps) {
   const { modificacoesHook, regrasAutomaticasAtivas } = useRPG();
+  
+  const getCorElemento = (elemento: string) => {
+    const e = elemento.trim().toLowerCase();
+    if (e === 'morte') return 'text-zinc-400 border-zinc-600 bg-zinc-900/50';
+    if (e === 'sangue') return 'text-red-400 border-red-800 bg-red-950/30';
+    if (e === 'energia') return 'text-purple-400 border-purple-800 bg-purple-950/30';
+    if (e.includes('conhec')) return 'text-amber-400 border-amber-800 bg-amber-950/30';
+    if (e === 'medo') return 'text-white border-white/50 bg-white/10';
+    return 'text-zinc-400 border-zinc-700 bg-zinc-800';
+  };
+
   const [expandirMods, setExpandirMods] = useState(false);
   const modsAtuais = (item.modificacoes || []).map(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)).filter(Boolean) as any[];
 
@@ -238,6 +249,37 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
                 </Collapse>
               </div>
             )}
+
+              {((item.maldicoes || []).length > 0) && (
+                <div className="mt-2 border border-indigo-900/50 rounded bg-indigo-950/20 overflow-hidden">
+                  <div className="px-2 py-1.5 bg-indigo-950/40 flex justify-between items-center cursor-pointer hover:bg-indigo-950/60 transition" onClick={(e) => { e.stopPropagation(); setExpandirMods(!expandirMods); }}>
+                    <div className="flex flex-wrap gap-1 items-center">
+                      <span className="text-[11px] font-bold text-indigo-300 uppercase tracking-wider mr-1">Maldições</span>
+                      {!expandirMods && (item.maldicoes || []).map((id: number) => {
+                        const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
+                        if (!m) return null;
+                        const cores = getCorElemento(m.Elemento_Mald);
+                        return <span key={m.Codigo_Mald} className={`px-1.5 py-0.5 rounded border text-[10px] font-bold truncate max-w-[120px] ${cores}`}>{m.Nome_Mald}</span>;
+                      })}
+                    </div>
+                  </div>
+                  <Collapse isOpen={expandirMods}>
+                    <div className="px-2 pb-2 pt-1 flex flex-col gap-1.5 border-t border-indigo-900/30">
+                      {(item.maldicoes || []).map((id: number) => {
+                        const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
+                        if (!m) return null;
+                        const cores = getCorElemento(m.Elemento_Mald);
+                        return (
+                          <div key={m.Codigo_Mald} className={`flex flex-col gap-0.5 pb-1 border-b border-indigo-900/20 last:border-0 last:pb-0 ${cores.split(' ').find(c => c.startsWith('text'))}`}>
+                            <div className="flex gap-1 items-center"><span className="font-bold text-xs">{m.Nome_Mald}</span><span className={`text-[9px] px-1 py-0 rounded border uppercase tracking-widest ${cores}`}>{m.Elemento_Mald}</span></div>
+                            <span className="text-[10px] opacity-80 leading-tight">{m.Descricao_Mald}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </Collapse>
+                </div>
+              )}
           </div>
           <div className="flex flex-col gap-1 mt-1">
             <p className="text-zinc-400 text-xs leading-relaxed whitespace-pre-wrap">{formatarTexto(item.item.Desc_Item)}</p>
@@ -1086,8 +1128,8 @@ export function InventarioPanel() {
       {armaEditandoId && (
         <ModalEditarArma
           armaInventario={armasHook?.armasInventario.find(a => a.id === armaEditandoId)!}
-          onSave={(novosDados, modificacoes) => {
-            armasHook?.editarArma(armaEditandoId, novosDados, modificacoes);
+          onSave={(novosDados, modificacoes, maldicoes) => {
+            armasHook?.editarArma(armaEditandoId, novosDados, modificacoes, maldicoes);
           }}
           onClose={() => setArmaEditandoId(null)}
         />
@@ -1119,8 +1161,8 @@ export function InventarioPanel() {
       {protecaoEditandoId && (
         <ModalEditarProtecao
           protecao={protecoesHook?.protecoesInventario.find(p => p.id === protecaoEditandoId)!}
-          onSave={(id, novosDados, modificacoes) => {
-            protecoesHook?.editarProtecao(id, novosDados, modificacoes);
+          onSave={(id, novosDados, modificacoes, maldicoes) => {
+            protecoesHook?.editarProtecao(id, novosDados, modificacoes, maldicoes);
           }}
           onClose={() => setProtecaoEditandoId(null)}
         />
@@ -1129,8 +1171,8 @@ export function InventarioPanel() {
       {editingItem?.tipo === 'item' && getItemParaEditar() && (
         <ModalEditarItem
           itemInventario={getItemParaEditar()!}
-          onSave={(itemEditado, modificacoes) => {
-            itensHook.editarItem(editingItem.id, itemEditado, modificacoes);
+          onSave={(itemEditado, modificacoes, maldicoes) => {
+            itensHook.editarItem(editingItem.id, itemEditado, modificacoes, maldicoes);
             setEditingItem(null);
           }}
           onClose={() => setEditingItem(null)}
@@ -1362,7 +1404,7 @@ function SortableArmaItem({
             <span className="italic text-zinc-400">{arma.Tipo_Arma}</span>
           </div>
           <div className="flex flex-col gap-1 text-xs text-zinc-300">
-            <span><span className="text-green-400 font-bold">Categoria:</span> {calcularCategoriaFinal(arma.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes, arma.Codigo_Arma === 71)}</span>
+            <span><span className="text-green-400 font-bold">Categoria:</span> {calcularCategoriaFinal(arma.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes, arma.Codigo_Arma === 71, item.maldicoes, maldicoesHook?.maldicoes)}</span>
             {stats.alcance && <span><span className="text-green-400 font-bold">Alcance:</span> {stats.alcance}</span>}
             <span><span className="text-green-400 font-bold">Tipo:</span> {arma.Tipo_Dano_Arma}</span>
             {stats.danoSecundario && <span><span className="text-green-400 font-bold">Dano Secundário:</span> {stats.danoSecundario}</span>}
@@ -1548,7 +1590,7 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
 
         <div className="border-t border-zinc-800 px-3 py-3 text-xs flex flex-col gap-2 bg-zinc-950/80">
           <div className="flex flex-col gap-1 text-xs text-zinc-300">
-            <span><span className="text-zinc-400 font-bold">Categoria:</span> {calcularCategoriaFinal(municao.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes)}</span>
+            <span><span className="text-zinc-400 font-bold">Categoria:</span> {calcularCategoriaFinal(municao.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes, false, item.maldicoes, maldicoesHook?.maldicoes)}</span>
             <span><span className="text-zinc-400 font-bold">Espaços:</span> {calcularEspacosFinais(municao['Espaços_Item'], item.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas.has(43))}</span>
             {modsAtuais.length > 0 && (
               <div className="mt-2 border border-zinc-800 rounded bg-zinc-900/50 overflow-hidden">
@@ -1730,7 +1772,7 @@ function SortableProtecaoItem({
         <div className="border-t border-zinc-800 px-3 py-3 text-xs flex flex-col gap-2 bg-zinc-950/80">
           <div className="flex flex-col gap-1 text-xs text-zinc-300">
             <span><span className="text-blue-400 font-bold">Proficiência:</span> {protecao.Proficiencia}</span>
-            <span><span className="text-blue-400 font-bold">Categoria:</span> {calcularCategoriaFinal(protecao.Categoria_Protecao, item.modificacoes, modificacoesHook.modificacoes)}</span>
+            <span><span className="text-blue-400 font-bold">Categoria:</span> {calcularCategoriaFinal(protecao.Categoria_Protecao, item.modificacoes, modificacoesHook.modificacoes, false, item.maldicoes, maldicoesHook?.maldicoes)}</span>
             <span><span className="text-blue-400 font-bold">Espaços:</span> {calcularEspacosFinais(protecao.Espacos_Protecao, item.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas.has(43))}</span>
 
             {modsAtuais.length > 0 && (

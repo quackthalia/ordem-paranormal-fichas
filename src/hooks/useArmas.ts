@@ -134,7 +134,7 @@ export function useArmas() {
     }));
   };
 
-  const editarArma = (idArma: string, novosDados: Partial<Arma>, novasModificacoes?: number[]) => {
+  const editarArma = (idArma: string, novosDados: Partial<Arma>, novasModificacoes?: number[], novasMaldicoes?: number[]) => {
     setArmasInventario(prev => prev.map(item => {
       if (item.id === idArma) {
         const ret: ArmaInventario = {

@@ -3,6 +3,7 @@ import { useRPG } from '../context/RPGContext';
 import { ToolbarFormato } from './ToolbarFormato';
 import { InputOtimizado } from './InputOtimizado';
 import { ModificacoesSelector } from './ModificacoesSelector';
+import { MaldicoesSelector } from './MaldicoesSelector';
 import type { MunicaoInventario, Municao } from '../types';
 import { categoriaRomanParaNum, categoriaNumParaRoman } from '../utils/rpgRules';
 
@@ -14,7 +15,7 @@ interface ModalEditarMunicaoProps {
 
 export function ModalEditarMunicao({ itemInventario, onSave, onClose }: ModalEditarMunicaoProps) {
   const { municao } = itemInventario;
-  const { modificacoesHook } = useRPG();
+  const { modificacoesHook, maldicoesHook } = useRPG();
   
   const [nome, setNome] = useState(municao.Nome_Item || '');
   const [descricao, setDescricao] = useState(municao.Descricao_Item || '');
@@ -43,7 +44,22 @@ export function ModalEditarMunicao({ itemInventario, onSave, onClose }: ModalEdi
   const catFinal = catNum + modificacoes.length;
   const podeAdicionarMod = catFinal < 4;
 
-  const handleAddMod = (id: number) => {
+  
+    const handleAddMald = (id: number) => {
+      if (podeAdicionarMald) {
+        setMaldicoes(prev => [...prev, id]);
+      }
+    };
+  
+    const handleRemoveMald = (index: number) => {
+      setMaldicoes(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const getOpcoesMaldicoes = () => {
+      return maldicoesHook.maldicoes.filter(m => ['munição'].includes(m.Categoria_Mald.trim().toLowerCase()));
+    };
+
+    const handleAddMod = (id: number) => {
     if (podeAdicionarMod) {
       setModificacoes(prev => [...prev, id]);
     }

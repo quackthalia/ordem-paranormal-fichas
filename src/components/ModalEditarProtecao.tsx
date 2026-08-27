@@ -4,6 +4,7 @@ import { ToolbarFormato } from './ToolbarFormato';
 import { CustomSelect } from './CustomSelect';
 
 import { ModificacoesSelector } from './ModificacoesSelector';
+import { MaldicoesSelector } from './MaldicoesSelector';
 import { useRPG } from '../context/RPGContext';
 import { categoriaRomanParaNum, categoriaNumParaRoman } from '../utils/rpgRules';
 
@@ -29,7 +30,7 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
   
   const editorDesc = useRef<HTMLElement | null>(null);
 
-  const { modificacoesHook } = useRPG();
+  const { modificacoesHook, maldicoesHook } = useRPG();
   const [modificacoes, setModificacoes] = useState<number[]>(protecao?.modificacoes || []);
 
   const catNum = categoriaRomanParaNum(categoria);
@@ -45,7 +46,22 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
   const baseEspacos = getEspacoNumber(espacos);
   const espacosFinais = temDiscreto ? Math.max(0, baseEspacos - 1) : baseEspacos;
 
-  const handleAddMod = (id: number) => {
+  
+    const handleAddMald = (id: number) => {
+      if (podeAdicionarMald) {
+        setMaldicoes(prev => [...prev, id]);
+      }
+    };
+  
+    const handleRemoveMald = (index: number) => {
+      setMaldicoes(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const getOpcoesMaldicoes = () => {
+      return maldicoesHook.maldicoes.filter(m => ['proteções', 'escudos'].includes(m.Categoria_Mald.trim().toLowerCase()));
+    };
+
+    const handleAddMod = (id: number) => {
     if (podeAdicionarMod) {
       setModificacoes(prev => [...prev, id]);
     }

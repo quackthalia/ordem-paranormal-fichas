@@ -188,7 +188,8 @@ export interface ArmaInventario {
   id: string;
   arma: Arma;
   municoesAcopladas?: string[]; // IDs das munições (MunicaoInventario.id) acopladas a esta arma
-  modificacoes?: number[]; // IDs (Codigo_Modif) das modificações aplicadas
+  modificacoes?: number[];
+  maldicoes?: number[]; // IDs (Codigo_Modif) das modificações aplicadas
 }
 
 // ============================================================
@@ -208,7 +209,8 @@ export interface ProtecaoInventario {
   id: string;
   protecao: Protecao;
   equipado?: boolean;
-  modificacoes?: number[]; // IDs (Codigo_Modif) das modificações aplicadas
+  modificacoes?: number[];
+  maldicoes?: number[]; // IDs (Codigo_Modif) das modificações aplicadas
 }
 
 // ============================================================
@@ -229,7 +231,8 @@ export interface ItemGeralInventario {
   id: string;
   item: ItemGeral;
   equipado?: boolean;
-  modificacoes?: number[]; // IDs (Codigo_Modif) das modificações aplicadas
+  modificacoes?: number[];
+  maldicoes?: number[]; // IDs (Codigo_Modif) das modificações aplicadas
 }
 
 
@@ -250,11 +253,21 @@ export interface MunicaoInventario {
   id: string;
   municao: Municao;
   modificacoes?: number[];
+  maldicoes?: number[];
 }
 
 // ============================================================
 // MODIFICAÇÕES
 // ============================================================
+export interface Maldicao {
+  Codigo_Mald: number;
+  Categoria_Mald: string;
+  Nome_Mald: string;
+  Descricao_Mald: string;
+  Elemento_Mald: string;
+  Efeito: string;
+}
+
 export interface Modificacao {
   Codigo_Modif: number;
   Categoria_Modif: string;

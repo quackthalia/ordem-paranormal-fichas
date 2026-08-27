@@ -22,6 +22,7 @@ import { useItens } from '../hooks/useItens';
 import { useItensAmaldicoados } from '../hooks/useItensAmaldicoados';
 import { calcularBonusVestimentas, type VestimentasBonus } from '../utils/vestimentasRules';
 import { useModificacoes } from '../hooks/useModificacoes';
+import { useMaldicoes } from '../hooks/useMaldicoes';
 import { capMaximoAtributo, pontosIniciaisPorNex, calcularStatusBase } from '../utils/rpgRules';
 
 // ============================================================
@@ -52,6 +53,7 @@ interface RPGContextType {
   bonusVestimentas: VestimentasBonus;
   toggleVestimentaGeral: (id: string, isAmaldicoado: boolean) => void;
   modificacoesHook: ReturnType<typeof useModificacoes>;
+  maldicoesHook: ReturnType<typeof useMaldicoes>;
   abaDireita: AbaDireita;
   setAbaDireita: React.Dispatch<React.SetStateAction<AbaDireita>>;
   abaModalPoderes: AbaModalPoderes;
@@ -220,6 +222,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const rituaisHook = useRituais();
 
   const modificacoesHook = useModificacoes();
+  const maldicoesHook = useMaldicoes();
 
   // Computa o conjunto de regras automáticas ativas
   const regrasAutomaticasAtivas = useMemo(() => {
@@ -539,7 +542,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     atributos, setAtributos,
     bonusAtributos, setBonusAtributos,
     pontosRestantes, alterarAtributo,
-    status, periciasHook, poderesHook, origensHook, trilhasHook, rituaisHook, inventarioHook, armasHook, municoesHook, protecoesHook, itensHook, itensAmaldicoadosHook, toggleVestimentaGeral, modificacoesHook, bonusVestimentas,
+    status, periciasHook, poderesHook, origensHook, trilhasHook, rituaisHook, inventarioHook, armasHook, municoesHook, protecoesHook, itensHook, itensAmaldicoadosHook, toggleVestimentaGeral, modificacoesHook, maldicoesHook, bonusVestimentas,
     abaDireita, setAbaDireita,
     abaModalPoderes, setAbaModalPoderes,
     tipoModalPoderes, setTipoModalPoderes,

@@ -5,6 +5,7 @@ import { ToolbarFormato } from './ToolbarFormato';
 import { CustomSelect } from './CustomSelect';
 
 import { ModificacoesSelector } from './ModificacoesSelector';
+import { MaldicoesSelector } from './MaldicoesSelector';
 import { useRPG } from '../context/RPGContext';
 import { categoriaRomanParaNum, categoriaNumParaRoman } from '../utils/rpgRules';
 
@@ -14,7 +15,7 @@ export function ModalEditarArma({
   onClose,
 }: {
   armaInventario: ArmaInventario;
-  onSave: (novosDados: Partial<Arma>, modificacoes?: number[]) => void;
+  onSave: (novosDados: Partial<Arma>, modificacoes?: number[], maldicoes?: number[]) => void;
   onClose: () => void;
 }) {
   React.useEffect(() => {
@@ -44,8 +45,9 @@ export function ModalEditarArma({
   const [empunhadura, setEmpunhadura] = useState(arma.Empunhadura_Arma || 'Uma Mão');
   const [tipoDano, setTipoDano] = useState(arma.Tipo_Dano_Arma || 'Corte');
 
-  const { modificacoesHook } = useRPG();
+  const { modificacoesHook, maldicoesHook } = useRPG();
   const [modificacoes, setModificacoes] = useState<number[]>(armaInventario.modificacoes || []);
+  const [maldicoes, setMaldicoes] = useState<number[]>(armaInventario.maldicoes || []);
 
   const editorDesc = useRef<HTMLDivElement | null>(null);
 
@@ -86,23 +88,58 @@ export function ModalEditarArma({
   }
 
   const catNum = categoriaRomanParaNum(categoria);
-  let modificador = modificacoes.length;
+    let modificador = modificacoes.length;
+  
+    if (arma.Codigo_Arma === 71 && modificador > 0) {
+      modificador -= 1;
+    }
+  
+    const temApocaliptica = modificacoes.some(id => {
+      const nome = modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)?.Nome_Modif.trim().toLowerCase();
+      return nome === 'apocalíptica';
+    });
+    if (temApocaliptica) {
+      modificador -= 1;
+    }
 
-  if (arma.Codigo_Arma === 71 && modificador > 0) {
-    modificador -= 1;
-  }
+    // Calcula o custo das maldições
+    let custoMaldicoes = 0;
+    const maldicoesPorElemento: Record<string, number> = {};
+    
+    maldicoes.forEach(id => {
+      const maldicao = maldicoesHook.maldicoes.find(m => m.Codigo_Mald === id);
+      if (maldicao) {
+        const el = maldicao.Elemento_Mald.trim().toLowerCase();
+        if (!maldicoesPorElemento[el]) {
+          maldicoesPorElemento[el] = 1;
+          custoMaldicoes += 2; // Primeira maldição do elemento custa +2
+        } else {
+          maldicoesPorElemento[el] += 1;
+          custoMaldicoes += 1; // Maldições adicionais do MESMO elemento custam +1
+        }
+      }
+    });
 
-  const temApocaliptica = modificacoes.some(id => {
-    const nome = modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)?.Nome_Modif.trim().toLowerCase();
-    return nome === 'apocalíptica';
-  });
-  if (temApocaliptica) {
-    modificador -= 1;
-  }
-  const catFinal = catNum + modificador;
-  const podeAdicionarMod = catFinal < 4;
+    const catFinal = catNum + modificador + custoMaldicoes;
+    const podeAdicionarMod = catFinal < 4;
+    const podeAdicionarMald = catFinal < 4;
 
-  const handleAddMod = (id: number) => {
+  
+    const handleAddMald = (id: number) => {
+      if (podeAdicionarMald) {
+        setMaldicoes(prev => [...prev, id]);
+      }
+    };
+  
+    const handleRemoveMald = (index: number) => {
+      setMaldicoes(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const getOpcoesMaldicoes = () => {
+      return maldicoesHook.maldicoes.filter(m => m.Categoria_Mald.trim().toLowerCase() === 'armas');
+    };
+
+    const handleAddMod = (id: number) => {
     if (podeAdicionarMod) {
       setModificacoes(prev => [...prev, id]);
     }
@@ -363,11 +400,11 @@ export function ModalEditarArma({
                   <InputOtimizado
                     value={categoriaNumParaRoman(catFinal)}
                     onChange={(val) => {
-                      const finalDesejado = categoriaRomanParaNum(val);
-                      let modCount = modificacoes.length;
-                      if (temApocaliptica) modCount -= 1;
-                      setCategoria(categoriaNumParaRoman(Math.max(0, finalDesejado - modCount)));
-                    }}
+                        const finalDesejado = categoriaRomanParaNum(val);
+                        let modCount = modificacoes.length;
+                        if (temApocaliptica) modCount -= 1;
+                        setCategoria(categoriaNumParaRoman(Math.max(0, finalDesejado - modCount - custoMaldicoes)));
+                      }}
                     placeholder="Ex: I, II, 0"
                     className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-green-700 transition"
                   />

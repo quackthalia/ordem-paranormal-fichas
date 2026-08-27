@@ -381,7 +381,7 @@ export function categoriaNumParaRoman(num: number): string {
   return 'IV';
 }
 
-export function calcularCategoriaFinal(categoriaBase: string | number | null | undefined, modificacoesIds?: number[], allModificacoes?: any[], isArmaID71?: boolean): string {
+export function calcularCategoriaFinal(categoriaBase: string | number | null | undefined, modificacoesIds?: number[], allModificacoes?: any[], isArmaID71?: boolean, maldicoesIds?: number[], allMaldicoes?: any[]): string {
   const baseNum = categoriaRomanParaNum(categoriaBase);
   let modificador = modificacoesIds?.length || 0;
 

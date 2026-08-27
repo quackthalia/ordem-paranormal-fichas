@@ -5,6 +5,7 @@ import { ToolbarFormato } from './ToolbarFormato';
 import { CustomSelect } from './CustomSelect';
 
 import { ModificacoesSelector } from './ModificacoesSelector';
+import { MaldicoesSelector } from './MaldicoesSelector';
 import { useRPG } from '../context/RPGContext';
 import { categoriaRomanParaNum, categoriaNumParaRoman } from '../utils/rpgRules';
 
@@ -14,7 +15,7 @@ export function ModalEditarItem({
   onClose,
 }: {
   itemInventario: ItemGeralInventario;
-  onSave: (novosDados: Partial<ItemGeral>, modificacoes?: number[]) => void;
+  onSave: (novosDados: Partial<ItemGeral>, modificacoes?: number[], maldicoes?: number[]) => void;
   onClose: () => void;
 }) {
   React.useEffect(() => {
@@ -33,6 +34,7 @@ export function ModalEditarItem({
 
   const { modificacoesHook, periciasHook } = useRPG();
   const [modificacoes, setModificacoes] = useState<number[]>(itemInventario.modificacoes || []);
+  const [maldicoes, setMaldicoes] = useState<number[]>(itemInventario.maldicoes || []);
   const [escolhendoFuncaoAdicional, setEscolhendoFuncaoAdicional] = useState<number | null>(null);
   const [escolhendoAprimorado, setEscolhendoAprimorado] = useState<number | null>(null);
   
@@ -90,7 +92,22 @@ export function ModalEditarItem({
   const catFinal = catNum + modificacoes.length;
   const podeAdicionarMod = catFinal < 4;
 
-  const handleAddMod = (id: number) => {
+  
+    const handleAddMald = (id: number) => {
+      if (podeAdicionarMald) {
+        setMaldicoes(prev => [...prev, id]);
+      }
+    };
+  
+    const handleRemoveMald = (index: number) => {
+      setMaldicoes(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const getOpcoesMaldicoes = () => {
+      return maldicoesHook.maldicoes.filter(m => ['acessórios'].includes(m.Categoria_Mald.trim().toLowerCase()));
+    };
+
+    const handleAddMod = (id: number) => {
     if (podeAdicionarMod) {
       const mod = modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id);
       if (mod && mod.Nome_Modif.trim().toLowerCase() === 'função adicional') {
@@ -202,14 +219,14 @@ export function ModalEditarItem({
 
   const handleSalvar = () => {
     onSave({
-      Nome_Item: nome,
+        Nome_Item: nome,
       Desc_Item: editorDesc.current?.innerHTML || descricao,
       Categoria_Item: categoria,
       Espacos_Itens: getEspacoNumber(espacos),
       Dt_Item: dt,
       Grupo_Item: grupo,
-    }, modificacoes);
-    onClose();
+      }, modificacoes, maldicoes);
+      onClose();
   };
 
   const InputLabel = ({ label }: { label: string }) => (

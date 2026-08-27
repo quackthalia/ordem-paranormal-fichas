@@ -27,10 +27,8 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
   }, [aberto]);
   
   const [busca, setBusca] = useState('');
-  const [categoriaSelecionada, setCategoriaSelecionada] = useState<string>('Todos');
-  const [elementoSelecionado, setElementoSelecionado] = useState<string>('Todos');
+  const [abaElemento, setAbaElemento] = useState<string | null>(null);
   const [expandidos, setExpandidos] = useState<Record<string, boolean>>({});
-  const [mostrarFiltrosAvançados, setMostrarFiltrosAvançados] = useState(false);
 
   const itensFiltrados = useMemo(() => {
     return itens.filter(item => {

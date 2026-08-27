@@ -2,6 +2,7 @@ import React from 'react';
 import { useRPG } from '../../context/RPGContext';
 import type { AtributoKey } from '../../types';
 import { CustomSelect } from '../../components/CustomSelect';
+import { BonusCondicionaisPanel } from './BonusCondicionaisPanel';
 
 // Cores por grau de treino: destreinado → treinado → veterano → expert
 const COR_TREINO: Record<number, string> = {
@@ -27,6 +28,7 @@ export const PericiasTable: React.FC = () => {
   const { pericias, handleMudarPericia, limites, totais } = periciasHook;
 
   const [periciaAberta, setPericiaAberta] = React.useState<{ nome: string; descricao: string } | null>(null);
+  const [mostrarBonus, setMostrarBonus] = React.useState(false);
   
 
   const bloquearLetras = (e: React.KeyboardEvent<HTMLInputElement>) => {

@@ -43,8 +43,7 @@ export const FichaScreen: React.FC = () => {
               <StatusPanel />
               <DefesaPanel />
               <ProtecoesPanel />
-              <BonusCondicionaisPanel />
-            </div>
+              </div>
 
             {/* COLUNA MEIO: Perícias */}
             <div className="flex flex-1 flex-col pb-10">

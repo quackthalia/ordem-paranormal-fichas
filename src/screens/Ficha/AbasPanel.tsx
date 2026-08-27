@@ -1519,7 +1519,7 @@ export const AbasPanel: React.FC = () => {
 
                                   // Só 1 valor = mostra direto
                                   if (partesDados.length === 1 && normal) {
-                                    return <span className="text-sm font-bold text-amber-400">{normal}</span>;
+                                    return <span className="text-sm font-bold text-zinc-100">{normal}</span>;
                                   }
 
                                   // Preenche vazios com valor normal (convenção //)
@@ -1541,7 +1541,7 @@ export const AbasPanel: React.FC = () => {
                                         <React.Fragment key={idx}>
                                           {idx > 0 && <span className="text-xs text-zinc-700">›</span>}
                                           <span
-                                            className={`text-sm font-bold transition-all duration-200 ${idx === ativo ? 'text-amber-400' : 'text-zinc-600'}`}
+                                            className={`text-sm font-bold transition-all duration-200 ${idx === ativo ? 'text-zinc-100' : 'text-zinc-600'}`}
                                           >
                                             {parte}
                                           </span>

@@ -59,9 +59,10 @@ export const PericiasTable: React.FC = () => {
         </h3>
         <button
           onClick={() => setMostrarBonus(!mostrarBonus)}
-          className={`rounded px-2 py-1 transition text-xs ${mostrarBonus ? 'bg-green-900/50 text-green-100 border-green-800/50' : 'bg-zinc-800/50 text-zinc-400 hover:text-zinc-200'} border border-zinc-700/50 flex items-center gap-2`}
+          className={`rounded transition text-lg ${mostrarBonus ? 'bg-green-900/50 text-green-400 border-green-800/50 shadow-[0_0_10px_rgba(34,197,94,0.2)]' : 'bg-zinc-800/50 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700/50'} border border-zinc-700/50 flex items-center justify-center w-8 h-8`}
+          title="Modificadores de Dados"
         >
-          Bônus de Dados {mostrarBonus ? '▲' : '▼'}
+          🎲
         </button>
       </div>
       

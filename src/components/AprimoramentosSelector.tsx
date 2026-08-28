@@ -224,7 +224,7 @@ export function AprimoramentosSelector({
                   >
                     Todos
                   </button>
-                  {['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo', 'Varia'].map(elem => {
+                  {['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Varia'].map(elem => {
                     const ativo = subAbaElemento === elem;
                     return (
                       <button

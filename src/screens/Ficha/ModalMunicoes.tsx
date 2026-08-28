@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState , useRef, useEffect} from 'react';
 import { useRPG } from '../../context/RPGContext';
 import type { Municao } from '../../types';
 
@@ -16,6 +16,11 @@ interface ModalMunicoesProps {
 }
 
 export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, onSelect }: ModalMunicoesProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
+  }, [municoesFiltradas]);
+
   React.useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = 'unset'; };
@@ -131,12 +136,12 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
         
         </Collapse>
 
-        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 custom-scrollbar">
           {municoesFiltradas.length === 0 ? (
             <div className="text-center text-zinc-500 italic p-4">Nenhuma munição encontrada.</div>
           ) : (
             <div className="flex flex-col md:flex-row gap-3 items-start">
-              <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
+              <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
                 {municoesFiltradas.filter((_, i) => i % 2 === 0).map((municao) => (
                   <div 
                     key={municao.Codigo_Municao} 
@@ -187,7 +192,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
                   </div>
                 ))}
               </div>
-              <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
+              <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
                 {municoesFiltradas.filter((_, i) => i % 2 !== 0).map((municao) => (
                   <div 
                     key={municao.Codigo_Municao} 

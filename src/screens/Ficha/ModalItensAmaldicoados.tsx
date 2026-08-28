@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo , useRef, useEffect} from 'react';
 import { useRPG } from '../../context/RPGContext';
 import { formatarTexto } from '../../utils/formatters';
 import { CustomSelect } from '../../components/CustomSelect';
@@ -10,6 +10,11 @@ interface ModalItensAmaldicoadosProps {
 }
 
 export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoadosProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
+  }, [itensFiltrados]);
+
   const { itensAmaldicoadosHook } = useRPG();
   const { itens, adicionarItem, loading } = itensAmaldicoadosHook;
 
@@ -141,7 +146,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
             })}
           </div>
 
-        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 custom-scrollbar">
           {loading ? (
             <div className="flex justify-center items-center h-40">
               <span className="text-zinc-500">Carregando itens amaldiçoados...</span>
@@ -158,7 +163,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
             </div>
           ) : (
             <div className="flex flex-col md:flex-row gap-3 items-start">
-              <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
+              <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
                 {itensFiltrados.filter((_, i) => i % 2 === 0).map(item => {
                   const isExpanded = !!expandidos[item.Codigo_Item_Ama];
                   return (
@@ -220,7 +225,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                   );
                 })}
               </div>
-              <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
+              <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
                 {itensFiltrados.filter((_, i) => i % 2 !== 0).map(item => {
                   const isExpanded = !!expandidos[item.Codigo_Item_Ama];
                   return (

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState , useRef, useEffect} from 'react';
 import { useRPG } from '../../context/RPGContext';
 import type { ItemGeral } from '../../types';
 
@@ -15,6 +15,11 @@ interface ModalItensProps {
 }
 
 export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
+  }, [itensFiltrados]);
+
   React.useEffect(() => {
     if (aberto) {
       document.body.style.overflow = 'hidden';
@@ -157,7 +162,7 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
         </Collapse>
 
         {/* List */}
-        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 custom-scrollbar">
                     {(() => {
             const renderItem = (item: ItemGeral) => {
               const isExpanded = expandidos.includes(item.Codigo_Item);
@@ -327,10 +332,10 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
           };
             return (
               <div className="flex flex-col md:flex-row gap-3 items-start">
-                <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
+                <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
                   {itensFiltrados.filter((_, i) => i % 2 === 0).map(renderItem)}
                 </div>
-                <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
+                <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
                   {itensFiltrados.filter((_, i) => i % 2 !== 0).map(renderItem)}
                 </div>
               </div>

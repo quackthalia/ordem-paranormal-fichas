@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState , useRef, useEffect} from 'react';
 import { useRPG } from '../../context/RPGContext';
 import type { Protecao } from '../../types';
 
@@ -12,6 +12,11 @@ interface ModalProtecoesProps {
 }
 
 export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
+  }, [protecoesFiltradas]);
+
   React.useEffect(() => {
     if (aberto) {
       document.body.style.overflow = 'hidden';
@@ -147,9 +152,9 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
         </Collapse>
 
         {/* Lista de proteções */}
-        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 custom-scrollbar">
           <div className="flex flex-col md:flex-row gap-3 items-start">
-            <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
+            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
               {protecoesFiltradas.filter((_, i) => i % 2 === 0).map((protecao: Protecao) => {
                 const isExpanded = expandidos.includes(protecao.Codigo_Protecao);
                 const hasProficiencia = proficienciasTotais.includes(protecao.Proficiencia);
@@ -219,7 +224,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                 );
               })}
             </div>
-            <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
+            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
               {protecoesFiltradas.filter((_, i) => i % 2 !== 0).map((protecao: Protecao) => {
                 const isExpanded = expandidos.includes(protecao.Codigo_Protecao);
                 const hasProficiencia = proficienciasTotais.includes(protecao.Proficiencia);

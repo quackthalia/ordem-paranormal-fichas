@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo , useRef, useEffect} from 'react';
 import { useRPG } from '../../context/RPGContext';
 import type { Arma } from '../../types';
 
@@ -20,6 +20,11 @@ interface ModalArmasProps {
 }
 
 export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
+  }, [armasFiltradas]);
+
   React.useEffect(() => {
     if (aberto) {
       document.body.style.overflow = 'hidden';
@@ -208,9 +213,9 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
         </Collapse>
 
         {/* Lista de armas */}
-        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 custom-scrollbar">
           <div className="flex flex-col md:flex-row gap-3 items-start">
-            <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
+            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
               {armasFiltradas.filter((_, i) => i % 2 === 0).map((arma: Arma) => {
                 const isExpanded = expandidos.includes(arma.Codigo_Arma);
                 const critico = formatarCritico(arma.Critico_Arma, arma.Multiplicador_Arma);
@@ -316,7 +321,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                 );
               })}
             </div>
-            <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
+            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
               {armasFiltradas.filter((_, i) => i % 2 !== 0).map((arma: Arma) => {
                 const isExpanded = expandidos.includes(arma.Codigo_Arma);
                 const critico = formatarCritico(arma.Critico_Arma, arma.Multiplicador_Arma);

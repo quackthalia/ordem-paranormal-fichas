@@ -185,7 +185,7 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
                 
                 return (
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-300 mt-0.5">
-                    <span><span className="font-bold text-green-400">Dado:</span> {danoBase}</span>
+                    <span><span className="font-bold text-green-400">Dano:</span> {danoBase}</span>
                     <span><span className="font-bold text-zinc-400">Crítico:</span> {critText}</span>
                   </div>
                 );
@@ -1358,8 +1358,7 @@ function SortableArmaItem({
           <div className="flex flex-col gap-1 flex-1 min-w-0 justify-center">
             <span className="font-bold text-sm text-zinc-100 truncate leading-none mt-0.5">{arma.Nome_Item}</span>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-300 mt-0.5">
-              <span><span className="font-bold text-green-400">Dado:</span> {stats.dano}</span>
-              {stats.danoSecundario && <span><span className="font-bold text-green-400">Secundário:</span> {stats.danoSecundario}</span>}
+              <span><span className="font-bold text-green-400">Dano:</span> {stats.dano}{stats.danoSecundario ? (stats.danoSecundario.trim().startsWith('+') ? stats.danoSecundario.trim() : '+' + stats.danoSecundario.trim()) : ''}</span>
               <span><span className="font-bold text-zinc-400">Crítico:</span> {formatarCritico(stats.critico, stats.multiplicador)}</span>
               {stringDT && <span><span className="font-bold text-green-400">DT:</span> {stringDT}</span>}
             </div>
@@ -1434,7 +1433,6 @@ function SortableArmaItem({
             <span><span className="text-green-400 font-bold">Categoria:</span> {calcularCategoriaFinal(arma.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes, arma.Codigo_Arma === 71, item.maldicoes, maldicoesHook?.maldicoes)}</span>
             {stats.alcance && <span><span className="text-green-400 font-bold">Alcance:</span> {stats.alcance}</span>}
             <span><span className="text-green-400 font-bold">Tipo:</span> {arma.Tipo_Dano_Arma}</span>
-            {stats.danoSecundario && <span><span className="text-green-400 font-bold">Dano Secundário:</span> {stats.danoSecundario}</span>}
             <span><span className="text-green-400 font-bold">Espaços:</span> {stats.espacos}</span>
             {modsAtuais.length > 0 && (
               <div className="mt-2 border border-zinc-800 rounded bg-zinc-900/50 overflow-hidden">

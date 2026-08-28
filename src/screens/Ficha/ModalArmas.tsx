@@ -261,7 +261,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                     <div className="flex-1 cursor-pointer flex flex-col" onClick={() => toggleExpandir(arma.Codigo_Arma)}>
                       <div className="flex items-center flex-nowrap gap-3 text-xs overflow-hidden text-zinc-300 mb-2">
                         <span>
-                          <span className="font-bold text-green-400">Dado:</span> {arma.Dano_Arma}
+                          <span className="font-bold text-green-400">Dano:</span> {arma.Dano_Arma}
                         </span>
                         {critico && (
                           <span>
@@ -367,7 +367,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                     <div className="flex-1 cursor-pointer flex flex-col" onClick={() => toggleExpandir(arma.Codigo_Arma)}>
                       <div className="flex items-center flex-nowrap gap-3 text-xs overflow-hidden text-zinc-300 mb-2">
                         <span>
-                          <span className="font-bold text-green-400">Dado:</span> {arma.Dano_Arma}
+                          <span className="font-bold text-green-400">Dano:</span> {arma.Dano_Arma}
                         </span>
                         {critico && (
                           <span>

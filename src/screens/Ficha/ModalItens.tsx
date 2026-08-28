@@ -171,7 +171,7 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
               return (
                 <div 
                   key={item.Codigo_Item} 
-                  className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col  ${isExpanded ? '' : 'h-[100px]'}`}
+                  className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col  ${isExpanded ? '' : 'h-[170px]'}`}
                 >
                   {/* Cabeçalho do item */}
                   <div 

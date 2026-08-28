@@ -153,11 +153,10 @@ export function AprimoramentosSelector({
       <button
         type="button"
         onClick={() => {
-          if (!podeAdicionarMod && podeAdicionarMald) setAbaModal('maldicoes');
-          else if (podeAdicionarMod && !podeAdicionarMald) setAbaModal('modificacoes');
+          
           setModalAberto(true);
         }}
-        disabled={!podeAdicionarMod && !podeAdicionarMald}
+        
         className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg border-2 border-dashed transition-all ${
           (podeAdicionarMod || podeAdicionarMald)
             ? 'border-zinc-700 hover:border-zinc-500 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/30' 
@@ -168,7 +167,7 @@ export function AprimoramentosSelector({
           <path d="M12 5v14M5 12h14"/>
         </svg>
         <span className="text-xs font-bold uppercase tracking-wider">
-          {(podeAdicionarMod || podeAdicionarMald) ? 'Adicionar Aprimoramento' : 'Limite Atingido'}
+          'Adicionar Aprimoramento'
         </span>
       </button>
 
@@ -237,21 +236,20 @@ export function AprimoramentosSelector({
             <div className="flex-1 overflow-y-auto custom-scrollbar p-4 bg-zinc-900/50">
               {abaModal === 'modificacoes' && (
                 <>
-                  {!podeAdicionarMod && (
-                    <p className="text-sm text-red-400/80 italic p-4 text-center font-bold">Limite de modificações atingido para a categoria deste item.</p>
-                  )}
-                  {podeAdicionarMod && modsDisponiveis.length === 0 ? (
+                  
+                  {modsDisponiveis.length === 0 ? (
                     <p className="text-sm text-zinc-500 italic p-6 text-center">Nenhuma modificação disponível.</p>
-                  ) : podeAdicionarMod && (
+                  ) : (
                     <div className="flex flex-col gap-2 w-full">
                         {modsDisponiveis.map(opcao => (
                           <div 
                             key={"mod-" + opcao.Codigo_Modif}
                             onClick={() => {
+                              if (!podeAdicionarMod) return;
                               onAddMod(opcao.Codigo_Modif);
                               setModalAberto(false);
                             }}
-                            className="flex flex-col p-3 rounded bg-zinc-900/40 border border-zinc-800/80 hover:border-green-500/50 hover:bg-zinc-900/80 cursor-pointer transition group"
+                            className={`flex flex-col p-3 rounded bg-zinc-900/40 border border-zinc-800/80 transition group ${podeAdicionarMod ? 'hover:border-green-500/50 hover:bg-zinc-900/80 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
                           >
                             <span className="font-bold text-zinc-200 text-sm group-hover:text-white transition-colors">{opcao.Nome_Modif}</span>
                             <span className="text-[12px] text-zinc-500 mt-1 leading-relaxed">{opcao.Descricao_Modif}</span>
@@ -265,12 +263,10 @@ export function AprimoramentosSelector({
 
               {abaModal === 'maldicoes' && (
                 <>
-                  {!podeAdicionarMald && (
-                    <p className="text-sm text-red-400/80 italic p-4 text-center font-bold">As maldições do item já ocupam todo o espaço permitido pela categoria atual.</p>
-                  )}
-                  {podeAdicionarMald && maldsDisponiveis.length === 0 ? (
+                  
+                  {maldsDisponiveis.length === 0 ? (
                     <p className="text-sm text-zinc-500 italic p-6 text-center">Nenhuma maldição disponível para este filtro.</p>
-                  ) : podeAdicionarMald && (
+                  ) : (
                     <div className="flex flex-col gap-2 w-full">
                         {maldsDisponiveis.map(opcao => {
                           const isVaria = opcao.Elemento_Mald?.toLowerCase() === 'varia' || opcao.Elemento_Mald?.toLowerCase() === 'lista';
@@ -280,10 +276,11 @@ export function AprimoramentosSelector({
                             <div 
                               key={"mald-" + opcao.Codigo_Mald}
                               onClick={() => {
+                                if (!podeAdicionarMald) return;
                                 onAddMald(opcao.Codigo_Mald, isVaria ? (elementosVaria[opcao.Codigo_Mald] || 'Sangue') : undefined);
                                 setModalAberto(false);
                               }}
-                              className="flex flex-col p-3 rounded bg-zinc-900/40 border border-zinc-800/80 hover:border-green-500/50 hover:bg-zinc-900/80 cursor-pointer transition group"
+                              className={`flex flex-col p-3 rounded bg-zinc-900/40 border border-zinc-800/80 transition group ${podeAdicionarMod ? 'hover:border-green-500/50 hover:bg-zinc-900/80 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
                             >
                               <div className="flex justify-between items-center gap-2">
                                 <span className="font-bold text-zinc-200 text-sm group-hover:text-white transition-colors">{opcao.Nome_Mald}</span>

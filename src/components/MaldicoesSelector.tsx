@@ -96,7 +96,7 @@ export function MaldicoesSelector({
             </div>
             {/* Filtros de Elemento */}
             <div className="flex flex-wrap items-center gap-1.5 px-3 pb-2">
-              {['Todos', 'Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo'].map(elem => {
+              {['Todos', 'Sangue', 'Morte', 'Conhecimento', 'Energia'].map(elem => {
                 const ativo = subAbaElemento === elem;
                 return (
                   <button
@@ -144,8 +144,7 @@ export function MaldicoesSelector({
                               { value: 'Sangue', label: 'Sangue' },
                               { value: 'Morte', label: 'Morte' },
                               { value: 'Conhecimento', label: 'Conhecimento' },
-                              { value: 'Energia', label: 'Energia' },
-                              { value: 'Medo', label: 'Medo' }
+                              { value: 'Energia', label: 'Energia' }
                             ]}
                             className="w-28 py-0.5 !text-[10px] !bg-zinc-950 uppercase font-bold tracking-wider"
                           />

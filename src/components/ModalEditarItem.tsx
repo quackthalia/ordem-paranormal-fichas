@@ -347,34 +347,29 @@ export function ModalEditarItem({
             </div>
           </div>
 
-          <ModificacoesSelector
-            modificacoesAplicadas={modificacoes}
-            opcoesModificacoes={getOpcoesModificacoes()}
-            todasModificacoes={modificacoesHook.modificacoes}
-            onAdd={handleAddMod}
-            onRemove={handleRemoveMod}
-            podeAdicionar={podeAdicionarMod}
-            permiteDuplicadas={(codigo) => {
-               const mod = modificacoesHook.modificacoes.find(m => m.Codigo_Modif === codigo);
-               if (mod?.Nome_Modif.trim().toLowerCase() === 'aprimorado') {
-                 const aprimorados = modificacoes.filter(mId => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === mId)?.Nome_Modif.trim().toLowerCase() === 'aprimorado');
-                 return aprimorados.length < getPericiasDoItem().length;
-               }
-               return false;
-            }}
-          />
+          <div className="mt-6 border-t border-zinc-800 pt-4">
+            <h3 className="font-bold text-zinc-400 mb-4 text-sm uppercase tracking-wider">Aprimoramentos</h3>
+            <AprimoramentosSelector 
+              modificacoesAplicadas={modificacoes}
+              opcoesModificacoes={getOpcoesModificacoes ? getOpcoesModificacoes() : []}
+              todasModificacoes={modificacoesHook ? modificacoesHook.modificacoes : []}
+              onAddMod={handleAddMod ? handleAddMod : () => {}}
+              onRemoveMod={handleRemoveMod ? handleRemoveMod : () => {}}
+              podeAdicionarMod={typeof podeAdicionarMod !== 'undefined' ? podeAdicionarMod : true}
+              
+              maldicoesAplicadas={maldicoes}
+              opcoesMaldicoes={getOpcoesMaldicoes ? getOpcoesMaldicoes() : []}
+              todasMaldicoes={maldicoesHook ? maldicoesHook.maldicoes : []}
+              maldicoesElementos={typeof maldicoesElementos !== 'undefined' ? maldicoesElementos : {}}
+              onAddMald={handleAddMald ? handleAddMald : () => {}}
+              onRemoveMald={handleRemoveMald ? handleRemoveMald : () => {}}
+              podeAdicionarMald={typeof podeAdicionarMald !== 'undefined' ? podeAdicionarMald : true}
+            />
+          </div>
         </div>
 
           <div className="mt-4 border-t border-zinc-800 pt-4">
-            <MaldicoesSelector
-              maldicoesAplicadas={maldicoes}
-              opcoesMaldicoes={getOpcoesMaldicoes()}
-              todasMaldicoes={maldicoesHook.maldicoes}
-              maldicoesElementos={maldicoesElementos}
-              onAdd={handleAddMald}
-              onRemove={handleRemoveMald}
-              podeAdicionar={podeAdicionarMald}
-            />
+            
           </div>
 
 

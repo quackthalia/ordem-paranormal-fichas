@@ -216,43 +216,23 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
           </div>
 
           <div className="mt-6 border-t border-zinc-800 pt-4">
-            <div className="flex gap-2 mb-4 border-b border-zinc-800 pb-2">
-              <button
-                type="button"
-                onClick={() => setAbaAprimoramento('modificacoes')}
-                className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded transition ${abaAprimoramento === 'modificacoes' ? 'bg-green-900/40 text-green-400 border border-green-800/50' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50 border border-transparent'}`}
-              >
-                Modificações
-              </button>
-              <button
-                type="button"
-                onClick={() => setAbaAprimoramento('maldicoes')}
-                className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded transition ${abaAprimoramento === 'maldicoes' ? 'bg-indigo-900/40 text-indigo-400 border border-indigo-800/50' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50 border border-transparent'}`}
-              >
-                Maldições
-              </button>
-            </div>
-            {abaAprimoramento === 'modificacoes' && (
-              <ModificacoesSelector
+            <h3 className="font-bold text-zinc-400 mb-4 text-sm uppercase tracking-wider">Aprimoramentos</h3>
+            <AprimoramentosSelector 
               modificacoesAplicadas={modificacoes}
               opcoesModificacoes={getOpcoesModificacoes()}
               todasModificacoes={modificacoesHook.modificacoes}
-              onAdd={handleAddMod}
-              onRemove={handleRemoveMod}
-              podeAdicionar={podeAdicionarMod}
-            />
-            )}
-            {abaAprimoramento === 'maldicoes' && (
-              <MaldicoesSelector
+              onAddMod={handleAddMod}
+              onRemoveMod={handleRemoveMod}
+              podeAdicionarMod={podeAdicionarMod}
+              
               maldicoesAplicadas={maldicoes}
               opcoesMaldicoes={getOpcoesMaldicoes()}
               todasMaldicoes={maldicoesHook.maldicoes}
               maldicoesElementos={maldicoesElementos}
-              onAdd={handleAddMald}
-              onRemove={handleRemoveMald}
-              podeAdicionar={podeAdicionarMald}
+              onAddMald={handleAddMald}
+              onRemoveMald={handleRemoveMald}
+              podeAdicionarMald={podeAdicionarMald}
             />
-            )}
           </div>
 
         </div>

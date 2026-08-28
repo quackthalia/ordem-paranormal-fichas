@@ -23,17 +23,15 @@ interface AprimoramentosSelectorProps {
 
 
 const getCorElemento = (elemento?: string) => {
-  if (!elemento) return 'bg-zinc-800 text-zinc-300 border-zinc-700';
-  switch (elemento.toLowerCase()) {
-    case 'sangue': return 'bg-red-950/40 text-red-400 border-red-900/50';
-    case 'morte': return 'bg-zinc-950/40 text-zinc-400 border-zinc-800/50';
-    case 'conhecimento': return 'bg-yellow-950/40 text-yellow-400 border-yellow-900/50';
-    case 'energia': return 'bg-purple-950/40 text-purple-400 border-purple-900/50';
-    case 'medo': return 'bg-white/5 text-white border-white/10';
-    case 'varia':
-    case 'lista': return 'bg-indigo-950/40 text-indigo-400 border-indigo-900/50';
-    default: return 'bg-zinc-800 text-zinc-300 border-zinc-700';
-  }
+  if (!elemento) return 'border-zinc-700 bg-zinc-800 text-zinc-300';
+  const elStr = elemento.toLowerCase();
+  if (elStr.includes('medo')) return 'border-zinc-500 bg-zinc-200/80 text-zinc-950';
+  if (elStr.includes('sangue')) return 'border-red-900 bg-red-950/20 text-red-500';
+  if (elStr.includes('morte')) return 'border-zinc-700 bg-black/50 text-white';
+  if (elStr.includes('conhecimento')) return 'border-yellow-900 bg-yellow-950/20 text-yellow-500';
+  if (elStr.includes('energia')) return 'border-purple-900 bg-purple-950/20 text-purple-500';
+  if (elStr.includes('varia') || elStr.includes('lista')) return 'border-blue-900 bg-blue-950/20 text-blue-400';
+  return 'border-zinc-700 bg-zinc-800 text-zinc-300';
 };
 
 export function AprimoramentosSelector({

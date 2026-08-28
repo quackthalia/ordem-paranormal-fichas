@@ -1,7 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useSmoothExpandScroll } from '../hooks/useSmoothExpandScroll';
 import type { Maldicao } from '../types';
-import { Collapse } from './Collapse';
 import { CustomSelect } from './CustomSelect';
 
 interface MaldicoesSelectorProps {
@@ -24,10 +22,8 @@ export function MaldicoesSelector({
   podeAdicionar
 }: MaldicoesSelectorProps) {
   const [selecionando, setSelecionando] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useSmoothExpandScroll(selecionando, dropdownRef);
-  const [subAbaElemento, setSubAbaElemento] = useState('Todos');
+  
+    const [subAbaElemento, setSubAbaElemento] = useState('Todos');
   const [elementosVaria, setElementosVaria] = useState<Record<number, string>>({});
 
   const aplicadas = maldicoesAplicadas
@@ -58,116 +54,119 @@ export function MaldicoesSelector({
   return (
     <div className="flex flex-col gap-3">
       {/* Botão de Adicionar (Dashed) */}
-      {!selecionando && (
-        <button
-          type="button"
-          onClick={() => setSelecionando(true)}
-          disabled={!podeAdicionar}
-          className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg border-2 border-dashed transition-all ${
-            podeAdicionar 
-              ? 'border-indigo-900/60 hover:border-indigo-600 text-indigo-400 hover:text-indigo-300 hover:bg-indigo-950/20' 
-              : 'border-zinc-800 text-zinc-700 cursor-not-allowed bg-zinc-900/20'
-          }`}
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
-            <path d="M12 5v14M5 12h14"/>
-          </svg>
-          <span className="text-xs font-bold uppercase tracking-wider">
-            {podeAdicionar ? 'Adicionar Maldição' : 'Limite Atingido'}
-          </span>
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={() => setSelecionando(true)}
+        disabled={!podeAdicionar}
+        className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg border-2 border-dashed transition-all ${
+          podeAdicionar 
+            ? 'border-zinc-700 hover:border-zinc-500 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/30' 
+            : 'border-zinc-800 text-zinc-700 cursor-not-allowed bg-zinc-900/20'
+        }`}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        <span className="text-xs font-bold uppercase tracking-wider">
+          {podeAdicionar ? 'Adicionar Maldição' : 'Limite Atingido'}
+        </span>
+      </button>
 
-      {/* Painel de Seleção */}
-      <Collapse isOpen={selecionando}>
-        <div ref={dropdownRef} className="flex flex-col border border-zinc-800 bg-zinc-950 rounded mb-1">
-          <div className="flex flex-col border-b border-zinc-800 bg-zinc-900/30">
-            <div className="flex items-center justify-between px-4 py-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">Selecionar Maldição</span>
-              <button 
-                type="button" 
-                onClick={() => setSelecionando(false)}
-                className="text-zinc-500 hover:text-zinc-300 p-1 rounded hover:bg-zinc-800 transition-colors"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                  <path d="M18 6L6 18M6 6l12 12"/>
-                </svg>
-              </button>
+      {/* Modal de Seleção */}
+      {selecionando && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85 p-5" onClick={() => setSelecionando(false)}>
+          <div 
+            className="flex max-h-[85vh] w-full max-w-md flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50" 
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex flex-col border-b border-zinc-800 bg-zinc-950">
+              <div className="flex items-center justify-between px-5 py-4">
+                <span className="font-bold text-zinc-100 uppercase tracking-wider text-sm">Selecionar Maldição</span>
+                <button 
+                  type="button" 
+                  onClick={() => setSelecionando(false)}
+                  className="text-zinc-500 hover:text-zinc-300 p-1 rounded hover:bg-zinc-800 transition-colors"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                  </svg>
+                </button>
+              </div>
+              {/* Filtros de Elemento */}
+              <div className="flex flex-wrap items-center gap-1.5 px-5 pb-4">
+                {['Todos', 'Sangue', 'Morte', 'Conhecimento', 'Energia'].map(elem => {
+                  const ativo = subAbaElemento === elem;
+                  return (
+                    <button
+                      key={elem}
+                      onClick={() => setSubAbaElemento(elem)}
+                      className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider transition border ${
+                        ativo
+                          ? getCorElemento(elem === 'Todos' ? 'varia' : elem)
+                          : 'bg-zinc-800/40 text-zinc-500 border-zinc-700/50 hover:bg-zinc-800 hover:text-zinc-300'
+                      }`}
+                    >
+                      {elem}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-            {/* Filtros de Elemento */}
-            <div className="flex flex-wrap items-center gap-1.5 px-4 pb-3">
-              {['Todos', 'Sangue', 'Morte', 'Conhecimento', 'Energia'].map(elem => {
-                const ativo = subAbaElemento === elem;
-                return (
-                  <button
-                    key={elem}
-                    onClick={() => setSubAbaElemento(elem)}
-                    className={`rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider transition border ${
-                      ativo
-                        ? getCorElemento(elem === 'Todos' ? 'varia' : elem)
-                        : 'bg-zinc-800/40 text-zinc-500 border-zinc-700/50 hover:bg-zinc-800 hover:text-zinc-300'
-                    }`}
-                  >
-                    {elem}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-          
-          <div className="flex flex-col max-h-[220px] overflow-y-auto custom-scrollbar">
-            {opcoesDisponiveis.length === 0 ? (
-              <p className="text-xs text-zinc-500 italic p-3 text-center">Nenhuma maldição disponível.</p>
-            ) : (
-              opcoesDisponiveis.map(opcao => {
-                const isVaria = opcao.Elemento_Mald?.toLowerCase() === 'varia' || opcao.Elemento_Mald?.toLowerCase() === 'lista';
-                const cores = getCorElemento(opcao.Elemento_Mald);
-                
-                return (
-                  <div 
-                    key={opcao.Codigo_Mald}
-                    onClick={() => {
-                      onAdd(opcao.Codigo_Mald, isVaria ? (elementosVaria[opcao.Codigo_Mald] || 'Sangue') : undefined);
-                      setSelecionando(false);
-                    }}
-                    className="flex flex-col px-4 py-3 border-b border-zinc-800/50 hover:bg-zinc-900 cursor-pointer transition-colors group last:border-0"
-                  >
-                    <div className="flex justify-between items-center gap-2">
-                      <span className="font-bold text-zinc-200 text-sm group-hover:text-white transition-colors">{opcao.Nome_Mald}</span>
-                      
-                      {isVaria ? (
-                        <div className="flex gap-2 min-w-0" onClick={e => e.stopPropagation()}>
-                          <CustomSelect 
-                            value={elementosVaria[opcao.Codigo_Mald] || 'Sangue'}
-                            onChange={val => setElementosVaria(prev => ({ ...prev, [opcao.Codigo_Mald]: val }))}
-                            options={[
-                              { value: 'Sangue', label: 'Sangue' },
-                              { value: 'Morte', label: 'Morte' },
-                              { value: 'Conhecimento', label: 'Conhecimento' },
-                              { value: 'Energia', label: 'Energia' }
-                            ]}
-                            className="w-28 py-0.5 !text-[10px] !bg-zinc-950 uppercase font-bold tracking-wider"
-                          />
-                        </div>
-                      ) : (
-                        <span className={`inline-block border rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight flex-shrink-0 ${cores}`}>
-                          {opcao.Elemento_Mald}
+            
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
+              {opcoesDisponiveis.length === 0 ? (
+                <p className="text-sm text-zinc-500 italic p-6 text-center">Nenhuma maldição disponível.</p>
+              ) : (
+                opcoesDisponiveis.map(opcao => {
+                  const isVaria = opcao.Elemento_Mald?.toLowerCase() === 'varia' || opcao.Elemento_Mald?.toLowerCase() === 'lista';
+                  const cores = getCorElemento(opcao.Elemento_Mald);
+                  
+                  return (
+                    <div 
+                      key={opcao.Codigo_Mald}
+                      onClick={() => {
+                        onAdd(opcao.Codigo_Mald, isVaria ? (elementosVaria[opcao.Codigo_Mald] || 'Sangue') : undefined);
+                        setSelecionando(false);
+                      }}
+                      className="flex flex-col p-4 rounded hover:bg-zinc-800/80 cursor-pointer transition-colors group border-b border-zinc-800/50 last:border-0"
+                    >
+                      <div className="flex justify-between items-center gap-2">
+                        <span className="font-bold text-zinc-200 text-sm group-hover:text-white transition-colors">{opcao.Nome_Mald}</span>
+                        
+                        {isVaria ? (
+                          <div className="flex gap-2 min-w-0" onClick={e => e.stopPropagation()}>
+                            <CustomSelect 
+                              value={elementosVaria[opcao.Codigo_Mald] || 'Sangue'}
+                              onChange={val => setElementosVaria(prev => ({ ...prev, [opcao.Codigo_Mald]: val }))}
+                              options={[
+                                { value: 'Sangue', label: 'Sangue' },
+                                { value: 'Morte', label: 'Morte' },
+                                { value: 'Conhecimento', label: 'Conhecimento' },
+                                { value: 'Energia', label: 'Energia' }
+                              ]}
+                              className="w-28 py-0.5 !text-[10px] !bg-zinc-950 uppercase font-bold tracking-wider"
+                            />
+                          </div>
+                        ) : (
+                          <span className={`inline-block border rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight flex-shrink-0 ${cores}`}>
+                            {opcao.Elemento_Mald}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[12px] text-zinc-500 mt-1 leading-relaxed">{opcao.Descricao_Mald}</span>
+                      {opcao.Efeito && (
+                        <span className="text-[11px] text-indigo-400 mt-1.5 italic">
+                          {opcao.Efeito}
                         </span>
                       )}
                     </div>
-                    <span className="text-[11px] text-zinc-500 mt-1 leading-relaxed">{opcao.Descricao_Mald}</span>
-                    {opcao.Efeito && (
-                      <span className="text-[10px] text-indigo-400 mt-1.5 italic">
-                        {opcao.Efeito}
-                      </span>
-                    )}
-                  </div>
-                );
-              })
-            )}
+                  );
+                })
+              )}
+            </div>
           </div>
         </div>
-      </Collapse>
+      )}
 
       {/* Lista de Maldições Aplicadas */}
       <div className="flex flex-col gap-2 mt-1">

@@ -74,7 +74,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onFechar}>
-      <div className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden flex flex-col h-[90vh]" onClick={e => e.stopPropagation()}>
+      <div className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ease-in-out flex flex-col h-[90vh]" onClick={e => e.stopPropagation()}>
 
         {/* Header */}
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
@@ -160,7 +160,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                 const isExpanded = expandidos.includes(protecao.Codigo_Protecao);
                 const hasProficiencia = proficienciasTotais.includes(protecao.Proficiencia);
                 return (
-                  <div key={protecao.Codigo_Protecao} onClick={() => toggleExpandir(protecao.Codigo_Protecao)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden ${isExpanded ? 'min-h-[190px] max-h-[3000px]' : 'min-h-[190px] max-h-[190px]'} cursor-pointer`}
+                  <div key={protecao.Codigo_Protecao} onClick={() => toggleExpandir(protecao.Codigo_Protecao)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[190px] max-h-[3000px]' : 'min-h-[190px] max-h-[190px]'} cursor-pointer`}
                   >
                     {/* Bloco fechado */}
                     <div
@@ -185,7 +185,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                     </div>
 
                     <div className="flex-1  flex flex-col" >
-                      <div className="flex items-center flex-nowrap gap-3 text-xs overflow-hidden text-zinc-300 mb-2">
+                      <div className="flex items-center flex-nowrap gap-3 text-xs overflow-hidden transition-all duration-300 ease-in-out text-zinc-300 mb-2">
                         <span>
                           <span className="font-bold text-green-400">Defesa:</span> {String(protecao.Defesa_Protecao).startsWith('+') ? protecao.Defesa_Protecao : `+${protecao.Defesa_Protecao}`}
                         </span>
@@ -204,7 +204,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                       )}
                     </div>
 
-                    <div className="flex flex-nowrap items-center gap-x-3 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2 ">
+                    <div className="flex flex-nowrap items-center gap-x-3 mt-auto overflow-hidden transition-all duration-300 ease-in-out text-[11px] border-t border-zinc-800/50 pt-2 ">
                       <span className="truncate"><span className="text-zinc-500 font-semibold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (protecao.Espacos_Protecao === 0.5 || String(protecao.Espacos_Protecao) === '0,5' || String(protecao.Espacos_Protecao) === '0.5')) ? 0.25 : protecao.Espacos_Protecao}</span>
                       <span className="truncate"><span className="text-zinc-500 font-semibold">Categoria:</span> {protecao.Categoria_Protecao}</span>
                       
@@ -228,7 +228,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                 const isExpanded = expandidos.includes(protecao.Codigo_Protecao);
                 const hasProficiencia = proficienciasTotais.includes(protecao.Proficiencia);
                 return (
-                  <div key={protecao.Codigo_Protecao} onClick={() => toggleExpandir(protecao.Codigo_Protecao)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden ${isExpanded ? 'min-h-[190px] max-h-[3000px]' : 'min-h-[190px] max-h-[190px]'} cursor-pointer`}
+                  <div key={protecao.Codigo_Protecao} onClick={() => toggleExpandir(protecao.Codigo_Protecao)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[190px] max-h-[3000px]' : 'min-h-[190px] max-h-[190px]'} cursor-pointer`}
                   >
                     {/* Bloco fechado */}
                     <div
@@ -253,7 +253,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                     </div>
 
                     <div className="flex-1  flex flex-col" >
-                      <div className="flex items-center flex-nowrap gap-3 text-xs overflow-hidden text-zinc-300 mb-2">
+                      <div className="flex items-center flex-nowrap gap-3 text-xs overflow-hidden transition-all duration-300 ease-in-out text-zinc-300 mb-2">
                         <span>
                           <span className="font-bold text-green-400">Defesa:</span> {String(protecao.Defesa_Protecao).startsWith('+') ? protecao.Defesa_Protecao : `+${protecao.Defesa_Protecao}`}
                         </span>
@@ -272,7 +272,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                       )}
                     </div>
 
-                    <div className="flex flex-nowrap items-center gap-x-3 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2 ">
+                    <div className="flex flex-nowrap items-center gap-x-3 mt-auto overflow-hidden transition-all duration-300 ease-in-out text-[11px] border-t border-zinc-800/50 pt-2 ">
                       <span className="truncate"><span className="text-zinc-500 font-semibold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (protecao.Espacos_Protecao === 0.5 || String(protecao.Espacos_Protecao) === '0,5' || String(protecao.Espacos_Protecao) === '0.5')) ? 0.25 : protecao.Espacos_Protecao}</span>
                       <span className="truncate"><span className="text-zinc-500 font-semibold">Categoria:</span> {protecao.Categoria_Protecao}</span>
                       

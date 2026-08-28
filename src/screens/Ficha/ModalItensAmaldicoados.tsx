@@ -84,7 +84,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={fechar}>
       <div 
-        className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden flex flex-col h-[90vh]"
+        className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ease-in-out flex flex-col h-[90vh]"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
@@ -170,7 +170,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                   return (
                     <div 
                       key={item.Codigo_Item_Ama}
-                      className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden ${isExpanded ? 'min-h-[160px] max-h-[3000px]' : 'min-h-[160px] max-h-[160px]'} cursor-pointer`}
+                      className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[160px] max-h-[3000px]' : 'min-h-[160px] max-h-[160px]'} cursor-pointer`}
                     >
                       <div className="flex items-start justify-between gap-2 mb-2  " >
                         <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 truncate">
@@ -203,7 +203,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                         </Collapse>
                       </div>
 
-                      <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2">
+                      <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden transition-all duration-300 ease-in-out text-[11px] border-t border-zinc-800/50 pt-2">
                         <span className="text-zinc-500">
                           <span className="text-zinc-400 font-semibold">Espaços:</span> {item.Espacos_Ama}
                         </span>
@@ -232,7 +232,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                   return (
                     <div 
                       key={item.Codigo_Item_Ama}
-                      className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden ${isExpanded ? 'min-h-[160px] max-h-[3000px]' : 'min-h-[160px] max-h-[160px]'} cursor-pointer`}
+                      className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[160px] max-h-[3000px]' : 'min-h-[160px] max-h-[160px]'} cursor-pointer`}
                     >
                       <div className="flex items-start justify-between gap-2 mb-2  " >
                         <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 truncate">
@@ -265,7 +265,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                         </Collapse>
                       </div>
 
-                      <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2">
+                      <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden transition-all duration-300 ease-in-out text-[11px] border-t border-zinc-800/50 pt-2">
                         <span className="text-zinc-500">
                           <span className="text-zinc-400 font-semibold">Espaços:</span> {item.Espacos_Ama}
                         </span>

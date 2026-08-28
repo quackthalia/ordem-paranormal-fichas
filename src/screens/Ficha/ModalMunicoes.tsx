@@ -69,7 +69,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onFechar}>
       <div 
-        className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden flex flex-col h-[90vh]"
+        className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ease-in-out flex flex-col h-[90vh]"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
@@ -144,7 +144,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
             <div className="flex flex-col md:flex-row gap-3 items-start">
               <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
                 {municoesFiltradas.filter((_, i) => i % 2 === 0).map((municao) => (
-                  <div key={municao.Codigo_Municao} onClick={() => toggleExpandir(String(municao.Codigo_Municao))} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden ${isExpanded ? 'min-h-[160px] max-h-[3000px]' : 'min-h-[160px] max-h-[160px]'} cursor-pointer`}
+                  <div key={municao.Codigo_Municao} onClick={() => toggleExpandir(String(municao.Codigo_Municao))} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[160px] max-h-[3000px]' : 'min-h-[160px] max-h-[160px]'} cursor-pointer`}
                     
                   >
                     <div className="flex items-start justify-between gap-2 mb-2">
@@ -154,7 +154,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
                     </div>
                     
                     <div className="flex-1">
-                      <div className="flex items-center flex-nowrap gap-3 text-xs overflow-hidden text-zinc-300 mb-2">
+                      <div className="flex items-center flex-nowrap gap-3 text-xs overflow-hidden transition-all duration-300 ease-in-out text-zinc-300 mb-2">
                         <span className="italic text-zinc-400">{municao.Tipo_Arma}</span>
                       </div>
                       
@@ -165,7 +165,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
                       </Collapse>
                     </div>
 
-                    <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2">
+                    <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden transition-all duration-300 ease-in-out text-[11px] border-t border-zinc-800/50 pt-2">
                       <span className="text-zinc-500">
                         <span className="text-green-400 font-semibold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (municao['Espaços_Item'] === 0.5 || String(municao['Espaços_Item']) === '0,5' || String(municao['Espaços_Item']) === '0.5')) ? 0.25 : municao['Espaços_Item']}
                       </span>
@@ -193,7 +193,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
               </div>
               <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
                 {municoesFiltradas.filter((_, i) => i % 2 !== 0).map((municao) => (
-                  <div key={municao.Codigo_Municao} onClick={() => toggleExpandir(String(municao.Codigo_Municao))} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden ${isExpanded ? 'min-h-[160px] max-h-[3000px]' : 'min-h-[160px] max-h-[160px]'} cursor-pointer`}
+                  <div key={municao.Codigo_Municao} onClick={() => toggleExpandir(String(municao.Codigo_Municao))} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[160px] max-h-[3000px]' : 'min-h-[160px] max-h-[160px]'} cursor-pointer`}
                     
                   >
                     <div className="flex items-start justify-between gap-2 mb-2">
@@ -203,7 +203,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
                     </div>
                     
                     <div className="flex-1">
-                      <div className="flex items-center flex-nowrap gap-3 text-xs overflow-hidden text-zinc-300 mb-2">
+                      <div className="flex items-center flex-nowrap gap-3 text-xs overflow-hidden transition-all duration-300 ease-in-out text-zinc-300 mb-2">
                         <span className="italic text-zinc-400">{municao.Tipo_Arma}</span>
                       </div>
                       
@@ -214,7 +214,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
                       </Collapse>
                     </div>
 
-                    <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2">
+                    <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden transition-all duration-300 ease-in-out text-[11px] border-t border-zinc-800/50 pt-2">
                       <span className="text-zinc-500">
                         <span className="text-green-400 font-semibold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (municao['Espaços_Item'] === 0.5 || String(municao['Espaços_Item']) === '0,5' || String(municao['Espaços_Item']) === '0.5')) ? 0.25 : municao['Espaços_Item']}
                       </span>

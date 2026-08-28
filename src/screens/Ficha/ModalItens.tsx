@@ -107,7 +107,7 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onFechar}>
-      <div className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden flex flex-col h-[90vh]" onClick={e => e.stopPropagation()}>
+      <div className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ease-in-out flex flex-col h-[90vh]" onClick={e => e.stopPropagation()}>
         
         {/* Header */}
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
@@ -169,7 +169,7 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
               const isExpanded = expandidos.includes(item.Codigo_Item);
               
               return (
-                <div key={item.Codigo_Item} onClick={() => toggleExpandir(item.Codigo_Item)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden ${isExpanded ? 'min-h-[160px] max-h-[3000px]' : 'min-h-[160px] max-h-[160px]'} cursor-pointer`}
+                <div key={item.Codigo_Item} onClick={() => toggleExpandir(item.Codigo_Item)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[160px] max-h-[3000px]' : 'min-h-[160px] max-h-[160px]'} cursor-pointer`}
                 >
                   {/* Cabeçalho do item */}
                   <div className="flex items-start justify-between gap-2 mb-2">
@@ -205,7 +205,7 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
 
 
 
-                <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2 ">
+                <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden transition-all duration-300 ease-in-out text-[11px] border-t border-zinc-800/50 pt-2 ">
                   <span className="text-zinc-500">
                     <span className="text-green-400 font-semibold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (item.Espacos_Itens === 0.5 || String(item.Espacos_Itens) === '0,5' || String(item.Espacos_Itens) === '0.5')) ? 0.25 : item.Espacos_Itens}
                   </span>

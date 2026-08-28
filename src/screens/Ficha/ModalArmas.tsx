@@ -224,7 +224,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                 return (
                   <div 
                     key={arma.Codigo_Arma} 
-                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col  ${isExpanded ? '' : 'h-[190px]'}`}
+                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col`}
                   >
                     {/* Bloco fechado */}
                     <div
@@ -330,7 +330,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                 return (
                   <div 
                     key={arma.Codigo_Arma} 
-                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col  ${isExpanded ? '' : 'h-[190px]'}`}
+                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col`}
                   >
                     {/* Bloco fechado */}
                     <div

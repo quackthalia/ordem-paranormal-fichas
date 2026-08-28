@@ -1535,8 +1535,8 @@ function SortableArmaItem({
           <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-zinc-800/50">
             {id !== 'coronhada-virtual' && (
                 <>
-                  {arma.Capacidade_Municao != null && (
-                    <button
+                  {(arma.Tipo_Arma?.toLowerCase() !== 'corpo a corpo' && arma.Tipo_Arma?.toLowerCase() !== 'corpo-a-corpo' && arma.Tipo_Arma) && (
+                      <button
                       onClick={(e) => {
                         e.stopPropagation();
                         const compativeis = municoesHook?.getMunicoesCompativeis?.(arma.Nome_Item, arma.Categoria_Item) || [];

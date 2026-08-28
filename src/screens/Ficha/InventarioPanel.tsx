@@ -115,8 +115,8 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
 
   const [expandirMods, setExpandirMods] = useState(false);
     const [expandirMalds, setExpandirMalds] = useState(false);
-  const modsAtuais = (item.modificacoes || []).map(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)).filter(Boolean) as any[];
-    const maldicoesAtuais = (item.maldicoes || []).map(id => maldicoesHook?.maldicoes.find(m => m.Codigo_Mald === id)).filter(Boolean) as any[];
+  const modsAtuais = (Array.isArray(item.modificacoes) ? item.modificacoes : []).map(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)).filter(Boolean) as any[];
+    const maldicoesAtuais = (Array.isArray(item.maldicoes) ? item.maldicoes : []).map(id => maldicoesHook?.maldicoes.find(m => m.Codigo_Mald === id)).filter(Boolean) as any[];
 
   const {
     attributes,
@@ -267,7 +267,7 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
               </div>
             )}
 
-            {((item.maldicoes || []).length > 0) && (
+            {((Array.isArray(item.maldicoes) ? item.maldicoes : []).length > 0) && (
               <div className="mt-3">
                 <div 
                   className="flex items-center gap-2 cursor-pointer group py-1.5 px-2 -mx-2 rounded hover:bg-zinc-800/40 transition-colors"
@@ -279,7 +279,7 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
                 </div>
                 <Collapse isOpen={expandirMalds}>
                   <div className="flex flex-col gap-2 pt-2 pb-1">
-                    {(item.maldicoes || []).map((id: number) => {
+                    {(Array.isArray(item.maldicoes) ? item.maldicoes : []).map((id: number) => {
                       const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
                       if (!m) return null;
                       const corTexto = getCorElementoTexto ? getCorElementoTexto(m.Elemento_Mald) : 'text-zinc-400';
@@ -1148,7 +1148,7 @@ export function InventarioPanel() {
       {armaEditandoId && (
         <ModalEditarArma
           armaInventario={armasHook?.armasInventario.find(a => a.id === armaEditandoId)!}
-          onSave={(dadosEditados, modificacoes, maldicoes, maldicoesElementos) => {
+          onSave={(id, dadosEditados, modificacoes, maldicoes, maldicoesElementos) => {
             armasHook?.editarArma(armaEditandoId, dadosEditados, modificacoes, maldicoes, maldicoesElementos);
           }}
           onClose={() => setArmaEditandoId(null)}
@@ -1181,7 +1181,7 @@ export function InventarioPanel() {
       {protecaoEditandoId && (
         <ModalEditarProtecao
           protecao={protecoesHook?.protecoesInventario.find(p => p.id === protecaoEditandoId)!}
-          onSave={(dadosEditados, modificacoes, maldicoes, maldicoesElementos) => {
+          onSave={(id, dadosEditados, modificacoes, maldicoes, maldicoesElementos) => {
             protecoesHook?.editarProtecao(protecaoEditandoId, dadosEditados, modificacoes, maldicoes, maldicoesElementos);
           }}
           onClose={() => setProtecaoEditandoId(null)}
@@ -1191,7 +1191,7 @@ export function InventarioPanel() {
       {editingItem?.tipo === 'item' && getItemParaEditar() && (
         <ModalEditarItem
           itemInventario={getItemParaEditar()!}
-          onSave={(dadosEditados, modificacoes, maldicoes, maldicoesElementos) => {
+          onSave={(id, dadosEditados, modificacoes, maldicoes, maldicoesElementos) => {
             itensHook.editarItem(editingItem.id, dadosEditados, modificacoes, maldicoes, maldicoesElementos);
             setEditingItem(null);
           }}
@@ -1271,8 +1271,8 @@ function SortableArmaItem({
   const [expandirMods, setExpandirMods] = useState(false);
     const [expandirMalds, setExpandirMalds] = useState(false);
 
-  const modsAtuais = (item.modificacoes || []).map(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)).filter(Boolean) as any[];
-    const maldicoesAtuais = (item.maldicoes || []).map(id => maldicoesHook?.maldicoes.find(m => m.Codigo_Mald === id)).filter(Boolean) as any[];
+  const modsAtuais = (Array.isArray(item.modificacoes) ? item.modificacoes : []).map(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)).filter(Boolean) as any[];
+    const maldicoesAtuais = (Array.isArray(item.maldicoes) ? item.maldicoes : []).map(id => maldicoesHook?.maldicoes.find(m => m.Codigo_Mald === id)).filter(Boolean) as any[];
 
   const municoesAcopladasList = (item.municoesAcopladas || []).map(mid => {
     return municoesHook?.municoesInventario.find(m => m.id === mid);
@@ -1493,7 +1493,7 @@ function SortableArmaItem({
               </div>
             )}
 
-            {((item.maldicoes || []).length > 0) && (
+            {((Array.isArray(item.maldicoes) ? item.maldicoes : []).length > 0) && (
               <div className="mt-3">
                 <div 
                   className="flex items-center gap-2 cursor-pointer group py-1.5 px-2 -mx-2 rounded hover:bg-zinc-800/40 transition-colors"
@@ -1505,7 +1505,7 @@ function SortableArmaItem({
                 </div>
                 <Collapse isOpen={expandirMalds}>
                   <div className="flex flex-col gap-2 pt-2 pb-1">
-                    {(item.maldicoes || []).map((id: number) => {
+                    {(Array.isArray(item.maldicoes) ? item.maldicoes : []).map((id: number) => {
                       const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
                       if (!m) return null;
                       const corTexto = getCorElementoTexto ? getCorElementoTexto(m.Elemento_Mald) : 'text-zinc-400';
@@ -1621,8 +1621,8 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
   const { modificacoesHook, maldicoesHook, regrasAutomaticasAtivas, regras } = useRPG();
   const [expandirMods, setExpandirMods] = useState(false);
     const [expandirMalds, setExpandirMalds] = useState(false);
-  const modsAtuais = (item.modificacoes || []).map(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)).filter(Boolean) as any[];
-    const maldicoesAtuais = (item.maldicoes || []).map(id => maldicoesHook?.maldicoes.find(m => m.Codigo_Mald === id)).filter(Boolean) as any[];
+  const modsAtuais = (Array.isArray(item.modificacoes) ? item.modificacoes : []).map(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)).filter(Boolean) as any[];
+    const maldicoesAtuais = (Array.isArray(item.maldicoes) ? item.maldicoes : []).map(id => maldicoesHook?.maldicoes.find(m => m.Codigo_Mald === id)).filter(Boolean) as any[];
 
   const style = isOverlay ? {} : {
     transform: CSS.Translate.toString(transform),
@@ -1682,7 +1682,7 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
                 </div>
               )}
 
-            {((item.maldicoes || []).length > 0) && (
+            {((Array.isArray(item.maldicoes) ? item.maldicoes : []).length > 0) && (
               <div className="mt-3">
                 <div 
                   className="flex items-center gap-2 cursor-pointer group py-1.5 px-2 -mx-2 rounded hover:bg-zinc-800/40 transition-colors"
@@ -1694,7 +1694,7 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
                 </div>
                 <Collapse isOpen={expandirMalds}>
                   <div className="flex flex-col gap-2 pt-2 pb-1">
-                    {(item.maldicoes || []).map((id: number) => {
+                    {(Array.isArray(item.maldicoes) ? item.maldicoes : []).map((id: number) => {
                       const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
                       if (!m) return null;
                       const corTexto = getCorElementoTexto ? getCorElementoTexto(m.Elemento_Mald) : 'text-zinc-400';
@@ -1813,8 +1813,8 @@ function SortableProtecaoItem({
   const [expandirMods, setExpandirMods] = useState(false);
     const [expandirMalds, setExpandirMalds] = useState(false);
 
-  const modsAtuais = (item.modificacoes || []).map(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)).filter(Boolean) as any[];
-    const maldicoesAtuais = (item.maldicoes || []).map(id => maldicoesHook?.maldicoes.find(m => m.Codigo_Mald === id)).filter(Boolean) as any[];
+  const modsAtuais = (Array.isArray(item.modificacoes) ? item.modificacoes : []).map(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)).filter(Boolean) as any[];
+    const maldicoesAtuais = (Array.isArray(item.maldicoes) ? item.maldicoes : []).map(id => maldicoesHook?.maldicoes.find(m => m.Codigo_Mald === id)).filter(Boolean) as any[];
 
   const style = isOverlay ? {} : {
     transform: CSS.Translate.toString(transform),
@@ -1878,7 +1878,7 @@ function SortableProtecaoItem({
                 </div>
               )}
 
-            {((item.maldicoes || []).length > 0) && (
+            {((Array.isArray(item.maldicoes) ? item.maldicoes : []).length > 0) && (
               <div className="mt-3">
                 <div 
                   className="flex items-center gap-2 cursor-pointer group py-1.5 px-2 -mx-2 rounded hover:bg-zinc-800/40 transition-colors"
@@ -1890,7 +1890,7 @@ function SortableProtecaoItem({
                 </div>
                 <Collapse isOpen={expandirMalds}>
                   <div className="flex flex-col gap-2 pt-2 pb-1">
-                    {(item.maldicoes || []).map((id: number) => {
+                    {(Array.isArray(item.maldicoes) ? item.maldicoes : []).map((id: number) => {
                       const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
                       if (!m) return null;
                       const corTexto = getCorElementoTexto ? getCorElementoTexto(m.Elemento_Mald) : 'text-zinc-400';

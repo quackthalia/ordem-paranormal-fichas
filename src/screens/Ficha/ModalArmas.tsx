@@ -222,9 +222,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                 const critico = formatarCritico(arma.Critico_Arma, arma.Multiplicador_Arma);
                 const hasProficiencia = proficienciasTotais.includes(arma.Proficiencia);
                 return (
-                  <div 
-                    key={arma.Codigo_Arma} 
-                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[230px] max-h-[3000px]' : 'min-h-[230px] max-h-[230px]'}`}
+                  <div key={arma.Codigo_Arma} onClick={() => toggleExpandir(arma.Codigo_Arma)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  min-h-[215px] cursor-pointer`}
                   >
                     {/* Bloco fechado */}
                     <div
@@ -264,7 +262,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                       </div>
                     </div>
                     
-                    <div className="flex-1 cursor-pointer flex flex-col" onClick={() => toggleExpandir(arma.Codigo_Arma)}>
+                    <div className="flex-1 flex flex-col">
                       <div className="flex items-center flex-nowrap gap-3 text-xs overflow-hidden text-zinc-300 mb-2">
                         <span>
                           <span className="font-bold text-green-400">Dano:</span> {arma.Dano_Arma}
@@ -328,9 +326,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                 const critico = formatarCritico(arma.Critico_Arma, arma.Multiplicador_Arma);
                 const hasProficiencia = proficienciasTotais.includes(arma.Proficiencia);
                 return (
-                  <div 
-                    key={arma.Codigo_Arma} 
-                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[230px] max-h-[3000px]' : 'min-h-[230px] max-h-[230px]'}`}
+                  <div key={arma.Codigo_Arma} onClick={() => toggleExpandir(arma.Codigo_Arma)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  min-h-[215px] cursor-pointer`}
                   >
                     {/* Bloco fechado */}
                     <div
@@ -370,7 +366,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                       </div>
                     </div>
                     
-                    <div className="flex-1 cursor-pointer flex flex-col" onClick={() => toggleExpandir(arma.Codigo_Arma)}>
+                    <div className="flex-1 flex flex-col">
                       <div className="flex items-center flex-nowrap gap-3 text-xs overflow-hidden text-zinc-300 mb-2">
                         <span>
                           <span className="font-bold text-green-400">Dano:</span> {arma.Dano_Arma}

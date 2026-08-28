@@ -170,7 +170,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                   return (
                     <div 
                       key={item.Codigo_Item_Ama}
-                      className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[160px] max-h-[3000px]' : 'min-h-[160px] max-h-[160px]'}`}
+                      className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  min-h-[150px] cursor-pointer`}
                     >
                       <div className="flex items-start justify-between gap-2 mb-2 cursor-pointer " onClick={() => toggleExpandir(String(item.Codigo_Item_Ama))}>
                         <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 truncate">
@@ -232,7 +232,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                   return (
                     <div 
                       key={item.Codigo_Item_Ama}
-                      className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[160px] max-h-[3000px]' : 'min-h-[160px] max-h-[160px]'}`}
+                      className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  min-h-[150px] cursor-pointer`}
                     >
                       <div className="flex items-start justify-between gap-2 mb-2 cursor-pointer " onClick={() => toggleExpandir(String(item.Codigo_Item_Ama))}>
                         <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 truncate">

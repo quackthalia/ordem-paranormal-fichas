@@ -119,7 +119,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
-  }, [armasFiltradas]);
+  }, [busca, filtroTipo, filtroEmpunhadura, filtroAlcance]);
 
   if (!aberto) return null;
 

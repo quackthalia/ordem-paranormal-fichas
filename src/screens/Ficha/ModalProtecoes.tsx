@@ -67,7 +67,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
-  }, [protecoesFiltradas]);
+  }, [busca]);
 
   if (!aberto) return null;
 

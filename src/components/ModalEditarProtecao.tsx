@@ -31,10 +31,13 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
 
   const { modificacoesHook, maldicoesHook } = useRPG();
   const [modificacoes, setModificacoes] = useState<number[]>(protecao?.modificacoes || []);
+  const [maldicoes, setMaldicoes] = useState<number[]>(protecao?.maldicoes || []);
+  const [maldicoesElementos, setMaldicoesElementos] = useState<Record<number, string>>(protecao?.maldicoesElementos || {});
 
   const catNum = categoriaRomanParaNum(categoria);
   const catFinal = catNum + modificacoes.length;
   const podeAdicionarMod = catFinal < 4;
+  const podeAdicionarMald = true;
 
   const temDiscreto = modificacoes.some(id => modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)?.Nome_Modif.trim().toLowerCase() === 'discreto');
   

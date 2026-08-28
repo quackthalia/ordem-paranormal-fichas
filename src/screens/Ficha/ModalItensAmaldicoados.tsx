@@ -170,9 +170,9 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                   return (
                     <div 
                       key={item.Codigo_Item_Ama}
-                      className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  min-h-[150px] cursor-pointer`}
+                      className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  min-h-[150px]  cursor-pointer`}
                     >
-                      <div className="flex items-start justify-between gap-2 mb-2 cursor-pointer " onClick={() => toggleExpandir(String(item.Codigo_Item_Ama))}>
+                      <div className= cursor-pointer"flex items-start justify-between gap-2 mb-2  " >
                         <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 truncate">
                           {item.Nome_Ama}
                         </h3>
@@ -195,7 +195,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                         </div>
                       </div>
                       
-                      <div className="flex-1 cursor-pointer" onClick={() => toggleExpandir(String(item.Codigo_Item_Ama))}>
+                      <div className="flex-1 " >
                         <Collapse isOpen={isExpanded} previewHeight="54px">
                           <p className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none ">
                             {formatarTexto(item.Desc_Ama)}
@@ -232,9 +232,9 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                   return (
                     <div 
                       key={item.Codigo_Item_Ama}
-                      className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  min-h-[150px] cursor-pointer`}
+                      className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  min-h-[150px]  cursor-pointer`}
                     >
-                      <div className="flex items-start justify-between gap-2 mb-2 cursor-pointer " onClick={() => toggleExpandir(String(item.Codigo_Item_Ama))}>
+                      <div className= cursor-pointer"flex items-start justify-between gap-2 mb-2  " >
                         <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 truncate">
                           {item.Nome_Ama}
                         </h3>
@@ -257,7 +257,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
                         </div>
                       </div>
                       
-                      <div className="flex-1 cursor-pointer" onClick={() => toggleExpandir(String(item.Codigo_Item_Ama))}>
+                      <div className="flex-1 " >
                         <Collapse isOpen={isExpanded} previewHeight="54px">
                           <p className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none ">
                             {formatarTexto(item.Desc_Ama)}

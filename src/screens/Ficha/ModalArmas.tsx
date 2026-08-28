@@ -222,12 +222,12 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                 const critico = formatarCritico(arma.Critico_Arma, arma.Multiplicador_Arma);
                 const hasProficiencia = proficienciasTotais.includes(arma.Proficiencia);
                 return (
-                  <div key={arma.Codigo_Arma} onClick={() => toggleExpandir(arma.Codigo_Arma)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  min-h-[215px] cursor-pointer`}
+                  <div key={arma.Codigo_Arma} onClick={() => toggleExpandir(arma.Codigo_Arma)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  min-h-[215px] cursor-pointer  cursor-pointer`}
                   >
                     {/* Bloco fechado */}
                     <div
-                      className="flex items-start justify-between gap-2 mb-2 cursor-pointer h-[2rem]"
-                      onClick={() => toggleExpandir(arma.Codigo_Arma)}
+                      className= cursor-pointer"flex items-start justify-between gap-2 mb-2  h-[2rem]"
+                      
                     >
                       <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 truncate">
                         {arma.Nome_Item}
@@ -326,12 +326,12 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                 const critico = formatarCritico(arma.Critico_Arma, arma.Multiplicador_Arma);
                 const hasProficiencia = proficienciasTotais.includes(arma.Proficiencia);
                 return (
-                  <div key={arma.Codigo_Arma} onClick={() => toggleExpandir(arma.Codigo_Arma)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  min-h-[215px] cursor-pointer`}
+                  <div key={arma.Codigo_Arma} onClick={() => toggleExpandir(arma.Codigo_Arma)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  min-h-[215px] cursor-pointer  cursor-pointer`}
                   >
                     {/* Bloco fechado */}
                     <div
-                      className="flex items-start justify-between gap-2 mb-2 cursor-pointer h-[2rem]"
-                      onClick={() => toggleExpandir(arma.Codigo_Arma)}
+                      className= cursor-pointer"flex items-start justify-between gap-2 mb-2  h-[2rem]"
+                      
                     >
                       <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 truncate">
                         {arma.Nome_Item}

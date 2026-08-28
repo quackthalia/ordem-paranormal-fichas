@@ -247,7 +247,7 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
             {modsAtuais.length > 0 && (
               <div className="mt-3">
                 <div 
-                  className="flex items-center gap-2 cursor-pointer group"
+                  className="flex items-center gap-2 cursor-pointer group py-1.5 px-2 -mx-2 rounded hover:bg-zinc-800/40 transition-colors"
                   onClick={(e) => { e.stopPropagation(); setExpandirMods(!expandirMods); }}
                 >
                   <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider group-hover:text-zinc-300 transition-colors">Modificações</span>
@@ -270,7 +270,7 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
             {((item.maldicoes || []).length > 0) && (
               <div className="mt-3">
                 <div 
-                  className="flex items-center gap-2 cursor-pointer group"
+                  className="flex items-center gap-2 cursor-pointer group py-1.5 px-2 -mx-2 rounded hover:bg-zinc-800/40 transition-colors"
                   onClick={(e) => { e.stopPropagation(); setExpandirMalds(!expandirMalds); }}
                 >
                   <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider group-hover:text-zinc-300 transition-colors">Maldições</span>
@@ -301,7 +301,7 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
             )}
 
           </div>
-          <div className="flex flex-col gap-1 mt-1">
+          <div className="flex flex-col gap-1 mt-3 pt-3 border-t border-zinc-800/50">
             <p className="text-zinc-400 text-xs leading-relaxed whitespace-pre-wrap">{formatarTexto(item.item.Desc_Item)}</p>
           </div>
           {item.item.Fonte_Item && (
@@ -1462,7 +1462,7 @@ function SortableArmaItem({
             {modsAtuais.length > 0 && (
               <div className="mt-3">
                 <div 
-                  className="flex items-center gap-2 cursor-pointer group"
+                  className="flex items-center gap-2 cursor-pointer group py-1.5 px-2 -mx-2 rounded hover:bg-zinc-800/40 transition-colors"
                   onClick={(e) => { e.stopPropagation(); setExpandirMods(!expandirMods); }}
                 >
                   <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider group-hover:text-zinc-300 transition-colors">Modificações</span>
@@ -1485,7 +1485,7 @@ function SortableArmaItem({
             {((item.maldicoes || []).length > 0) && (
               <div className="mt-3">
                 <div 
-                  className="flex items-center gap-2 cursor-pointer group"
+                  className="flex items-center gap-2 cursor-pointer group py-1.5 px-2 -mx-2 rounded hover:bg-zinc-800/40 transition-colors"
                   onClick={(e) => { e.stopPropagation(); setExpandirMalds(!expandirMalds); }}
                 >
                   <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider group-hover:text-zinc-300 transition-colors">Maldições</span>
@@ -1517,7 +1517,7 @@ function SortableArmaItem({
 
           </div>
           
-          <div className="flex flex-col gap-1 mt-1">
+          <div className="flex flex-col gap-1 mt-3 pt-3 border-t border-zinc-800/50">
             <p className="text-zinc-400 text-xs leading-relaxed whitespace-pre-wrap">{formatarTexto(arma.Descricao_Item)}</p>
           </div>
           
@@ -1672,7 +1672,7 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
             {((item.maldicoes || []).length > 0) && (
               <div className="mt-3">
                 <div 
-                  className="flex items-center gap-2 cursor-pointer group"
+                  className="flex items-center gap-2 cursor-pointer group py-1.5 px-2 -mx-2 rounded hover:bg-zinc-800/40 transition-colors"
                   onClick={(e) => { e.stopPropagation(); setExpandirMalds(!expandirMalds); }}
                 >
                   <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider group-hover:text-zinc-300 transition-colors">Maldições</span>
@@ -1718,7 +1718,7 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
             {modsAtuais.length > 0 && (
               <div className="mt-3">
                 <div 
-                  className="flex items-center gap-2 cursor-pointer group"
+                  className="flex items-center gap-2 cursor-pointer group py-1.5 px-2 -mx-2 rounded hover:bg-zinc-800/40 transition-colors"
                   onClick={(e) => { e.stopPropagation(); setExpandirMods(!expandirMods); }}
                 >
                   <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider group-hover:text-zinc-300 transition-colors">Modificações</span>
@@ -1740,12 +1740,12 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
             )}
           </div>
           
-          <div className="flex flex-col gap-1 mt-1">
-            <div 
-              className="text-zinc-400 text-xs leading-relaxed whitespace-pre-wrap"
-              dangerouslySetInnerHTML={{ __html: municao.Descricao_Item }}
-            />
-          </div>
+          <div className="flex flex-col gap-1 mt-3 pt-3 border-t border-zinc-800/50">
+              <div 
+                className="text-zinc-400 text-xs leading-relaxed whitespace-pre-wrap"
+                dangerouslySetInnerHTML={{ __html: municao.Descricao_Item }}
+              />
+            </div>
           
           <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-zinc-800/50">
             {onEditar && (
@@ -1868,7 +1868,7 @@ function SortableProtecaoItem({
             {((item.maldicoes || []).length > 0) && (
               <div className="mt-3">
                 <div 
-                  className="flex items-center gap-2 cursor-pointer group"
+                  className="flex items-center gap-2 cursor-pointer group py-1.5 px-2 -mx-2 rounded hover:bg-zinc-800/40 transition-colors"
                   onClick={(e) => { e.stopPropagation(); setExpandirMalds(!expandirMalds); }}
                 >
                   <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider group-hover:text-zinc-300 transition-colors">Maldições</span>
@@ -1941,7 +1941,7 @@ function SortableProtecaoItem({
             {modsAtuais.length > 0 && (
               <div className="mt-3">
                 <div 
-                  className="flex items-center gap-2 cursor-pointer group"
+                  className="flex items-center gap-2 cursor-pointer group py-1.5 px-2 -mx-2 rounded hover:bg-zinc-800/40 transition-colors"
                   onClick={(e) => { e.stopPropagation(); setExpandirMods(!expandirMods); }}
                 >
                   <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider group-hover:text-zinc-300 transition-colors">Modificações</span>
@@ -1962,12 +1962,12 @@ function SortableProtecaoItem({
               </div>
             )}
           </div>
-          <div className="flex flex-col gap-1 mt-1">
-            <div
-              className="text-zinc-400 text-xs leading-relaxed whitespace-pre-wrap"
-              dangerouslySetInnerHTML={{ __html: protecao.Descricao_Protecao || '' }}
-            />
-          </div>
+          <div className="flex flex-col gap-1 mt-3 pt-3 border-t border-zinc-800/50">
+              <div
+                className="text-zinc-400 text-xs leading-relaxed whitespace-pre-wrap"
+                dangerouslySetInnerHTML={{ __html: protecao.Descricao_Protecao || '' }}
+              />
+            </div>
           <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-zinc-800/50">
             <button
               onClick={(e) => { e.stopPropagation(); onEditar?.(); }}

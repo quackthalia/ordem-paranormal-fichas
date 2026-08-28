@@ -216,7 +216,7 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
           </div>
 
           <div className="mt-6 border-t border-zinc-800 pt-4">
-            <h3 className="font-bold text-zinc-400 mb-4 text-sm uppercase tracking-wider">Aprimoramentos</h3>
+            <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-2 block">Aprimoramentos</label>
             <AprimoramentosSelector 
               modificacoesAplicadas={modificacoes}
               opcoesModificacoes={getOpcoesModificacoes()}

@@ -160,7 +160,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                 const isExpanded = expandidos.includes(protecao.Codigo_Protecao);
                 const hasProficiencia = proficienciasTotais.includes(protecao.Proficiencia);
                 return (
-                  <div key={protecao.Codigo_Protecao} onClick={() => toggleExpandir(protecao.Codigo_Protecao)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[190px] max-h-[3000px]' : 'min-h-[190px] max-h-[190px]'} cursor-pointer`}
+                  <div key={protecao.Codigo_Protecao} onClick={() => toggleExpandir(protecao.Codigo_Protecao)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden ${isExpanded ? 'min-h-[190px] max-h-[3000px]' : 'min-h-[190px] max-h-[190px]'} cursor-pointer`}
                   >
                     {/* Bloco fechado */}
                     <div
@@ -228,7 +228,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                 const isExpanded = expandidos.includes(protecao.Codigo_Protecao);
                 const hasProficiencia = proficienciasTotais.includes(protecao.Proficiencia);
                 return (
-                  <div key={protecao.Codigo_Protecao} onClick={() => toggleExpandir(protecao.Codigo_Protecao)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[190px] max-h-[3000px]' : 'min-h-[190px] max-h-[190px]'} cursor-pointer`}
+                  <div key={protecao.Codigo_Protecao} onClick={() => toggleExpandir(protecao.Codigo_Protecao)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden ${isExpanded ? 'min-h-[190px] max-h-[3000px]' : 'min-h-[190px] max-h-[190px]'} cursor-pointer`}
                   >
                     {/* Bloco fechado */}
                     <div

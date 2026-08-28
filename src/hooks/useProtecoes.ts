@@ -35,7 +35,7 @@ export function useProtecoes() {
     setProtecoesInventario(prev => prev.filter(item => item.id !== id));
   }, []);
 
-  const editarProtecao = useCallback((id: string, novosDados: Partial<Protecao>, novasModificacoes?: number[]) => {
+  const editarProtecao = useCallback((id: string, novosDados: Partial<Protecao>, novasModificacoes?: number[], novasMaldicoes?: number[], novasMaldicoesElementos?: string[]) => {
     setProtecoesInventario(prev => prev.map(item => {
       if (item.id === id) {
         const ret: ProtecaoInventario = { ...item, protecao: { ...item.protecao, ...novosDados } };

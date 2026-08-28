@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useSmoothExpandScroll } from '../hooks/useSmoothExpandScroll';
 import type { Modificacao } from '../types';
 import { Collapse } from './Collapse';
 
@@ -22,13 +23,7 @@ export function ModificacoesSelector({
   const [selecionando, setSelecionando] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (selecionando && dropdownRef.current) {
-      setTimeout(() => {
-        dropdownRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 300);
-    }
-  }, [selecionando]);
+  useSmoothExpandScroll(selecionando, dropdownRef);
 
   const aplicadas = modificacoesAplicadas
     .map(id => todasModificacoes.find(m => m.Codigo_Modif === id))

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useSmoothExpandScroll } from '../hooks/useSmoothExpandScroll';
 import type { Maldicao } from '../types';
 import { Collapse } from './Collapse';
 import { CustomSelect } from './CustomSelect';
@@ -25,13 +26,7 @@ export function MaldicoesSelector({
   const [selecionando, setSelecionando] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (selecionando && dropdownRef.current) {
-      setTimeout(() => {
-        dropdownRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 300);
-    }
-  }, [selecionando]);
+  useSmoothExpandScroll(selecionando, dropdownRef);
   const [subAbaElemento, setSubAbaElemento] = useState('Todos');
   const [elementosVaria, setElementosVaria] = useState<Record<number, string>>({});
 

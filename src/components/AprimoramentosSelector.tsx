@@ -210,37 +210,56 @@ export function AprimoramentosSelector({
               </button>
             </div>
             
-            {/* Filtros Extras para Maldições */}
-            {abaModal === 'maldicoes' && (
-              <div className="flex flex-wrap items-center gap-1.5 px-5 py-3 border-b border-zinc-800 bg-zinc-900/30">
-                {['Todos', 'Sangue', 'Morte', 'Conhecimento', 'Energia'].map(elem => {
-                  const ativo = subAbaElemento === elem;
-                  return (
-                    <button
-                      key={elem}
-                      onClick={() => setSubAbaElemento(elem)}
-                      className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider transition border ${
-                        ativo
-                          ? getCorElemento(elem === 'Todos' ? 'varia' : elem)
-                          : 'bg-zinc-800/40 text-zinc-500 border-zinc-700/50 hover:bg-zinc-800 hover:text-zinc-300'
-                      }`}
-                    >
-                      {elem}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-
+            {/* Filtros Extras para Maldicoes */}
+              {abaModal === 'maldicoes' && (
+                <div className="flex flex-wrap items-center gap-2 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Elementos:</span>
+                  <button
+                    onClick={() => setSubAbaElemento('Todos')}
+                    className={`rounded px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider transition ${
+                      subAbaElemento === 'Todos'
+                        ? 'bg-green-900/40 text-green-300 border border-green-800'
+                        : 'bg-zinc-800/60 text-zinc-500 border border-zinc-700 hover:text-zinc-300'
+                    }`}
+                  >
+                    Todos
+                  </button>
+                  {['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo', 'Varia'].map(elem => {
+                    const ativo = subAbaElemento === elem;
+                    return (
+                      <button
+                        key={elem}
+                        onClick={() => setSubAbaElemento(elem)}
+                        className={`rounded px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider transition border ${
+                          ativo
+                            ? (() => {
+                                const elStr = elem.toLowerCase();
+                                if (elStr.includes('medo')) return 'border-zinc-500 bg-zinc-200/80 text-zinc-950 px-3';
+                                if (elStr.includes('sangue')) return 'border-red-900 bg-red-950/20 text-red-500';
+                                if (elStr.includes('morte')) return 'border-zinc-700 bg-black/50 text-white px-3';
+                                if (elStr.includes('conhecimento')) return 'border-yellow-900 bg-yellow-950/20 text-yellow-500';
+                                if (elStr.includes('energia')) return 'border-purple-900 bg-purple-950/20 text-purple-500';
+                                if (elStr.includes('varia')) return 'border-blue-900 bg-blue-950/20 text-blue-400';
+                                return 'border-zinc-600 text-zinc-100';
+                              })()
+                            : 'border-transparent text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300'
+                        }`}
+                      >
+                        {elem}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+  
             {/* Lista de Opções */}
             <div className="flex-1 overflow-y-auto custom-scrollbar p-4 bg-zinc-900/50">
               {abaModal === 'modificacoes' && (
                 <>
-                  
                   {modsDisponiveis.length === 0 ? (
                     <p className="text-sm text-zinc-500 italic p-6 text-center">Nenhuma modificação disponível.</p>
                   ) : (
-                    <div className="flex flex-col gap-2 w-full">
+                    <div className="flex flex-col gap-3 w-full pb-4">
                         {modsDisponiveis.map(opcao => (
                           <div 
                             key={"mod-" + opcao.Codigo_Modif}
@@ -249,29 +268,38 @@ export function AprimoramentosSelector({
                               onAddMod(opcao.Codigo_Modif);
                               setModalAberto(false);
                             }}
-                            className={`flex flex-col p-3 rounded bg-zinc-900/40 border border-zinc-800/80 transition group ${podeAdicionarMod ? 'hover:border-green-500/50 hover:bg-zinc-900/80 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                            className={`flex flex-col p-4 rounded-lg bg-zinc-900 border-l-[3px] border-l-zinc-500 border border-zinc-800 transition group ${podeAdicionarMod ? 'hover:border-green-500/50 hover:border-l-green-500 hover:bg-zinc-800/80 cursor-pointer shadow-sm hover:shadow' : 'opacity-50 cursor-not-allowed'}`}
                           >
-                            <span className="font-bold text-zinc-200 text-sm group-hover:text-white transition-colors">{opcao.Nome_Modif}</span>
-                            <span className="text-[12px] text-zinc-500 mt-1 leading-relaxed">{opcao.Descricao_Modif}</span>
+                            <span className="font-bold text-zinc-200 text-sm group-hover:text-green-400 transition-colors">{opcao.Nome_Modif}</span>
+                            <span className="text-[12px] text-zinc-400 mt-1.5 leading-relaxed">{opcao.Descricao_Modif}</span>
                           </div>
                         ))}
                     </div>
                   )}
-                
                 </>
               )}
 
               {abaModal === 'maldicoes' && (
                 <>
-                  
                   {maldsDisponiveis.length === 0 ? (
                     <p className="text-sm text-zinc-500 italic p-6 text-center">Nenhuma maldição disponível para este filtro.</p>
                   ) : (
-                    <div className="flex flex-col gap-2 w-full">
+                    <div className="flex flex-col gap-3 w-full pb-4">
                         {maldsDisponiveis.map(opcao => {
                           const isVaria = opcao.Elemento_Mald?.toLowerCase() === 'varia' || opcao.Elemento_Mald?.toLowerCase() === 'lista';
                           const cores = getCorElemento(opcao.Elemento_Mald);
                           
+                          let borderL = 'border-l-zinc-600';
+                          if (opcao.Elemento_Mald) {
+                            const elStr = opcao.Elemento_Mald.toLowerCase();
+                            if (elStr.includes('medo')) borderL = 'border-l-zinc-500';
+                            else if (elStr.includes('sangue')) borderL = 'border-l-red-900';
+                            else if (elStr.includes('morte')) borderL = 'border-l-zinc-700';
+                            else if (elStr.includes('conhecimento')) borderL = 'border-l-yellow-900';
+                            else if (elStr.includes('energia')) borderL = 'border-l-purple-900';
+                            else if (elStr.includes('varia')) borderL = 'border-l-blue-900';
+                          }
+
                           return (
                             <div 
                               key={"mald-" + opcao.Codigo_Mald}
@@ -280,13 +308,14 @@ export function AprimoramentosSelector({
                                 onAddMald(opcao.Codigo_Mald, isVaria ? (elementosVaria[opcao.Codigo_Mald] || 'Sangue') : undefined);
                                 setModalAberto(false);
                               }}
-                              className={`flex flex-col p-3 rounded bg-zinc-900/40 border border-zinc-800/80 transition group ${podeAdicionarMod ? 'hover:border-green-500/50 hover:bg-zinc-900/80 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                              className={`flex flex-col p-4 rounded-lg bg-zinc-900 border-l-[3px] ${borderL} border border-zinc-800 transition group ${podeAdicionarMald ? 'hover:border-green-500/50 hover:bg-zinc-800/80 hover:border-l-green-500 cursor-pointer shadow-sm hover:shadow' : 'opacity-50 cursor-not-allowed'}`}
                             >
                               <div className="flex justify-between items-center gap-2">
-                                <span className="font-bold text-zinc-200 text-sm group-hover:text-white transition-colors">{opcao.Nome_Mald}</span>
+                                <span className="font-bold text-zinc-200 text-sm group-hover:text-green-400 transition-colors">{opcao.Nome_Mald}</span>
                                 
                                 {isVaria ? (
-                                  <div className="flex gap-2 min-w-0" onClick={e => e.stopPropagation()}>
+                                  <div className="flex gap-2 min-w-0 bg-zinc-950 p-1 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
+                                    <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline self-center">Elemento:</span>
                                     <CustomSelect 
                                       value={elementosVaria[opcao.Codigo_Mald] || 'Sangue'}
                                       onChange={val => setElementosVaria(prev => ({ ...prev, [opcao.Codigo_Mald]: val }))}
@@ -297,6 +326,7 @@ export function AprimoramentosSelector({
                                         { value: 'Energia', label: 'Energia' }
                                       ]}
                                       className="w-28 py-0.5 !text-[10px] !bg-zinc-950 uppercase font-bold tracking-wider"
+                                      hideIcon={true}
                                     />
                                   </div>
                                 ) : (
@@ -305,9 +335,9 @@ export function AprimoramentosSelector({
                                   </span>
                                 )}
                               </div>
-                              <span className="text-[12px] text-zinc-500 mt-1.5 leading-relaxed">{opcao.Descricao_Mald}</span>
+                              <span className="text-[12px] text-zinc-400 mt-2 leading-relaxed">{opcao.Descricao_Mald}</span>
                               {opcao.Efeito && (
-                                <span className="text-[11px] text-green-500 mt-1.5 italic">
+                                <span className="text-[11px] text-green-500 mt-2 italic">
                                   {opcao.Efeito}
                                 </span>
                               )}
@@ -316,7 +346,6 @@ export function AprimoramentosSelector({
                         })}
                     </div>
                   )}
-                
                 </>
               )}
             </div>

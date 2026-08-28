@@ -1327,6 +1327,17 @@ function SortableArmaItem({
             alcance = ord[idx + 1];
           }
         }
+        if (nomeM === 'empuxo') {
+          const ord = ['Curto', 'Medio', 'Longo', 'Extremo', 'Ilimitado'];
+          if (!alcance) {
+            alcance = 'Curto';
+          } else {
+            const idx = ord.indexOf(alcance);
+            if (idx !== -1 && idx < ord.length - 1) {
+              alcance = ord[idx + 1];
+            }
+          }
+        }
       }
 
       // Mods das munições acopladas

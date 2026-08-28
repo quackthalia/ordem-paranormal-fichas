@@ -4,8 +4,8 @@ import { InputOtimizado } from './InputOtimizado';
 import { ToolbarFormato } from './ToolbarFormato';
 import { CustomSelect } from './CustomSelect';
 
-import { ModificacoesSelector } from './ModificacoesSelector';
-import { MaldicoesSelector } from './MaldicoesSelector';
+
+import { AprimoramentosSelector } from './AprimoramentosSelector';
 import { useRPG } from '../context/RPGContext';
 import { categoriaRomanParaNum, categoriaNumParaRoman } from '../utils/rpgRules';
 
@@ -36,7 +36,7 @@ export function ModalEditarItem({
   const [modificacoes, setModificacoes] = useState<number[]>(itemInventario.modificacoes || []);
   const [maldicoes, setMaldicoes] = useState<number[]>(itemInventario.maldicoes || []);
   const [maldicoesElementos, setMaldicoesElementos] = useState<Record<number, string>>(itemObj.maldicoes_elementos || {});
-  const [abaAprimoramento, setAbaAprimoramento] = useState<'modificacoes' | 'maldicoes'>('modificacoes');
+  
   const [escolhendoFuncaoAdicional, setEscolhendoFuncaoAdicional] = useState<number | null>(null);
   const [escolhendoAprimorado, setEscolhendoAprimorado] = useState<number | null>(null);
   

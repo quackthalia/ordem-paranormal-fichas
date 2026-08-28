@@ -3,8 +3,7 @@ import type { ProtecaoInventario } from '../types';
 import { ToolbarFormato } from './ToolbarFormato';
 import { CustomSelect } from './CustomSelect';
 
-import { ModificacoesSelector } from './ModificacoesSelector';
-import { MaldicoesSelector } from './MaldicoesSelector';
+import { AprimoramentosSelector } from './AprimoramentosSelector';
 import { useRPG } from '../context/RPGContext';
 import { categoriaRomanParaNum, categoriaNumParaRoman } from '../utils/rpgRules';
 

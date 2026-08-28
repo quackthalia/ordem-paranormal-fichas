@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useRPG } from '../context/RPGContext';
 import { ToolbarFormato } from './ToolbarFormato';
 import { InputOtimizado } from './InputOtimizado';
-import { ModificacoesSelector } from './ModificacoesSelector';
-import { MaldicoesSelector } from './MaldicoesSelector';
+
+import { AprimoramentosSelector } from './AprimoramentosSelector';
 import type { MunicaoInventario, Municao } from '../types';
 import { categoriaRomanParaNum, categoriaNumParaRoman } from '../utils/rpgRules';
 

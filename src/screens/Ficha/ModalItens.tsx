@@ -195,7 +195,7 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
 
                   <div className="flex-1 cursor-pointer" onClick={() => toggleExpandir(item.Codigo_Item)}>
                     <Collapse isOpen={isExpanded} previewHeight="54px">
-                      <p className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none min-">
+                      <p className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none min-h-[54px]">
                         {formatarTexto(item.Desc_Item)}
                       </p>
                     </Collapse>

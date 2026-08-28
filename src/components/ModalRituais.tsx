@@ -230,7 +230,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                 const corElemento = obterCorBadge(elementoSendoEscolhido);
 
                 return (
-                  <div key={codigo} className={`bg-zinc-900/40 border border-zinc-800/80 rounded hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col border-l-4  min-h-[200px]`} style={{ borderLeftColor: corElemento }}>
+                  <div key={codigo} className={`bg-zinc-900/40 border border-zinc-800/80 rounded hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col border-l-4  min-h-[210px]`} style={{ borderLeftColor: corElemento }}>
                     <div
                       onClick={() => setExpandidos(prev => prev.includes(codigo) ? prev.filter(id => id !== codigo) : [...prev, codigo])}
                       className="flex cursor-pointer items-start justify-between gap-3 p-3"
@@ -311,7 +311,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                         </div>
                       </Collapse>
                       <Collapse isOpen={expandido} previewHeight="90px">
-                        <div className="text-xs leading-relaxed text-zinc-400 min-">
+                        <div className="text-xs leading-relaxed text-zinc-400 min-h-[90px]">
                           {ritual.Descricao_Ritual.split('\n').map((linha, idx) => (
                             <span key={idx} className="block mb-1" dangerouslySetInnerHTML={{ __html: formatarDescricao(linha) }} />
                           ))}
@@ -363,7 +363,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                 const corElemento = obterCorBadge(elementoSendoEscolhido);
 
                 return (
-                  <div key={codigo} className={`bg-zinc-900/40 border border-zinc-800/80 rounded hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col border-l-4  min-h-[200px]`} style={{ borderLeftColor: corElemento }}>
+                  <div key={codigo} className={`bg-zinc-900/40 border border-zinc-800/80 rounded hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col border-l-4  min-h-[210px]`} style={{ borderLeftColor: corElemento }}>
                     <div
                       onClick={() => setExpandidos(prev => prev.includes(codigo) ? prev.filter(id => id !== codigo) : [...prev, codigo])}
                       className="flex cursor-pointer items-start justify-between gap-3 p-3"
@@ -444,7 +444,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                         </div>
                       </Collapse>
                       <Collapse isOpen={expandido} previewHeight="90px">
-                        <div className="text-xs leading-relaxed text-zinc-400 min-">
+                        <div className="text-xs leading-relaxed text-zinc-400 min-h-[90px]">
                           {ritual.Descricao_Ritual.split('\n').map((linha, idx) => (
                             <span key={idx} className="block mb-1" dangerouslySetInnerHTML={{ __html: formatarDescricao(linha) }} />
                           ))}

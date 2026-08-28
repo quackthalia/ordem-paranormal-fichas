@@ -14,7 +14,7 @@ export function ModalEditarArma({
   onClose,
 }: {
   armaInventario: ArmaInventario;
-  onSave: (novosDados: Partial<Arma>, modificacoes?: number[], maldicoes?: number[], maldicoesElementos?: Record<number, string>) => void;
+  onSave: (novosDados: Partial<Arma>, modificacoes?: number[], maldições?: number[], maldiçõesElementos?: Record<number, string>) => void;
   onClose: () => void;
 }) {
   React.useEffect(() => {
@@ -36,18 +36,18 @@ export function ModalEditarArma({
   const [alcance, setAlcance] = useState(arma.Alcance_Item || '');
   const [danoSecundario, setDanoSecundario] = useState(arma.Dano_Secundario || '');
   const [categoria, setCategoria] = useState(arma.Categoria_Item || '');
-  const [espacos, setEspacos] = useState(arma['Espa├ºos_Item']?.toString() || '');
+  const [espacos, setEspacos] = useState(arma['Espaços_Item']?.toString() || '');
   const [dt, setDt] = useState(arma.dt_item || '');
 
   const [proficiencia, setProficiencia] = useState(arma.Proficiencia || 'Armas Simples');
   const [tipoArma, setTipoArma] = useState(arma.Tipo_Arma || 'Corpo a Corpo');
-  const [empunhadura, setEmpunhadura] = useState(arma.Empunhadura_Arma || 'Uma M├úo');
+  const [empunhadura, setEmpunhadura] = useState(arma.Empunhadura_Arma || 'Uma Mão');
   const [tipoDano, setTipoDano] = useState(arma.Tipo_Dano_Arma || 'Corte');
 
-  const { modificacoesHook, maldicoesHook } = useRPG();
+  const { modificacoesHook, maldiçõesHook } = useRPG();
   const [modificacoes, setModificacoes] = useState<number[]>(armaInventario.modificacoes || []);
-  const [maldicoes, setMaldicoes] = useState<number[]>(armaInventario.maldicoes || []);
-  const [maldicoesElementos, setMaldicoesElementos] = useState<Record<number, string>>(armaInventario.maldicoes_elementos || {});
+  const [maldições, setMaldicoes] = useState<number[]>(armaInventario.maldições || []);
+  const [maldiçõesElementos, setMaldicoesElementos] = useState<Record<number, string>>(armaInventario.maldições_elementos || {});
   
 
   const editorDesc = useRef<HTMLDivElement | null>(null);
@@ -66,15 +66,8 @@ export function ModalEditarArma({
 
   const temMiraTelescopica = modificacoes.some(id => {
     const nome = modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)?.Nome_Modif.trim().toLowerCase();
-    return nome === 'mira telesc├│pica';
+    return nome === 'mira telescópica';
   });
-
-  // Efeitos de maldições
-  const maldicoesAtuais = maldicoes.map(id => maldicoesHook?.maldicoes.find(m => m.Codigo_Mald === id)).filter(Boolean) as any[];
-  const temErosiva = maldicoesAtuais.some((m: any) => m.Nome_Mald.trim().toLowerCase() === 'erosiva');
-  const temLancinante = maldicoesAtuais.some((m: any) => m.Nome_Mald.trim().toLowerCase() === 'lancinante');
-  const temPredadora = maldicoesAtuais.some((m: any) => m.Nome_Mald.trim().toLowerCase() === 'predadora');
-  const temEmpuxo = maldicoesAtuais.some((m: any) => m.Nome_Mald.trim().toLowerCase() === 'empuxo');
 
   const getEspacoNumber = (val: string | number) => {
     const num = Number(String(val).replace(',', '.').replace(/[^0-9.-]+/g, ''));
@@ -83,40 +76,15 @@ export function ModalEditarArma({
   const baseEspacos = getEspacoNumber(espacos);
   const espacosFinais = temDiscreto ? Math.max(0, baseEspacos - 1) : baseEspacos;
 
-  const criticoFinal = (() => {
-    let cr = Number(critico || 20);
-    if (temMira) cr -= 2;
-    if (temPredadora) cr -= 1;
-    return Math.max(1, cr);
-  })();
-
+  const criticoFinal = temMira ? Math.max(1, Number(critico || 20) - 2) : (critico || 20);
   const danoFinal = temCalibreGrosso ? dano.replace(/(\d+)d(\d+)/i, (match, p1, p2) => `${Number(p1) + 1}d${p2}`) : dano;
-
-  const danoSecundarioFinal = (() => {
-    let ds = danoSecundario;
-    if (temErosiva) ds = ds ? `${ds} + 1d8` : '+1d8';
-    if (temLancinante) ds = ds ? `${ds} + 1d8*` : '+1d8*';
-    return ds;
-  })();
-
+  
   const ordAlcance = ['', 'Curto', 'Médio', 'Longo', 'Extremo', 'Ilimitado'];
   let alcanceFinal = alcance;
   if (temMiraTelescopica) {
-    const idx = ordAlcance.indexOf(alcanceFinal);
-    if (idx !== -1 && idx < ordAlcance.length - 1) alcanceFinal = ordAlcance[idx + 1];
-  }
-  if (temPredadora) {
-    const ord2 = ['Curto', 'Médio', 'Longo', 'Extremo', 'Ilimitado'];
-    const idx = ord2.indexOf(alcanceFinal);
-    if (idx !== -1 && idx < ord2.length - 1) alcanceFinal = ord2[idx + 1];
-  }
-  if (temEmpuxo) {
-    const ord2 = ['Curto', 'Médio', 'Longo', 'Extremo', 'Ilimitado'];
-    if (!alcanceFinal) {
-      alcanceFinal = 'Curto';
-    } else {
-      const idx = ord2.indexOf(alcanceFinal);
-      if (idx !== -1 && idx < ord2.length - 1) alcanceFinal = ord2[idx + 1];
+    const idx = ordAlcance.indexOf(alcance);
+    if (idx !== -1 && idx < ordAlcance.length - 1) {
+      alcanceFinal = ordAlcance[idx + 1];
     }
   }
 
@@ -129,21 +97,21 @@ export function ModalEditarArma({
   
     const temApocaliptica = modificacoes.some(id => {
       const nome = modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)?.Nome_Modif.trim().toLowerCase();
-      return nome === 'apocal├¡ptica';
+      return nome === 'apocalíptica';
     });
     if (temApocaliptica) {
       modificador -= 1;
     }
 
-    // Calcula o custo das maldi├º├Áes
+    // Calcula o custo das maldições
     let custoMaldicoes = 0;
-    if (maldicoes.length > 0) {
-      custoMaldicoes = 2 + (maldicoes.length - 1);
+    if (maldições.length > 0) {
+      custoMaldicoes = 2 + (maldições.length - 1);
     }
 
     const catFinal = catNum + modificador + custoMaldicoes;
     const podeAdicionarMod = catFinal < 4;
-    const custoProximaMaldicao = maldicoes.length === 0 ? 2 : 1;
+    const custoProximaMaldicao = maldições.length === 0 ? 2 : 1;
     const podeAdicionarMald = (catFinal + custoProximaMaldicao) <= 4;
 
   
@@ -171,7 +139,7 @@ export function ModalEditarArma({
     };
 
     const getOpcoesMaldicoes = () => {
-      return maldicoesHook.maldicoes.filter(m => m.Categoria_Mald.trim().toLowerCase() === 'armas');
+      return maldiçõesHook.maldições.filter(m => m.Categoria_Mald.trim().toLowerCase() === 'armas');
     };
 
     const handleAddMod = (id: number) => {
@@ -186,8 +154,8 @@ export function ModalEditarArma({
 
   const getOpcoesModificacoes = () => {
     return modificacoesHook.modificacoes.filter(m => {
-      // Impede Ferrolho Autom├ítico se a arma j├í ├® autom├ítica
-      if (m.Nome_Modif === 'Ferrolho Autom├ítico' && arma['Automatica?']) return false;
+      // Impede Ferrolho Automático se a arma já é automática
+      if (m.Nome_Modif === 'Ferrolho Automático' && arma['Automatica?']) return false;
       
       const cat = m.Categoria_Modif.toLowerCase();
       const tipo = tipoArma.toLowerCase();
@@ -218,13 +186,13 @@ export function ModalEditarArma({
       Alcance_Item: alcance,
       Dano_Secundario: danoSecundario,
       Categoria_Item: categoria,
-      'Espa├ºos_Item': getEspacoNumber(espacos),
+      'Espaços_Item': getEspacoNumber(espacos),
       dt_item: dt,
       Proficiencia: proficiencia,
       Tipo_Arma: tipoArma,
       Empunhadura_Arma: empunhadura,
       Tipo_Dano_Arma: tipoDano,
-    }, modificacoes, maldicoes, maldicoesElementos);
+    }, modificacoes, maldições, maldiçõesElementos);
     onClose();
   };
 
@@ -248,13 +216,13 @@ export function ModalEditarArma({
             onClick={onClose}
             className="text-zinc-500 hover:text-green-500 transition"
           >
-            Ô£ò
+            ✕
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 custom-scrollbar flex flex-col gap-4">
           <div className="rounded border border-zinc-800 bg-zinc-950 p-4">
-            <h3 className="font-bold text-green-500 mb-2 border-b border-zinc-800 pb-2">Informa├º├Áes da Arma</h3>
+            <h3 className="font-bold text-green-500 mb-2 border-b border-zinc-800 pb-2">Informações da Arma</h3>
             <div className="flex flex-col gap-2 mt-4">
               
               <InputLabel label="Nome da Arma" />
@@ -267,13 +235,13 @@ export function ModalEditarArma({
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
                 <div >
-                  <InputLabel label="Profici├¬ncia" />
+                  <InputLabel label="Proficiência" />
                   <CustomSelect
                     value={proficiencia}
                     onChange={val => setProficiencia(val)}
                     options={[
                       { value: "Armas Simples", label: "Armas Simples" },
-                      { value: "Armas T├íticas", label: "Armas T├íticas" },
+                      { value: "Armas Táticas", label: "Armas Táticas" },
                       { value: "Armas Pesadas", label: "Armas Pesadas" }
                     ]}
                     wrapperClassName="w-full"
@@ -303,9 +271,9 @@ export function ModalEditarArma({
                     onChange={val => setEmpunhadura(val)}
                     options={[
                       { value: "Leve", label: "Leve" },
-                      { value: "Uma M├úo", label: "Uma M├úo" },
-                      { value: "Duas M├úos", label: "Duas M├úos" },
-                      { value: "Uma M├úo/Duas M├úos", label: "Uma M├úo/Duas M├úos" }
+                      { value: "Uma Mão", label: "Uma Mão" },
+                      { value: "Duas Mãos", label: "Duas Mãos" },
+                      { value: "Uma Mão/Duas Mãos", label: "Uma Mão/Duas Mãos" }
                     ]}
                     wrapperClassName="w-full"
                   />
@@ -320,12 +288,12 @@ export function ModalEditarArma({
                     onChange={val => setTipoDano(val)}
                     options={[
                       { value: "Corte", label: "Corte" },
-                      { value: "Perfura├º├úo", label: "Perfura├º├úo" },
+                      { value: "Perfuração", label: "Perfuração" },
                       { value: "Impacto", label: "Impacto" },
-                      { value: "Bal├¡stico", label: "Bal├¡stico" },
+                      { value: "Balístico", label: "Balístico" },
                       { value: "Fogo", label: "Fogo" },
                       { value: "Frio", label: "Frio" },
-                      { value: "Qu├¡mico", label: "Qu├¡mico" },
+                      { value: "Químico", label: "Químico" },
                       { value: "Eletricidade", label: "Eletricidade" },
                       { value: "Morte", label: "Morte" },
                       { value: "Sangue", label: "Sangue" },
@@ -356,7 +324,7 @@ export function ModalEditarArma({
 
                 <div className="flex gap-2">
                   <div className="flex-1">
-                    <InputLabel label="Cr├¡tico (Margem)" />
+                    <InputLabel label="Crítico (Margem)" />
                     <InputOtimizado
                       value={criticoFinal.toString()}
                       onChange={val => {
@@ -401,7 +369,7 @@ export function ModalEditarArma({
                     options={[
                       { value: "", label: "Nenhum" },
                       { value: "Curto", label: "Curto" },
-                      { value: "M├®dio", label: "M├®dio" },
+                      { value: "Médio", label: "Médio" },
                       { value: "Longo", label: "Longo" },
                       { value: "Extremo", label: "Extremo" },
                       { value: "Ilimitado", label: "Ilimitado" }
@@ -411,9 +379,9 @@ export function ModalEditarArma({
                 </div>
                 
                 <div>
-                  <InputLabel label="Dano Secund├írio" />
+                  <InputLabel label="Dano Secundário" />
                   <InputOtimizado
-                    value={danoSecundarioFinal}
+                    value={danoSecundario}
                     onChange={setDanoSecundario}
                     placeholder="Ex: +2d6 (Explosivo)"
                     className="w-full rounded border border-zinc-700 bg-zinc-950 p-2 text-sm text-zinc-100 outline-none focus:border-green-700 transition"
@@ -446,7 +414,7 @@ export function ModalEditarArma({
                 </div>
 
                 <div>
-                  <InputLabel label="Espa├ºos" />
+                  <InputLabel label="Espaços" />
                   <InputOtimizado
                     value={espacosFinais.toString()}
                     onChange={val => {
@@ -462,7 +430,7 @@ export function ModalEditarArma({
           </div>
 
           <div className="mt-2">
-            <InputLabel label="Descri├º├úo" />
+            <InputLabel label="Descrição" />
             <div className="rounded border border-zinc-800 bg-zinc-950">
               <ToolbarFormato editorRef={editorDesc as any} />
               <div
@@ -491,10 +459,10 @@ export function ModalEditarArma({
               onRemoveMod={handleRemoveMod}
               podeAdicionarMod={podeAdicionarMod}
               
-              maldicoesAplicadas={maldicoes}
+              maldiçõesAplicadas={maldições}
               opcoesMaldicoes={getOpcoesMaldicoes()}
-              todasMaldicoes={maldicoesHook.maldicoes}
-              maldicoesElementos={maldicoesElementos}
+              todasMaldicoes={maldiçõesHook.maldições}
+              maldiçõesElementos={maldiçõesElementos}
               onAddMald={handleAddMald}
               onRemoveMald={handleRemoveMald}
               podeAdicionarMald={podeAdicionarMald}
@@ -514,7 +482,7 @@ export function ModalEditarArma({
             onClick={handleSalvar}
             className="rounded bg-green-700 px-5 py-2 text-xs font-bold uppercase tracking-wider text-zinc-100 shadow hover:bg-green-600"
           >
-            Salvar Altera├º├Áes
+            Salvar Alterações
           </button>
         </div>
       </div>

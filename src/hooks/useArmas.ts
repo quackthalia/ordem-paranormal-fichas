@@ -136,7 +136,7 @@ export function useArmas() {
 
   const editarArma = (id: string, novosDados: Partial<Arma>, novasModificacoes?: number[], novasMaldicoes?: number[], novasMaldicoesElementos?: Record<number, string>) => {
     setArmasInventario(prev => prev.map(item => {
-      if (item.id === idArma) {
+      if (item.id === id) {
         const ret: ArmaInventario = {
           ...item,
           arma: { ...item.arma, ...novosDados }

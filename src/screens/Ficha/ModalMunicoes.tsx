@@ -16,10 +16,6 @@ interface ModalMunicoesProps {
 }
 
 export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, onSelect }: ModalMunicoesProps) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollTop = 0;
-  }, [municoesFiltradas]);
 
   React.useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -64,6 +60,11 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
   }))).filter(Boolean).sort();
   
   const uniqueTipos = Array.from(new Set(municoesDisponiveis.map(m => m.Tipo_Arma))).filter(Boolean).sort();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
+  }, [municoesFiltradas]);
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onFechar}>

@@ -66,10 +66,6 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
   limiteCirculo,
   rituaisAprendidosIds = [],
 }) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollTop = 0;
-  }, [listaFiltrada]);
 
   React.useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -118,6 +114,11 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
       return true;
     }).sort((a, b) => sortPorElementoENome(a, b, r => r?.Elemento_Ritual, r => r?.Nome_Ritual));
   }, [rituais, abaElemento, abaCirculo, limiteCirculo, rituaisAprendidosIds, busca]);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
+  }, [listaFiltrada]);
+
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onClose}>

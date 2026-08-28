@@ -12,10 +12,6 @@ interface ModalProtecoesProps {
 }
 
 export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollTop = 0;
-  }, [protecoesFiltradas]);
 
   React.useEffect(() => {
     if (aberto) {
@@ -70,6 +66,11 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
     if (c === 'O') return '0';
     return c;
   }))).filter(Boolean).sort();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
+  }, [protecoesFiltradas]);
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onFechar}>

@@ -10,10 +10,6 @@ interface ModalItensAmaldicoadosProps {
 }
 
 export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoadosProps) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollTop = 0;
-  }, [itensFiltrados]);
 
   const { itensAmaldicoadosHook } = useRPG();
   const { itens, adicionarItem, loading } = itensAmaldicoadosHook;
@@ -79,6 +75,11 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
   };
 
   if (!aberto) return null;
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
+  }, [itensFiltrados]);
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={fechar}>

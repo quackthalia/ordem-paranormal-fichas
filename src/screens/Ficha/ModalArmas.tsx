@@ -20,10 +20,6 @@ interface ModalArmasProps {
 }
 
 export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollTop = 0;
-  }, [armasFiltradas]);
 
   React.useEffect(() => {
     if (aberto) {
@@ -122,6 +118,11 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
 
   const uniqueTipos = Array.from(new Set(armasHook.armas.map(a => a.Tipo_Arma))).filter(Boolean).sort();
   const uniqueEmpunhaduras = Array.from(new Set(armasHook.armas.map(a => a.Empunhadura_Arma))).filter(Boolean).sort();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
+  }, [armasFiltradas]);
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onFechar}>

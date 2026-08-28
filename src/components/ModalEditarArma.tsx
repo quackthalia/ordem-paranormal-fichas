@@ -14,7 +14,7 @@ export function ModalEditarArma({
   onClose,
 }: {
   armaInventario: ArmaInventario;
-  onSave: (novosDados: Partial<Arma>, modificacoes?: number[], maldições?: number[], maldiçõesElementos?: Record<number, string>) => void;
+  onSave: (novosDados: Partial<Arma>, modificacoes?: number[], maldicoes?: number[], maldicoesElementos?: Record<number, string>) => void;
   onClose: () => void;
 }) {
   React.useEffect(() => {
@@ -44,10 +44,10 @@ export function ModalEditarArma({
   const [empunhadura, setEmpunhadura] = useState(arma.Empunhadura_Arma || 'Uma Mão');
   const [tipoDano, setTipoDano] = useState(arma.Tipo_Dano_Arma || 'Corte');
 
-  const { modificacoesHook, maldiçõesHook } = useRPG();
+  const { modificacoesHook, maldicoesHook } = useRPG();
   const [modificacoes, setModificacoes] = useState<number[]>(armaInventario.modificacoes || []);
-  const [maldições, setMaldicoes] = useState<number[]>(armaInventario.maldições || []);
-  const [maldiçõesElementos, setMaldicoesElementos] = useState<Record<number, string>>(armaInventario.maldições_elementos || {});
+  const [maldicoes, setMaldicoes] = useState<number[]>(armaInventario.maldicoes || []);
+  const [maldicoesElementos, setMaldicoesElementos] = useState<Record<number, string>>(armaInventario.maldicoes_elementos || {});
   
 
   const editorDesc = useRef<HTMLDivElement | null>(null);
@@ -105,13 +105,13 @@ export function ModalEditarArma({
 
     // Calcula o custo das maldições
     let custoMaldicoes = 0;
-    if (maldições.length > 0) {
-      custoMaldicoes = 2 + (maldições.length - 1);
+    if (maldicoes.length > 0) {
+      custoMaldicoes = 2 + (maldicoes.length - 1);
     }
 
     const catFinal = catNum + modificador + custoMaldicoes;
     const podeAdicionarMod = catFinal < 4;
-    const custoProximaMaldicao = maldições.length === 0 ? 2 : 1;
+    const custoProximaMaldicao = maldicoes.length === 0 ? 2 : 1;
     const podeAdicionarMald = (catFinal + custoProximaMaldicao) <= 4;
 
   
@@ -139,7 +139,7 @@ export function ModalEditarArma({
     };
 
     const getOpcoesMaldicoes = () => {
-      return maldiçõesHook.maldições.filter(m => m.Categoria_Mald.trim().toLowerCase() === 'armas');
+      return maldicoesHook.maldicoes.filter(m => m.Categoria_Mald.trim().toLowerCase() === 'armas');
     };
 
     const handleAddMod = (id: number) => {
@@ -192,7 +192,7 @@ export function ModalEditarArma({
       Tipo_Arma: tipoArma,
       Empunhadura_Arma: empunhadura,
       Tipo_Dano_Arma: tipoDano,
-    }, modificacoes, maldições, maldiçõesElementos);
+    }, modificacoes, maldicoes, maldicoesElementos);
     onClose();
   };
 
@@ -459,10 +459,10 @@ export function ModalEditarArma({
               onRemoveMod={handleRemoveMod}
               podeAdicionarMod={podeAdicionarMod}
               
-              maldiçõesAplicadas={maldições}
+              maldicoesAplicadas={maldicoes}
               opcoesMaldicoes={getOpcoesMaldicoes()}
-              todasMaldicoes={maldiçõesHook.maldições}
-              maldiçõesElementos={maldiçõesElementos}
+              todasMaldicoes={maldicoesHook.maldicoes}
+              maldicoesElementos={maldicoesElementos}
               onAddMald={handleAddMald}
               onRemoveMald={handleRemoveMald}
               podeAdicionarMald={podeAdicionarMald}

@@ -171,7 +171,7 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
               return (
                 <div 
                   key={item.Codigo_Item} 
-                  className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col  ${isExpanded ? '' : 'h-[190px]'}`}
+                  className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col  min-h-[170px]`}
                 >
                   {/* Cabeçalho do item */}
                   <div 
@@ -195,7 +195,7 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
 
                   <div className="flex-1 cursor-pointer" onClick={() => toggleExpandir(item.Codigo_Item)}>
                     <Collapse isOpen={isExpanded} previewHeight="54px">
-                      <p className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none min-h-[54px]">
+                      <p className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap select-none min-">
                         {formatarTexto(item.Desc_Item)}
                       </p>
                     </Collapse>

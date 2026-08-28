@@ -162,7 +162,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                 return (
                   <div 
                     key={protecao.Codigo_Protecao} 
-                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col  ${isExpanded ? '' : 'h-[220px]'}`}
+                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col  min-h-[190px]`}
                   >
                     {/* Bloco fechado */}
                     <div
@@ -200,7 +200,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                       {protecao.Descricao_Protecao && (
                         <div className="flex flex-col gap-1 mt-1 mb-3">
                           <Collapse isOpen={isExpanded} previewHeight="54px">
-                            <p className="text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none min-h-[54px]">{formatarTexto(protecao.Descricao_Protecao)}</p>
+                            <p className="text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none min-">{formatarTexto(protecao.Descricao_Protecao)}</p>
                           </Collapse>
                         </div>
                       )}
@@ -232,7 +232,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                 return (
                   <div 
                     key={protecao.Codigo_Protecao} 
-                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col  ${isExpanded ? '' : 'h-[220px]'}`}
+                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col  min-h-[190px]`}
                   >
                     {/* Bloco fechado */}
                     <div
@@ -270,7 +270,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                       {protecao.Descricao_Protecao && (
                         <div className="flex flex-col gap-1 mt-1 mb-3">
                           <Collapse isOpen={isExpanded} previewHeight="54px">
-                            <p className="text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none min-h-[54px]">{formatarTexto(protecao.Descricao_Protecao)}</p>
+                            <p className="text-zinc-400 text-[11px] leading-relaxed whitespace-pre-wrap select-none min-">{formatarTexto(protecao.Descricao_Protecao)}</p>
                           </Collapse>
                         </div>
                       )}

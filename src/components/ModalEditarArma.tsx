@@ -76,7 +76,12 @@ export function ModalEditarArma({
   const baseEspacos = getEspacoNumber(espacos);
   const espacosFinais = temDiscreto ? Math.max(0, baseEspacos - 1) : baseEspacos;
 
-  const criticoFinal = temMira ? Math.max(1, Number(critico || 20) - 2) : (critico || 20);
+  const criticoFinal = (() => {
+    let cr = Number(critico || 20);
+    if (temMira) cr -= 2;
+    if (temPredadora) cr -= 1;
+    return Math.max(1, cr);
+  })();
   const danoFinal = temCalibreGrosso ? dano.replace(/(\d+)d(\d+)/i, (match, p1, p2) => `${Number(p1) + 1}d${p2}`) : dano;
   
   const ordAlcance = ['', 'Curto', 'Médio', 'Longo', 'Extremo', 'Ilimitado'];

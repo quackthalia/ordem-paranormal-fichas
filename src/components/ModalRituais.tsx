@@ -230,10 +230,10 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                 const corElemento = obterCorBadge(elementoSendoEscolhido);
 
                 return (
-                  <div key={codigo} onClick={() => setExpandidos(prev => prev.includes(codigo) ? prev.filter(id => id !== codigo) : [...prev, codigo])} className={`bg-zinc-900/40 border border-zinc-800/80 rounded hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col border-l-4  min-h-[200px]  cursor-pointer`} style={{ borderLeftColor: corElemento }}>
+                  <div key={codigo} onClick={() => setExpandidos(prev => prev.includes(codigo) ? prev.filter(id => id !== codigo) : [...prev, codigo])} className={`bg-zinc-900/40 border border-zinc-800/80 rounded hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col border-l-4  min-h-[210px]  cursor-pointer`} style={{ borderLeftColor: corElemento }}>
                     <div
                       
-                      className= cursor-pointer"flex  items-start justify-between gap-3 p-3"
+                      className="flex  items-start justify-between gap-3 p-3"
                     >
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2.5">
@@ -363,10 +363,10 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                 const corElemento = obterCorBadge(elementoSendoEscolhido);
 
                 return (
-                  <div key={codigo} onClick={() => setExpandidos(prev => prev.includes(codigo) ? prev.filter(id => id !== codigo) : [...prev, codigo])} className={`bg-zinc-900/40 border border-zinc-800/80 rounded hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col border-l-4  min-h-[200px]  cursor-pointer`} style={{ borderLeftColor: corElemento }}>
+                  <div key={codigo} onClick={() => setExpandidos(prev => prev.includes(codigo) ? prev.filter(id => id !== codigo) : [...prev, codigo])} className={`bg-zinc-900/40 border border-zinc-800/80 rounded hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col border-l-4  min-h-[210px]  cursor-pointer`} style={{ borderLeftColor: corElemento }}>
                     <div
                       
-                      className= cursor-pointer"flex  items-start justify-between gap-3 p-3"
+                      className="flex  items-start justify-between gap-3 p-3"
                     >
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2.5">

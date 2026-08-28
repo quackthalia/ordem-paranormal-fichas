@@ -160,11 +160,11 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                 const isExpanded = expandidos.includes(protecao.Codigo_Protecao);
                 const hasProficiencia = proficienciasTotais.includes(protecao.Proficiencia);
                 return (
-                  <div key={protecao.Codigo_Protecao} onClick={() => toggleExpandir(protecao.Codigo_Protecao)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  min-h-[170px]  cursor-pointer`}
+                  <div key={protecao.Codigo_Protecao} onClick={() => toggleExpandir(protecao.Codigo_Protecao)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  min-h-[190px]  cursor-pointer`}
                   >
                     {/* Bloco fechado */}
                     <div
-                      className= cursor-pointer"flex items-start justify-between gap-2 mb-2  "
+                      className="flex items-start justify-between gap-2 mb-2  "
                       
                     >
                       <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 truncate">
@@ -228,11 +228,11 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                 const isExpanded = expandidos.includes(protecao.Codigo_Protecao);
                 const hasProficiencia = proficienciasTotais.includes(protecao.Proficiencia);
                 return (
-                  <div key={protecao.Codigo_Protecao} onClick={() => toggleExpandir(protecao.Codigo_Protecao)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  min-h-[170px]  cursor-pointer`}
+                  <div key={protecao.Codigo_Protecao} onClick={() => toggleExpandir(protecao.Codigo_Protecao)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  min-h-[190px]  cursor-pointer`}
                   >
                     {/* Bloco fechado */}
                     <div
-                      className= cursor-pointer"flex items-start justify-between gap-2 mb-2  "
+                      className="flex items-start justify-between gap-2 mb-2  "
                       
                     >
                       <h3 className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none flex-1 mt-0.5 truncate">

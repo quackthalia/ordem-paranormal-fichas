@@ -253,7 +253,7 @@ export function AprimoramentosSelector({
                               onAddMod(opcao.Codigo_Modif);
                               setModalAberto(false);
                             }}
-                            className="flex flex-col p-3 rounded-md border border-zinc-800/80 bg-zinc-950/80 hover:border-green-800 hover:bg-zinc-900 cursor-pointer transition-all shadow-sm group"
+                            className="flex flex-col p-3 rounded bg-zinc-900/40 border border-zinc-800/80 hover:border-green-500/50 hover:bg-zinc-900/80 cursor-pointer transition group"
                           >
                             <span className="font-bold text-zinc-200 text-sm group-hover:text-white transition-colors">{opcao.Nome_Modif}</span>
                             <span className="text-[12px] text-zinc-500 mt-1 leading-relaxed">{opcao.Descricao_Modif}</span>
@@ -285,7 +285,7 @@ export function AprimoramentosSelector({
                                 onAddMald(opcao.Codigo_Mald, isVaria ? (elementosVaria[opcao.Codigo_Mald] || 'Sangue') : undefined);
                                 setModalAberto(false);
                               }}
-                              className="flex flex-col p-3 rounded-md border border-zinc-800/80 bg-zinc-950/80 hover:border-green-800 hover:bg-zinc-900 cursor-pointer transition-all shadow-sm group"
+                              className="flex flex-col p-3 rounded bg-zinc-900/40 border border-zinc-800/80 hover:border-green-500/50 hover:bg-zinc-900/80 cursor-pointer transition group"
                             >
                               <div className="flex justify-between items-center gap-2">
                                 <span className="font-bold text-zinc-200 text-sm group-hover:text-white transition-colors">{opcao.Nome_Mald}</span>

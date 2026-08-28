@@ -162,7 +162,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                 return (
                   <div 
                     key={protecao.Codigo_Protecao} 
-                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col`}
+                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col  ${isExpanded ? '' : 'h-[220px]'}`}
                   >
                     {/* Bloco fechado */}
                     <div
@@ -232,7 +232,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                 return (
                   <div 
                     key={protecao.Codigo_Protecao} 
-                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col`}
+                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col  ${isExpanded ? '' : 'h-[220px]'}`}
                   >
                     {/* Bloco fechado */}
                     <div

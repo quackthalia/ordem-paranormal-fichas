@@ -32,7 +32,7 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
   const { modificacoesHook, maldicoesHook } = useRPG();
   const [modificacoes, setModificacoes] = useState<number[]>(protecao?.modificacoes || []);
   const [maldicoes, setMaldicoes] = useState<number[]>(protecao?.maldicoes || []);
-  const [maldicoesElementos, setMaldicoesElementos] = useState<Record<number, string>>(protecao?.maldicoesElementos || {});
+  const [maldicoesElementos, setMaldicoesElementos] = useState<Record<number, string>>((protecao as any)?.maldicoes_elementos || {});
 
   const catNum = categoriaRomanParaNum(categoria);
   const catFinal = catNum + modificacoes.length;

@@ -300,6 +300,8 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
               </div>
             )}
 
+            
+
           </div>
           <div className="flex flex-col gap-1 mt-3 pt-3 border-t border-zinc-800/50">
             <p className="text-zinc-400 text-xs leading-relaxed whitespace-pre-wrap">{formatarTexto(item.item.Desc_Item)}</p>

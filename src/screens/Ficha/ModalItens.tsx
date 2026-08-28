@@ -189,7 +189,7 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
                 </Collapse>
 
                   <div className="flex-1">
-                    <Collapse isOpen={isExpanded} previewHeight="54px">
+                    <Collapse isOpen={isExpanded} previewHeight="36px">
                       <p className="text-xs text-zinc-400 mb-2 leading-relaxed whitespace-pre-wrap select-none ">
                         {formatarTexto(item.Desc_Item)}
                       </p>

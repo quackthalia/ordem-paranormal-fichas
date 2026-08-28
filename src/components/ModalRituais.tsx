@@ -310,7 +310,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                           {ritual.Resistencia_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Resistência: </span><span className="text-zinc-300">{ritual.Resistencia_Ritual?.split('/')[0].trim()}</span></div>}
                         </div>
                       </Collapse>
-                      <Collapse isOpen={expandido} previewHeight="90px">
+                      <Collapse isOpen={expandido} previewHeight="60px">
                         <div className="text-xs leading-relaxed text-zinc-400 ">
                           {ritual.Descricao_Ritual.split('\n').map((linha, idx) => (
                             <span key={idx} className="block mb-1" dangerouslySetInnerHTML={{ __html: formatarDescricao(linha) }} />
@@ -443,7 +443,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                           {ritual.Resistencia_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Resistência: </span><span className="text-zinc-300">{ritual.Resistencia_Ritual?.split('/')[0].trim()}</span></div>}
                         </div>
                       </Collapse>
-                      <Collapse isOpen={expandido} previewHeight="90px">
+                      <Collapse isOpen={expandido} previewHeight="60px">
                         <div className="text-xs leading-relaxed text-zinc-400 ">
                           {ritual.Descricao_Ritual.split('\n').map((linha, idx) => (
                             <span key={idx} className="block mb-1" dangerouslySetInnerHTML={{ __html: formatarDescricao(linha) }} />

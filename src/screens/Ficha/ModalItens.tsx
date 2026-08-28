@@ -169,7 +169,7 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
               const isExpanded = expandidos.includes(item.Codigo_Item);
               
               return (
-                <div key={item.Codigo_Item} onClick={() => toggleExpandir(item.Codigo_Item)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  min-h-[160px]  cursor-pointer`}
+                <div key={item.Codigo_Item} onClick={() => toggleExpandir(item.Codigo_Item)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[160px] max-h-[3000px]' : 'min-h-[160px] max-h-[160px]'} cursor-pointer`}
                 >
                   {/* Cabeçalho do item */}
                   <div className="flex items-start justify-between gap-2 mb-2">

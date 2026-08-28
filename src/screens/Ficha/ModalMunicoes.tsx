@@ -144,7 +144,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
             <div className="flex flex-col md:flex-row gap-3 items-start">
               <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
                 {municoesFiltradas.filter((_, i) => i % 2 === 0).map((municao) => (
-                  <div key={municao.Codigo_Municao} onClick={() => toggleExpandir(String(municao.Codigo_Municao))} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  min-h-[160px]  cursor-pointer`}
+                  <div key={municao.Codigo_Municao} onClick={() => toggleExpandir(String(municao.Codigo_Municao))} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[160px] max-h-[3000px]' : 'min-h-[160px] max-h-[160px]'} cursor-pointer`}
                     
                   >
                     <div className="flex items-start justify-between gap-2 mb-2">
@@ -193,7 +193,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
               </div>
               <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
                 {municoesFiltradas.filter((_, i) => i % 2 !== 0).map((municao) => (
-                  <div key={municao.Codigo_Municao} onClick={() => toggleExpandir(String(municao.Codigo_Municao))} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  min-h-[160px]  cursor-pointer`}
+                  <div key={municao.Codigo_Municao} onClick={() => toggleExpandir(String(municao.Codigo_Municao))} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[160px] max-h-[3000px]' : 'min-h-[160px] max-h-[160px]'} cursor-pointer`}
                     
                   >
                     <div className="flex items-start justify-between gap-2 mb-2">

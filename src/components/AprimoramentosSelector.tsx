@@ -178,7 +178,7 @@ export function AprimoramentosSelector({
       {modalAberto && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85 p-5" onClick={() => setModalAberto(false)}>
           <div 
-            className="flex max-h-[85vh] w-full max-w-xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50" 
+            className="flex h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50" 
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
@@ -236,7 +236,7 @@ export function AprimoramentosSelector({
             )}
 
             {/* Lista de Opções */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-4 bg-zinc-900/50">
               {abaModal === 'modificacoes' && (
                 <>
                   {!podeAdicionarMod && (
@@ -245,19 +245,38 @@ export function AprimoramentosSelector({
                   {podeAdicionarMod && modsDisponiveis.length === 0 ? (
                     <p className="text-sm text-zinc-500 italic p-6 text-center">Nenhuma modificação disponível.</p>
                   ) : podeAdicionarMod && (
-                    modsDisponiveis.map(opcao => (
-                      <div 
-                        key={opcao.Codigo_Modif}
-                        onClick={() => {
-                          onAddMod(opcao.Codigo_Modif);
-                          setModalAberto(false);
-                        }}
-                        className="flex flex-col p-4 rounded hover:bg-zinc-800/80 cursor-pointer transition-colors group border-b border-zinc-800/50 last:border-0"
-                      >
-                        <span className="font-bold text-zinc-200 text-sm group-hover:text-white transition-colors">{opcao.Nome_Modif}</span>
-                        <span className="text-[12px] text-zinc-500 mt-1 leading-relaxed">{opcao.Descricao_Modif}</span>
+                    <div className="flex flex-col md:flex-row gap-3 items-start">
+                      <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+                        {modsDisponiveis.filter((_, i) => i % 2 === 0).map(opcao => (
+                          <div 
+                            key={"mod-" + opcao.Codigo_Modif}
+                            onClick={() => {
+                              onAddMod(opcao.Codigo_Modif);
+                              setModalAberto(false);
+                            }}
+                            className="flex flex-col p-4 rounded-lg border border-zinc-800 bg-zinc-950 hover:border-green-800 hover:bg-zinc-900 cursor-pointer transition-all shadow-sm group"
+                          >
+                            <span className="font-bold text-zinc-200 text-sm group-hover:text-white transition-colors">{opcao.Nome_Modif}</span>
+                            <span className="text-[12px] text-zinc-500 mt-1.5 leading-relaxed">{opcao.Descricao_Modif}</span>
+                          </div>
+                        ))}
                       </div>
-                    ))
+                      <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+                        {modsDisponiveis.filter((_, i) => i % 2 !== 0).map(opcao => (
+                          <div 
+                            key={"mod-" + opcao.Codigo_Modif}
+                            onClick={() => {
+                              onAddMod(opcao.Codigo_Modif);
+                              setModalAberto(false);
+                            }}
+                            className="flex flex-col p-4 rounded-lg border border-zinc-800 bg-zinc-950 hover:border-green-800 hover:bg-zinc-900 cursor-pointer transition-all shadow-sm group"
+                          >
+                            <span className="font-bold text-zinc-200 text-sm group-hover:text-white transition-colors">{opcao.Nome_Modif}</span>
+                            <span className="text-[12px] text-zinc-500 mt-1.5 leading-relaxed">{opcao.Descricao_Modif}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   )}
                 </>
               )}
@@ -270,51 +289,102 @@ export function AprimoramentosSelector({
                   {podeAdicionarMald && maldsDisponiveis.length === 0 ? (
                     <p className="text-sm text-zinc-500 italic p-6 text-center">Nenhuma maldição disponível para este filtro.</p>
                   ) : podeAdicionarMald && (
-                    maldsDisponiveis.map(opcao => {
-                      const isVaria = opcao.Elemento_Mald?.toLowerCase() === 'varia' || opcao.Elemento_Mald?.toLowerCase() === 'lista';
-                      const cores = getCorElemento(opcao.Elemento_Mald);
-                      
-                      return (
-                        <div 
-                          key={opcao.Codigo_Mald}
-                          onClick={() => {
-                            onAddMald(opcao.Codigo_Mald, isVaria ? (elementosVaria[opcao.Codigo_Mald] || 'Sangue') : undefined);
-                            setModalAberto(false);
-                          }}
-                          className="flex flex-col p-4 rounded hover:bg-zinc-800/80 cursor-pointer transition-colors group border-b border-zinc-800/50 last:border-0"
-                        >
-                          <div className="flex justify-between items-center gap-2">
-                            <span className="font-bold text-zinc-200 text-sm group-hover:text-white transition-colors">{opcao.Nome_Mald}</span>
-                            
-                            {isVaria ? (
-                              <div className="flex gap-2 min-w-0" onClick={e => e.stopPropagation()}>
-                                <CustomSelect 
-                                  value={elementosVaria[opcao.Codigo_Mald] || 'Sangue'}
-                                  onChange={val => setElementosVaria(prev => ({ ...prev, [opcao.Codigo_Mald]: val }))}
-                                  options={[
-                                    { value: 'Sangue', label: 'Sangue' },
-                                    { value: 'Morte', label: 'Morte' },
-                                    { value: 'Conhecimento', label: 'Conhecimento' },
-                                    { value: 'Energia', label: 'Energia' }
-                                  ]}
-                                  className="w-28 py-0.5 !text-[10px] !bg-zinc-950 uppercase font-bold tracking-wider"
-                                />
+                    <div className="flex flex-col md:flex-row gap-3 items-start">
+                      <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+                        {maldsDisponiveis.filter((_, i) => i % 2 === 0).map(opcao => {
+                          const isVaria = opcao.Elemento_Mald?.toLowerCase() === 'varia' || opcao.Elemento_Mald?.toLowerCase() === 'lista';
+                          const cores = getCorElemento(opcao.Elemento_Mald);
+                          
+                          return (
+                            <div 
+                              key={"mald-" + opcao.Codigo_Mald}
+                              onClick={() => {
+                                onAddMald(opcao.Codigo_Mald, isVaria ? (elementosVaria[opcao.Codigo_Mald] || 'Sangue') : undefined);
+                                setModalAberto(false);
+                              }}
+                              className="flex flex-col p-4 rounded-lg border border-zinc-800 bg-zinc-950 hover:border-green-800 hover:bg-zinc-900 cursor-pointer transition-all shadow-sm group"
+                            >
+                              <div className="flex justify-between items-center gap-2">
+                                <span className="font-bold text-zinc-200 text-sm group-hover:text-white transition-colors">{opcao.Nome_Mald}</span>
+                                
+                                {isVaria ? (
+                                  <div className="flex gap-2 min-w-0" onClick={e => e.stopPropagation()}>
+                                    <CustomSelect 
+                                      value={elementosVaria[opcao.Codigo_Mald] || 'Sangue'}
+                                      onChange={val => setElementosVaria(prev => ({ ...prev, [opcao.Codigo_Mald]: val }))}
+                                      options={[
+                                        { value: 'Sangue', label: 'Sangue' },
+                                        { value: 'Morte', label: 'Morte' },
+                                        { value: 'Conhecimento', label: 'Conhecimento' },
+                                        { value: 'Energia', label: 'Energia' }
+                                      ]}
+                                      className="w-28 py-0.5 !text-[10px] !bg-zinc-950 uppercase font-bold tracking-wider"
+                                    />
+                                  </div>
+                                ) : (
+                                  <span className={`inline-block border rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight flex-shrink-0 ${cores}`}>
+                                    {opcao.Elemento_Mald}
+                                  </span>
+                                )}
                               </div>
-                            ) : (
-                              <span className={`inline-block border rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight flex-shrink-0 ${cores}`}>
-                                {opcao.Elemento_Mald}
-                              </span>
-                            )}
-                          </div>
-                          <span className="text-[12px] text-zinc-500 mt-1 leading-relaxed">{opcao.Descricao_Mald}</span>
-                          {opcao.Efeito && (
-                            <span className="text-[11px] text-green-500 mt-1.5 italic">
-                              {opcao.Efeito}
-                            </span>
-                          )}
-                        </div>
-                      );
-                    })
+                              <span className="text-[12px] text-zinc-500 mt-2 leading-relaxed">{opcao.Descricao_Mald}</span>
+                              {opcao.Efeito && (
+                                <span className="text-[11px] text-green-500 mt-2 italic">
+                                  {opcao.Efeito}
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+                        {maldsDisponiveis.filter((_, i) => i % 2 !== 0).map(opcao => {
+                          const isVaria = opcao.Elemento_Mald?.toLowerCase() === 'varia' || opcao.Elemento_Mald?.toLowerCase() === 'lista';
+                          const cores = getCorElemento(opcao.Elemento_Mald);
+                          
+                          return (
+                            <div 
+                              key={"mald-" + opcao.Codigo_Mald}
+                              onClick={() => {
+                                onAddMald(opcao.Codigo_Mald, isVaria ? (elementosVaria[opcao.Codigo_Mald] || 'Sangue') : undefined);
+                                setModalAberto(false);
+                              }}
+                              className="flex flex-col p-4 rounded-lg border border-zinc-800 bg-zinc-950 hover:border-green-800 hover:bg-zinc-900 cursor-pointer transition-all shadow-sm group"
+                            >
+                              <div className="flex justify-between items-center gap-2">
+                                <span className="font-bold text-zinc-200 text-sm group-hover:text-white transition-colors">{opcao.Nome_Mald}</span>
+                                
+                                {isVaria ? (
+                                  <div className="flex gap-2 min-w-0" onClick={e => e.stopPropagation()}>
+                                    <CustomSelect 
+                                      value={elementosVaria[opcao.Codigo_Mald] || 'Sangue'}
+                                      onChange={val => setElementosVaria(prev => ({ ...prev, [opcao.Codigo_Mald]: val }))}
+                                      options={[
+                                        { value: 'Sangue', label: 'Sangue' },
+                                        { value: 'Morte', label: 'Morte' },
+                                        { value: 'Conhecimento', label: 'Conhecimento' },
+                                        { value: 'Energia', label: 'Energia' }
+                                      ]}
+                                      className="w-28 py-0.5 !text-[10px] !bg-zinc-950 uppercase font-bold tracking-wider"
+                                    />
+                                  </div>
+                                ) : (
+                                  <span className={`inline-block border rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight flex-shrink-0 ${cores}`}>
+                                    {opcao.Elemento_Mald}
+                                  </span>
+                                )}
+                              </div>
+                              <span className="text-[12px] text-zinc-500 mt-2 leading-relaxed">{opcao.Descricao_Mald}</span>
+                              {opcao.Efeito && (
+                                <span className="text-[11px] text-green-500 mt-2 italic">
+                                  {opcao.Efeito}
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
                   )}
                 </>
               )}

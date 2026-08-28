@@ -58,9 +58,9 @@ export function ModificacoesSelector({
 
       {/* Painel de Seleção */}
       <Collapse isOpen={selecionando}>
-        <div ref={dropdownRef} className="flex flex-col border border-zinc-700/60 bg-zinc-900/80 rounded-lg overflow-hidden shadow-xl mb-1">
-          <div className="flex items-center justify-between px-3 py-2 border-b border-zinc-800 bg-zinc-950/50">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Selecionar Modificação</span>
+        <div ref={dropdownRef} className="flex flex-col border border-zinc-800 bg-zinc-950 rounded mb-1">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800 bg-zinc-900/30">
+            <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">Selecionar Modificação</span>
             <button 
               type="button" 
               onClick={() => setSelecionando(false)}
@@ -72,7 +72,7 @@ export function ModificacoesSelector({
             </button>
           </div>
           
-          <div className="flex flex-col max-h-[220px] overflow-y-auto custom-scrollbar p-1">
+          <div className="flex flex-col max-h-[220px] overflow-y-auto custom-scrollbar">
             {opcoesDisponiveis.length === 0 ? (
               <p className="text-xs text-zinc-500 italic p-3 text-center">Nenhuma modificação disponível.</p>
             ) : (
@@ -83,7 +83,7 @@ export function ModificacoesSelector({
                     onAdd(opcao.Codigo_Modif);
                     setSelecionando(false);
                   }}
-                  className="flex flex-col px-3 py-2.5 rounded-md hover:bg-zinc-800/80 cursor-pointer transition-colors group"
+                  className="flex flex-col px-4 py-3 border-b border-zinc-800/50 hover:bg-zinc-900 cursor-pointer transition-colors group last:border-0"
                 >
                   <span className="font-bold text-zinc-200 text-sm group-hover:text-white transition-colors">{opcao.Nome_Modif}</span>
                   <span className="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">{opcao.Descricao_Modif}</span>

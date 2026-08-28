@@ -80,10 +80,10 @@ export function MaldicoesSelector({
 
       {/* Painel de Seleção */}
       <Collapse isOpen={selecionando}>
-        <div ref={dropdownRef} className="flex flex-col border border-indigo-900/40 bg-zinc-900/80 rounded-lg overflow-hidden shadow-xl mb-1">
-          <div className="flex flex-col border-b border-zinc-800 bg-zinc-950/50">
-            <div className="flex items-center justify-between px-3 py-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Selecionar Maldição</span>
+        <div ref={dropdownRef} className="flex flex-col border border-zinc-800 bg-zinc-950 rounded mb-1">
+          <div className="flex flex-col border-b border-zinc-800 bg-zinc-900/30">
+            <div className="flex items-center justify-between px-4 py-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">Selecionar Maldição</span>
               <button 
                 type="button" 
                 onClick={() => setSelecionando(false)}
@@ -95,7 +95,7 @@ export function MaldicoesSelector({
               </button>
             </div>
             {/* Filtros de Elemento */}
-            <div className="flex flex-wrap items-center gap-1.5 px-3 pb-2">
+            <div className="flex flex-wrap items-center gap-1.5 px-4 pb-3">
               {['Todos', 'Sangue', 'Morte', 'Conhecimento', 'Energia'].map(elem => {
                 const ativo = subAbaElemento === elem;
                 return (
@@ -115,7 +115,7 @@ export function MaldicoesSelector({
             </div>
           </div>
           
-          <div className="flex flex-col max-h-[220px] overflow-y-auto custom-scrollbar p-1">
+          <div className="flex flex-col max-h-[220px] overflow-y-auto custom-scrollbar">
             {opcoesDisponiveis.length === 0 ? (
               <p className="text-xs text-zinc-500 italic p-3 text-center">Nenhuma maldição disponível.</p>
             ) : (
@@ -130,7 +130,7 @@ export function MaldicoesSelector({
                       onAdd(opcao.Codigo_Mald, isVaria ? (elementosVaria[opcao.Codigo_Mald] || 'Sangue') : undefined);
                       setSelecionando(false);
                     }}
-                    className="flex flex-col px-3 py-2.5 rounded-md hover:bg-zinc-800/80 cursor-pointer transition-colors group"
+                    className="flex flex-col px-4 py-3 border-b border-zinc-800/50 hover:bg-zinc-900 cursor-pointer transition-colors group last:border-0"
                   >
                     <div className="flex justify-between items-center gap-2">
                       <span className="font-bold text-zinc-200 text-sm group-hover:text-white transition-colors">{opcao.Nome_Mald}</span>

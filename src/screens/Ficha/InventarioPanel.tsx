@@ -1317,7 +1317,7 @@ function SortableArmaItem({
           danoSecundario = danoSecundario ? `${danoSecundario} + 1d8` : '+1d8';
         }
         if (nomeM === 'lancinante') {
-          dano = `*${dano}`;
+          danoSecundario = danoSecundario ? `${danoSecundario} + 1d8*` : '+1d8*';
         }
         if (nomeM === 'predadora') {
           critico -= 1;

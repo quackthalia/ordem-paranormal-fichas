@@ -272,9 +272,47 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
                 </Collapse>
               </div>
             )}
-              
 
-              
+            {((item.maldicoes || []).length > 0) && (
+              <div className="mt-2 border border-zinc-800 rounded bg-zinc-900/50 overflow-hidden">
+                <div 
+                  className="px-2 py-1.5 bg-zinc-800/40 flex justify-between items-center cursor-pointer hover:bg-zinc-800/60 transition"
+                  onClick={(e) => { e.stopPropagation(); setExpandirMalds(!expandirMalds); }}
+                >
+                  <div className="flex flex-wrap gap-1 items-center">
+                    <span className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mr-1">Maldições</span>
+                    {!expandirMalds && (item.maldicoes || []).map((id: number) => {
+                      const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
+                      if (!m) return null;
+                      const corTexto = getCorElementoTexto ? getCorElementoTexto(m.Elemento_Mald) : 'text-zinc-400';
+                      return <span key={m.Codigo_Mald} className={`px-1.5 py-0.5 rounded border border-zinc-700/50 text-[10px] font-bold truncate max-w-[120px] ${corTexto}`}>{m.Nome_Mald}</span>;
+                    })}
+                  </div>
+                  <span className="text-zinc-500 text-[10px] ml-2 flex-shrink-0">{expandirMalds ? '▼ Ocultar' : '▶ Expandir'}</span>
+                </div>
+                <Collapse isOpen={expandirMalds}>
+                  <div className="p-2 flex flex-col gap-2 max-h-[200px] overflow-y-auto overflow-x-hidden custom-scrollbar">
+                    {(item.maldicoes || []).map((id: number) => {
+                      const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
+                      if (!m) return null;
+                      const corTexto = getCorElementoTexto ? getCorElementoTexto(m.Elemento_Mald) : 'text-zinc-400';
+                      return (
+                        <div key={m.Codigo_Mald} className="flex flex-col gap-0.5 pb-2 border-b border-zinc-800/50 last:border-0 last:pb-0">
+                          <div className="flex gap-1 items-center">
+                            <span className={`text-xs font-bold ${corTexto}`}>{m.Nome_Mald}</span>
+                            <span className={`text-[9px] px-1 py-0 rounded border border-zinc-700 uppercase tracking-widest ${corTexto}`}>{m.Elemento_Mald}</span>
+                          </div>
+                          {m.Descricao_Mald && (
+                            <p className="text-[11px] text-zinc-400 leading-relaxed whitespace-pre-wrap">{formatarTexto(m.Descricao_Mald)}</p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </Collapse>
+              </div>
+            )}
+
           </div>
           <div className="flex flex-col gap-1 mt-1">
             <p className="text-zinc-400 text-xs leading-relaxed whitespace-pre-wrap">{formatarTexto(item.item.Desc_Item)}</p>
@@ -1450,7 +1488,7 @@ function SortableArmaItem({
                   </div>
                   <span className="text-zinc-500 text-[10px] ml-2 flex-shrink-0">{expandirMods ? '▲ Ocultar' : '▼ Expandir'}</span>
                 </div>
-                {expandirMods && (
+                <Collapse isOpen={expandirMods}>
                   <div className="p-2 flex flex-col gap-2 max-h-[200px] overflow-y-auto overflow-x-hidden custom-scrollbar">
                     {modsAtuais.map(m => (
                       <div key={m.Codigo_Modif} className="flex flex-col gap-0.5 pb-2 border-b border-zinc-800/50 last:border-0 last:pb-0">
@@ -1459,10 +1497,50 @@ function SortableArmaItem({
                       </div>
                     ))}
                   </div>
-                )}
-              
+                </Collapse>
               </div>
             )}
+
+            {((item.maldicoes || []).length > 0) && (
+              <div className="mt-2 border border-zinc-800 rounded bg-zinc-900/50 overflow-hidden">
+                <div 
+                  className="px-2 py-1.5 bg-zinc-800/40 flex justify-between items-center cursor-pointer hover:bg-zinc-800/60 transition"
+                  onClick={(e) => { e.stopPropagation(); setExpandirMalds(!expandirMalds); }}
+                >
+                  <div className="flex flex-wrap gap-1 items-center">
+                    <span className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mr-1">Maldições</span>
+                    {!expandirMalds && (item.maldicoes || []).map((id: number) => {
+                      const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
+                      if (!m) return null;
+                      const corTexto = getCorElementoTexto ? getCorElementoTexto(m.Elemento_Mald) : 'text-zinc-400';
+                      return <span key={m.Codigo_Mald} className={`px-1.5 py-0.5 rounded border border-zinc-700/50 text-[10px] font-bold truncate max-w-[120px] ${corTexto}`}>{m.Nome_Mald}</span>;
+                    })}
+                  </div>
+                  <span className="text-zinc-500 text-[10px] ml-2 flex-shrink-0">{expandirMalds ? '▼ Ocultar' : '▶ Expandir'}</span>
+                </div>
+                <Collapse isOpen={expandirMalds}>
+                  <div className="p-2 flex flex-col gap-2 max-h-[200px] overflow-y-auto overflow-x-hidden custom-scrollbar">
+                    {(item.maldicoes || []).map((id: number) => {
+                      const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
+                      if (!m) return null;
+                      const corTexto = getCorElementoTexto ? getCorElementoTexto(m.Elemento_Mald) : 'text-zinc-400';
+                      return (
+                        <div key={m.Codigo_Mald} className="flex flex-col gap-0.5 pb-2 border-b border-zinc-800/50 last:border-0 last:pb-0">
+                          <div className="flex gap-1 items-center">
+                            <span className={`text-xs font-bold ${corTexto}`}>{m.Nome_Mald}</span>
+                            <span className={`text-[9px] px-1 py-0 rounded border border-zinc-700 uppercase tracking-widest ${corTexto}`}>{m.Elemento_Mald}</span>
+                          </div>
+                          {m.Descricao_Mald && (
+                            <p className="text-[11px] text-zinc-400 leading-relaxed whitespace-pre-wrap">{formatarTexto(m.Descricao_Mald)}</p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </Collapse>
+              </div>
+            )}
+
           </div>
           
           <div className="flex flex-col gap-1 mt-1">
@@ -1634,7 +1712,7 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
                   </div>
                   <span className="text-zinc-500 text-[10px] ml-2 flex-shrink-0">{expandirMods ? '▼ Ocultar' : '▶ Expandir'}</span>
                 </div>
-                {expandirMalds && (
+                <Collapse isOpen={expandirMalds}>
                   <div className="p-2 flex flex-col gap-2 max-h-[200px] overflow-y-auto overflow-x-hidden custom-scrollbar">
                     {(item.maldicoes || []).map((id: number) => {
                       const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
@@ -1653,7 +1731,7 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
                       );
                     })}
                   </div>
-                )}
+                </Collapse>
               </div>
             )}
           </div>
@@ -1686,7 +1764,7 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
                   </div>
                   <span className="text-zinc-500 text-[10px] ml-2 flex-shrink-0">{expandirMods ? '▲ Ocultar' : '▼ Expandir'}</span>
                 </div>
-                {expandirMods && (
+                <Collapse isOpen={expandirMods}>
                   <div className="p-2 flex flex-col gap-2 max-h-[200px] overflow-y-auto overflow-x-hidden custom-scrollbar">
                     {modsAtuais.map(m => (
                       <div key={m.Codigo_Modif} className="flex flex-col gap-0.5 pb-2 border-b border-zinc-800/50 last:border-0 last:pb-0">
@@ -1695,7 +1773,7 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
                       </div>
                     ))}
                   </div>
-                )}
+                </Collapse>
               
               </div>
             )}
@@ -1843,7 +1921,7 @@ function SortableProtecaoItem({
                   </div>
                   <span className="text-zinc-500 text-[10px] ml-2 flex-shrink-0">{expandirMods ? '▼ Ocultar' : '▶ Expandir'}</span>
                 </div>
-                {expandirMalds && (
+                <Collapse isOpen={expandirMalds}>
                   <div className="p-2 flex flex-col gap-2 max-h-[200px] overflow-y-auto overflow-x-hidden custom-scrollbar">
                     {(item.maldicoes || []).map((id: number) => {
                       const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
@@ -1862,7 +1940,7 @@ function SortableProtecaoItem({
                       );
                     })}
                   </div>
-                )}
+                </Collapse>
               </div>
             )}
           </div>
@@ -1922,7 +2000,7 @@ function SortableProtecaoItem({
                   </div>
                   <span className="text-zinc-500 text-[10px] ml-2 flex-shrink-0">{expandirMods ? '▲ Ocultar' : '▼ Expandir'}</span>
                 </div>
-                {expandirMods && (
+                <Collapse isOpen={expandirMods}>
                   <div className="p-2 flex flex-col gap-2 max-h-[200px] overflow-y-auto overflow-x-hidden custom-scrollbar">
                     {modsAtuais.map(m => (
                       <div key={m.Codigo_Modif} className="flex flex-col gap-0.5 pb-2 border-b border-zinc-800/50 last:border-0 last:pb-0">
@@ -1931,7 +2009,7 @@ function SortableProtecaoItem({
                       </div>
                     ))}
                   </div>
-                )}
+                </Collapse>
               
               </div>
             )}

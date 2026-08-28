@@ -245,25 +245,19 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
               </>
             )}
             {modsAtuais.length > 0 && (
-              <div className="mt-2 border border-zinc-800 rounded bg-zinc-900/50 overflow-hidden">
+              <div className="mt-3">
                 <div 
-                  className="px-2 py-1.5 bg-zinc-800/40 flex justify-between items-center cursor-pointer hover:bg-zinc-800/60 transition"
+                  className="flex items-center gap-2 cursor-pointer group"
                   onClick={(e) => { e.stopPropagation(); setExpandirMods(!expandirMods); }}
                 >
-                  <div className="flex flex-wrap gap-1 items-center">
-                    <span className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mr-1">Modificações</span>
-                    {!expandirMods && modsAtuais.map(m => (
-                      <span key={m.Codigo_Modif} className="px-1.5 py-0.5 rounded bg-zinc-800/60 border border-zinc-700/50 text-[10px] font-bold text-zinc-300 truncate max-w-[120px]">
-                        {m.Nome_Modif}
-                      </span>
-                    ))}
-                  </div>
-                  <span className="text-zinc-500 text-[10px] ml-2 flex-shrink-0">{expandirMods ? '▲ Ocultar' : '▼ Expandir'}</span>
+                  <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider group-hover:text-zinc-300 transition-colors">Modificações</span>
+                  <div className="h-px bg-zinc-800 flex-1 group-hover:bg-zinc-700 transition-colors"></div>
+                  <svg className={`w-3 h-3 text-zinc-500 group-hover:text-zinc-300 transition-transform duration-200 ${expandirMods ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
                 </div>
                 <Collapse isOpen={expandirMods}>
-                  <div className="p-2 flex flex-col gap-2 max-h-[200px] overflow-y-auto overflow-x-hidden custom-scrollbar">
+                  <div className="flex flex-col gap-2 pt-2 pb-1">
                     {modsAtuais.map(m => (
-                      <div key={m.Codigo_Modif} className="flex flex-col gap-0.5 pb-2 border-b border-zinc-800/50 last:border-0 last:pb-0">
+                      <div key={m.Codigo_Modif} className="flex flex-col gap-0.5">
                         <span className="text-xs font-bold text-zinc-200">{m.Nome_Modif}</span>
                         <p className="text-[11px] text-zinc-400 leading-relaxed whitespace-pre-wrap">{formatarTexto(m.Descricao_Modif || '')}</p>
                       </div>
@@ -274,30 +268,23 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
             )}
 
             {((item.maldicoes || []).length > 0) && (
-              <div className="mt-2 border border-zinc-800 rounded bg-zinc-900/50 overflow-hidden">
+              <div className="mt-3">
                 <div 
-                  className="px-2 py-1.5 bg-zinc-800/40 flex justify-between items-center cursor-pointer hover:bg-zinc-800/60 transition"
+                  className="flex items-center gap-2 cursor-pointer group"
                   onClick={(e) => { e.stopPropagation(); setExpandirMalds(!expandirMalds); }}
                 >
-                  <div className="flex flex-wrap gap-1 items-center">
-                    <span className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mr-1">Maldições</span>
-                    {!expandirMalds && (item.maldicoes || []).map((id: number) => {
-                      const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
-                      if (!m) return null;
-                      const corTexto = getCorElementoTexto ? getCorElementoTexto(m.Elemento_Mald) : 'text-zinc-400';
-                      return <span key={m.Codigo_Mald} className={`px-1.5 py-0.5 rounded border border-zinc-700/50 text-[10px] font-bold truncate max-w-[120px] ${corTexto}`}>{m.Nome_Mald}</span>;
-                    })}
-                  </div>
-                  <span className="text-zinc-500 text-[10px] ml-2 flex-shrink-0">{expandirMalds ? '▼ Ocultar' : '▶ Expandir'}</span>
+                  <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider group-hover:text-zinc-300 transition-colors">Maldições</span>
+                  <div className="h-px bg-zinc-800 flex-1 group-hover:bg-zinc-700 transition-colors"></div>
+                  <svg className={`w-3 h-3 text-zinc-500 group-hover:text-zinc-300 transition-transform duration-200 ${expandirMalds ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
                 </div>
                 <Collapse isOpen={expandirMalds}>
-                  <div className="p-2 flex flex-col gap-2 max-h-[200px] overflow-y-auto overflow-x-hidden custom-scrollbar">
+                  <div className="flex flex-col gap-2 pt-2 pb-1">
                     {(item.maldicoes || []).map((id: number) => {
                       const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
                       if (!m) return null;
                       const corTexto = getCorElementoTexto ? getCorElementoTexto(m.Elemento_Mald) : 'text-zinc-400';
                       return (
-                        <div key={m.Codigo_Mald} className="flex flex-col gap-0.5 pb-2 border-b border-zinc-800/50 last:border-0 last:pb-0">
+                        <div key={m.Codigo_Mald} className="flex flex-col gap-0.5">
                           <div className="flex gap-1 items-center">
                             <span className={`text-xs font-bold ${corTexto}`}>{m.Nome_Mald}</span>
                             <span className={`text-[9px] px-1 py-0 rounded border border-zinc-700 uppercase tracking-widest ${corTexto}`}>{m.Elemento_Mald}</span>
@@ -1473,25 +1460,19 @@ function SortableArmaItem({
             <span><span className="text-green-400 font-bold">Tipo:</span> {arma.Tipo_Dano_Arma}</span>
             <span><span className="text-green-400 font-bold">Espaços:</span> {stats.espacos}</span>
             {modsAtuais.length > 0 && (
-              <div className="mt-2 border border-zinc-800 rounded bg-zinc-900/50 overflow-hidden">
+              <div className="mt-3">
                 <div 
-                  className="px-2 py-1.5 bg-zinc-800/40 flex justify-between items-center cursor-pointer hover:bg-zinc-800/60 transition"
+                  className="flex items-center gap-2 cursor-pointer group"
                   onClick={(e) => { e.stopPropagation(); setExpandirMods(!expandirMods); }}
                 >
-                  <div className="flex flex-wrap gap-1 items-center">
-                    <span className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mr-1">Modificações</span>
-                    {!expandirMods && modsAtuais.map(m => (
-                      <span key={m.Codigo_Modif} className="px-1.5 py-0.5 rounded bg-zinc-800/60 border border-zinc-700/50 text-[10px] font-bold text-zinc-300 truncate max-w-[120px]">
-                        {m.Nome_Modif}
-                      </span>
-                    ))}
-                  </div>
-                  <span className="text-zinc-500 text-[10px] ml-2 flex-shrink-0">{expandirMods ? '▲ Ocultar' : '▼ Expandir'}</span>
+                  <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider group-hover:text-zinc-300 transition-colors">Modificações</span>
+                  <div className="h-px bg-zinc-800 flex-1 group-hover:bg-zinc-700 transition-colors"></div>
+                  <svg className={`w-3 h-3 text-zinc-500 group-hover:text-zinc-300 transition-transform duration-200 ${expandirMods ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
                 </div>
                 <Collapse isOpen={expandirMods}>
-                  <div className="p-2 flex flex-col gap-2 max-h-[200px] overflow-y-auto overflow-x-hidden custom-scrollbar">
+                  <div className="flex flex-col gap-2 pt-2 pb-1">
                     {modsAtuais.map(m => (
-                      <div key={m.Codigo_Modif} className="flex flex-col gap-0.5 pb-2 border-b border-zinc-800/50 last:border-0 last:pb-0">
+                      <div key={m.Codigo_Modif} className="flex flex-col gap-0.5">
                         <span className="text-xs font-bold text-zinc-200">{m.Nome_Modif}</span>
                         <p className="text-[11px] text-zinc-400 leading-relaxed whitespace-pre-wrap">{formatarTexto(m.Descricao_Modif || '')}</p>
                       </div>
@@ -1502,30 +1483,23 @@ function SortableArmaItem({
             )}
 
             {((item.maldicoes || []).length > 0) && (
-              <div className="mt-2 border border-zinc-800 rounded bg-zinc-900/50 overflow-hidden">
+              <div className="mt-3">
                 <div 
-                  className="px-2 py-1.5 bg-zinc-800/40 flex justify-between items-center cursor-pointer hover:bg-zinc-800/60 transition"
+                  className="flex items-center gap-2 cursor-pointer group"
                   onClick={(e) => { e.stopPropagation(); setExpandirMalds(!expandirMalds); }}
                 >
-                  <div className="flex flex-wrap gap-1 items-center">
-                    <span className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mr-1">Maldições</span>
-                    {!expandirMalds && (item.maldicoes || []).map((id: number) => {
-                      const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
-                      if (!m) return null;
-                      const corTexto = getCorElementoTexto ? getCorElementoTexto(m.Elemento_Mald) : 'text-zinc-400';
-                      return <span key={m.Codigo_Mald} className={`px-1.5 py-0.5 rounded border border-zinc-700/50 text-[10px] font-bold truncate max-w-[120px] ${corTexto}`}>{m.Nome_Mald}</span>;
-                    })}
-                  </div>
-                  <span className="text-zinc-500 text-[10px] ml-2 flex-shrink-0">{expandirMalds ? '▼ Ocultar' : '▶ Expandir'}</span>
+                  <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider group-hover:text-zinc-300 transition-colors">Maldições</span>
+                  <div className="h-px bg-zinc-800 flex-1 group-hover:bg-zinc-700 transition-colors"></div>
+                  <svg className={`w-3 h-3 text-zinc-500 group-hover:text-zinc-300 transition-transform duration-200 ${expandirMalds ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
                 </div>
                 <Collapse isOpen={expandirMalds}>
-                  <div className="p-2 flex flex-col gap-2 max-h-[200px] overflow-y-auto overflow-x-hidden custom-scrollbar">
+                  <div className="flex flex-col gap-2 pt-2 pb-1">
                     {(item.maldicoes || []).map((id: number) => {
                       const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
                       if (!m) return null;
                       const corTexto = getCorElementoTexto ? getCorElementoTexto(m.Elemento_Mald) : 'text-zinc-400';
                       return (
-                        <div key={m.Codigo_Mald} className="flex flex-col gap-0.5 pb-2 border-b border-zinc-800/50 last:border-0 last:pb-0">
+                        <div key={m.Codigo_Mald} className="flex flex-col gap-0.5">
                           <div className="flex gap-1 items-center">
                             <span className={`text-xs font-bold ${corTexto}`}>{m.Nome_Mald}</span>
                             <span className={`text-[9px] px-1 py-0 rounded border border-zinc-700 uppercase tracking-widest ${corTexto}`}>{m.Elemento_Mald}</span>
@@ -1696,30 +1670,23 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
               )}
 
             {((item.maldicoes || []).length > 0) && (
-              <div className="mt-2 border border-zinc-800 rounded bg-zinc-900/50 overflow-hidden">
+              <div className="mt-3">
                 <div 
-                  className="px-2 py-1.5 bg-zinc-800/40 flex justify-between items-center cursor-pointer hover:bg-zinc-800/60 transition"
+                  className="flex items-center gap-2 cursor-pointer group"
                   onClick={(e) => { e.stopPropagation(); setExpandirMalds(!expandirMalds); }}
                 >
-                  <div className="flex flex-wrap gap-1 items-center">
-                    <span className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mr-1">Maldições</span>
-                    {!expandirMalds && (item.maldicoes || []).map((id: number) => {
-                      const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
-                      if (!m) return null;
-                      const corTexto = getCorElementoTexto ? getCorElementoTexto(m.Elemento_Mald) : 'text-zinc-400';
-                      return <span key={m.Codigo_Mald} className={`px-1.5 py-0.5 rounded border border-zinc-700/50 text-[10px] font-bold truncate max-w-[120px] ${corTexto}`}>{m.Nome_Mald}</span>;
-                    })}
-                  </div>
-                  <span className="text-zinc-500 text-[10px] ml-2 flex-shrink-0">{expandirMods ? '▼ Ocultar' : '▶ Expandir'}</span>
+                  <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider group-hover:text-zinc-300 transition-colors">Maldições</span>
+                  <div className="h-px bg-zinc-800 flex-1 group-hover:bg-zinc-700 transition-colors"></div>
+                  <svg className={`w-3 h-3 text-zinc-500 group-hover:text-zinc-300 transition-transform duration-200 ${expandirMalds ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
                 </div>
                 <Collapse isOpen={expandirMalds}>
-                  <div className="p-2 flex flex-col gap-2 max-h-[200px] overflow-y-auto overflow-x-hidden custom-scrollbar">
+                  <div className="flex flex-col gap-2 pt-2 pb-1">
                     {(item.maldicoes || []).map((id: number) => {
                       const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
                       if (!m) return null;
                       const corTexto = getCorElementoTexto ? getCorElementoTexto(m.Elemento_Mald) : 'text-zinc-400';
                       return (
-                        <div key={m.Codigo_Mald} className="flex flex-col gap-0.5 pb-2 border-b border-zinc-800/50 last:border-0 last:pb-0">
+                        <div key={m.Codigo_Mald} className="flex flex-col gap-0.5">
                           <div className="flex gap-1 items-center">
                             <span className={`text-xs font-bold ${corTexto}`}>{m.Nome_Mald}</span>
                             <span className={`text-[9px] px-1 py-0 rounded border border-zinc-700 uppercase tracking-widest ${corTexto}`}>{m.Elemento_Mald}</span>
@@ -1749,25 +1716,19 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
             <span><span className="text-zinc-400 font-bold">Categoria:</span> {calcularCategoriaFinal(municao.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes, false, item.maldicoes, maldicoesHook?.maldicoes)}</span>
             <span><span className="text-zinc-400 font-bold">Espaços:</span> {calcularEspacosFinais(municao['Espaços_Item'], item.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas.has(43))}</span>
             {modsAtuais.length > 0 && (
-              <div className="mt-2 border border-zinc-800 rounded bg-zinc-900/50 overflow-hidden">
+              <div className="mt-3">
                 <div 
-                  className="px-2 py-1.5 bg-zinc-800/40 flex justify-between items-center cursor-pointer hover:bg-zinc-800/60 transition"
+                  className="flex items-center gap-2 cursor-pointer group"
                   onClick={(e) => { e.stopPropagation(); setExpandirMods(!expandirMods); }}
                 >
-                  <div className="flex flex-wrap gap-1 items-center">
-                    <span className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mr-1">Modificações</span>
-                    {!expandirMods && modsAtuais.map(m => (
-                      <span key={m.Codigo_Modif} className="px-1.5 py-0.5 rounded bg-zinc-800/60 border border-zinc-700/50 text-[10px] font-bold text-zinc-300 truncate max-w-[120px]">
-                        {m.Nome_Modif}
-                      </span>
-                    ))}
-                  </div>
-                  <span className="text-zinc-500 text-[10px] ml-2 flex-shrink-0">{expandirMods ? '▲ Ocultar' : '▼ Expandir'}</span>
+                  <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider group-hover:text-zinc-300 transition-colors">Modificações</span>
+                  <div className="h-px bg-zinc-800 flex-1 group-hover:bg-zinc-700 transition-colors"></div>
+                  <svg className={`w-3 h-3 text-zinc-500 group-hover:text-zinc-300 transition-transform duration-200 ${expandirMods ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
                 </div>
                 <Collapse isOpen={expandirMods}>
-                  <div className="p-2 flex flex-col gap-2 max-h-[200px] overflow-y-auto overflow-x-hidden custom-scrollbar">
+                  <div className="flex flex-col gap-2 pt-2 pb-1">
                     {modsAtuais.map(m => (
-                      <div key={m.Codigo_Modif} className="flex flex-col gap-0.5 pb-2 border-b border-zinc-800/50 last:border-0 last:pb-0">
+                      <div key={m.Codigo_Modif} className="flex flex-col gap-0.5">
                         <span className="text-xs font-bold text-zinc-200">{m.Nome_Modif}</span>
                         <p className="text-[11px] text-zinc-400 leading-relaxed whitespace-pre-wrap">{formatarTexto(m.Descricao_Modif || '')}</p>
                       </div>
@@ -1905,30 +1866,23 @@ function SortableProtecaoItem({
               )}
 
             {((item.maldicoes || []).length > 0) && (
-              <div className="mt-2 border border-zinc-800 rounded bg-zinc-900/50 overflow-hidden">
+              <div className="mt-3">
                 <div 
-                  className="px-2 py-1.5 bg-zinc-800/40 flex justify-between items-center cursor-pointer hover:bg-zinc-800/60 transition"
+                  className="flex items-center gap-2 cursor-pointer group"
                   onClick={(e) => { e.stopPropagation(); setExpandirMalds(!expandirMalds); }}
                 >
-                  <div className="flex flex-wrap gap-1 items-center">
-                    <span className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mr-1">Maldições</span>
-                    {!expandirMalds && (item.maldicoes || []).map((id: number) => {
-                      const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
-                      if (!m) return null;
-                      const corTexto = getCorElementoTexto ? getCorElementoTexto(m.Elemento_Mald) : 'text-zinc-400';
-                      return <span key={m.Codigo_Mald} className={`px-1.5 py-0.5 rounded border border-zinc-700/50 text-[10px] font-bold truncate max-w-[120px] ${corTexto}`}>{m.Nome_Mald}</span>;
-                    })}
-                  </div>
-                  <span className="text-zinc-500 text-[10px] ml-2 flex-shrink-0">{expandirMods ? '▼ Ocultar' : '▶ Expandir'}</span>
+                  <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider group-hover:text-zinc-300 transition-colors">Maldições</span>
+                  <div className="h-px bg-zinc-800 flex-1 group-hover:bg-zinc-700 transition-colors"></div>
+                  <svg className={`w-3 h-3 text-zinc-500 group-hover:text-zinc-300 transition-transform duration-200 ${expandirMalds ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
                 </div>
                 <Collapse isOpen={expandirMalds}>
-                  <div className="p-2 flex flex-col gap-2 max-h-[200px] overflow-y-auto overflow-x-hidden custom-scrollbar">
+                  <div className="flex flex-col gap-2 pt-2 pb-1">
                     {(item.maldicoes || []).map((id: number) => {
                       const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
                       if (!m) return null;
                       const corTexto = getCorElementoTexto ? getCorElementoTexto(m.Elemento_Mald) : 'text-zinc-400';
                       return (
-                        <div key={m.Codigo_Mald} className="flex flex-col gap-0.5 pb-2 border-b border-zinc-800/50 last:border-0 last:pb-0">
+                        <div key={m.Codigo_Mald} className="flex flex-col gap-0.5">
                           <div className="flex gap-1 items-center">
                             <span className={`text-xs font-bold ${corTexto}`}>{m.Nome_Mald}</span>
                             <span className={`text-[9px] px-1 py-0 rounded border border-zinc-700 uppercase tracking-widest ${corTexto}`}>{m.Elemento_Mald}</span>
@@ -1985,25 +1939,19 @@ function SortableProtecaoItem({
             <span><span className="text-blue-400 font-bold">Espaços:</span> {calcularEspacosFinais(protecao.Espacos_Protecao, item.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas.has(43))}</span>
 
             {modsAtuais.length > 0 && (
-              <div className="mt-2 border border-zinc-800 rounded bg-zinc-900/50 overflow-hidden">
+              <div className="mt-3">
                 <div 
-                  className="px-2 py-1.5 bg-zinc-800/40 flex justify-between items-center cursor-pointer hover:bg-zinc-800/60 transition"
+                  className="flex items-center gap-2 cursor-pointer group"
                   onClick={(e) => { e.stopPropagation(); setExpandirMods(!expandirMods); }}
                 >
-                  <div className="flex flex-wrap gap-1 items-center">
-                    <span className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider mr-1">Modificações</span>
-                    {!expandirMods && modsAtuais.map(m => (
-                      <span key={m.Codigo_Modif} className="px-1.5 py-0.5 rounded bg-zinc-800/60 border border-zinc-700/50 text-[10px] font-bold text-zinc-300 truncate max-w-[120px]">
-                        {m.Nome_Modif}
-                      </span>
-                    ))}
-                  </div>
-                  <span className="text-zinc-500 text-[10px] ml-2 flex-shrink-0">{expandirMods ? '▲ Ocultar' : '▼ Expandir'}</span>
+                  <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider group-hover:text-zinc-300 transition-colors">Modificações</span>
+                  <div className="h-px bg-zinc-800 flex-1 group-hover:bg-zinc-700 transition-colors"></div>
+                  <svg className={`w-3 h-3 text-zinc-500 group-hover:text-zinc-300 transition-transform duration-200 ${expandirMods ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
                 </div>
                 <Collapse isOpen={expandirMods}>
-                  <div className="p-2 flex flex-col gap-2 max-h-[200px] overflow-y-auto overflow-x-hidden custom-scrollbar">
+                  <div className="flex flex-col gap-2 pt-2 pb-1">
                     {modsAtuais.map(m => (
-                      <div key={m.Codigo_Modif} className="flex flex-col gap-0.5 pb-2 border-b border-zinc-800/50 last:border-0 last:pb-0">
+                      <div key={m.Codigo_Modif} className="flex flex-col gap-0.5">
                         <span className="text-xs font-bold text-zinc-200">{m.Nome_Modif}</span>
                         <p className="text-[11px] text-zinc-400 leading-relaxed whitespace-pre-wrap">{formatarTexto(m.Descricao_Modif || '')}</p>
                       </div>

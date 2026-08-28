@@ -90,7 +90,7 @@ export function AprimoramentosSelector({
           {modsAplicadasFull.map((mod, index) => (
             <div 
               key={`mod-${mod.Codigo_Modif}-${index}`}
-              className="group flex items-start justify-between p-3 bg-zinc-900/40 hover:bg-zinc-900/60 border border-zinc-800 hover:border-zinc-700 rounded-lg transition-all"
+              className="group flex items-start justify-between p-3 bg-zinc-950 hover:bg-zinc-900 border border-zinc-800 hover:border-zinc-700 rounded-lg transition-all"
             >
               <div className="flex flex-col gap-1.5 pr-4">
                 <span className="font-bold text-zinc-200 text-[13px]">{mod.Nome_Modif}</span>
@@ -119,7 +119,7 @@ export function AprimoramentosSelector({
             return (
               <div 
                 key={`mald-${mod.Codigo_Mald}-${index}`}
-                className="group flex items-start justify-between p-3 bg-zinc-900/40 hover:bg-zinc-900/60 border border-zinc-800 hover:border-zinc-700 rounded-lg transition-all"
+                className="group flex items-start justify-between p-3 bg-zinc-950 hover:bg-zinc-900 border border-zinc-800 hover:border-zinc-700 rounded-lg transition-all"
               >
                 <div className="flex flex-col gap-1.5 pr-4">
                   <div className="flex items-center gap-2">

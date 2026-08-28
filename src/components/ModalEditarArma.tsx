@@ -58,21 +58,6 @@ export function ModalEditarArma({
     const nome = modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)?.Nome_Modif.trim().toLowerCase();
     return nome === 'mira laser' || nome === 'perigosa';
   });
-
-  const temCalibreGrosso = modificacoes.some(id => {
-    const nome = modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)?.Nome_Modif.trim().toLowerCase();
-    return nome === 'calibre grosso';
-  });
-
-  const temMiraTelescopica = modificacoes.some(id => {
-    const nome = modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)?.Nome_Modif.trim().toLowerCase();
-    return nome === 'mira telescópica';
-  });
-
-  const getEspacoNumber = (val: string | number) => {
-    const num = Number(String(val).replace(',', '.').replace(/[^0-9.-]+/g, ''));
-    return isNaN(num) ? 0 : num;
-  };
   const baseEspacos = getEspacoNumber(espacos);
   const espacosFinais = temDiscreto ? Math.max(0, baseEspacos - 1) : baseEspacos;
 

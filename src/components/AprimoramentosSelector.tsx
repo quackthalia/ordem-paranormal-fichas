@@ -93,8 +93,8 @@ export function AprimoramentosSelector({
               className="group flex items-start justify-between p-3 bg-zinc-950 hover:bg-zinc-900 border border-zinc-800 hover:border-zinc-700 rounded-lg transition-all"
             >
               <div className="flex flex-col gap-1.5 pr-4">
-                <span className="font-bold text-zinc-200 text-[13px]">{mod.Nome_Modif}</span>
-                <p className="text-[11px] text-zinc-400 leading-relaxed">{mod.Descricao_Modif}</p>
+                <span className="font-bold text-zinc-200 text-[15px]">{mod.Nome_Modif}</span>
+                <p className="text-sm text-zinc-400 leading-relaxed mt-1">{mod.Descricao_Modif}</p>
               </div>
               <button
                 type="button"
@@ -123,14 +123,14 @@ export function AprimoramentosSelector({
               >
                 <div className="flex flex-col gap-1.5 pr-4">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-zinc-200 text-[13px]">{mod.Nome_Mald}</span>
-                    <span className={`inline-block rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight flex-shrink-0 ${cores}`}>
+                    <span className="font-bold text-zinc-200 text-[15px]">{mod.Nome_Mald}</span>
+                    <span className={`inline-block rounded px-1.5 py-px text-[10px] font-bold uppercase tracking-wider leading-tight flex-shrink-0 mt-0.5 ${cores}`}>
                       {elementoReal}
                     </span>
                   </div>
-                  <p className="text-[11px] text-zinc-400 leading-relaxed">{mod.Descricao_Mald}</p>
+                  <p className="text-sm text-zinc-400 leading-relaxed mt-1">{mod.Descricao_Mald}</p>
                   {mod.Efeito && (
-                    <p className="text-[10px] text-green-500 italic">Efeito: {mod.Efeito}</p>
+                    <p className="text-xs text-green-500 italic mt-1">Efeito: {mod.Efeito}</p>
                   )}
                 </div>
                 <button

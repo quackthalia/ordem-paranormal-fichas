@@ -160,7 +160,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                 const isExpanded = expandidos.includes(protecao.Codigo_Protecao);
                 const hasProficiencia = proficienciasTotais.includes(protecao.Proficiencia);
                 return (
-                  <div key={protecao.Codigo_Protecao} onClick={() => toggleExpandir(protecao.Codigo_Protecao)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-2 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[160px] max-h-[3000px]' : 'min-h-[160px] max-h-[160px]'} cursor-pointer`}
+                  <div key={protecao.Codigo_Protecao} onClick={() => toggleExpandir(protecao.Codigo_Protecao)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-2 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[185px] max-h-[3000px]' : 'min-h-[185px] max-h-[185px]'} cursor-pointer`}
                   >
                     {/* Bloco fechado */}
                     <div
@@ -184,7 +184,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                       </div>
                     </div>
 
-                    <div className="flex-1  flex flex-col" >
+                    <div className="flex-1 flex flex-col shrink-0">
                       <div className="flex items-center flex-nowrap gap-3 text-xs overflow-hidden transition-all duration-300 ease-in-out text-zinc-300 mb-2">
                         <span>
                           <span className="font-bold text-green-400">Defesa:</span> {String(protecao.Defesa_Protecao).startsWith('+') ? protecao.Defesa_Protecao : `+${protecao.Defesa_Protecao}`}
@@ -228,7 +228,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                 const isExpanded = expandidos.includes(protecao.Codigo_Protecao);
                 const hasProficiencia = proficienciasTotais.includes(protecao.Proficiencia);
                 return (
-                  <div key={protecao.Codigo_Protecao} onClick={() => toggleExpandir(protecao.Codigo_Protecao)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-2 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[160px] max-h-[3000px]' : 'min-h-[160px] max-h-[160px]'} cursor-pointer`}
+                  <div key={protecao.Codigo_Protecao} onClick={() => toggleExpandir(protecao.Codigo_Protecao)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-2 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[185px] max-h-[3000px]' : 'min-h-[185px] max-h-[185px]'} cursor-pointer`}
                   >
                     {/* Bloco fechado */}
                     <div
@@ -252,7 +252,7 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
                       </div>
                     </div>
 
-                    <div className="flex-1  flex flex-col" >
+                    <div className="flex-1 flex flex-col shrink-0">
                       <div className="flex items-center flex-nowrap gap-3 text-xs overflow-hidden transition-all duration-300 ease-in-out text-zinc-300 mb-2">
                         <span>
                           <span className="font-bold text-green-400">Defesa:</span> {String(protecao.Defesa_Protecao).startsWith('+') ? protecao.Defesa_Protecao : `+${protecao.Defesa_Protecao}`}

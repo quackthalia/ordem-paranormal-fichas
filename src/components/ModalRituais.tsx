@@ -230,7 +230,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                 const corElemento = obterCorBadge(elementoSendoEscolhido);
 
                 return (
-                  <div key={codigo} onClick={() => setExpandidos(prev => prev.includes(codigo) ? prev.filter(id => id !== codigo) : [...prev, codigo])} className={`bg-zinc-900/40 border border-zinc-800/80 rounded hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col border-l-4  overflow-hidden transition-all duration-300 ease-in-out ${expandido ? 'min-h-[180px] max-h-[3000px]' : 'min-h-[180px] max-h-[180px]'} cursor-pointer`} style={{ borderLeftColor: corElemento }}>
+                  <div key={codigo} onClick={() => setExpandidos(prev => prev.includes(codigo) ? prev.filter(id => id !== codigo) : [...prev, codigo])} className={`bg-zinc-900/40 border border-zinc-800/80 rounded hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col border-l-4  overflow-hidden transition-all duration-300 ease-in-out ${expandido ? 'min-h-[215px] max-h-[3000px]' : 'min-h-[215px] max-h-[215px]'} cursor-pointer`} style={{ borderLeftColor: corElemento }}>
                     <div
                       
                       className="flex  items-start justify-between gap-3 p-3"
@@ -298,7 +298,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                       <span className="text-zinc-500 text-xs mt-1">{expandido ? '▲' : '▼'}</span>
                     </div>
 
-                    <div className="px-3 pb-3">
+                    <div className="px-3 pb-3 shrink-0">
                       <Collapse isOpen={expandido}>
                         <div className="mb-2 flex flex-col gap-1 border-b border-zinc-800/50 pb-3">
                           {ritual.Execucao_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Execução: </span><span className="text-zinc-300">{ritual.Execucao_Ritual?.split('/')[0].trim()}</span></div>}
@@ -363,7 +363,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                 const corElemento = obterCorBadge(elementoSendoEscolhido);
 
                 return (
-                  <div key={codigo} onClick={() => setExpandidos(prev => prev.includes(codigo) ? prev.filter(id => id !== codigo) : [...prev, codigo])} className={`bg-zinc-900/40 border border-zinc-800/80 rounded hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col border-l-4  overflow-hidden transition-all duration-300 ease-in-out ${expandido ? 'min-h-[180px] max-h-[3000px]' : 'min-h-[180px] max-h-[180px]'} cursor-pointer`} style={{ borderLeftColor: corElemento }}>
+                  <div key={codigo} onClick={() => setExpandidos(prev => prev.includes(codigo) ? prev.filter(id => id !== codigo) : [...prev, codigo])} className={`bg-zinc-900/40 border border-zinc-800/80 rounded hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col border-l-4  overflow-hidden transition-all duration-300 ease-in-out ${expandido ? 'min-h-[215px] max-h-[3000px]' : 'min-h-[215px] max-h-[215px]'} cursor-pointer`} style={{ borderLeftColor: corElemento }}>
                     <div
                       
                       className="flex  items-start justify-between gap-3 p-3"
@@ -431,7 +431,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                       <span className="text-zinc-500 text-xs mt-1">{expandido ? '▲' : '▼'}</span>
                     </div>
 
-                    <div className="px-3 pb-3">
+                    <div className="px-3 pb-3 shrink-0">
                       <Collapse isOpen={expandido}>
                         <div className="mb-2 flex flex-col gap-1 border-b border-zinc-800/50 pb-3">
                           {ritual.Execucao_Ritual && <div className="text-xs"><span className="font-bold text-zinc-500">Execução: </span><span className="text-zinc-300">{ritual.Execucao_Ritual?.split('/')[0].trim()}</span></div>}

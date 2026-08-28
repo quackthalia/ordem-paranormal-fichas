@@ -79,8 +79,6 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
     setExpandidos(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
 
-  if (!aberto) return null;
-
   const itensFiltrados = itensHook.itens.filter((item: ItemGeral) => {
     if (item.Grupo_Item.trim() !== grupoAba) return false;
     if (busca && !item.Nome_Item.toLowerCase().includes(busca.toLowerCase())) return false;
@@ -103,6 +101,8 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
   }, [itensFiltrados]);
+
+  if (!aberto) return null;
 
 
   return (

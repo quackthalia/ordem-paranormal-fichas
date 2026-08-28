@@ -87,8 +87,6 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
     setExpandidos(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
 
-  if (!aberto) return null;
-
   const filtros = [
     { label: 'Todas', valor: 'Todas' },
     { label: 'Simples', valor: 'Armas Simples' },
@@ -122,6 +120,8 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
   }, [armasFiltradas]);
+
+  if (!aberto) return null;
 
 
   return (

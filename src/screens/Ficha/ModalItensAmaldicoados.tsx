@@ -73,12 +73,12 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
   const toggleExpandir = (id: string) => {
     setExpandidos(prev => ({ ...prev, [id]: !prev[id] }));
   };
-
-  if (!aberto) return null;
   const scrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
   }, [itensFiltrados]);
+
+  if (!aberto) return null;
 
 
   return (

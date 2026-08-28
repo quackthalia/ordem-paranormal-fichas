@@ -36,8 +36,6 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
   
   const [expandidos, setExpandidos] = useState<number[]>([]);
 
-  if (!aberto) return null;
-
   const toggleExpandir = (id: number) => {
     setExpandidos(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
@@ -70,6 +68,8 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
   }, [protecoesFiltradas]);
+
+  if (!aberto) return null;
 
 
   return (

@@ -63,7 +63,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
   const scrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
-  }, [busca]);
+  }, [busca, filtroCategoria, filtroTipo]);
 
 
   return (

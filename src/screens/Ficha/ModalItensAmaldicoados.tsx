@@ -76,7 +76,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
   const scrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
-  }, [busca, filtroCategoria]);
+  }, [busca, abaElemento]);
 
   if (!aberto) return null;
 

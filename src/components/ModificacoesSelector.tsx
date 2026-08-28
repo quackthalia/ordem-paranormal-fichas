@@ -54,7 +54,7 @@ export function ModificacoesSelector({
       {selecionando && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85 p-5" onClick={() => setSelecionando(false)}>
           <div 
-            className="flex max-h-[85vh] w-full max-w-md flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50" 
+            className="flex max-h-[85vh] w-full max-w-xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50" 
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-900/50 px-5 py-4">

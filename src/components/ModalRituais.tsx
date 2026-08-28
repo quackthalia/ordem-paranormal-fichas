@@ -230,7 +230,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                 const corElemento = obterCorBadge(elementoSendoEscolhido);
 
                 return (
-                  <div key={codigo} className={`bg-zinc-900/40 border border-zinc-800/80 rounded hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col border-l-4  min-h-[210px]`} style={{ borderLeftColor: corElemento }}>
+                  <div key={codigo} className={`bg-zinc-900/40 border border-zinc-800/80 rounded hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col border-l-4  overflow-hidden transition-all duration-300 ease-in-out ${expandido ? 'min-h-[210px] max-h-[3000px]' : 'min-h-[210px] max-h-[210px]'}`} style={{ borderLeftColor: corElemento }}>
                     <div
                       onClick={() => setExpandidos(prev => prev.includes(codigo) ? prev.filter(id => id !== codigo) : [...prev, codigo])}
                       className="flex cursor-pointer items-start justify-between gap-3 p-3"
@@ -363,7 +363,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                 const corElemento = obterCorBadge(elementoSendoEscolhido);
 
                 return (
-                  <div key={codigo} className={`bg-zinc-900/40 border border-zinc-800/80 rounded hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col border-l-4  min-h-[210px]`} style={{ borderLeftColor: corElemento }}>
+                  <div key={codigo} className={`bg-zinc-900/40 border border-zinc-800/80 rounded hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col border-l-4  overflow-hidden transition-all duration-300 ease-in-out ${expandido ? 'min-h-[210px] max-h-[3000px]' : 'min-h-[210px] max-h-[210px]'}`} style={{ borderLeftColor: corElemento }}>
                     <div
                       onClick={() => setExpandidos(prev => prev.includes(codigo) ? prev.filter(id => id !== codigo) : [...prev, codigo])}
                       className="flex cursor-pointer items-start justify-between gap-3 p-3"

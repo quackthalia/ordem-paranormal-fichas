@@ -146,7 +146,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
                 {municoesFiltradas.filter((_, i) => i % 2 === 0).map((municao) => (
                   <div 
                     key={municao.Codigo_Municao} 
-                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col cursor-pointer min-h-[160px]`}
+                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col cursor-pointer overflow-hidden transition-all duration-300 ease-in-out ${!!expandidos[String(municao.Codigo_Municao)] ? 'min-h-[160px] max-h-[3000px]' : 'min-h-[160px] max-h-[160px]'}`}
                     onClick={() => toggleExpandir(String(municao.Codigo_Municao))}
                   >
                     <div className="flex items-start justify-between gap-2 mb-2">
@@ -197,7 +197,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
                 {municoesFiltradas.filter((_, i) => i % 2 !== 0).map((municao) => (
                   <div 
                     key={municao.Codigo_Municao} 
-                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col cursor-pointer min-h-[160px]`}
+                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col cursor-pointer overflow-hidden transition-all duration-300 ease-in-out ${!!expandidos[String(municao.Codigo_Municao)] ? 'min-h-[160px] max-h-[3000px]' : 'min-h-[160px] max-h-[160px]'}`}
                     onClick={() => toggleExpandir(String(municao.Codigo_Municao))}
                   >
                     <div className="flex items-start justify-between gap-2 mb-2">

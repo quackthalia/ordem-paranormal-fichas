@@ -224,7 +224,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                 return (
                   <div 
                     key={arma.Codigo_Arma} 
-                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col  min-h-[230px]`}
+                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[230px] max-h-[3000px]' : 'min-h-[230px] max-h-[230px]'}`}
                   >
                     {/* Bloco fechado */}
                     <div
@@ -330,7 +330,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
                 return (
                   <div 
                     key={arma.Codigo_Arma} 
-                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col  min-h-[230px]`}
+                    className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[230px] max-h-[3000px]' : 'min-h-[230px] max-h-[230px]'}`}
                   >
                     {/* Bloco fechado */}
                     <div

@@ -1,7 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useSmoothExpandScroll } from '../hooks/useSmoothExpandScroll';
 import type { Modificacao } from '../types';
-import { Collapse } from './Collapse';
 
 interface ModificacoesSelectorProps {
   modificacoesAplicadas: number[];
@@ -21,10 +19,8 @@ export function ModificacoesSelector({
   podeAdicionar
 }: ModificacoesSelectorProps) {
   const [selecionando, setSelecionando] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useSmoothExpandScroll(selecionando, dropdownRef);
-
+  
+  
   const aplicadas = modificacoesAplicadas
     .map(id => todasModificacoes.find(m => m.Codigo_Modif === id))
     .filter(Boolean) as Modificacao[];
@@ -36,63 +32,66 @@ export function ModificacoesSelector({
   return (
     <div className="flex flex-col gap-3">
       {/* Botão de Adicionar (Dashed) */}
-      {!selecionando && (
-        <button
-          type="button"
-          onClick={() => setSelecionando(true)}
-          disabled={!podeAdicionar}
-          className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg border-2 border-dashed transition-all ${
-            podeAdicionar 
-              ? 'border-zinc-700 hover:border-zinc-500 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/30' 
-              : 'border-zinc-800 text-zinc-700 cursor-not-allowed bg-zinc-900/20'
-          }`}
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
-            <path d="M12 5v14M5 12h14"/>
-          </svg>
-          <span className="text-xs font-bold uppercase tracking-wider">
-            {podeAdicionar ? 'Adicionar Modificação' : 'Limite Atingido'}
-          </span>
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={() => setSelecionando(true)}
+        disabled={!podeAdicionar}
+        className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg border-2 border-dashed transition-all ${
+          podeAdicionar 
+            ? 'border-zinc-700 hover:border-zinc-500 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/30' 
+            : 'border-zinc-800 text-zinc-700 cursor-not-allowed bg-zinc-900/20'
+        }`}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        <span className="text-xs font-bold uppercase tracking-wider">
+          {podeAdicionar ? 'Adicionar Modificação' : 'Limite Atingido'}
+        </span>
+      </button>
 
-      {/* Painel de Seleção */}
-      <Collapse isOpen={selecionando}>
-        <div ref={dropdownRef} className="flex flex-col border border-zinc-800 bg-zinc-950 rounded mb-1">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800 bg-zinc-900/30">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">Selecionar Modificação</span>
-            <button 
-              type="button" 
-              onClick={() => setSelecionando(false)}
-              className="text-zinc-500 hover:text-zinc-300 p-1 rounded hover:bg-zinc-800 transition-colors"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                <path d="M18 6L6 18M6 6l12 12"/>
-              </svg>
-            </button>
-          </div>
-          
-          <div className="flex flex-col max-h-[220px] overflow-y-auto custom-scrollbar">
-            {opcoesDisponiveis.length === 0 ? (
-              <p className="text-xs text-zinc-500 italic p-3 text-center">Nenhuma modificação disponível.</p>
-            ) : (
-              opcoesDisponiveis.map(opcao => (
-                <div 
-                  key={opcao.Codigo_Modif}
-                  onClick={() => {
-                    onAdd(opcao.Codigo_Modif);
-                    setSelecionando(false);
-                  }}
-                  className="flex flex-col px-4 py-3 border-b border-zinc-800/50 hover:bg-zinc-900 cursor-pointer transition-colors group last:border-0"
-                >
-                  <span className="font-bold text-zinc-200 text-sm group-hover:text-white transition-colors">{opcao.Nome_Modif}</span>
-                  <span className="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">{opcao.Descricao_Modif}</span>
-                </div>
-              ))
-            )}
+      {/* Modal de Seleção */}
+      {selecionando && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85 p-5" onClick={() => setSelecionando(false)}>
+          <div 
+            className="flex max-h-[85vh] w-full max-w-md flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 shadow-2xl shadow-black/50" 
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-900/50 px-5 py-4">
+              <span className="font-bold text-zinc-100 uppercase tracking-wider text-sm">Selecionar Modificação</span>
+              <button 
+                type="button" 
+                onClick={() => setSelecionando(false)}
+                className="text-zinc-500 hover:text-zinc-300 p-1 rounded hover:bg-zinc-800 transition-colors"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
+              {opcoesDisponiveis.length === 0 ? (
+                <p className="text-sm text-zinc-500 italic p-6 text-center">Nenhuma modificação disponível.</p>
+              ) : (
+                opcoesDisponiveis.map(opcao => (
+                  <div 
+                    key={opcao.Codigo_Modif}
+                    onClick={() => {
+                      onAdd(opcao.Codigo_Modif);
+                      setSelecionando(false);
+                    }}
+                    className="flex flex-col p-4 rounded hover:bg-zinc-800/80 cursor-pointer transition-colors group border-b border-zinc-800/50 last:border-0"
+                  >
+                    <span className="font-bold text-zinc-200 text-sm group-hover:text-white transition-colors">{opcao.Nome_Modif}</span>
+                    <span className="text-[12px] text-zinc-500 mt-1 leading-relaxed">{opcao.Descricao_Modif}</span>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
-      </Collapse>
+      )}
 
       {/* Lista de Modificações Aplicadas */}
       <div className="flex flex-col gap-2 mt-1">

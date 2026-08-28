@@ -47,16 +47,16 @@ export function calcularBonusMaldicoes(
   const allMaldicoes: { id: number, elem?: string }[] = [];
 
   armas.forEach(a => {
-    if (a.maldicoes) a.maldicoes.forEach(m => allMaldicoes.push({ id: m, elem: a.maldicoes_elementos?.[m] }));
+    if (Array.isArray(a.maldicoes)) a.maldicoes.forEach(m => allMaldicoes.push({ id: m, elem: a.maldicoes_elementos?.[m] }));
   });
   protecoes.forEach(p => {
-    if (p.equipado && p.maldicoes) p.maldicoes.forEach(m => allMaldicoes.push({ id: m, elem: p.maldicoes_elementos?.[m] }));
+    if (p.equipado && Array.isArray(p.maldicoes)) p.maldicoes.forEach(m => allMaldicoes.push({ id: m, elem: p.maldicoes_elementos?.[m] }));
   });
   itens.forEach(i => {
-    if (i.maldicoes) i.maldicoes.forEach(m => allMaldicoes.push({ id: m, elem: i.maldicoes_elementos?.[m] }));
+    if (Array.isArray(i.maldicoes)) i.maldicoes.forEach(m => allMaldicoes.push({ id: m, elem: i.maldicoes_elementos?.[m] }));
   });
   municoes.forEach(m => {
-    if (m.maldicoes) m.maldicoes.forEach(m => allMaldicoes.push({ id: m, elem: m.maldicoes_elementos?.[m] }));
+    if (Array.isArray(m.maldicoes)) m.maldicoes.forEach(m => allMaldicoes.push({ id: m, elem: m.maldicoes_elementos?.[m] }));
   });
 
   for (const { id, elem } of allMaldicoes) {

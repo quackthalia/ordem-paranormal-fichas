@@ -377,7 +377,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     if (!afinidadeEscolhida) return false;
 
     // Se a regra estiver ativa, a afinidade é garantida a partir do NEX 60 automaticamente
-    if (regras['nex_experiencia'] && nex >= 60) {
+    if (regras['nex_experiencia'] && nivel >= 12) {
       return true;
     }
 
@@ -388,7 +388,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
       if (!isNaN(nexSlot) && nexSlot >= 50) return true;
       return false;
     });
-  }, [afinidadeEscolhida, poderesHook.poderesEscolhidos, regras, nex]);
+  }, [afinidadeEscolhida, poderesHook.poderesEscolhidos, regras, nex, nivel]);
 
   const periciasGratisSemTrilha = useMemo(() => {
     const gratis: string[] = [];

@@ -7,7 +7,9 @@ export const BonusCondicionaisPanel: React.FC = () => {
     bonusDadosCondicionais, setBonusDadosCondicionais,
     bonusDadosAtivos, setBonusDadosAtivos,
     poderesHook,
-    periciasHook
+    periciasHook,
+    jaTinhaPericiaTrilha,
+    trilhasHook
   } = useRPG();
 
   return (
@@ -79,6 +81,12 @@ export const BonusCondicionaisPanel: React.FC = () => {
               <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
                 <span className="text-green-500 font-bold mt-[-1px]">•</span>
                 <span>+1d20 em testes de Profissão (Faz-Tudo)</span>
+              </div>
+            )}
+            {trilhasHook.trilhaSelecionada && jaTinhaPericiaTrilha && (
+              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                <span>+1d20 em testes de {trilhasHook.trilhaSelecionada.nome_pericia} ({trilhasHook.trilhaSelecionada.Nome_Trilha})</span>
               </div>
             )}
             {Object.values(poderesHook.poderesEscolhidos).map((poder, idx) => {

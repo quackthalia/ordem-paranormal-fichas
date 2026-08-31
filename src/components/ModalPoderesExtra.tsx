@@ -80,7 +80,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
   const [subAbaElemento, setSubAbaElemento] = useState<string | null>(null);
   const [busca, setBusca] = useState('');
 
-  const { nex, atributos, periciasHook, trilhasHook, poderesHook, rituaisHook, origensHook } = useRPG();
+  const { nex, nivel, regras, atributos, periciasHook, trilhasHook, poderesHook, rituaisHook, origensHook } = useRPG();
   const contextoPrereq = useMemo(() => {
     const poderesArray: { nome: string; elemento?: string; codigoRegra?: number | null; periciaEscolhidaNome?: string }[] = Object.values(poderesHook.poderesEscolhidos).map(p => ({
       nome: p.nome.toLowerCase(),
@@ -104,15 +104,17 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
     return {
       atributos,
       nex,
+      nivel,
       pericias: periciasHook.pericias,
       nomesPericias: periciasHook.nomesPericias,
       poderes: poderesArray,
       origem: origensHook.origemSelecionada?.nome_origem,
       grupo_origem: origensHook.origemSelecionada?.Codigo_Grupo || null,
       rituaisAprendidos: rituaisHook.rituaisAprendidos,
-      rituais: rituaisHook.rituais
+      rituais: rituaisHook.rituais,
+      regras
     };
-  }, [atributos, nex, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, trilhasHook.trilhaSelecionada, rituaisHook.rituaisAprendidos, rituaisHook.rituais, origensHook.origemSelecionada]);
+  }, [atributos, nex, nivel, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, trilhasHook.trilhaSelecionada, rituaisHook.rituaisAprendidos, rituaisHook.rituais, origensHook.origemSelecionada, regras]);
 
   const [poderesExpandidos, setPoderesExpandidos] = useState<number[]>([]);
   const [escolhendoElementoId, setEscolhendoElementoId] = useState<number | string | null>(null);

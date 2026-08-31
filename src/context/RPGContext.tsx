@@ -24,7 +24,7 @@ import { calcularBonusVestimentas, type VestimentasBonus } from '../utils/vestim
 import { calcularBonusMaldicoes, type MaldicoesBonusGlobais } from '../utils/maldicoesRules';
 import { useModificacoes } from '../hooks/useModificacoes';
 import { useMaldicoes } from '../hooks/useMaldicoes';
-import { capMaximoAtributo, pontosIniciaisPorNex, calcularStatusBase } from '../utils/rpgRules';
+import { capMaximoAtributo, pontosIniciaisPorNivel, calcularStatusBase } from '../utils/rpgRules';
 
 // ============================================================
 // TUDO QUE O CONTEXTO EXPÕE
@@ -129,6 +129,7 @@ interface RPGContextType {
   setVersaoRitual: React.Dispatch<React.SetStateAction<Record<number, VersaoRitual>>>;
   elementoRitual: Record<number, string>;
   setElementoRitual: React.Dispatch<React.SetStateAction<Record<number, string>>>;
+  jaTinhaPericiaTrilha: boolean;
 
   afinidadeEscolhida: string | null;
   setAfinidadeEscolhida: React.Dispatch<React.SetStateAction<string | null>>;
@@ -323,7 +324,13 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   }, [rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras]);
 
   const paranormalPenalty = useMemo(() => {
-    const qtd = Object.entries(poderesHook.poderesEscolhidos).filter(([key, p]) => p.categoria === 'paranormais' && key !== 'extra_regra1').length;
+    const qtd = Object.entries(poderesHook.poderesEscolhidos).filter(([key, p]) => {
+      if (p.categoria !== 'paranormais') return false;
+      const numKey = Number(key);
+      if (!isNaN(numKey) && numKey >= 1000) return false;
+      if (String(key).startsWith('extra_')) return false;
+      return true;
+    }).length;
     if (qtd === 0 || !classe) return 0;
     
     let perda = 0;
@@ -383,7 +390,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     });
   }, [afinidadeEscolhida, poderesHook.poderesEscolhidos, regras, nex]);
 
-  const periciasGratis = useMemo(() => {
+  const periciasGratisSemTrilha = useMemo(() => {
     const gratis: string[] = [];
     if (classe === 'Ocultista') {
       gratis.push('Vontade', 'Ocultismo');
@@ -396,23 +403,33 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
       if (nome_p1) gratis.push(nome_p1);
 
       if (Codigo_Per_Regra === 1) {
-        // Regra 1: Apenas a perícia 1
+        // Regra 1: Apenas a per�cia 1
       } else if (Codigo_Per_Regra === 6) {
-        // Regra 6: Perícia 1 + escolha
+        // Regra 6: Per�cia 1 + escolha
         if (escolhaRegra6 === 'p2' && nome_p2) gratis.push(nome_p2);
         else if (escolhaRegra6 === 'pesp' && nome_pesp) gratis.push(nome_pesp);
       } else if (Codigo_Per_Regra === 7) {
-        // Regra 7 não adiciona treino básico aqui
+        // Regra 7 n�o adiciona treino b�sico aqui
       } else {
-        // Padrão: Perícia 1 + Perícia 2
+        // Padr�o: Per�cia 1 + Per�cia 2
         if (nome_p2) gratis.push(nome_p2);
       }
     }
-    if (trilhasHook.trilhaSelecionada && trilhasHook.trilhaSelecionada.nome_pericia) {
-      gratis.push(trilhasHook.trilhaSelecionada.nome_pericia);
-    }
     return gratis;
-  }, [classe, skillCombatente1, skillCombatente2, origensHook.origemSelecionada, trilhasHook.trilhaSelecionada]);
+  }, [classe, skillCombatente1, skillCombatente2, origensHook.origemSelecionada]);
+
+  const periciasGratis = useMemo(() => {
+    const list = [...periciasGratisSemTrilha];
+    if (trilhasHook.trilhaSelecionada && trilhasHook.trilhaSelecionada.nome_pericia) {
+      list.push(trilhasHook.trilhaSelecionada.nome_pericia);
+    }
+    return list;
+  }, [periciasGratisSemTrilha, trilhasHook.trilhaSelecionada]);
+
+  const jaTinhaPericiaTrilha = useMemo(() => {
+    if (!trilhasHook.trilhaSelecionada || !trilhasHook.trilhaSelecionada.nome_pericia) return false;
+    return periciasGratisSemTrilha.includes(trilhasHook.trilhaSelecionada.nome_pericia);
+  }, [periciasGratisSemTrilha, trilhasHook.trilhaSelecionada]);
 
   const veteranasGratis = useMemo(() => {
     const vet: string[] = [];
@@ -424,7 +441,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
 
   const periciasHook = usePericias(
     classe, 
-    nex, 
+    nivel, 
     atributosFinais, 
     regrasAtivas, 
     periciasGratis, 
@@ -439,8 +456,8 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   // ============================================================
   // LÓGICA DE ATRIBUTOS
   // ============================================================
-  const capMaximo = capMaximoAtributo(nex);
-  const pontosIniciais = pontosIniciaisPorNex(nex);
+  const capMaximo = capMaximoAtributo(nivel);
+  const pontosIniciais = pontosIniciaisPorNivel(nivel);
 
   let pontosGastos = 0;
   let bonusPorAtributoZero = 0;
@@ -586,6 +603,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     rituaisExpandidos, setRituaisExpandidos,
     versaoRitual, setVersaoRitual,
     elementoRitual, setElementoRitual,
+    jaTinhaPericiaTrilha,
     afinidadeEscolhida, setAfinidadeEscolhida, afinidadeAtiva,
     poderesExtras, setPoderesExtras,
     progressaoNexRecusados, setProgressaoNexRecusados,

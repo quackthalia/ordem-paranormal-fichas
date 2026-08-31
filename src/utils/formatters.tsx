@@ -2,6 +2,7 @@ import React from 'react';
 
 export function formatarTexto(texto: string) {
   if (!texto) return texto;
+  if (typeof texto !== 'string') return String(texto);
 
   // Divide o texto onde encontrar *texto* ou _texto_
   const parts = texto.split(/(\*[^*]+\*|_[^_]+_)/g);

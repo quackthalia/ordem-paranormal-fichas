@@ -303,6 +303,7 @@ export const ModalPoderes: React.FC = () => {
     regras,
     periciasHook,
     nex,
+    nivel,
     trilhasHook,
     rituaisHook,
     origensHook,
@@ -329,17 +330,21 @@ export const ModalPoderes: React.FC = () => {
     }
 
     let nexContexto = nex;
+    let nivelContexto = nivel;
     if (typeof nexModalAberto === 'number') {
       if (regras['nex_experiencia'] && nexModalAberto <= 20 && nexModalAberto > 0) {
         nexContexto = nexModalAberto === 20 ? 99 : nexModalAberto * 5;
+        nivelContexto = nexModalAberto;
       } else {
         nexContexto = nexModalAberto;
+        nivelContexto = nexModalAberto === 99 ? 20 : Math.floor(nexModalAberto / 5);
       }
     }
 
     return {
       atributos,
       nex: nexContexto,
+      nivel: nivelContexto,
       pericias: periciasHook.pericias,
       nomesPericias: periciasHook.nomesPericias,
       poderes: poderesArray,
@@ -349,7 +354,7 @@ export const ModalPoderes: React.FC = () => {
       rituais: rituaisHook.rituais,
       regras
     };
-  }, [atributos, nex, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, trilhasHook.trilhaSelecionada, rituaisHook.rituaisAprendidos, rituaisHook.rituais, origensHook.origemSelecionada, regras]);
+  }, [atributos, nex, nivel, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, trilhasHook.trilhaSelecionada, rituaisHook.rituaisAprendidos, rituaisHook.rituais, origensHook.origemSelecionada, regras]);
 
   const editorRef = useRef<HTMLDivElement>(null);
   const afinidadeRef = useRef<HTMLDivElement>(null);

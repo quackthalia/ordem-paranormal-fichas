@@ -37,7 +37,7 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
     }
   }, [isOpen]);
 
-  const { classe, nex, atributos, periciasHook, poderesHook, rituaisHook } = useRPG();
+  const { classe, nex, nivel, regras, atributos, periciasHook, poderesHook, rituaisHook } = useRPG();
   const [poderes, setPoderes] = useState<Poder[]>([]);
   const [filtro, setFiltro] = useState('');
   const [expandidos, setExpandidos] = useState<number[]>([]);
@@ -60,13 +60,15 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
     return {
       atributos,
       nex,
+      nivel,
       pericias: periciasHook.pericias,
       nomesPericias: periciasHook.nomesPericias,
       poderes: poderesArray,
       rituaisAprendidos: rituaisHook.rituaisAprendidos,
-      rituais: rituaisHook.rituais
+      rituais: rituaisHook.rituais,
+      regras
     };
-  }, [atributos, nex, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, rituaisHook.rituaisAprendidos, rituaisHook.rituais]);
+  }, [atributos, nex, nivel, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras]);
 
   useEffect(() => {
     if (!isOpen) return;

@@ -25,19 +25,19 @@ export function calcularNivel(nex: number): number {
   return nex === 99 ? 20 : Math.floor(nex / 5);
 }
 
-/** Pontos de atributo que você ganha conforme o NEX */
-export function pontosIniciaisPorNex(nex: number): number {
+/** Pontos de atributo que você ganha conforme o Nível */
+export function pontosIniciaisPorNivel(nivel: number): number {
   let pts = 4;
-  if (nex >= 20) pts += 1;
-  if (nex >= 50) pts += 1;
-  if (nex >= 80) pts += 1;
-  if (nex >= 95) pts += 1;
+  if (nivel >= 4) pts += 1;
+  if (nivel >= 10) pts += 1;
+  if (nivel >= 16) pts += 1;
+  if (nivel >= 19) pts += 1;
   return pts;
 }
 
-/** Cap máximo de um atributo (NEX 5 = 3, resto = 5) */
-export function capMaximoAtributo(nex: number): number {
-  return nex === 5 ? 3 : 5;
+/** Cap máximo de um atributo (Nível 1 = 3, resto = 5) */
+export function capMaximoAtributo(nivel: number): number {
+  return nivel === 1 ? 3 : 5;
 }
 
 /** Calcula PV, PE, SAN e PE/TURNO */
@@ -209,26 +209,26 @@ export function calcularPD(
   return pd;
 }
 
-/** Limites de perícias por classe/nex */
+/** Limites de perícias por classe/nível */
 export function calcularLimitesPericias(
   classe: ClasseRPG,
-  nex: number,
+  nivel: number,
   atributos: Atributos
 ): { maxTreinadas: number; maxUpgrades: number } {
   let maxTreinadas = 0, maxUpgrades = 0;
 
   if (classe === 'Combatente') {
     maxTreinadas = 1 + atributos.INT;
-    if (nex >= 35) maxUpgrades += (2 + atributos.INT);
-    if (nex >= 70) maxUpgrades += (2 + atributos.INT);
+    if (nivel >= 7) maxUpgrades += (2 + atributos.INT);
+    if (nivel >= 14) maxUpgrades += (2 + atributos.INT);
   } else if (classe === 'Especialista') {
     maxTreinadas = 7 + atributos.INT;
-    if (nex >= 35) maxUpgrades += (5 + atributos.INT);
-    if (nex >= 70) maxUpgrades += (5 + atributos.INT);
+    if (nivel >= 7) maxUpgrades += (5 + atributos.INT);
+    if (nivel >= 14) maxUpgrades += (5 + atributos.INT);
   } else if (classe === 'Ocultista') {
     maxTreinadas = 3 + atributos.INT;
-    if (nex >= 35) maxUpgrades += (3 + atributos.INT);
-    if (nex >= 70) maxUpgrades += (3 + atributos.INT);
+    if (nivel >= 7) maxUpgrades += (3 + atributos.INT);
+    if (nivel >= 14) maxUpgrades += (3 + atributos.INT);
   }
 
   return { maxTreinadas, maxUpgrades };
@@ -300,7 +300,7 @@ export function obterCorBadge(texto: string): string {
 /** Verifica se atende requisito de ritual (Ex: Requer 3º círculo, Afinidade com Morte) */
 export function verificarRequisitoRitual(
   requisito: string,
-  nex: number,
+  nivel: number,
   classe: string | null,
   afinidadeAtiva: boolean,
   afinidadeEscolhida: string | null,
@@ -329,7 +329,7 @@ export function verificarRequisitoRitual(
   const circuloMatch = reqLower.match(/(\d+)[º°o]?\s*c.*rculo/);
   if (circuloMatch) {
     const circuloExigido = parseInt(circuloMatch[1], 10);
-    const acesso = verificarAcessoCirculo(circuloExigido, nex, classe);
+    const acesso = verificarAcessoCirculo(circuloExigido, nivel, classe);
     if (!acesso.atende) {
       motivos.push(acesso.motivo!);
     }
@@ -342,21 +342,21 @@ export function verificarRequisitoRitual(
   return { atende: true };
 }
 
-export function verificarAcessoCirculo(circuloExigido: number, nex: number, classe: string | null): { atende: boolean; motivo?: string } {
-  let nexReqs = [5, 25, 55, 85]; // Ocultista
+export function verificarAcessoCirculo(circuloExigido: number, nivel: number, classe: string | null): { atende: boolean; motivo?: string } {
+  let nivelReqs = [1, 5, 11, 17]; // Ocultista
   if (classe !== 'Ocultista') {
-    nexReqs = [5, 45, 75, 999]; // Especialista/Combatente
+    nivelReqs = [1, 9, 15, 999]; // Especialista/Combatente
   }
 
   let acessoCirculo = 1;
-  if (nex >= nexReqs[3]) acessoCirculo = 4;
-  else if (nex >= nexReqs[2]) acessoCirculo = 3;
-  else if (nex >= nexReqs[1]) acessoCirculo = 2;
+  if (nivel >= nivelReqs[3]) acessoCirculo = 4;
+  else if (nivel >= nivelReqs[2]) acessoCirculo = 3;
+  else if (nivel >= nivelReqs[1]) acessoCirculo = 2;
 
   if (acessoCirculo < circuloExigido) {
-    const nexExigido = nexReqs[circuloExigido - 1];
-    const nexText = nexExigido === 999 ? 'Inacessível' : `NEX ${nexExigido}%`;
-    return { atende: false, motivo: `acesso ao ${circuloExigido}º Círculo (${nexText} para ${classe || 'sua classe'})` };
+    const nivelExigido = nivelReqs[circuloExigido - 1];
+    const nivelText = nivelExigido === 999 ? 'Inacessível' : `Nível ${nivelExigido}`;
+    return { atende: false, motivo: `acesso ao ${circuloExigido}º Círculo (${nivelText} para ${classe || 'sua classe'})` };
   }
   return { atende: true };
 }

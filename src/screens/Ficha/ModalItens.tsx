@@ -167,9 +167,10 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
                     {(() => {
             const renderItem = (item: ItemGeral) => {
               const isExpanded = expandidos.includes(item.Codigo_Item);
+              const isChoosingPericia = escolhendoPericia === item.Codigo_Item;
               
               return (
-                <div key={item.Codigo_Item} onClick={() => toggleExpandir(item.Codigo_Item)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-2 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[130px] max-h-[3000px]' : 'min-h-[130px] max-h-[130px]'} cursor-pointer`}
+                <div key={item.Codigo_Item} onClick={() => toggleExpandir(item.Codigo_Item)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-2 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col transition-all duration-300 ease-in-out ${isChoosingPericia ? 'overflow-visible' : 'overflow-hidden'} ${isExpanded || isChoosingPericia ? 'min-h-[130px] max-h-[3000px]' : 'min-h-[130px] max-h-[130px]'} cursor-pointer`}
                 >
                   {/* Cabeçalho do item */}
                   <div className="flex items-start justify-between gap-2 mb-2">
@@ -205,7 +206,7 @@ export function ModalItens({ aberto, onFechar, grupoAba }: ModalItensProps) {
 
 
 
-                <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden transition-all duration-300 ease-in-out text-[11px] border-t border-zinc-800/50 pt-2 ">
+                <div className={`flex flex-nowrap items-center gap-2 mt-auto transition-all duration-300 ease-in-out text-[11px] border-t border-zinc-800/50 pt-2 ${isChoosingPericia ? 'overflow-visible' : 'overflow-hidden'}`}>
                   <span className="text-zinc-500">
                     <span className="text-green-400 font-semibold">Espaços:</span> {(regrasAutomaticasAtivas.has(43) && (item.Espacos_Itens === 0.5 || String(item.Espacos_Itens) === '0,5' || String(item.Espacos_Itens) === '0.5')) ? 0.25 : item.Espacos_Itens}
                   </span>

@@ -38,7 +38,7 @@ export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, remo
 
   let corBordaLeft = 'border-l-zinc-600';
   if (item.item.Elemento_Ama) {
-    const elStr = item.item.Elemento_Ama.toLowerCase();
+    const elStr = String(item.item.Elemento_Ama).toLowerCase();
     corBordaLeft = elStr.includes('medo') ? 'border-l-zinc-200' :
                    elStr.includes('sangue') ? 'border-l-red-600' :
                    elStr.includes('morte') ? 'border-l-black' :
@@ -91,7 +91,7 @@ export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, remo
 
         <div className="flex items-center gap-3 flex-shrink-0">
           {item.item.Elemento_Ama ? (() => {
-              const elStr = item.item.Elemento_Ama.toLowerCase();
+              const elStr = String(item.item.Elemento_Ama).toLowerCase();
               const corText = elStr.includes('medo') ? 'bg-zinc-200/80 text-zinc-950 px-1' :
                               elStr.includes('sangue') ? 'text-red-500' :
                               elStr.includes('morte') ? 'bg-black/50 text-white px-1' :
@@ -105,8 +105,8 @@ export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, remo
               );
           })() : <span className="text-[10px] font-bold text-zinc-300 bg-zinc-700/50 px-1 rounded-sm truncate uppercase tracking-wider">Sem Elemento</span>}
 
-          {(item.item['Vestimenta?']?.toLowerCase() === 'true') && (() => {
-            const elStr = (item.item.Elemento_Ama || '').toLowerCase();
+          {(String(item.item['Vestimenta?']).toLowerCase() === 'true') && (() => {
+            const elStr = String(item.item.Elemento_Ama || '').toLowerCase();
             const checkedColor = elStr.includes('medo') ? 'bg-white border-zinc-400 text-zinc-950' :
                                  elStr.includes('sangue') ? 'bg-red-700 border-zinc-700 text-white' :
                                  elStr.includes('morte') ? 'bg-black border-zinc-700 text-white' :

@@ -18,6 +18,7 @@ const NOMES_ATRIBUTOS: Record<AtributoKey, string> = {
 export const AtributosScreen: React.FC = () => {
   const {
     nex, setNex,
+    nivel,
     atributos,
     pontosRestantes,
     alterarAtributo,
@@ -59,7 +60,7 @@ export const AtributosScreen: React.FC = () => {
         {ATRIBUTOS_ORDER.map(nome => {
           const temAtributoZerado = Object.values(atributos).some(v => v === 0);
           const naoPodeDiminuir = atributos[nome] === 0 || (atributos[nome] === 1 && temAtributoZerado);
-          const naoPodeAumentar = pontosRestantes <= 0 || atributos[nome] >= capMaximoAtributo(nex);
+          const naoPodeAumentar = pontosRestantes <= 0 || atributos[nome] >= capMaximoAtributo(nivel);
 
           return (
             <div

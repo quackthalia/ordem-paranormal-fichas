@@ -1451,7 +1451,7 @@ export const AbasPanel: React.FC = () => {
                         const dados = ritual.customProps?.[versao]?.Dados_Ritual || obterValorVersao(ritual.Dados_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
 
                         // Opções de versão disponíveis
-                        const reqNormal = verificarAcessoCirculo(ritual.Circulo_Ritual, nex, classe);
+                        const reqNormal = verificarAcessoCirculo(ritual.Circulo_Ritual, nivel, classe);
                         const versoesDisponiveis: { value: VersaoRitual; label: string; disabled?: boolean; title?: string }[] = [
                           { 
                             value: 'normal', 
@@ -1460,7 +1460,7 @@ export const AbasPanel: React.FC = () => {
                           },
                         ];
                         if (ritual.Tem_Discente) {
-                          const req = verificarRequisitoRitual(ritual.Requisito_Discente, nex, classe, afinidadeAtiva, afinidadeEscolhida, ritual.Elemento_Ritual);
+                          const req = verificarRequisitoRitual(ritual.Requisito_Discente, nivel, classe, afinidadeAtiva, afinidadeEscolhida, ritual.Elemento_Ritual);
                           versoesDisponiveis.push({ 
                             value: 'discente', 
                             label: 'Discente',
@@ -1468,7 +1468,7 @@ export const AbasPanel: React.FC = () => {
                           });
                         }
                         if (ritual.Tem_Verdadeiro) {
-                          const req = verificarRequisitoRitual(ritual.Requisito_Verdadeiro, nex, classe, afinidadeAtiva, afinidadeEscolhida, ritual.Elemento_Ritual);
+                          const req = verificarRequisitoRitual(ritual.Requisito_Verdadeiro, nivel, classe, afinidadeAtiva, afinidadeEscolhida, ritual.Elemento_Ritual);
                           versoesDisponiveis.push({ 
                             value: 'verdadeiro', 
                             label: 'Verdadeiro',

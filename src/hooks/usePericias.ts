@@ -21,7 +21,7 @@ interface UsePericiasReturn {
 
 export function usePericias(
   classe: ClasseRPG,
-  nex: number,
+  nivel: number,
   atributos: Atributos,
   regrasAtivas: boolean, // true = regras aplicadas, false = livre
   periciasGratisBase: string[],
@@ -332,7 +332,7 @@ export function usePericias(
   }, [periciasGratis, veteranasGratis, pericias]);
 
   const limites = useMemo(() => {
-    const lim = calcularLimitesPericias(classe, nex, atributos);
+    const lim = calcularLimitesPericias(classe, nivel, atributos);
     let extra = 0;
     if (codigoPerRegra === 1 || codigoPerRegra === 3) extra = 1;
     if (codigoPerRegra === 2) extra = 2;
@@ -344,7 +344,7 @@ export function usePericias(
       ...lim,
       maxTreinadas: lim.maxTreinadas + extra
     };
-  }, [classe, nex, atributos, codigoPerRegra]);
+  }, [classe, nivel, atributos, codigoPerRegra]);
 
   const totais = useMemo(() => {
     let totalTreinadasUsadas = 0;
@@ -376,9 +376,9 @@ export function usePericias(
             return prev;
           }
 
-          // NEX mínimo para aumentar grau
-          if (novoValor === 10 && nex < 35) return prev;
-          if (novoValor === 15 && nex < 70) return prev;
+          // Nível mínimo para aumentar grau
+          if (novoValor === 10 && nivel < 7) return prev;
+          if (novoValor === 15 && nivel < 14) return prev;
 
           // Simula para verificar limites
           const simuladas = {
@@ -413,7 +413,7 @@ export function usePericias(
         };
       });
     },
-    [regrasAtivas, periciasGratis, nex, limites]
+    [regrasAtivas, periciasGratis, nivel, limites]
   );
 
   const periciasComBonus = useMemo(() => {

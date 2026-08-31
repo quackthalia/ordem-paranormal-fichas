@@ -1138,7 +1138,7 @@ export const AbasPanel: React.FC = () => {
              const pego = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === `poder_57_${chave}`);
              if (!pego) {
                 const isExtra = chave.startsWith('extra_');
-                const nivelNum = isExtra ? nex : parseInt(chave, 10);
+                const nivelNum = isExtra ? effectiveNex : parseInt(chave, 10);
                 let c = 1;
                 if (nivelNum >= 85) c = 4;
                 else if (nivelNum >= 55) c = 3;
@@ -1151,20 +1151,21 @@ export const AbasPanel: React.FC = () => {
           const slotsOcultistaPendentesList: { index: number, nex: number, maxCirculo: number, isOcultista: boolean }[] = [];
           if (classe === 'Ocultista') {
             const todosSlots: { index: number, nex: number, maxCirculo: number }[] = [];
-            if (nex >= 5) {
+            if (nivel >= 1) {
               todosSlots.push({ index: 1, nex: 5, maxCirculo: 1 });
               todosSlots.push({ index: 2, nex: 5, maxCirculo: 1 });
               todosSlots.push({ index: 3, nex: 5, maxCirculo: 1 });
             }
-            for (let n = 10; n <= nex; n += 5) {
+            for (let lvl = 2; lvl <= nivel; lvl++) {
               let c = 1;
-              if (n >= 85) c = 4;
-              else if (n >= 55) c = 3;
-              else if (n >= 25) c = 2;
-              todosSlots.push({ index: todosSlots.length + 1, nex: n, maxCirculo: c });
+              if (lvl >= 17) c = 4;
+              else if (lvl >= 11) c = 3;
+              else if (lvl >= 5) c = 2;
+              const nexEquiv = lvl === 20 ? 99 : lvl * 5;
+              todosSlots.push({ index: todosSlots.length + 1, nex: nexEquiv, maxCirculo: c });
             }
             
-            // Filtra os que já foram pegos
+            // Filtra os que j� foram pegos
             for (const slot of todosSlots) {
               const pego = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === `ocultista_${slot.index}`);
               if (!pego) {
@@ -1188,16 +1189,16 @@ export const AbasPanel: React.FC = () => {
             const oc = periciasHook.pericias['Ocultismo'];
             if (oc && oc.treino > 0) {
               const pego1 = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'regra_61_1');
-              if (!pego1) slotsRegra61PendentesList.push({ chave: 'regra_61_1', index: 901, nex, maxCirculo: 1, isOcultista: false, isRegra61: true });
+              if (!pego1) slotsRegra61PendentesList.push({ chave: 'regra_61_1', index: 901, nex: effectiveNex, maxCirculo: 1, isOcultista: false, isRegra61: true });
               
               if (oc.treino >= 10) {
                 const pego2 = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'regra_61_2');
-                if (!pego2) slotsRegra61PendentesList.push({ chave: 'regra_61_2', index: 902, nex, maxCirculo: 2, isOcultista: false, isRegra61: true });
+                if (!pego2) slotsRegra61PendentesList.push({ chave: 'regra_61_2', index: 902, nex: effectiveNex, maxCirculo: 2, isOcultista: false, isRegra61: true });
               }
               
               if (oc.treino >= 15) {
                 const pego3 = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'regra_61_3');
-                if (!pego3) slotsRegra61PendentesList.push({ chave: 'regra_61_3', index: 903, nex, maxCirculo: 3, isOcultista: false, isRegra61: true });
+                if (!pego3) slotsRegra61PendentesList.push({ chave: 'regra_61_3', index: 903, nex: effectiveNex, maxCirculo: 3, isOcultista: false, isRegra61: true });
               }
             }
           }
@@ -1216,7 +1217,7 @@ export const AbasPanel: React.FC = () => {
               }
               for (let i = 1; i <= int; i++) {
                 const pego = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === `regra_62_${i}`);
-                if (!pego) slotsRegra62PendentesList.push({ chave: `regra_62_${i}`, index: 910 + i, nex, maxCirculo: maxC, isOcultista: false, isRegra62: true });
+                if (!pego) slotsRegra62PendentesList.push({ chave: `regra_62_${i}`, index: 910 + i, nex: effectiveNex, maxCirculo: maxC, isOcultista: false, isRegra62: true });
               }
             }
           }

@@ -55,7 +55,7 @@ export function Collapse({
     <div
       className={`relative ${className}`}
       style={{
-        maxHeight: isOpen ? `${height}px` : (previewHeight !== undefined ? previewHeight : '0px'),
+        maxHeight: (isFullyOpen && isOpen) ? 'none' : (isOpen ? `${height}px` : (previewHeight !== undefined ? previewHeight : '0px')),
         opacity: (isOpen || previewHeight !== undefined) ? 1 : 0,
         overflow: (isFullyOpen && isOpen) ? 'visible' : 'hidden',
         transition: (isFullyOpen && isOpen) ? `max-height 0.01s linear, opacity ${duration} ${timingFunction}` : `max-height ${duration} ${timingFunction}, opacity ${duration} ${timingFunction}`,

@@ -20,9 +20,6 @@ export function Collapse({
   const contentRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState<number>(0);
   const [isFullyOpen, setIsFullyOpen] = useState(isOpen);
-  const [localMaxHeight, setLocalMaxHeight] = useState<string | number>(
-    isOpen ? 'none' : (previewHeight !== undefined ? previewHeight : '0px')
-  );
 
   useEffect(() => {
     if (isOpen) {
@@ -48,32 +45,11 @@ export function Collapse({
     return () => resizeObserver.disconnect();
   }, []);
 
-  useEffect(() => {
-    if (isOpen) {
-      if (localMaxHeight === 'none') return;
-      setLocalMaxHeight(`${height}px`);
-      const timer = setTimeout(() => {
-        setLocalMaxHeight('none');
-      }, 300);
-      return () => clearTimeout(timer);
-    } else {
-      const currentHeight = contentRef.current?.scrollHeight || height;
-      setLocalMaxHeight(`${currentHeight}px`);
-      
-      const raf = requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          setLocalMaxHeight(previewHeight !== undefined ? previewHeight : '0px');
-        });
-      });
-      return () => cancelAnimationFrame(raf);
-    }
-  }, [isOpen, height, previewHeight]);
-
   return (
     <div
       className={`relative ${className}`}
       style={{
-        maxHeight: localMaxHeight,
+        maxHeight: isOpen ? `${height}px` : (previewHeight !== undefined ? previewHeight : '0px'),
         opacity: (isOpen || previewHeight !== undefined) ? 1 : 0,
         overflow: (isFullyOpen && isOpen) ? 'visible' : 'hidden',
         transition: (isFullyOpen && isOpen) ? `max-height 0.01s linear, opacity ${duration} ${timingFunction}` : `max-height ${duration} ${timingFunction}, opacity ${duration} ${timingFunction}`,

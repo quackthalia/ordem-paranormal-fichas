@@ -156,7 +156,7 @@ export function ModalTrilhas({
                 const nexLevels = [10, 40, 65, 99];
 
                 return (
-                  <div key={trilha.Codigo_Trilha} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out cursor-pointer ${estaExpandida ? 'min-h-[155px] max-h-[3000px]' : 'min-h-[155px] max-h-[155px]'}`}>
+                  <div key={trilha.Codigo_Trilha} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out cursor-pointer ${estaExpandida ? 'min-h-[170px] max-h-[3000px]' : 'min-h-[170px] max-h-[170px]'}`}>
                     <div
                       onClick={() => setTrilhasModalExpandidas(prev => prev.includes(trilha.Codigo_Trilha) ? prev.filter(i => i !== trilha.Codigo_Trilha) : [...prev, trilha.Codigo_Trilha])}
                       className="flex cursor-pointer justify-between items-start mb-2"
@@ -230,7 +230,7 @@ export function ModalTrilhas({
                       </div>
                     </Collapse>
 
-                    <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2">
+                    <div className="flex flex-nowrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 shrink-0">
                       <button
                         onClick={(e) => { e.stopPropagation(); handleEscolher(trilha); }}
                         className="ml-auto shrink-0 px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
@@ -249,7 +249,7 @@ export function ModalTrilhas({
                 const nexLevels = [10, 40, 65, 99];
 
                 return (
-                  <div key={trilha.Codigo_Trilha} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out cursor-pointer ${estaExpandida ? 'min-h-[155px] max-h-[3000px]' : 'min-h-[155px] max-h-[155px]'}`}>
+                  <div key={trilha.Codigo_Trilha} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out cursor-pointer ${estaExpandida ? 'min-h-[170px] max-h-[3000px]' : 'min-h-[170px] max-h-[170px]'}`}>
                     <div
                       onClick={() => setTrilhasModalExpandidas(prev => prev.includes(trilha.Codigo_Trilha) ? prev.filter(i => i !== trilha.Codigo_Trilha) : [...prev, trilha.Codigo_Trilha])}
                       className="flex cursor-pointer justify-between items-start mb-2"
@@ -323,7 +323,7 @@ export function ModalTrilhas({
                       </div>
                     </Collapse>
 
-                    <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2">
+                    <div className="flex flex-nowrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 shrink-0">
                       <button
                         onClick={(e) => { e.stopPropagation(); handleEscolher(trilha); }}
                         className="ml-auto shrink-0 px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"

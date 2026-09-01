@@ -451,7 +451,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
             }
 
             return (
-              <div key={codigo} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out ${estaExpandido ? 'min-h-[155px] max-h-[3000px]' : 'min-h-[155px] max-h-[155px]'} cursor-pointer`}>
+              <div key={codigo} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out ${estaExpandido ? 'min-h-[170px] max-h-[3000px]' : 'min-h-[170px] max-h-[170px]'} cursor-pointer`}>
                 <div
                   onClick={() => toggleExpandir(codigo as number)}
                   className="flex items-start justify-between gap-3 mb-2"
@@ -527,7 +527,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                   </Collapse>
                 </div>
 
-                <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden transition-all duration-300 ease-in-out text-[11px] border-t border-zinc-800/50 pt-2 mt-2">
+                <div className="flex flex-nowrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 shrink-0">
                   <div className="flex flex-wrap items-center justify-end gap-3 w-full">
                     {escolhendoElementoId != null && escolhendoElementoId === codigo ? (
                       <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800">

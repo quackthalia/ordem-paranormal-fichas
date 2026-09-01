@@ -94,7 +94,7 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
                         const isExpanded = expandidos.includes(id);
 
                         return (
-                          <div key={id} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out cursor-pointer ${isExpanded ? 'min-h-[155px] max-h-[3000px]' : 'min-h-[155px] max-h-[155px]'} ${!meetsNex ? 'opacity-70' : ''}`}>
+                          <div key={id} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out cursor-pointer ${isExpanded ? 'min-h-[170px] max-h-[3000px]' : 'min-h-[170px] max-h-[170px]'} ${!meetsNex ? 'opacity-70' : ''}`}>
                             <div 
                               className="flex justify-between items-start cursor-pointer mb-2"
                               onClick={() => setExpandidos(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])}
@@ -115,7 +115,7 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
                               </Collapse>
                             </div>
                             
-                            <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2">
+                            <div className="flex flex-nowrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 shrink-0">
                               {meetsNex ? (
                                 <button
                                   onClick={(e) => {
@@ -151,7 +151,7 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
                         const isExpanded = expandidos.includes(id);
 
                         return (
-                          <div key={id} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out cursor-pointer ${isExpanded ? 'min-h-[155px] max-h-[3000px]' : 'min-h-[155px] max-h-[155px]'} ${!meetsNex ? 'opacity-70' : ''}`}>
+                          <div key={id} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out cursor-pointer ${isExpanded ? 'min-h-[170px] max-h-[3000px]' : 'min-h-[170px] max-h-[170px]'} ${!meetsNex ? 'opacity-70' : ''}`}>
                             <div 
                               className="flex justify-between items-start cursor-pointer mb-2"
                               onClick={() => setExpandidos(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])}
@@ -172,7 +172,7 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
                               </Collapse>
                             </div>
                             
-                            <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2">
+                            <div className="flex flex-nowrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 shrink-0">
                               {meetsNex ? (
                                 <button
                                   onClick={(e) => {

@@ -25,7 +25,7 @@ const CORES_ELEMENTOS: Record<string, string> = {
   varia: '#888888',
 };
 
-const ELEMENTOS = ['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo', 'Varia'];
+const ELEMENTOS = ['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Varia'];
 
 function obterCorBadge(elemento: string): string {
   return CORES_ELEMENTOS[elemento.toLowerCase()] || '#666';

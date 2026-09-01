@@ -228,7 +228,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
     { id: 'ocultista', label: 'Ocultista' }
   ];
 
-  const subAbasElementos = ['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo', 'Varia'];
+  const subAbasElementos = ['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Varia'];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onClose}>

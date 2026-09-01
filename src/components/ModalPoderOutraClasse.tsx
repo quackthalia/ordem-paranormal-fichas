@@ -71,7 +71,14 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
   }, [atributos, nex, nivel, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras]);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      setFiltro('');
+      setExpandidos([]);
+      setEscolhendoElementoId(null);
+      setEscolhendoRitualId(null);
+      setEscolhendoPericiaId(null);
+      return;
+    }
     
     let classesParaBuscar: string[] = [];
     if (classe === 'Especialista') classesParaBuscar = ['Combatente', 'Ocultista'];
@@ -129,17 +136,42 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
               const blocked = !req.atende || alreadyHas || bloqRitual;
 
               return (
-                <div key={poder.codigo_poder} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col `}>
-                  <div className="flex justify-between items-center cursor-pointer transition" onClick={() => setExpandidos(prev => prev.includes(poder.codigo_poder) ? prev.filter(id => id !== poder.codigo_poder) : [...prev, poder.codigo_poder])}>
-                    <div className="flex flex-col gap-1">
-                      <span className="font-bold text-zinc-200 group-hover:text-green-400 transition truncate">{poder.Nome}</span>
-                      <span className="text-[10px] uppercase tracking-wider text-zinc-500">{poder.Tipo || poder.Classe}</span>
+                <div key={poder.codigo_poder} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col h-full cursor-pointer`}>
+                  <div 
+                    className="flex items-start justify-between gap-3 mb-2 cursor-pointer"
+                    onClick={() => setExpandidos(prev => prev.includes(poder.codigo_poder) ? prev.filter(id => id !== poder.codigo_poder) : [...prev, poder.codigo_poder])}
+                  >
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none truncate">{poder.Nome}</span>
+                      <span className="inline-block rounded bg-zinc-800 px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight text-zinc-400">{poder.Tipo || poder.Classe}</span>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
-                    </div>
+                    <span className="w-5 text-center text-zinc-500 text-xs flex-shrink-0 mt-0.5">{isExpanded ? '▲' : '▼'}</span>
                   </div>
-                  <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2 mt-3">
+
+                  <div className="flex-1 flex flex-col">
+                    <Collapse isOpen={isExpanded} previewHeight="4.5em">
+                      <p 
+                        className="text-xs text-zinc-400 mb-2 leading-relaxed whitespace-pre-wrap select-none"
+                        dangerouslySetInnerHTML={{ __html: formatarDescricao(poder.Descricao) }}
+                      />
+                    </Collapse>
+                    <Collapse isOpen={isExpanded}>
+                      <div className="mt-2 text-left border-t border-zinc-800/50 pt-2 flex flex-col gap-2">
+                        {poder.PreRequisitos && (
+                          <div className="inline-block rounded bg-amber-400/5 px-3 py-2 text-xs italic text-amber-400 border border-amber-500/20">
+                            <strong>Pré-requisitos:</strong> {formatarTextoPreRequisitos(poder.PreRequisitos, contextoPrereq.nomesPericias)}
+                          </div>
+                        )}
+                        {poder.Fonte && (
+                          <div className="text-[0.6rem] uppercase tracking-wider text-zinc-600">
+                            Fonte: {poder.Fonte}
+                          </div>
+                        )}
+                      </div>
+                    </Collapse>
+                  </div>
+
+                  <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden transition-all duration-300 ease-in-out text-[11px] border-t border-zinc-800/50 pt-2 mt-2">
                     <div className="flex items-center justify-end w-full gap-2">
                       {!alreadyHas && escolhendoElementoId === poder.codigo_poder ? (
                         <div className="flex gap-1 items-center bg-zinc-950 p-1 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
@@ -224,14 +256,6 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
                       )}
                     </div>
                   </div>
-                  <Collapse isOpen={isExpanded}>
-                    <div className="border-t border-zinc-800 px-5 py-4 text-left">
-                      <div className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap min-h-[4.5em]" dangerouslySetInnerHTML={{ __html: formatarDescricao(poder.Descricao) }} />
-                      {poder.PreRequisitos && (
-                        <div className="mt-4 p-2 rounded bg-amber-500/10 text-xs italic text-amber-500 border border-amber-500/20">Pré-requisitos: {formatarTextoPreRequisitos(poder.PreRequisitos, contextoPrereq.nomesPericias)}</div>
-                      )}
-                    </div>
-                  </Collapse>
                 </div>
               );
             

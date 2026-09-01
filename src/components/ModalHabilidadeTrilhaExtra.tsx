@@ -108,7 +108,7 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
                             
                             <Collapse isOpen={isExpanded} previewHeight="4.5em">
                               <div 
-                                className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap min-h-[4.5em]" 
+                                className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap" 
                                 dangerouslySetInnerHTML={{ __html: formatarDescricao(descricao) }} 
                               />
                             </Collapse>
@@ -163,7 +163,7 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
                             
                             <Collapse isOpen={isExpanded} previewHeight="4.5em">
                               <div 
-                                className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap min-h-[4.5em]" 
+                                className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap" 
                                 dangerouslySetInnerHTML={{ __html: formatarDescricao(descricao) }} 
                               />
                             </Collapse>

@@ -156,7 +156,7 @@ export function ModalTrilhas({
                 const nexLevels = [10, 40, 65, 99];
 
                 return (
-                  <div key={trilha.Codigo_Trilha} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-2 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out cursor-pointer ${estaExpandida ? 'min-h-[130px] max-h-[3000px]' : 'min-h-[130px] max-h-[130px]'}`}>
+                  <div key={trilha.Codigo_Trilha} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out cursor-pointer ${estaExpandida ? 'min-h-[155px] max-h-[3000px]' : 'min-h-[155px] max-h-[155px]'}`}>
                     <div
                       onClick={() => setTrilhasModalExpandidas(prev => prev.includes(trilha.Codigo_Trilha) ? prev.filter(i => i !== trilha.Codigo_Trilha) : [...prev, trilha.Codigo_Trilha])}
                       className="flex cursor-pointer justify-between items-start mb-2"
@@ -173,7 +173,7 @@ export function ModalTrilhas({
                     </div>
 
                     <div className="flex-1 flex flex-col">
-                      <Collapse isOpen={estaExpandida} previewHeight="36px">
+                      <Collapse isOpen={estaExpandida} previewHeight="4.5em">
                         <div className="text-xs text-zinc-400 mb-2 leading-relaxed whitespace-pre-wrap select-none" dangerouslySetInnerHTML={{ __html: formatarDescricao(trilha.Descricao_Trilha) }} />
                       </Collapse>
                     </div>
@@ -249,7 +249,7 @@ export function ModalTrilhas({
                 const nexLevels = [10, 40, 65, 99];
 
                 return (
-                  <div key={trilha.Codigo_Trilha} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-2 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out cursor-pointer ${estaExpandida ? 'min-h-[130px] max-h-[3000px]' : 'min-h-[130px] max-h-[130px]'}`}>
+                  <div key={trilha.Codigo_Trilha} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out cursor-pointer ${estaExpandida ? 'min-h-[155px] max-h-[3000px]' : 'min-h-[155px] max-h-[155px]'}`}>
                     <div
                       onClick={() => setTrilhasModalExpandidas(prev => prev.includes(trilha.Codigo_Trilha) ? prev.filter(i => i !== trilha.Codigo_Trilha) : [...prev, trilha.Codigo_Trilha])}
                       className="flex cursor-pointer justify-between items-start mb-2"
@@ -266,7 +266,7 @@ export function ModalTrilhas({
                     </div>
 
                     <div className="flex-1 flex flex-col">
-                      <Collapse isOpen={estaExpandida} previewHeight="36px">
+                      <Collapse isOpen={estaExpandida} previewHeight="4.5em">
                         <div className="text-xs text-zinc-400 mb-2 leading-relaxed whitespace-pre-wrap select-none" dangerouslySetInnerHTML={{ __html: formatarDescricao(trilha.Descricao_Trilha) }} />
                       </Collapse>
                     </div>

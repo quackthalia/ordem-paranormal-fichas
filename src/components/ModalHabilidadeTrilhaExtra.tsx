@@ -94,7 +94,7 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
                         const isExpanded = expandidos.includes(id);
 
                         return (
-                          <div key={id} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col h-full ${!meetsNex ? 'opacity-70' : ''}`}>
+                          <div key={id} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-2 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out cursor-pointer ${isExpanded ? 'min-h-[130px] max-h-[3000px]' : 'min-h-[130px] max-h-[130px]'} ${!meetsNex ? 'opacity-70' : ''}`}>
                             <div 
                               className="flex justify-between items-start cursor-pointer mb-2"
                               onClick={() => setExpandidos(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])}
@@ -106,12 +106,14 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
                               <span className="text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
                             </div>
                             
-                            <Collapse isOpen={isExpanded} previewHeight="4.5em">
-                              <div 
-                                className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap" 
-                                dangerouslySetInnerHTML={{ __html: formatarDescricao(descricao) }} 
-                              />
-                            </Collapse>
+                            <div className="flex-1 flex flex-col">
+                              <Collapse isOpen={isExpanded} previewHeight="36px">
+                                <div 
+                                  className="text-xs text-zinc-400 mb-2 leading-relaxed whitespace-pre-wrap select-none" 
+                                  dangerouslySetInnerHTML={{ __html: formatarDescricao(descricao) }} 
+                                />
+                              </Collapse>
+                            </div>
                             
                             <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2">
                               {meetsNex ? (
@@ -149,7 +151,7 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
                         const isExpanded = expandidos.includes(id);
 
                         return (
-                          <div key={id} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col h-full ${!meetsNex ? 'opacity-70' : ''}`}>
+                          <div key={id} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-2 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out cursor-pointer ${isExpanded ? 'min-h-[130px] max-h-[3000px]' : 'min-h-[130px] max-h-[130px]'} ${!meetsNex ? 'opacity-70' : ''}`}>
                             <div 
                               className="flex justify-between items-start cursor-pointer mb-2"
                               onClick={() => setExpandidos(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])}
@@ -161,12 +163,14 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
                               <span className="text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
                             </div>
                             
-                            <Collapse isOpen={isExpanded} previewHeight="4.5em">
-                              <div 
-                                className="text-xs text-zinc-400 mb-4 leading-relaxed whitespace-pre-wrap" 
-                                dangerouslySetInnerHTML={{ __html: formatarDescricao(descricao) }} 
-                              />
-                            </Collapse>
+                            <div className="flex-1 flex flex-col">
+                              <Collapse isOpen={isExpanded} previewHeight="36px">
+                                <div 
+                                  className="text-xs text-zinc-400 mb-2 leading-relaxed whitespace-pre-wrap select-none" 
+                                  dangerouslySetInnerHTML={{ __html: formatarDescricao(descricao) }} 
+                                />
+                              </Collapse>
+                            </div>
                             
                             <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2">
                               {meetsNex ? (

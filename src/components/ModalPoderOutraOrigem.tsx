@@ -108,7 +108,7 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
               const bloqRitual = precisaEscolherRitual && rituaisAprendidos.length === 0;
 
               return (
-                <div key={origem.Codigo_Origem} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col h-full cursor-pointer`}>
+                <div key={origem.Codigo_Origem} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-2 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[130px] max-h-[3000px]' : 'min-h-[130px] max-h-[130px]'} cursor-pointer`}>
                   <div 
                     className="flex items-start justify-between gap-3 mb-2 cursor-pointer"
                     onClick={() => setExpandidos(prev => prev.includes(origem.Codigo_Origem) ? prev.filter(id => id !== origem.Codigo_Origem) : [...prev, origem.Codigo_Origem])}
@@ -121,7 +121,7 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
                   </div>
 
                   <div className="flex-1 flex flex-col">
-                    <Collapse isOpen={isExpanded} previewHeight="4.5em">
+                    <Collapse isOpen={isExpanded} previewHeight="36px">
                       <p className="text-xs text-zinc-400 mb-2 leading-relaxed whitespace-pre-wrap select-none">
                         <strong className="text-green-500 font-semibold">{origem.Nome_Poder}. </strong>
                         <span dangerouslySetInnerHTML={{ __html: formatarDescricao(origem.Descricao_Poder) }} />

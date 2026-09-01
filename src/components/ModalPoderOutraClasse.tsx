@@ -136,7 +136,7 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
               const blocked = !req.atende || alreadyHas || bloqRitual;
 
               return (
-                <div key={poder.codigo_poder} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col h-full cursor-pointer`}>
+                <div key={poder.codigo_poder} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-2 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[130px] max-h-[3000px]' : 'min-h-[130px] max-h-[130px]'} cursor-pointer`}>
                   <div 
                     className="flex items-start justify-between gap-3 mb-2 cursor-pointer"
                     onClick={() => setExpandidos(prev => prev.includes(poder.codigo_poder) ? prev.filter(id => id !== poder.codigo_poder) : [...prev, poder.codigo_poder])}
@@ -149,7 +149,7 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
                   </div>
 
                   <div className="flex-1 flex flex-col">
-                    <Collapse isOpen={isExpanded} previewHeight="4.5em">
+                    <Collapse isOpen={isExpanded} previewHeight="36px">
                       <p 
                         className="text-xs text-zinc-400 mb-2 leading-relaxed whitespace-pre-wrap select-none"
                         dangerouslySetInnerHTML={{ __html: formatarDescricao(poder.Descricao) }}

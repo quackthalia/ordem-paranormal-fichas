@@ -1011,7 +1011,7 @@ export const AbasPanel: React.FC = () => {
                               </div>
                               <div className="flex items-center gap-2.5">
                                 {hab.elemento && (
-                                  <span className={`rounded border px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${getBadgeElemento(hab.elemento)}`}>
+                                  <span className={`rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${getBadgeElemento(hab.elemento)}`}>
                                     {hab.elemento}
                                   </span>
                                 )}

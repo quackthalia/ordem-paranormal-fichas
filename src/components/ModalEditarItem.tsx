@@ -35,7 +35,7 @@ export function ModalEditarItem({
   const { modificacoesHook, periciasHook } = useRPG();
   const [modificacoes, setModificacoes] = useState<number[]>(itemInventario.modificacoes || []);
   const [maldicoes, setMaldicoes] = useState<number[]>(itemInventario.maldicoes || []);
-  const [maldicoesElementos, setMaldicoesElementos] = useState<Record<number, string>>(itemObj.maldicoes_elementos || {});
+  const [maldicoesElementos, setMaldicoesElementos] = useState<Record<number, string>>(itemInventario.maldicoes_elementos || {});
   
   const [escolhendoFuncaoAdicional, setEscolhendoFuncaoAdicional] = useState<number | null>(null);
   const [escolhendoAprimorado, setEscolhendoAprimorado] = useState<number | null>(null);

@@ -108,10 +108,9 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
               const bloqRitual = precisaEscolherRitual && rituaisAprendidos.length === 0;
 
               return (
-                <div key={origem.Codigo_Origem} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[170px] max-h-[3000px]' : 'min-h-[170px] max-h-[170px]'} cursor-pointer`}>
+                <div key={origem.Codigo_Origem} onClick={() => setExpandidos(prev => prev.includes(origem.Codigo_Origem) ? prev.filter(id => id !== origem.Codigo_Origem) : [...prev, origem.Codigo_Origem])} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[170px] max-h-[3000px]' : 'min-h-[170px] max-h-[170px]'} cursor-pointer`}>
                   <div 
                     className="flex items-start justify-between gap-3 mb-2 cursor-pointer"
-                    onClick={() => setExpandidos(prev => prev.includes(origem.Codigo_Origem) ? prev.filter(id => id !== origem.Codigo_Origem) : [...prev, origem.Codigo_Origem])}
                   >
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none truncate">{origem.Nome}</span>

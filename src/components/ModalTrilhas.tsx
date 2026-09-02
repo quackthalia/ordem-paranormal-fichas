@@ -156,10 +156,9 @@ export function ModalTrilhas({
                 const nexLevels = [10, 40, 65, 99];
 
                 return (
-                  <div key={trilha.Codigo_Trilha} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out cursor-pointer ${estaExpandida ? 'min-h-[170px] max-h-[3000px]' : 'min-h-[170px] max-h-[170px]'}`}>
+                  <div key={trilha.Codigo_Trilha} onClick={() => setTrilhasModalExpandidas(prev => prev.includes(trilha.Codigo_Trilha) ? prev.filter(i => i !== trilha.Codigo_Trilha) : [...prev, trilha.Codigo_Trilha])} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out cursor-pointer ${estaExpandida ? 'min-h-[170px] max-h-[3000px]' : 'min-h-[170px] max-h-[170px]'}`}>
                     <div
-                      onClick={() => setTrilhasModalExpandidas(prev => prev.includes(trilha.Codigo_Trilha) ? prev.filter(i => i !== trilha.Codigo_Trilha) : [...prev, trilha.Codigo_Trilha])}
-                      className="flex cursor-pointer justify-between items-start mb-2"
+                      className="flex justify-between items-start mb-2"
                     >
                       <div className="flex flex-col gap-1">
                         <span className="font-bold text-zinc-200 group-hover:text-green-400 transition uppercase tracking-wider text-sm">{trilha.Nome_Trilha}</span>
@@ -198,7 +197,7 @@ export function ModalTrilhas({
                           return (
                             <div key={nexLvl} className="rounded border border-zinc-800 bg-zinc-950/50 overflow-hidden transition">
                               <div
-                                onClick={() => toggleHabilidade(uniqueHabId)}
+                                onClick={(e) => { e.stopPropagation(); toggleHabilidade(uniqueHabId); }}
                                 className="flex cursor-pointer justify-between items-center p-2 hover:bg-zinc-800/50 transition"
                               >
                                 <div className="flex items-center gap-2">
@@ -249,10 +248,9 @@ export function ModalTrilhas({
                 const nexLevels = [10, 40, 65, 99];
 
                 return (
-                  <div key={trilha.Codigo_Trilha} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out cursor-pointer ${estaExpandida ? 'min-h-[170px] max-h-[3000px]' : 'min-h-[170px] max-h-[170px]'}`}>
+                  <div key={trilha.Codigo_Trilha} onClick={() => setTrilhasModalExpandidas(prev => prev.includes(trilha.Codigo_Trilha) ? prev.filter(i => i !== trilha.Codigo_Trilha) : [...prev, trilha.Codigo_Trilha])} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out cursor-pointer ${estaExpandida ? 'min-h-[170px] max-h-[3000px]' : 'min-h-[170px] max-h-[170px]'}`}>
                     <div
-                      onClick={() => setTrilhasModalExpandidas(prev => prev.includes(trilha.Codigo_Trilha) ? prev.filter(i => i !== trilha.Codigo_Trilha) : [...prev, trilha.Codigo_Trilha])}
-                      className="flex cursor-pointer justify-between items-start mb-2"
+                      className="flex justify-between items-start mb-2"
                     >
                       <div className="flex flex-col gap-1">
                         <span className="font-bold text-zinc-200 group-hover:text-green-400 transition uppercase tracking-wider text-sm">{trilha.Nome_Trilha}</span>

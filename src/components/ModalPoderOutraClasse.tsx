@@ -136,10 +136,9 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
               const blocked = !req.atende || alreadyHas || bloqRitual;
 
               return (
-                <div key={poder.codigo_poder} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[170px] max-h-[3000px]' : 'min-h-[170px] max-h-[170px]'} cursor-pointer`}>
+                <div key={poder.codigo_poder} onClick={() => setExpandidos(prev => prev.includes(poder.codigo_poder) ? prev.filter(id => id !== poder.codigo_poder) : [...prev, poder.codigo_poder])} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[170px] max-h-[3000px]' : 'min-h-[170px] max-h-[170px]'} cursor-pointer`}>
                   <div 
                     className="flex items-start justify-between gap-3 mb-2 cursor-pointer"
-                    onClick={() => setExpandidos(prev => prev.includes(poder.codigo_poder) ? prev.filter(id => id !== poder.codigo_poder) : [...prev, poder.codigo_poder])}
                   >
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none truncate">{poder.Nome}</span>

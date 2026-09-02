@@ -451,9 +451,8 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
             }
 
             return (
-              <div key={codigo} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out ${estaExpandido ? 'min-h-[170px] max-h-[3000px]' : 'min-h-[170px] max-h-[170px]'} cursor-pointer`}>
+              <div key={codigo} onClick={() => toggleExpandir(codigo as number)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out ${estaExpandido ? 'min-h-[170px] max-h-[3000px]' : 'min-h-[170px] max-h-[170px]'} cursor-pointer`}>
                 <div
-                  onClick={() => toggleExpandir(codigo as number)}
                   className="flex items-start justify-between gap-3 mb-2"
                 >
                   <div className="flex flex-wrap items-center gap-2">

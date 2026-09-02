@@ -50,6 +50,24 @@ function sanidadePorNivel(classe: string | null): number {
   }
 }
 
+function getBadgeElemento(elemento: string): string {
+  if (!elemento) return 'border-zinc-700 bg-zinc-900 text-zinc-400';
+  const el = elemento.toLowerCase();
+  
+  if (el.includes(' e ')) {
+    return 'border-zinc-500 bg-zinc-800 text-zinc-300';
+  }
+
+  switch (el) {
+    case 'morte': return 'border-zinc-700 bg-black/50 text-white';
+    case 'medo': return 'border-zinc-500 bg-zinc-200/80 text-zinc-950';
+    case 'sangue': return 'border-red-900 bg-red-950/20 text-red-500';
+    case 'energia': return 'border-purple-900 bg-purple-950/20 text-purple-500';
+    case 'conhecimento': return 'border-yellow-900 bg-yellow-950/20 text-yellow-500';
+    default: return 'border-zinc-700 bg-zinc-900 text-zinc-400';
+  }
+}
+
 function obterCorBadge(elemento: string): string {
   if (!elemento) return '#666';
   const elementoStr = elemento.toLowerCase();
@@ -967,12 +985,8 @@ export const AbasPanel: React.FC = () => {
 
                         return (
                           <div key={hab.id}
-                            className={`overflow-hidden rounded-r border-l-4 bg-zinc-900/50 ${hab.categoria === 'paranormais' ? 'border-l-0' : 'border-green-800'}`}
+                            className="overflow-hidden rounded-r border-l-4 border-green-800 bg-zinc-900/50"
                           >
-                            {hab.elemento && (
-                              <div className="h-0.5 w-full" style={{ background: obterCorBadge(hab.elemento) }} />
-                            )}
-
                             <div onClick={() => {
                               setHabilidadesExpandidas(prev =>
                                 prev.includes(hab.id) ? prev.filter(id => id !== hab.id) : [...prev, hab.id]
@@ -982,6 +996,11 @@ export const AbasPanel: React.FC = () => {
                             >
                               <div className="flex items-center gap-3">
                                 <span className="text-sm font-bold text-zinc-100">{hab.nome}</span>
+                                {hab.elemento && (
+                                  <span className={`rounded border px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${getBadgeElemento(hab.elemento)}`}>
+                                    {hab.elemento}
+                                  </span>
+                                )}
                                 {hab.extra && <span className="rounded border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 text-xs font-bold text-amber-400">{hab.extra}</span>}
                               </div>
                               <div className="flex items-center gap-2.5">
@@ -992,24 +1011,6 @@ export const AbasPanel: React.FC = () => {
 
                             <Collapse isOpen={estaExpandida}>
                               <div className="px-4 py-4 text-left text-sm leading-relaxed text-zinc-400">
-                                {/* 🔥 Badge do elemento ACIMA da descrição — text-[9px] ~ pequeno */}
-                                {hab.elemento && (
-                                  <div className="mb-3">
-                                    <span className={`inline-block rounded px-2 py-px text-[9px] font-bold uppercase tracking-wider leading-tight ${
-                                      (() => {
-                                        const elStr = hab.elemento.toLowerCase();
-                                        if (elStr.includes('medo')) return 'bg-zinc-200/80 text-zinc-950 px-1';
-                                        if (elStr.includes('sangue')) return 'text-red-500';
-                                        if (elStr.includes('morte')) return 'bg-black/50 text-white px-1';
-                                        if (elStr.includes('conhecimento')) return 'text-yellow-500';
-                                        if (elStr.includes('energia')) return 'text-purple-500';
-                                        return 'text-zinc-400';
-                                      })()
-                                    }`}
-                                    >{hab.elemento}</span>
-                                  </div>
-                                )}
-
                                 <div dangerouslySetInnerHTML={{ __html: formatarDescricao(hab.descricao) }} />
 
                                 {/* 🔥 Afinidade: texto puro */}

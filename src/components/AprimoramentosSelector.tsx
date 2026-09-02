@@ -90,7 +90,7 @@ export function AprimoramentosSelector({
           {modsAplicadasFull.map((mod, index) => (
             <div 
               key={`mod-${mod.Codigo_Modif}-${index}`}
-              className="group flex items-start justify-between p-3 bg-zinc-950 hover:bg-zinc-900 border border-zinc-800 hover:border-zinc-700 rounded-lg transition-all"
+              className="group flex items-start justify-between p-3 bg-zinc-950 hover:bg-zinc-900 border border-zinc-800 hover:border-zinc-700 rounded transition-all"
             >
               <div className="flex flex-col gap-1.5 pr-4">
                 <span className="font-bold text-zinc-200 text-[15px]">{mod.Nome_Modif}</span>
@@ -119,7 +119,7 @@ export function AprimoramentosSelector({
             return (
               <div 
                 key={`mald-${mod.Codigo_Mald}-${index}`}
-                className="group flex items-start justify-between p-3 bg-zinc-950 hover:bg-zinc-900 border border-zinc-800 hover:border-zinc-700 rounded-lg transition-all"
+                className="group flex items-start justify-between p-3 bg-zinc-950 hover:bg-zinc-900 border border-zinc-800 hover:border-zinc-700 rounded transition-all"
               >
                 <div className="flex flex-col gap-1.5 pr-4">
                   <div className="flex items-center gap-2">
@@ -157,7 +157,7 @@ export function AprimoramentosSelector({
           setModalAberto(true);
         }}
         
-        className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg border-2 border-dashed transition-all ${
+        className={`w-full flex items-center justify-center gap-2 py-3 rounded border-2 border-dashed transition-all ${
           (podeAdicionarMod || podeAdicionarMald)
             ? 'border-zinc-700 hover:border-zinc-500 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/30' 
             : 'border-zinc-800 text-zinc-700 cursor-not-allowed bg-zinc-900/20'
@@ -175,7 +175,7 @@ export function AprimoramentosSelector({
       {modalAberto && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85 p-5" onClick={() => setModalAberto(false)}>
           <div 
-            className="flex h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-950 shadow-2xl shadow-black/50" 
+            className="flex h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-lg border border-zinc-700 bg-zinc-950 shadow-2xl shadow-black/50"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
@@ -268,7 +268,7 @@ export function AprimoramentosSelector({
                               onAddMod(opcao.Codigo_Modif);
                               setModalAberto(false);
                             }}
-                            className={`flex flex-col p-4 rounded-lg bg-zinc-900/40 border-l-[3px] border-l-zinc-500 border border-zinc-800 transition group ${podeAdicionarMod ? 'hover:border-green-500/50 hover:border-l-green-500 hover:bg-zinc-900/80 cursor-pointer shadow-sm hover:shadow' : 'opacity-50 cursor-not-allowed'}`}
+                            className={`flex flex-col p-4 rounded bg-zinc-900/40 border-l-[3px] border-l-zinc-500 border border-zinc-800 transition group ${podeAdicionarMod ? 'hover:border-green-500/50 hover:border-l-green-500 hover:bg-zinc-900/80 cursor-pointer shadow-sm hover:shadow' : 'opacity-50 cursor-not-allowed'}`}
                           >
                             <span className="font-bold text-zinc-200 text-sm group-hover:text-green-400 transition-colors">{opcao.Nome_Modif}</span>
                             <span className="text-[12px] text-zinc-400 mt-1.5 leading-relaxed">{opcao.Descricao_Modif}</span>
@@ -308,7 +308,7 @@ export function AprimoramentosSelector({
                                 onAddMald(opcao.Codigo_Mald, isVaria ? (elementosVaria[opcao.Codigo_Mald] || 'Sangue') : undefined);
                                 setModalAberto(false);
                               }}
-                              className={`flex flex-col p-4 rounded-lg bg-zinc-900/40 border-l-[3px] ${borderL} border border-zinc-800 transition group ${podeAdicionarMald ? 'hover:border-green-500/50 hover:bg-zinc-900/80 hover:border-l-green-500 cursor-pointer shadow-sm hover:shadow' : 'opacity-50 cursor-not-allowed'}`}
+                              className={`flex flex-col p-4 rounded bg-zinc-900/40 border-l-[3px] ${borderL} border border-zinc-800 transition group ${podeAdicionarMald ? 'hover:border-green-500/50 hover:bg-zinc-900/80 hover:border-l-green-500 cursor-pointer shadow-sm hover:shadow' : 'opacity-50 cursor-not-allowed'}`}
                             >
                               <div className="flex justify-between items-center gap-2">
                                 <span className="font-bold text-zinc-200 text-sm group-hover:text-green-400 transition-colors">{opcao.Nome_Mald}</span>

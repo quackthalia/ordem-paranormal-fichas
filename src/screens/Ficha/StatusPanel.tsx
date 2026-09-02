@@ -421,20 +421,20 @@ function BarraStatus({
       </div>
 
       {/* CORPO */}
-      <div className="flex gap-2.5">
+      <div className="flex w-full overflow-visible">
         <div
-          className={`relative flex items-center justify-between overflow-hidden rounded border p-2.5 transition-all ${corBarra} ${hasTemp ? 'flex-[2.5]' : 'flex-1'}`}
+          className={`relative flex items-center justify-between overflow-hidden rounded border p-2.5 transition-all duration-300 ease-out ${corBarra} ${hasTemp ? 'w-[71.5%]' : 'w-full'}`}
         >
           {/* Preenchimento proporcional */}
           <div
             className="absolute inset-y-0 left-0 bg-white/5 transition-all"
             style={{ width: `${percentual}%` }}
           />
-          <div className="relative">
+          <div className="relative shrink-0">
             <button onClick={() => alterarStatus(-5)} className={btnSeta} title="-5">«</button>
             <button onClick={() => alterarStatus(-1)} className={btnSeta} title="-1">‹</button>
           </div>
-          <div className="relative flex items-center gap-1">
+          <div className="relative flex items-center gap-1 shrink-0">
             <input
               type="number"
               onKeyDown={bloquearLetras}
@@ -453,30 +453,34 @@ function BarraStatus({
               title={`Editar ${titulo} Máxima`}
             />
           </div>
-          <div className="relative">
+          <div className="relative shrink-0">
             <button onClick={() => alterarStatus(1)} className={btnSeta} title="+1">›</button>
             <button onClick={() => alterarStatus(5)} className={btnSeta} title="+5">»</button>
           </div>
         </div>
 
         {/* TEMPORÁRIO */}
-        {hasTemp && setTempAtual && setTempMax && (
-          <div className={`flex flex-1 items-center justify-center gap-1 rounded border border-dashed p-2.5 ${corTempClasses}`}>
-            <input
-              type="number"
-              onKeyDown={bloquearLetras}
-              value={tempAtual}
-              onChange={(e) => setTempAtual(Math.max(0, Number(e.target.value)))}
-              className="w-9 bg-transparent text-center font-bold text-zinc-100 outline-none"
-            />
-            <span className="text-zinc-500">/</span>
-            <input
-              type="number"
-              onKeyDown={bloquearLetras}
-              value={tempMax}
-              onChange={(e) => setTempMax(Math.max(0, Number(e.target.value)))}
-              className="w-9 bg-transparent text-center font-bold text-zinc-100 outline-none"
-            />
+        {setTempAtual && setTempMax && (
+          <div 
+            className={`transition-all duration-300 ease-out overflow-hidden flex items-stretch ${hasTemp ? 'w-[28.5%] pl-2.5 opacity-100 translate-x-0' : 'w-0 pl-0 opacity-0 translate-x-4'}`}
+          >
+            <div className={`flex w-full items-center justify-center gap-1 rounded border border-dashed p-2.5 whitespace-nowrap min-w-[80px] ${corTempClasses}`}>
+              <input
+                type="number"
+                onKeyDown={bloquearLetras}
+                value={tempAtual}
+                onChange={(e) => setTempAtual(Math.max(0, Number(e.target.value)))}
+                className="w-8 bg-transparent text-center font-bold text-zinc-100 outline-none shrink-0"
+              />
+              <span className="text-zinc-500 shrink-0">/</span>
+              <input
+                type="number"
+                onKeyDown={bloquearLetras}
+                value={tempMax}
+                onChange={(e) => setTempMax(Math.max(0, Number(e.target.value)))}
+                className="w-8 bg-transparent text-center font-bold text-zinc-100 outline-none shrink-0"
+              />
+            </div>
           </div>
         )}
       </div>

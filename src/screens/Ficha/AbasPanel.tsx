@@ -983,9 +983,20 @@ export const AbasPanel: React.FC = () => {
                           );
                         }
 
+                        let corBordaLeft = 'border-l-green-800';
+                        if (hab.categoria === 'paranormais' && hab.elemento) {
+                          const elStr = hab.elemento.toLowerCase();
+                          corBordaLeft = elStr.includes('medo') ? 'border-l-zinc-200' :
+                                         elStr.includes('sangue') ? 'border-l-red-600' :
+                                         elStr.includes('morte') ? 'border-l-black' :
+                                         elStr.includes('conhecimento') ? 'border-l-yellow-600' :
+                                         elStr.includes('energia') ? 'border-l-purple-600' : 
+                                         (elStr.includes('varia') || elStr.includes('vária')) ? 'border-l-green-600' : 'border-l-zinc-600';
+                        }
+
                         return (
                           <div key={hab.id}
-                            className="overflow-hidden rounded-r border-l-4 border-green-800 bg-zinc-900/50"
+                            className={`overflow-hidden rounded-r border-l-4 bg-zinc-900/50 ${corBordaLeft}`}
                           >
                             <div onClick={() => {
                               setHabilidadesExpandidas(prev =>
@@ -996,14 +1007,14 @@ export const AbasPanel: React.FC = () => {
                             >
                               <div className="flex items-center gap-3">
                                 <span className="text-sm font-bold text-zinc-100">{hab.nome}</span>
-                                {hab.elemento && (
-                                  <span className={`rounded border px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${getBadgeElemento(hab.elemento)}`}>
-                                    {hab.elemento}
-                                  </span>
-                                )}
                                 {hab.extra && <span className="rounded border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 text-xs font-bold text-amber-400">{hab.extra}</span>}
                               </div>
                               <div className="flex items-center gap-2.5">
+                                {hab.elemento && (
+                                  <span className={`rounded border px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${getBadgeElemento(hab.elemento)}`}>
+                                    {hab.elemento}
+                                  </span>
+                                )}
                                 <span className="rounded border border-zinc-800 bg-zinc-950 px-2 py-0.5 text-[0.65rem] uppercase tracking-wider text-zinc-500">{hab.tipo}</span>
                                 <span className="text-xs text-zinc-600">{estaExpandida ? '▲' : '▼'}</span>
                               </div>

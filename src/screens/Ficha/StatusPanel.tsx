@@ -395,6 +395,7 @@ function BarraStatus({
   setTempMax,
 }: BarraStatusProps) {
   const percentual = valorMax > 0 ? Math.min(100, (valorAtual / valorMax) * 100) : 0;
+  const percentualTemp = tempMax && tempMax > 0 && tempAtual !== undefined ? Math.min(100, (tempAtual / tempMax) * 100) : 0;
 
   return (
     <div>
@@ -464,22 +465,29 @@ function BarraStatus({
           <div 
             className={`transition-all duration-300 ease-out overflow-hidden flex items-stretch ${hasTemp ? 'w-[28.5%] pl-2.5 opacity-100 translate-x-0' : 'w-0 pl-0 opacity-0 translate-x-4'}`}
           >
-            <div className={`flex w-full items-center justify-center gap-1 rounded border border-dashed p-2.5 whitespace-nowrap min-w-[80px] ${corTempClasses}`}>
-              <input
-                type="number"
-                onKeyDown={bloquearLetras}
-                value={tempAtual}
-                onChange={(e) => setTempAtual(Math.max(0, Number(e.target.value)))}
-                className="w-8 bg-transparent text-center font-bold text-zinc-100 outline-none shrink-0"
+            <div className={`relative flex w-full items-center justify-center gap-1 rounded border border-dashed p-2.5 whitespace-nowrap min-w-[80px] overflow-hidden ${corTempClasses}`}>
+              {/* Preenchimento proporcional do Temporário */}
+              <div
+                className="absolute inset-y-0 left-0 bg-white/5 transition-all duration-300"
+                style={{ width: `${percentualTemp}%` }}
               />
-              <span className="text-zinc-500 shrink-0">/</span>
-              <input
-                type="number"
-                onKeyDown={bloquearLetras}
-                value={tempMax}
-                onChange={(e) => setTempMax(Math.max(0, Number(e.target.value)))}
-                className="w-8 bg-transparent text-center font-bold text-zinc-100 outline-none shrink-0"
-              />
+              <div className="relative flex items-center gap-1">
+                <input
+                  type="number"
+                  onKeyDown={bloquearLetras}
+                  value={tempAtual}
+                  onChange={(e) => setTempAtual(Math.max(0, Number(e.target.value)))}
+                  className="w-8 bg-transparent text-center font-bold text-zinc-100 outline-none shrink-0"
+                />
+                <span className="text-zinc-500 shrink-0">/</span>
+                <input
+                  type="number"
+                  onKeyDown={bloquearLetras}
+                  value={tempMax}
+                  onChange={(e) => setTempMax(Math.max(0, Number(e.target.value)))}
+                  className="w-8 bg-transparent text-center font-bold text-zinc-100 outline-none shrink-0"
+                />
+              </div>
             </div>
           </div>
         )}

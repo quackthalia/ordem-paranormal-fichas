@@ -819,8 +819,9 @@ export const AbasPanel: React.FC = () => {
                     </div>
 
                     <div className="flex flex-col gap-2.5">
-                      {itensDaCategoria.map(hab => {
-                        const estaExpandida = habilidadesExpandidas.includes(hab.id);
+                      {(() => {
+                        const renderHab = (hab: any) => {
+                          const estaExpandida = habilidadesExpandidas.includes(hab.id);
 
                         if (hab.isSlotVazio) {
                           return (
@@ -1120,7 +1121,39 @@ export const AbasPanel: React.FC = () => {
                             </Collapse>
                           </div>
                         );
-                      })}
+                        }; // Fim renderHab
+
+                        if (categoria === 'paranormais') {
+                          const grouped = itensDaCategoria.reduce((acc, hab) => {
+                             const el = hab.isSlotVazio ? 'Disponível' : (hab.elemento || 'Sem Elemento');
+                             if (!acc[el]) acc[el] = [];
+                             acc[el].push(hab);
+                             return acc;
+                          }, {} as Record<string, typeof itensDaCategoria>);
+                          
+                          const order = ['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo', 'Sem Elemento', 'Disponível'];
+                          const getOrder = (e: string) => {
+                             for (let i=0; i<order.length; i++) {
+                               if (e.toLowerCase().includes(order[i].toLowerCase())) return i;
+                             }
+                             return 99;
+                          };
+                          const sortedKeys = Object.keys(grouped).sort((a,b) => getOrder(a) - getOrder(b));
+
+                          return sortedKeys.map(el => (
+                            <div key={el} className="flex flex-col gap-2.5">
+                              <div className={`flex items-center gap-3 ${el !== sortedKeys[0] ? 'mt-3 mb-1' : 'mb-1'}`}>
+                                <span className="h-2 w-2 rounded-full" style={{ background: el === 'Sem Elemento' || el === 'Disponível' ? '#52525b' : obterCorBadge(el) }}></span>
+                                <span className="text-[0.6rem] font-bold uppercase tracking-[0.15em] text-zinc-500">{el}</span>
+                                <div className="flex-1 border-t border-zinc-800/50" />
+                              </div>
+                              {grouped[el].map(hab => renderHab(hab))}
+                            </div>
+                          ));
+                        }
+
+                        return itensDaCategoria.map(hab => renderHab(hab));
+                      })()}
                     </div>
                   </div>
                 );

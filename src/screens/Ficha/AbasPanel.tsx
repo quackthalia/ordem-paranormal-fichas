@@ -483,7 +483,8 @@ export const AbasPanel: React.FC = () => {
             // Ignora o segundo block completamente
           } else {
             if (pp) poderesRenderizados.add(nomeBaseCheck);
-            lista.push({ id: `escolha_nex_${nivelPatamar}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria });
+            const automaticoVal = pp ? (afinidadeAtiva ? (pp['Automatico?_Afinidade'] ?? pp['Automatico?']) : pp['Automatico?']) : undefined;
+            lista.push({ id: `escolha_nex_${nivelPatamar}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal });
           }
         } else {
           const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
@@ -543,7 +544,8 @@ export const AbasPanel: React.FC = () => {
             // Ignora o segundo block
           } else {
             if (pp) poderesRenderizados.add(nomeBaseCheck);
-            lista.push({ id: `escolha_nex_combate_${nivelPatamar}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria });
+            const automaticoVal = pp ? (afinidadeAtiva ? (pp['Automatico?_Afinidade'] ?? pp['Automatico?']) : pp['Automatico?']) : undefined;
+            lista.push({ id: `escolha_nex_combate_${nivelPatamar}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal });
           }
         } else {
           const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
@@ -600,7 +602,8 @@ export const AbasPanel: React.FC = () => {
           // Ignora duplicata
         } else {
           if (pp) poderesRenderizados.add(nomeBaseCheck);
-          lista.push({ id: `escolha_${key}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria });
+          const automaticoVal = pp ? (afinidadeAtiva ? (pp['Automatico?_Afinidade'] ?? pp['Automatico?']) : pp['Automatico?']) : undefined;
+          lista.push({ id: `escolha_${key}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal });
         }
       }
     });
@@ -649,6 +652,7 @@ export const AbasPanel: React.FC = () => {
           // Ignora duplicata
         } else {
           if (pp) poderesRenderizados.add(nomeBaseCheck);
+          const automaticoVal = pp ? (afinidadeAtiva ? (pp['Automatico?_Afinidade'] ?? pp['Automatico?']) : pp['Automatico?']) : undefined;
           lista.push({ 
             id: `escolha_nex_${chave}`, 
             nome: escolhido.nome, 
@@ -660,7 +664,8 @@ export const AbasPanel: React.FC = () => {
             afinidade: afinidadeDoPoder,
             afinidadeAtiva,
             afinidadeAdquiridaKey: adqKey,
-            categoria: 'paranormais'
+            categoria: 'paranormais',
+            automatico: automaticoVal,
           });
         }
       }
@@ -1006,9 +1011,31 @@ export const AbasPanel: React.FC = () => {
                             }}
                               className="flex cursor-pointer items-center justify-between gap-2 bg-zinc-800/40 px-4 py-3 transition hover:bg-zinc-700/50"
                             >
-                              <div className="flex items-center gap-3">
-                                <span className="text-sm font-bold text-zinc-100">{hab.nome}</span>
-                                {hab.extra && <span className="rounded border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 text-xs font-bold text-amber-400">{hab.extra}</span>}
+                              <div className="flex items-center gap-3 min-w-0 flex-1">
+                                <span className="text-sm font-bold text-zinc-100 truncate">{hab.nome}</span>
+                                {hab.extra && <span className="rounded border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 text-xs font-bold text-amber-400 shrink-0">{hab.extra}</span>}
+                                {hab.automatico && (
+                                  <span
+                                    title={hab.automatico === 'Sim' ? 'Totalmente automático — acontece sozinho' : 'Semi-automático — parte funciona automaticamente'}
+                                    className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider ${
+                                      hab.automatico === 'Sim'
+                                        ? 'bg-green-950/60 text-green-400 border border-green-800/50'
+                                        : 'bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
+                                    }`}
+                                  >
+                                    {hab.automatico === 'Sim' ? (
+                                      <>
+                                        <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z"/></svg>
+                                        Auto
+                                      </>
+                                    ) : (
+                                      <>
+                                        <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z" opacity="0.5"/><path d="M19 3v4m0 4v10" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
+                                        Semi
+                                      </>
+                                    )}
+                                  </span>
+                                )}
                               </div>
                               <div className="flex items-center gap-2.5">
                                 {hab.elemento && (

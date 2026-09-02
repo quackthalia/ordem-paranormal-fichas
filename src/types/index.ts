@@ -42,6 +42,7 @@ export interface Poder {
   Pre_Codigo?: number | null;
   Codigo_Regra?: number | null;
   Pericia_Poder?: number | null;
+  Automatico?: string | null;
 }
 
 export interface PoderParanormal {
@@ -58,6 +59,8 @@ export interface PoderParanormal {
   Codigo_Regra?: number | null;
   Codigo_Regra_Afinidade?: number | null;
   Pericia_Poder?: number | null;
+  'Automatico?'?: string | null;
+  'Automatico?_Afinidade'?: string | null;
 }
 
 export interface GrupoOrigem {
@@ -124,6 +127,7 @@ export interface HabilidadeItem {
   afinidadeAtiva?: boolean;
   afinidadeAdquiridaKey?: string | number;
   categoria: CategoriaHabilidade | 'trilha';
+  automatico?: string | null;
 }
 
 export interface LimiteCirculos {

@@ -82,31 +82,33 @@ export const PericiasTable: React.FC = () => {
       </div>
 
       <Collapse isOpen={mostrarOpcoes}>
-        <div className="mb-2 flex flex-col rounded border border-zinc-800 bg-zinc-950/80 px-3 py-1.5 text-xs shadow-lg shadow-black/20">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <label className="flex cursor-pointer items-center gap-2 text-zinc-400 font-bold hover:text-zinc-200 transition-colors">
-                <input
-                  type="checkbox"
-                  className="cursor-pointer accent-green-600"
-                  checked={regrasAtivas}
-                  onChange={(e) => setRegrasAtivas(e.target.checked)}
-                />
-                {regrasAtivas ? 'Regras Ativas' : 'Modo Livre'}
-              </label>
-            </div>
+        <div className="mb-3 flex items-center justify-between rounded-xl border border-zinc-700/50 bg-zinc-900/95 px-4 py-3 shadow-lg shadow-black/80">
+          <label className="flex cursor-pointer items-center gap-2 text-[10px] uppercase tracking-wider text-zinc-400 font-bold hover:text-zinc-200 transition-colors">
+            <input
+              type="checkbox"
+              className="cursor-pointer accent-green-600 w-3 h-3"
+              checked={regrasAtivas}
+              onChange={(e) => setRegrasAtivas(e.target.checked)}
+            />
+            {regrasAtivas ? 'Regras Ativas' : 'Modo Livre'}
+          </label>
 
-            {regrasAtivas && (
-              <div className="flex gap-4 font-bold uppercase tracking-wider text-[10px]">
-                <span className={limites.maxTreinadas - totais.totalTreinadasUsadas < 0 ? 'text-red-500' : 'text-green-500'}>
-                  Treinar: {limites.maxTreinadas - totais.totalTreinadasUsadas}
-                </span>
-                <span className={limites.maxUpgrades - totais.totalUpgradesGastos < 0 ? 'text-red-500' : 'text-green-500'}>
-                  Upgrades: {limites.maxUpgrades - totais.totalUpgradesGastos}
+          {regrasAtivas && (
+            <div className="flex items-center gap-6 font-bold uppercase tracking-widest text-[10px]">
+              <div className="flex items-center gap-2 bg-zinc-950/50 px-3 py-1.5 rounded-md border border-zinc-800/50">
+                <span className="text-zinc-500">Treinar</span>
+                <span className={`text-xs font-black ${limites.maxTreinadas - totais.totalTreinadasUsadas < 0 ? 'text-red-400' : 'text-green-500'}`}>
+                  {limites.maxTreinadas - totais.totalTreinadasUsadas}
                 </span>
               </div>
-            )}
-          </div>
+              <div className="flex items-center gap-2 bg-zinc-950/50 px-3 py-1.5 rounded-md border border-zinc-800/50">
+                <span className="text-zinc-500">Upgrades</span>
+                <span className={`text-xs font-black ${limites.maxUpgrades - totais.totalUpgradesGastos < 0 ? 'text-red-400' : 'text-green-500'}`}>
+                  {limites.maxUpgrades - totais.totalUpgradesGastos}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </Collapse>
 

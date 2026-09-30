@@ -113,38 +113,6 @@ export const PericiasTable: React.FC = () => {
         </div>
       </Collapse>
 
-      {/* PAINEL DE REGRAS E BÔNUS */}
-      <div className="mb-2 flex flex-col rounded border border-zinc-800 bg-zinc-950/80 px-3 py-1.5 text-xs">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <label className="flex cursor-pointer items-center gap-2 text-zinc-400">
-              <input
-                type="checkbox"
-                className="cursor-pointer accent-green-600"
-                checked={regrasAtivas}
-                onChange={(e) => setRegrasAtivas(e.target.checked)}
-              />
-              {regrasAtivas ? 'Regras Ativas' : 'Modo Livre'}
-            </label>
-            
-            
-          </div>
-
-          {regrasAtivas && (
-            <div className="flex gap-4 font-bold">
-              <span className={limites.maxTreinadas - totais.totalTreinadasUsadas < 0 ? 'text-green-500' : 'text-emerald-400'}>
-                Treinar: {limites.maxTreinadas - totais.totalTreinadasUsadas}
-              </span>
-              <span className={limites.maxUpgrades - totais.totalUpgradesGastos < 0 ? 'text-green-500' : 'text-amber-400'}>
-                Upgrades: {limites.maxUpgrades - totais.totalUpgradesGastos}
-              </span>
-            </div>
-          )}
-        </div>
-        
-        
-      </div>
-
       {/* TABELA */}
       <div className="w-full">
         <table className="w-full border-collapse text-zinc-100">

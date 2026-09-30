@@ -151,8 +151,8 @@ function AtributosFicha() {
   };
 
   return (
-    <div className="mb-10 mt-6 flex justify-center w-full relative">
-      <div className="absolute top-0 left-0 md:left-4 z-10 flex flex-col items-start gap-1.5">
+    <div className="mb-6 mt-6 flex flex-col items-center w-full relative">
+      <div className="w-full flex justify-between items-start z-10 px-2 md:px-4 mb-4 relative min-h-[40px]">
         <div className="flex items-center gap-1.5 bg-zinc-900/80 border border-zinc-800 px-3 py-1.5 rounded-lg shadow-lg shadow-black/20">
           <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">NEX:</span>
           {regras['nex_experiencia'] ? (
@@ -178,37 +178,40 @@ function AtributosFicha() {
               />
             </div>
           )}
-          <div className="w-px h-4 bg-zinc-800 mx-1"></div>
-          <button 
-            onClick={() => setOpcoesAbertas(!opcoesAbertas)}
-            className={`text-zinc-500 hover:text-zinc-300 transition-transform duration-300 ${opcoesAbertas ? 'rotate-90 text-zinc-200' : ''}`}
-            title="Opções de Atributos"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-          </button>
         </div>
 
-        <div className={`overflow-hidden transition-all duration-300 ease-in-out ${opcoesAbertas ? 'max-h-24 opacity-100' : 'max-h-0 opacity-0'}`}>
-          <div className="bg-zinc-900/95 border border-zinc-700/50 px-3 py-2 rounded-lg flex flex-col items-start gap-1.5 shadow-lg shadow-black/80 mt-1">
-            <label className="flex cursor-pointer items-center gap-2 text-[10px] uppercase tracking-wider text-zinc-400 font-bold hover:text-zinc-200 transition-colors">
-              <input
-                type="checkbox"
-                className="cursor-pointer accent-green-600"
-                checked={regrasAtivasAtributos}
-                onChange={(e) => setRegrasAtivasAtributos(e.target.checked)}
-              />
-              {regrasAtivasAtributos ? 'Regras Ativas' : 'Modo Livre'}
-            </label>
-            {regrasAtivasAtributos && (
-              <span className={`text-[10px] uppercase tracking-wider font-bold ${pontosRestantes > 0 ? 'text-green-500' : 'text-zinc-500'}`}>
-                Disponível: {pontosRestantes}
-              </span>
-            )}
+        <div className="flex flex-col items-end gap-1.5 absolute right-2 md:right-4 top-0 z-50">
+          <button 
+            onClick={() => setOpcoesAbertas(!opcoesAbertas)}
+            className={`text-zinc-500 hover:text-zinc-300 transition-all flex items-center gap-1.5 bg-zinc-900/80 border border-zinc-800 px-3 py-1.5 rounded-lg shadow-lg shadow-black/20 ${opcoesAbertas ? 'text-green-500' : ''}`}
+            title="Opções de Atributos"
+          >
+            <span className="text-[10px] font-bold uppercase tracking-wider">Regras</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform duration-300 ${opcoesAbertas ? 'rotate-90' : ''}`}><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </button>
+          
+          <div className={`overflow-hidden transition-all duration-300 ease-in-out origin-top-right ${opcoesAbertas ? 'max-h-24 opacity-100' : 'max-h-0 opacity-0'}`}>
+            <div className="bg-zinc-900/95 border border-zinc-700/50 px-3 py-2 rounded-lg flex flex-col items-end gap-1.5 shadow-lg shadow-black/80">
+              <label className="flex cursor-pointer items-center gap-2 text-[10px] uppercase tracking-wider text-zinc-400 font-bold hover:text-zinc-200 transition-colors">
+                <input
+                  type="checkbox"
+                  className="cursor-pointer accent-green-600"
+                  checked={regrasAtivasAtributos}
+                  onChange={(e) => setRegrasAtivasAtributos(e.target.checked)}
+                />
+                {regrasAtivasAtributos ? 'Regras Ativas' : 'Modo Livre'}
+              </label>
+              {regrasAtivasAtributos && (
+                <span className={`text-[10px] uppercase tracking-wider font-bold ${pontosRestantes > 0 ? 'text-green-500' : 'text-zinc-500'}`}>
+                  Disponível: {pontosRestantes}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="relative w-full max-w-[340px] aspect-square mt-8 md:mt-4">
+      <div className="relative w-full max-w-[340px] aspect-square">
         <img src="/images/atributos-bg.png" alt="Atributos" className="w-full h-full object-contain pointer-events-none drop-shadow-[0_0_20px_rgba(255,255,255,0.05)]" />
         
         {renderAtributo('AGI', 'top-[16%] left-[50%] -translate-x-1/2 -translate-y-1/2')}

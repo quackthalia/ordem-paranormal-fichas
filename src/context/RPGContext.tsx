@@ -87,6 +87,8 @@ interface RPGContextType {
   setProficiencias: React.Dispatch<React.SetStateAction<string[]>>;
   regrasAtivas: boolean;
   setRegrasAtivas: React.Dispatch<React.SetStateAction<boolean>>;
+  regrasAtivasAtributos: boolean;
+  setRegrasAtivasAtributos: React.Dispatch<React.SetStateAction<boolean>>;
   bloquearLetras: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   refazerPersonagem: () => void;
   filtroHabilidades: string;
@@ -172,6 +174,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const [resistencias, setResistencias] = useState<string[]>([]);
   const [proficiencias, setProficiencias] = useState<string[]>([]);
   const [regrasAtivas, setRegrasAtivas] = useState(true);
+  const [regrasAtivasAtributos, setRegrasAtivasAtributos] = useState(true);
   const [filtroHabilidades, setFiltroHabilidades] = useState('');
   const [habilidadesExpandidas, setHabilidadesExpandidas] = useState<string[]>([]);
   const [nexModalAberto, setNexModalAberto] = useState<number | string | null>(null);
@@ -628,6 +631,7 @@ const atributosFinais = useMemo(() => {
     resistencias, setResistencias,
     proficiencias, setProficiencias,
     regrasAtivas, setRegrasAtivas,
+    regrasAtivasAtributos, setRegrasAtivasAtributos,
     bloquearLetras, refazerPersonagem,
     filtroHabilidades, setFiltroHabilidades,
     habilidadesExpandidas, setHabilidadesExpandidas,

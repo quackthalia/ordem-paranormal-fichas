@@ -88,7 +88,7 @@ export const FichaScreen: React.FC = () => {
 function AtributosFicha() {
   const { 
     atributos, setAtributos, bonusAtributos, setBonusAtributos, bloquearLetras, atributosFinais, 
-    nex, setNex, regras, regrasAtivas, setRegrasAtivas, pontosRestantes, alterarAtributo, nivel 
+    nex, setNex, regras, regrasAtivasAtributos, setRegrasAtivasAtributos, pontosRestantes, alterarAtributo, nivel 
   } = useRPG();
   
   // Para UX visual do botão disabled
@@ -108,7 +108,7 @@ function AtributosFicha() {
                 let numValue = Number(e.target.value);
                 let baseDesejada = isNaN(numValue) ? atributos[nome] : numValue - diferenca;
                 
-                if (regrasAtivas) {
+                if (regrasAtivasAtributos) {
                   const valorAntigo = atributos[nome];
                   if (baseDesejada > valorAntigo) {
                      let cost = 0;
@@ -169,12 +169,12 @@ function AtributosFicha() {
           <input
             type="checkbox"
             className="cursor-pointer accent-green-600"
-            checked={regrasAtivas}
-            onChange={(e) => setRegrasAtivas(e.target.checked)}
+            checked={regrasAtivasAtributos}
+            onChange={(e) => setRegrasAtivasAtributos(e.target.checked)}
           />
-          {regrasAtivas ? 'Regras Ativas' : 'Modo Livre'}
+          {regrasAtivasAtributos ? 'Regras Ativas' : 'Modo Livre'}
         </label>
-        {regrasAtivas && (
+        {regrasAtivasAtributos && (
           <span className={`text-[10px] uppercase tracking-wider font-bold ${pontosRestantes > 0 ? 'text-green-500' : 'text-zinc-500'}`}>
             Disponível: {pontosRestantes}
           </span>

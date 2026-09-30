@@ -352,6 +352,9 @@ export function usePericias(
     let totalUpgradesGastos = 0;
 
     Object.entries(pericias).forEach(([nome, dados]) => {
+      // Ignora perícias marcadas como 'isLivre' (Modo Livre)
+      if (dados.isLivre) return;
+
       if (dados.treino >= 5 && !periciasGratis.includes(nome)) {
         totalTreinadasUsadas += 1;
       }
@@ -410,7 +413,11 @@ export function usePericias(
 
         return {
           ...prev,
-          [nome]: { ...periciaAtual, [campo]: Number(valor) },
+          [nome]: { 
+             ...periciaAtual, 
+             [campo]: Number(valor),
+             isLivre: !regrasAtivas // Marca como livre se as regras estiverem desativadas!
+          },
         };
       });
     },

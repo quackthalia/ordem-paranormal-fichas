@@ -115,9 +115,8 @@ function AtributosFicha() {
             onChange={(e) => {
               const diferenca = atributosFinais[nome] - atributos[nome];
               let numValue = Number(e.target.value);
-              let baseDesejada = isNaN(numValue) ? atributos[nome] : numValue - diferenca;
-              
               if (regrasAtivasAtributos) {
+                let baseDesejada = isNaN(numValue) ? atributos[nome] : numValue - diferenca;
                 const valorAntigo = atributos[nome];
                 if (baseDesejada > valorAntigo) {
                    let cost = 0;
@@ -134,9 +133,15 @@ function AtributosFicha() {
                 } else {
                    if (baseDesejada < 0) baseDesejada = 0;
                 }
+                setAtributos({ ...atributos, [nome]: baseDesejada });
+              } else {
+                // Modo Livre: não mexe nos pontos da base, adiciona direto como bônus!
+                if (!isNaN(numValue)) {
+                   const diferencaSemBonus = atributosFinais[nome] - bonusAtributos[nome];
+                   const novoBonus = Math.max(0, numValue - diferencaSemBonus);
+                   setBonusAtributos({ ...bonusAtributos, [nome]: novoBonus });
+                }
               }
-              
-              setAtributos({ ...atributos, [nome]: baseDesejada });
             }}
             className={`relative z-0 w-16 bg-transparent text-center text-[2rem] font-black outline-none ${atributosFinais[nome] > (atributos[nome] + bonusAtributos[nome]) ? 'text-green-500' : 'text-zinc-100'}`}
           />

@@ -25,6 +25,7 @@ export interface Pericia {
   atributo: AtributoKey;
   treino: number;
   outros: number;
+  isLivre?: boolean;
   kit?: boolean;
   descricao?: string;
 }

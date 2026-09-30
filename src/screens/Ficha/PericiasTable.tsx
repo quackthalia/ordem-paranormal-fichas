@@ -172,12 +172,12 @@ export const PericiasTable: React.FC = () => {
                 }
                 
                 // Bônus de itens (equipamentos mundanos) não se acumulam, pega-se o maior.
-                return Math.max(acc, bonusDesteItem);
+                return acc + bonusDesteItem;
               }, 0) || 0;
 
               // Adiciona também bônus de itens amaldiçoados (ex: Tênis Lépidos)
               const bonusAmaldicoados = periciasHook.bonusVestimentas?.[nome] || 0;
-              const bonusItemFinal = Math.max(bonusInventario, bonusAmaldicoados);
+              const bonusItemFinal = bonusInventario + bonusAmaldicoados;
 
               const totalBonus = dadosPericia.treino + dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25 + bonusItemFinal;
               const corTexto = COR_TREINO[dadosPericia.treino] ?? 'text-zinc-400';

@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { useRPG } from '../../context/RPGContext';
 import { CustomSelect } from '../../components/CustomSelect';
-import { NEX_OPTIONS } from '../../utils/rpgRules';
+import { NEX_OPTIONS, capMaximoAtributo } from '../../utils/rpgRules';
 import { StatusPanel } from './StatusPanel';
 import { PericiasTable } from './PericiasTable';
 import { AbasPanel } from './AbasPanel';
@@ -86,7 +86,14 @@ export const FichaScreen: React.FC = () => {
 // COMPONENTE INTERNO: ATRIBUTOS NA FICHA
 // ============================================================
 function AtributosFicha() {
-  const { atributos, setAtributos, bonusAtributos, setBonusAtributos, bloquearLetras, atributosFinais, nex, setNex, regras } = useRPG();
+  const { 
+    atributos, setAtributos, bonusAtributos, setBonusAtributos, bloquearLetras, atributosFinais, 
+    nex, setNex, regras, regrasAtivas, setRegrasAtivas, pontosRestantes, alterarAtributo, nivel 
+  } = useRPG();
+  
+  // Para UX visual do botão disabled
+  
+  const capMaximo = capMaximoAtributo(nivel);
 
   const renderAtributo = (nome, posClasses) => {
     return (
@@ -103,16 +110,38 @@ function AtributosFicha() {
             />
           </div>
           
-          <input
-            type="number"
-            onKeyDown={bloquearLetras}
-            value={atributosFinais[nome]}
-            onChange={(e) => {
-              const diferenca = atributosFinais[nome] - atributos[nome];
-              setAtributos({ ...atributos, [nome]: Number(e.target.value) - diferenca });
-            }}
-            className={`relative z-0 w-16 bg-transparent text-center text-[2rem] font-black outline-none ${atributosFinais[nome] > (atributos[nome] + bonusAtributos[nome]) ? 'text-green-500' : 'text-zinc-100'}`}
-          />
+          {regrasAtivas ? (
+            <div className="flex items-center gap-1 bg-zinc-950/90 px-1 py-0.5 rounded-full border border-zinc-800 shadow-xl z-20 backdrop-blur-sm" style={{ transform: 'scale(0.95)' }}>
+              <button
+                onClick={() => alterarAtributo(nome, 'diminuir')}
+                disabled={atributos[nome] <= (nome === 'PRE' && atributos[nome] === 0 ? 0 : 0)}
+                className="flex h-6 w-6 items-center justify-center rounded-full border border-zinc-700 bg-zinc-900 text-lg font-bold text-zinc-300 transition hover:border-red-700 hover:text-red-500 hover:bg-red-900/40 disabled:cursor-not-allowed disabled:opacity-30 pointer-events-auto"
+              >
+                -
+              </button>
+              <span className={`w-10 text-center text-[2rem] font-black leading-none ${atributosFinais[nome] > (atributos[nome] + bonusAtributos[nome]) ? 'text-green-500' : 'text-zinc-100'} pointer-events-none drop-shadow-lg`}>
+                {atributosFinais[nome]}
+              </span>
+              <button
+                onClick={() => alterarAtributo(nome, 'aumentar')}
+                disabled={pontosRestantes <= 0 || atributos[nome] >= capMaximo}
+                className="flex h-6 w-6 items-center justify-center rounded-full border border-zinc-700 bg-zinc-900 text-lg font-bold text-zinc-300 transition hover:border-green-700 hover:text-green-500 hover:bg-green-900/40 disabled:cursor-not-allowed disabled:opacity-30 pointer-events-auto"
+              >
+                +
+              </button>
+            </div>
+          ) : (
+            <input
+              type="number"
+              onKeyDown={bloquearLetras}
+              value={atributosFinais[nome]}
+              onChange={(e) => {
+                const diferenca = atributosFinais[nome] - atributos[nome];
+                setAtributos({ ...atributos, [nome]: Number(e.target.value) - diferenca });
+              }}
+              className={`relative z-0 w-16 bg-transparent text-center text-[2rem] font-black outline-none ${atributosFinais[nome] > (atributos[nome] + bonusAtributos[nome]) ? 'text-green-500' : 'text-zinc-100'}`}
+            />
+          )}
       </div>
     );
   };
@@ -146,7 +175,24 @@ function AtributosFicha() {
         )}
       </div>
 
-      <div className="relative w-full max-w-[340px] aspect-square">
+      <div className="absolute top-0 right-0 md:right-4 z-10 flex flex-col items-end gap-1.5 bg-zinc-900/80 border border-zinc-800 px-3 py-2 rounded-lg">
+        <label className="flex cursor-pointer items-center gap-2 text-[10px] uppercase tracking-wider text-zinc-400 font-bold">
+          <input
+            type="checkbox"
+            className="cursor-pointer accent-green-600"
+            checked={regrasAtivas}
+            onChange={(e) => setRegrasAtivas(e.target.checked)}
+          />
+          {regrasAtivas ? 'Regras Ativas' : 'Modo Livre'}
+        </label>
+        {regrasAtivas && (
+          <span className={`text-[10px] uppercase tracking-wider font-bold ${pontosRestantes > 0 ? 'text-green-500' : 'text-zinc-500'}`}>
+            Disponível: {pontosRestantes}
+          </span>
+        )}
+      </div>
+
+      <div className="relative w-full max-w-[340px] aspect-square mt-8 md:mt-4">
         <img src="/images/atributos-bg.png" alt="Atributos" className="w-full h-full object-contain pointer-events-none drop-shadow-[0_0_20px_rgba(255,255,255,0.05)]" />
         
         {renderAtributo('AGI', 'top-[16%] left-[50%] -translate-x-1/2 -translate-y-1/2')}

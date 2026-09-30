@@ -110,28 +110,7 @@ function AtributosFicha() {
             />
           </div>
           
-          {regrasAtivas ? (
-            <div className="flex items-center gap-1 bg-zinc-950/90 px-1 py-0.5 rounded-full border border-zinc-800 shadow-xl z-20 backdrop-blur-sm" style={{ transform: 'scale(0.95)' }}>
-              <button
-                onClick={() => alterarAtributo(nome, 'diminuir')}
-                disabled={atributos[nome] <= (nome === 'PRE' && atributos[nome] === 0 ? 0 : 0)}
-                className="flex h-6 w-6 items-center justify-center rounded-full border border-zinc-700 bg-zinc-900 text-lg font-bold text-zinc-300 transition hover:border-red-700 hover:text-red-500 hover:bg-red-900/40 disabled:cursor-not-allowed disabled:opacity-30 pointer-events-auto"
-              >
-                -
-              </button>
-              <span className={`w-10 text-center text-[2rem] font-black leading-none ${atributosFinais[nome] > (atributos[nome] + bonusAtributos[nome]) ? 'text-green-500' : 'text-zinc-100'} pointer-events-none drop-shadow-lg`}>
-                {atributosFinais[nome]}
-              </span>
-              <button
-                onClick={() => alterarAtributo(nome, 'aumentar')}
-                disabled={pontosRestantes <= 0 || atributos[nome] >= capMaximo}
-                className="flex h-6 w-6 items-center justify-center rounded-full border border-zinc-700 bg-zinc-900 text-lg font-bold text-zinc-300 transition hover:border-green-700 hover:text-green-500 hover:bg-green-900/40 disabled:cursor-not-allowed disabled:opacity-30 pointer-events-auto"
-              >
-                +
-              </button>
-            </div>
-          ) : (
-            <input
+          <input
               type="number"
               onKeyDown={bloquearLetras}
               value={atributosFinais[nome]}
@@ -141,7 +120,6 @@ function AtributosFicha() {
               }}
               className={`relative z-0 w-16 bg-transparent text-center text-[2rem] font-black outline-none ${atributosFinais[nome] > (atributos[nome] + bonusAtributos[nome]) ? 'text-green-500' : 'text-zinc-100'}`}
             />
-          )}
       </div>
     );
   };
@@ -186,7 +164,7 @@ function AtributosFicha() {
           {regrasAtivas ? 'Regras Ativas' : 'Modo Livre'}
         </label>
         {regrasAtivas && (
-          <span className={`text-[10px] uppercase tracking-wider font-bold ${pontosRestantes > 0 ? 'text-green-500' : 'text-zinc-500'}`}>
+          <span className={`text-[10px] uppercase tracking-wider font-bold ${pontosRestantes >= 0 ? 'text-green-500' : 'text-red-500'}`}>
             Disponível: {pontosRestantes}
           </span>
         )}

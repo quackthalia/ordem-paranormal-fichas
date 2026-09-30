@@ -238,21 +238,17 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
             item.item.Nome_Item.toLowerCase().includes('amuleto sagrado') || 
             item.item.Grupo_Item?.toLowerCase() === 'proteções' ||
             item.item.Grupo_Item?.toLowerCase() === 'protecoes') && (
-            <button
+            <input
+              type="checkbox"
+              checked={!!item.equipado}
               onPointerDown={(e) => e.stopPropagation()}
-              onClick={(e) => {
+              onChange={(e) => {
                 e.stopPropagation();
                 toggleEquipado(item.id);
               }}
-              className={`text-[9px] uppercase tracking-wider font-bold px-2 py-1 rounded border transition-colors flex-shrink-0 ${
-                item.equipado 
-                  ? 'bg-green-600/20 text-green-400 border-green-500/50' 
-                  : 'bg-zinc-900 text-zinc-500 border-zinc-700 hover:border-zinc-500 hover:text-zinc-300'
-              }`}
+              className="w-3.5 h-3.5 cursor-pointer accent-green-600 flex-shrink-0"
               title={item.equipado ? "Desequipar item" : "Equipar item"}
-            >
-              {item.equipado ? 'Equipado' : 'Equipar'}
-            </button>
+            />
           )}
           <div onClick={() => toggleExpandir(item.id)} className="w-5 text-center text-zinc-500 text-xs flex-shrink-0 cursor-pointer">{isExpanded ? '▲' : '▼'}</div>
         </div>

@@ -152,7 +152,7 @@ export const PericiasTable: React.FC = () => {
                   
                   if (periciaEncontrada) {
                     // Vestimentas, Amuletos e Utensílios precisam estar equipados para dar o bônus
-                    if ((isVestimenta || isAmuleto || isUtensilio) && !obj.equipado) {
+                    if ((isVestimenta || isAmuleto) && !obj.equipado) {
                       // não ganha nada
                     } else {
                       if (periciaEncontrada.includes('*')) {

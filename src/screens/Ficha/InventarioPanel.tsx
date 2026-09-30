@@ -234,54 +234,26 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
         </div>
 
         <div className="flex items-center gap-3 flex-shrink-0">
-          {(item.item.Nome_Item.toLowerCase().includes('vestimenta') || item.item.Nome_Item.toLowerCase().includes('amuleto sagrado')) && (
-            <input
-              type="checkbox"
-              checked={!!item.equipado}
+          {(item.item.Nome_Item.toLowerCase().includes('vestimenta') || 
+            item.item.Nome_Item.toLowerCase().includes('amuleto sagrado') || 
+            item.item.Grupo_Item?.toLowerCase() === 'proteções' ||
+            item.item.Grupo_Item?.toLowerCase() === 'protecoes') && (
+            <button
               onPointerDown={(e) => e.stopPropagation()}
-              onChange={() => toggleEquipado(item.id)}
-              className="w-5 h-5 cursor-pointer accent-green-600"
-              title={item.equipado ? "Desequipar" : "Equipar item"}
-            />
-          )}
-          <div onClick={() => toggleExpandir(item.id)} className="w-5 text-center text-zinc-500 text-xs flex-shrink-0 cursor-pointer">{isExpanded ? '▲' : '▼'}</div>
-        </div>
-      </div>
-      
-      <Collapse isOpen={isExpanded} className={isDragging ? 'hidden' : ''}>
-        <div className="border-t border-zinc-800 px-3 py-3 text-xs bg-zinc-950/80 flex flex-col gap-2 relative z-10" onClick={e => e.stopPropagation()}>
-          <div className="flex flex-col gap-1 mt-1">
-            <span><span className="text-green-400 font-bold">Categoria:</span> {calcularCategoriaFinal(item.item.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes, false, item.maldicoes, maldicoesHook?.maldicoes)}</span>
-            <span><span className="text-green-400 font-bold">Espaços:</span> {calcularEspacosFinais(item.item.Espacos_Itens, item.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas?.has(43))}</span>
-
-              {((Array.isArray(item.maldicoes) ? item.maldicoes : []).length > 0) && (
-              <div className="mt-3">
-                <div 
-                  className="flex items-center gap-2 cursor-pointer group py-1.5 px-2 -mx-2 rounded hover:bg-zinc-800/40 transition-colors"
-                  onClick={(e) => { e.stopPropagation(); setExpandirMalds(!expandirMalds); }}
-                >
-                  <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider group-hover:text-zinc-300 transition-colors">Maldições</span>
-                  <div className="h-px bg-zinc-800 flex-1 group-hover:bg-zinc-700 transition-colors"></div>
-                  <svg className={`w-3 h-3 text-zinc-500 group-hover:text-zinc-300 transition-transform duration-200 ${expandirMalds ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
-                </div>
-                <Collapse isOpen={expandirMalds}>
-                  <div className="flex flex-col gap-2 pt-2 pb-1">
-                    {(Array.isArray(item.maldicoes) ? item.maldicoes : []).map((id: number) => {
-                      const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
-                      if (!m) return null;
-                      const corTexto = getCorElementoTexto ? getCorElementoTexto(m.Elemento_Mald) : 'text-zinc-400';
-                      return (
-                        <div key={m.Codigo_Mald} className="flex flex-col gap-0.5">
-                          <div className="flex gap-1 items-center">
-                            <span className={`text-xs font-bold ${corTexto}`}>{m.Nome_Mald}</span>
-                            <span className={`rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${getBadgeElemento(m.Elemento_Mald)}`}>{m.Elemento_Mald}</span>
-                          </div>
-                          {m.Descricao_Mald && (
-                            <p className="text-[11px] text-zinc-400 leading-relaxed whitespace-pre-wrap">{formatarTexto(m.Descricao_Mald)}</p>
-                          )}
-                        </div>
-                      );
-                    })}
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleEquipado(item.id);
+              }}
+              className={`text-[9px] uppercase tracking-wider font-bold px-2 py-1 rounded border transition-colors flex-shrink-0 ${
+                item.equipado 
+                  ? 'bg-green-600/20 text-green-400 border-green-500/50' 
+                  : 'bg-zinc-900 text-zinc-500 border-zinc-700 hover:border-zinc-500 hover:text-zinc-300'
+              }`}
+              title={item.equipado ? "Desequipar item" : "Equipar item"}
+            >
+              {item.equipado ? 'Equipado' : 'Equipar'}
+            </button>
+          )}}
                   </div>
                 </Collapse>
               </div>

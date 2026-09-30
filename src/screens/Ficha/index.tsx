@@ -105,15 +105,23 @@ function AtributosFicha() {
               value={atributosFinais[nome]}
               onChange={(e) => {
                 const diferenca = atributosFinais[nome] - atributos[nome];
-                let baseDesejada = Number(e.target.value) - diferenca;
+                let numValue = Number(e.target.value);
+                let baseDesejada = isNaN(numValue) ? atributos[nome] : numValue - diferenca;
                 
                 if (regrasAtivas) {
                   const valorAntigo = atributos[nome];
                   if (baseDesejada > valorAntigo) {
-                     const dif = baseDesejada - valorAntigo;
-                     const stepsAllowed = Math.min(dif, pontosRestantes);
-                     baseDesejada = valorAntigo + Math.max(0, stepsAllowed);
-                     if (baseDesejada > capMaximo) baseDesejada = capMaximo;
+                     let cost = 0;
+                     let current = valorAntigo;
+                     while (current < baseDesejada && current < capMaximo) {
+                       current++;
+                       cost++;
+                       if (cost > pontosRestantes) {
+                         current--;
+                         break;
+                       }
+                     }
+                     baseDesejada = current;
                   } else {
                      if (baseDesejada < 0) baseDesejada = 0;
                   }

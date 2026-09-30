@@ -91,8 +91,6 @@ function AtributosFicha() {
     nex, setNex, regras, regrasAtivasAtributos, setRegrasAtivasAtributos, pontosRestantes, alterarAtributo, nivel 
   } = useRPG();
   
-  // Para UX visual do botão disabled
-  
   const capMaximo = capMaximoAtributo(nivel);
 
   const renderAtributo = (nome, posClasses) => {
@@ -102,35 +100,46 @@ function AtributosFicha() {
             <input
               type="number"
               onKeyDown={bloquearLetras}
-              value={atributosFinais[nome]}
-              onChange={(e) => {
-                const diferenca = atributosFinais[nome] - atributos[nome];
-                let numValue = Number(e.target.value);
-                let baseDesejada = isNaN(numValue) ? atributos[nome] : numValue - diferenca;
-                
-                if (regrasAtivasAtributos) {
-                  const valorAntigo = atributos[nome];
-                  if (baseDesejada > valorAntigo) {
-                     let cost = 0;
-                     let current = valorAntigo;
-                     while (current < baseDesejada && current < capMaximo) {
-                       current++;
-                       cost++;
-                       if (cost > pontosRestantes) {
-                         current--;
-                         break;
-                       }
-                     }
-                     baseDesejada = current;
-                  } else {
-                     if (baseDesejada < 0) baseDesejada = 0;
-                  }
-                }
-                
-                setAtributos({ ...atributos, [nome]: baseDesejada });
-              }}
-              className={`relative z-0 w-16 bg-transparent text-center text-[2rem] font-black outline-none ${atributosFinais[nome] > (atributos[nome] + bonusAtributos[nome]) ? 'text-green-500' : 'text-zinc-100'}`}
+              value={bonusAtributos[nome]}
+              onChange={(e) =>
+                setBonusAtributos({ ...bonusAtributos, [nome]: Math.max(0, Number(e.target.value)) })
+              }
+              className="w-full bg-transparent text-center text-[10px] font-bold text-amber-400 outline-none"
             />
+          </div>
+          
+          <input
+            type="number"
+            onKeyDown={bloquearLetras}
+            value={atributosFinais[nome]}
+            onChange={(e) => {
+              const diferenca = atributosFinais[nome] - atributos[nome];
+              let numValue = Number(e.target.value);
+              let baseDesejada = isNaN(numValue) ? atributos[nome] : numValue - diferenca;
+              
+              if (regrasAtivasAtributos) {
+                const valorAntigo = atributos[nome];
+                if (baseDesejada > valorAntigo) {
+                   let cost = 0;
+                   let current = valorAntigo;
+                   while (current < baseDesejada && current < capMaximo) {
+                     current++;
+                     cost++;
+                     if (cost > pontosRestantes) {
+                       current--;
+                       break;
+                     }
+                   }
+                   baseDesejada = current;
+                } else {
+                   if (baseDesejada < 0) baseDesejada = 0;
+                }
+              }
+              
+              setAtributos({ ...atributos, [nome]: baseDesejada });
+            }}
+            className={`relative z-0 w-16 bg-transparent text-center text-[2rem] font-black outline-none ${atributosFinais[nome] > (atributos[nome] + bonusAtributos[nome]) ? 'text-green-500' : 'text-zinc-100'}`}
+          />
       </div>
     );
   };

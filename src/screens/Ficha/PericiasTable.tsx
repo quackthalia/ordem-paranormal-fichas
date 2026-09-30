@@ -55,19 +55,10 @@ export const PericiasTable: React.FC = () => {
   return (
     <div className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-6">
       <div className="flex items-center justify-between mb-2 border-b border-zinc-800 pb-1">
-        <div className="w-20 opacity-0 pointer-events-none"></div>
-        <h3 className="font-display text-lg uppercase tracking-[0.2em] text-zinc-300 flex-1 text-center">
+        <h3 className="font-display text-lg uppercase tracking-[0.2em] text-zinc-300 ml-4 flex-1 text-center">
           Perícias
         </h3>
-        <div className="flex items-center gap-2 w-20 justify-end">
-          <button
-            onClick={() => setMostrarOpcoes(!mostrarOpcoes)}
-            className={`rounded transition text-lg ${mostrarOpcoes ? 'bg-zinc-800 text-zinc-200 shadow-[0_0_10px_rgba(255,255,255,0.05)]' : 'bg-zinc-800/50 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700/50'} border border-zinc-700/50 flex items-center justify-center w-9 h-9`}
-            title="Opções de Regras"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-          </button>
-          <button
+        <button
           onClick={() => setMostrarBonus(!mostrarBonus)}
           className={`rounded transition text-lg ${mostrarBonus ? 'bg-green-900/50 text-green-400 border-green-800/50 shadow-[0_0_10px_rgba(34,197,94,0.2)]' : 'bg-zinc-800/50 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700/50'} border border-zinc-700/50 flex items-center justify-center w-9 h-9 overflow-hidden`}
           title="Modificadores de Dados"
@@ -80,8 +71,19 @@ export const PericiasTable: React.FC = () => {
         </button>
         </div>
       </div>
+      <div className="flex justify-end mb-2">
+        <button 
+          onClick={() => setMostrarOpcoes(!mostrarOpcoes)} 
+          className={`text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all ${mostrarOpcoes ? 'text-green-500' : 'text-zinc-500 hover:text-zinc-300'}`} 
+          title="Regras e Limites"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${mostrarOpcoes ? 'rotate-90' : ''}`}><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg> 
+          Limites
+        </button>
+      </div>
+
       <Collapse isOpen={mostrarOpcoes}>
-        <div className="mb-2 flex flex-col rounded border border-zinc-800 bg-zinc-950/80 px-3 py-2 text-xs shadow-lg shadow-black/50">
+        <div className="mb-2 flex flex-col rounded border border-zinc-700/50 bg-zinc-900/95 px-3 py-2 text-xs shadow-lg shadow-black/80 animate-in fade-in slide-in-from-top-1 duration-200">
           <div className="flex items-center justify-between">
             <label className="flex cursor-pointer items-center gap-2 text-zinc-400">
               <input
@@ -105,6 +107,7 @@ export const PericiasTable: React.FC = () => {
           </div>
         </div>
       </Collapse>
+
       <Collapse isOpen={mostrarBonus}>
         <div className="mb-4">
           <BonusCondicionaisPanel />

@@ -69,7 +69,6 @@ export const PericiasTable: React.FC = () => {
             className={`w-full h-full object-contain scale-[1.15] mix-blend-screen transition-opacity duration-200 ${mostrarBonus ? 'opacity-100' : 'opacity-50 hover:opacity-80'}`}
           />
         </button>
-        </div>
       </div>
       <div className="flex justify-end mb-2">
         <button 

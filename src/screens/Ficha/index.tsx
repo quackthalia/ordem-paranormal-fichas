@@ -102,21 +102,24 @@ function AtributosFicha() {
             <input
               type="number"
               onKeyDown={bloquearLetras}
-              value={bonusAtributos[nome]}
-              onChange={(e) =>
-                setBonusAtributos({ ...bonusAtributos, [nome]: Math.max(0, Number(e.target.value)) })
-              }
-              className="w-full bg-transparent text-center text-[10px] font-bold text-amber-400 outline-none"
-            />
-          </div>
-          
-          <input
-              type="number"
-              onKeyDown={bloquearLetras}
               value={atributosFinais[nome]}
               onChange={(e) => {
                 const diferenca = atributosFinais[nome] - atributos[nome];
-                setAtributos({ ...atributos, [nome]: Number(e.target.value) - diferenca });
+                let baseDesejada = Number(e.target.value) - diferenca;
+                
+                if (regrasAtivas) {
+                  const valorAntigo = atributos[nome];
+                  if (baseDesejada > valorAntigo) {
+                     const dif = baseDesejada - valorAntigo;
+                     const stepsAllowed = Math.min(dif, pontosRestantes);
+                     baseDesejada = valorAntigo + Math.max(0, stepsAllowed);
+                     if (baseDesejada > capMaximo) baseDesejada = capMaximo;
+                  } else {
+                     if (baseDesejada < 0) baseDesejada = 0;
+                  }
+                }
+                
+                setAtributos({ ...atributos, [nome]: baseDesejada });
               }}
               className={`relative z-0 w-16 bg-transparent text-center text-[2rem] font-black outline-none ${atributosFinais[nome] > (atributos[nome] + bonusAtributos[nome]) ? 'text-green-500' : 'text-zinc-100'}`}
             />
@@ -164,7 +167,7 @@ function AtributosFicha() {
           {regrasAtivas ? 'Regras Ativas' : 'Modo Livre'}
         </label>
         {regrasAtivas && (
-          <span className={`text-[10px] uppercase tracking-wider font-bold ${pontosRestantes >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+          <span className={`text-[10px] uppercase tracking-wider font-bold ${pontosRestantes > 0 ? 'text-green-500' : 'text-zinc-500'}`}>
             Disponível: {pontosRestantes}
           </span>
         )}

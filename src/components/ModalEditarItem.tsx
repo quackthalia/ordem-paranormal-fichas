@@ -442,44 +442,63 @@ export function ModalEditarItem({
       </div>
 
       {escolhendoFuncaoAdicional !== null && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-5" onClick={(e) => e.stopPropagation()}>
-          <div className="flex w-full max-w-sm flex-col overflow-hidden rounded border border-zinc-700 bg-zinc-900 p-5 shadow-2xl">
-            <h3 className="mb-4 font-bold text-sm uppercase tracking-wider text-zinc-100">Escolha a Perícia (Função Adicional)</h3>
-            <div className="w-full mb-4">
-              <CustomSelect
-                value=""
-                onChange={val => {
-                  if (val) {
-                    setModificacoes(prev => [...(prev || []), escolhendoFuncaoAdicional]);
-                    const match = nome.match(/\((.*?)\)/);
-                    if (match) {
-                      setNome(prev => prev.replace(/\((.*?)\)/, `($1, ${val})`));
-                    } else {
-                      setNome(prev => `${prev} (${val})`);
-                    }
-                    setEscolhendoFuncaoAdicional(null);
-                  }
-                }}
-                options={[
-                  { value: "", label: "Selecione a perícia..." },
-                  ...TODAS_PERICIAS.filter(p => {
-                    const match = nome.match(/\((.*?)\)/);
-                    if (match && match[1]) {
-                      return match[1].toLowerCase().trim() !== p.toLowerCase().trim();
-                    }
-                    return true;
-                  }).map(p => ({ value: p, label: p }))
-                ]}
-                wrapperClassName="w-full"
-                className={selectClass}
-              />
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 backdrop-blur-sm bg-black/60 transition-opacity" onClick={() => setEscolhendoFuncaoAdicional(null)} />
+          <div className="relative w-full max-w-sm overflow-hidden rounded-2xl border border-zinc-800 bg-[#0a0a0a] shadow-[0_0_40px_rgba(0,0,0,0.8)] ring-1 ring-white/5 flex flex-col">
+            <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-green-500/50 to-transparent" />
+            
+            <div className="flex flex-shrink-0 items-center justify-between border-b border-white/5 bg-zinc-900/40 px-6 py-4">
+              <h3 className="font-display text-base uppercase tracking-wider text-zinc-100 drop-shadow-md">
+                Função Adicional
+              </h3>
+              <button
+                onClick={() => setEscolhendoFuncaoAdicional(null)}
+                className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-500 hover:bg-zinc-800 hover:text-zinc-100 transition-colors"
+              >
+                ✕
+              </button>
             </div>
-            <button
-              onClick={() => setEscolhendoFuncaoAdicional(null)}
-              className="rounded bg-zinc-800 px-4 py-2 text-xs uppercase font-bold text-zinc-300 hover:bg-zinc-700 hover:text-white w-full transition"
-            >
-              Cancelar
-            </button>
+
+            <div className="p-6 flex flex-col gap-4">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-zinc-500">Escolha a Perícia</p>
+              <div className="w-full">
+                <CustomSelect
+                  value=""
+                  onChange={val => {
+                    if (val) {
+                      setModificacoes(prev => [...(prev || []), escolhendoFuncaoAdicional]);
+                      const match = nome.match(/\((.*?)\)/);
+                      if (match) {
+                        setNome(prev => prev.replace(/\((.*?)\)/, `($1, ${val})`));
+                      } else {
+                        setNome(prev => `${prev} (${val})`);
+                      }
+                      setEscolhendoFuncaoAdicional(null);
+                    }
+                  }}
+                  options={[
+                    { value: "", label: "Selecione a perícia..." },
+                    ...TODAS_PERICIAS.filter(p => {
+                      const match = nome.match(/\((.*?)\)/);
+                      if (match && match[1]) {
+                        return match[1].toLowerCase().trim() !== p.toLowerCase().trim();
+                      }
+                      return true;
+                    }).map(p => ({ value: p, label: p }))
+                  ]}
+                  wrapperClassName="w-full"
+                  className="w-full rounded bg-zinc-900/50 border border-zinc-800 px-3 py-2 text-sm text-zinc-100 outline-none transition-all focus:border-green-500 focus:bg-zinc-900 focus:ring-1 focus:ring-green-500/50 hover:border-zinc-700"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 border-t border-white/5 bg-zinc-900/40 px-6 py-4">
+              <button
+                onClick={() => setEscolhendoFuncaoAdicional(null)}
+                className="rounded px-4 py-2 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors"
+              >
+                Cancelar
+              </button>
+            </div>
           </div>
         </div>
       )}

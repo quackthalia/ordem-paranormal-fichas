@@ -98,10 +98,10 @@ export const PericiasTable: React.FC = () => {
 
             {regrasAtivas && (
               <div className="flex gap-4 font-bold uppercase tracking-wider text-[10px]">
-                <span className={limites.maxTreinadas - totais.totalTreinadasUsadas < 0 ? 'text-green-500' : 'text-emerald-400'}>
+                <span className={limites.maxTreinadas - totais.totalTreinadasUsadas < 0 ? 'text-red-500' : 'text-green-500'}>
                   Treinar: {limites.maxTreinadas - totais.totalTreinadasUsadas}
                 </span>
-                <span className={limites.maxUpgrades - totais.totalUpgradesGastos < 0 ? 'text-green-500' : 'text-amber-400'}>
+                <span className={limites.maxUpgrades - totais.totalUpgradesGastos < 0 ? 'text-red-500' : 'text-green-500'}>
                   Upgrades: {limites.maxUpgrades - totais.totalUpgradesGastos}
                 </span>
               </div>

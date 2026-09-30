@@ -73,6 +73,12 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
                 onChange(opt.value);
                 setIsOpen(false);
               }}
+              onPointerDown={(e) => {
+                if (opt.disabled) return;
+                e.preventDefault();
+                onChange(opt.value);
+                setIsOpen(false);
+              }}
               className={`relative py-2 px-3 transition-colors ${
                 opt.disabled
                   ? 'opacity-60 cursor-not-allowed bg-zinc-900/50 text-zinc-500'

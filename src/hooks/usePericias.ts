@@ -387,13 +387,14 @@ export function usePericias(
           // Simula para verificar limites
           const simuladas = {
             ...prev,
-            [nome]: { ...periciaAtual, treino: novoValor },
+            [nome]: { ...periciaAtual, treino: novoValor, isLivre: false },
           };
 
           let simTreinadas = 0;
           let simUpgrades = 0;
 
           Object.entries(simuladas).forEach(([n, d]) => {
+            if (d.isLivre) return;
             if (d.treino >= 5 && !periciasGratis.includes(n)) simTreinadas += 1;
             if (d.treino === 10) simUpgrades += 1;
             else if (d.treino === 15) simUpgrades += 2;

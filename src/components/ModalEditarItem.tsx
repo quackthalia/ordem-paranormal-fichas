@@ -444,10 +444,10 @@ export function ModalEditarItem({
       {escolhendoFuncaoAdicional !== null && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 backdrop-blur-sm bg-black/60 transition-opacity" onClick={() => setEscolhendoFuncaoAdicional(null)} />
-          <div className="relative w-full max-w-sm overflow-hidden rounded-2xl border border-zinc-800 bg-[#0a0a0a] shadow-[0_0_40px_rgba(0,0,0,0.8)] ring-1 ring-white/5 flex flex-col" onClick={e => e.stopPropagation()}>
+          <div className="relative w-full max-w-sm rounded-2xl border border-zinc-800 bg-[#0a0a0a] shadow-[0_0_40px_rgba(0,0,0,0.8)] ring-1 ring-white/5 flex flex-col" onClick={e => e.stopPropagation()}>
             <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-green-500/50 to-transparent" />
             
-            <div className="flex flex-shrink-0 items-center justify-between border-b border-white/5 bg-zinc-900/40 px-6 py-4">
+            <div className="flex flex-shrink-0 items-center justify-between border-b border-white/5 bg-zinc-900/40 px-6 py-4 rounded-t-2xl">
               <h3 className="font-display text-base uppercase tracking-wider text-zinc-100 drop-shadow-md">
                 Função Adicional
               </h3>
@@ -491,7 +491,7 @@ export function ModalEditarItem({
                 />
               </div>
             </div>
-            <div className="flex justify-end gap-3 border-t border-white/5 bg-zinc-900/40 px-6 py-4">
+            <div className="flex justify-end gap-3 border-t border-white/5 bg-zinc-900/40 px-6 py-4 rounded-b-2xl">
               <button
                 onClick={() => setEscolhendoFuncaoAdicional(null)}
                 className="rounded px-4 py-2 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors"

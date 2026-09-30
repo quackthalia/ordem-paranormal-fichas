@@ -86,6 +86,7 @@ export const FichaScreen: React.FC = () => {
 // COMPONENTE INTERNO: ATRIBUTOS NA FICHA
 // ============================================================
 function AtributosFicha() {
+  const [opcoesAbertas, setOpcoesAbertas] = React.useState(false);
   const { 
     atributos, setAtributos, bonusAtributos, setBonusAtributos, bloquearLetras, atributosFinais, 
     nex, setNex, regras, regrasAtivasAtributos, setRegrasAtivasAtributos, pontosRestantes, alterarAtributo, nivel 
@@ -178,20 +179,32 @@ function AtributosFicha() {
         )}
       </div>
 
-      <div className="absolute top-0 right-0 md:right-4 z-10 flex flex-col items-end gap-1.5 bg-zinc-900/80 border border-zinc-800 px-3 py-2 rounded-lg">
-        <label className="flex cursor-pointer items-center gap-2 text-[10px] uppercase tracking-wider text-zinc-400 font-bold">
-          <input
-            type="checkbox"
-            className="cursor-pointer accent-green-600"
-            checked={regrasAtivasAtributos}
-            onChange={(e) => setRegrasAtivasAtributos(e.target.checked)}
-          />
-          {regrasAtivasAtributos ? 'Regras Ativas' : 'Modo Livre'}
-        </label>
-        {regrasAtivasAtributos && (
-          <span className={`text-[10px] uppercase tracking-wider font-bold ${pontosRestantes > 0 ? 'text-green-500' : 'text-zinc-500'}`}>
-            Disponível: {pontosRestantes}
-          </span>
+      <div className="absolute top-0 right-0 md:right-4 z-10 flex flex-col items-end gap-1.5">
+        <button 
+          onClick={() => setOpcoesAbertas(!opcoesAbertas)}
+          className="bg-zinc-900/80 border border-zinc-800 w-8 h-8 rounded-lg flex items-center justify-center text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800 transition-all cursor-pointer"
+          title="Opções de Atributos"
+        >
+          ⚙️
+        </button>
+
+        {opcoesAbertas && (
+          <div className="bg-zinc-900/90 border border-zinc-800 px-3 py-2 rounded-lg flex flex-col items-end gap-1.5 shadow-lg shadow-black/50 transition-all">
+            <label className="flex cursor-pointer items-center gap-2 text-[10px] uppercase tracking-wider text-zinc-400 font-bold">
+              <input
+                type="checkbox"
+                className="cursor-pointer accent-green-600"
+                checked={regrasAtivasAtributos}
+                onChange={(e) => setRegrasAtivasAtributos(e.target.checked)}
+              />
+              {regrasAtivasAtributos ? 'Regras Ativas' : 'Modo Livre'}
+            </label>
+            {regrasAtivasAtributos && (
+              <span className={`text-[10px] uppercase tracking-wider font-bold ${pontosRestantes > 0 ? 'text-green-500' : 'text-zinc-500'}`}>
+                Disponível: {pontosRestantes}
+              </span>
+            )}
+          </div>
         )}
       </div>
 

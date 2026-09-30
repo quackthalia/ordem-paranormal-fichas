@@ -30,6 +30,7 @@ export const PericiasTable: React.FC = () => {
 
   const [periciaAberta, setPericiaAberta] = React.useState<{ nome: string; descricao: string } | null>(null);
   const [mostrarBonus, setMostrarBonus] = React.useState(false);
+  const [mostrarOpcoes, setMostrarOpcoes] = React.useState(false);
   
 
   
@@ -54,10 +55,19 @@ export const PericiasTable: React.FC = () => {
   return (
     <div className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-6">
       <div className="flex items-center justify-between mb-2 border-b border-zinc-800 pb-1">
-        <h3 className="font-display text-lg uppercase tracking-[0.2em] text-zinc-300 ml-4 flex-1 text-center">
+        <div className="w-20 opacity-0 pointer-events-none"></div>
+        <h3 className="font-display text-lg uppercase tracking-[0.2em] text-zinc-300 flex-1 text-center">
           Perícias
         </h3>
-        <button
+        <div className="flex items-center gap-2 w-20 justify-end">
+          <button
+            onClick={() => setMostrarOpcoes(!mostrarOpcoes)}
+            className={`rounded transition text-lg ${mostrarOpcoes ? 'bg-zinc-800 text-zinc-200 shadow-[0_0_10px_rgba(255,255,255,0.05)]' : 'bg-zinc-800/50 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700/50'} border border-zinc-700/50 flex items-center justify-center w-9 h-9`}
+            title="Opções de Regras"
+          >
+            ⚙️
+          </button>
+          <button
           onClick={() => setMostrarBonus(!mostrarBonus)}
           className={`rounded transition text-lg ${mostrarBonus ? 'bg-green-900/50 text-green-400 border-green-800/50 shadow-[0_0_10px_rgba(34,197,94,0.2)]' : 'bg-zinc-800/50 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700/50'} border border-zinc-700/50 flex items-center justify-center w-9 h-9 overflow-hidden`}
           title="Modificadores de Dados"
@@ -68,8 +78,33 @@ export const PericiasTable: React.FC = () => {
             className={`w-full h-full object-contain scale-[1.15] mix-blend-screen transition-opacity duration-200 ${mostrarBonus ? 'opacity-100' : 'opacity-50 hover:opacity-80'}`}
           />
         </button>
+        </div>
       </div>
-      
+      <Collapse isOpen={mostrarOpcoes}>
+        <div className="mb-2 flex flex-col rounded border border-zinc-800 bg-zinc-950/80 px-3 py-2 text-xs shadow-lg shadow-black/50">
+          <div className="flex items-center justify-between">
+            <label className="flex cursor-pointer items-center gap-2 text-zinc-400">
+              <input
+                type="checkbox"
+                className="cursor-pointer accent-green-600"
+                checked={regrasAtivas}
+                onChange={(e) => setRegrasAtivas(e.target.checked)}
+              />
+              {regrasAtivas ? 'Regras Ativas' : 'Modo Livre'}
+            </label>
+            {regrasAtivas && (
+              <div className="flex gap-4 font-bold">
+                <span className={limites.maxTreinadas - totais.totalTreinadasUsadas < 0 ? 'text-green-500' : 'text-emerald-400'}>
+                  Treinar: {limites.maxTreinadas - totais.totalTreinadasUsadas}
+                </span>
+                <span className={limites.maxUpgrades - totais.totalUpgradesGastos < 0 ? 'text-green-500' : 'text-amber-400'}>
+                  Upgrades: {limites.maxUpgrades - totais.totalUpgradesGastos}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      </Collapse>
       <Collapse isOpen={mostrarBonus}>
         <div className="mb-4">
           <BonusCondicionaisPanel />

@@ -312,7 +312,7 @@ export const PericiasTable: React.FC = () => {
                                       }
                                     }}
                                     placeholder="Nome da profissão..."
-                                    className="flex-1 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm text-zinc-100 outline-none focus:border-green-500"
+                                    className="flex-1 rounded border border-transparent bg-transparent hover:border-zinc-800 focus:bg-zinc-900 focus:border-green-500 px-2 py-1 text-sm font-bold text-zinc-300 outline-none transition-colors"
                                   />
                                   <CustomSelect
                                     value={String(prof.treino)}

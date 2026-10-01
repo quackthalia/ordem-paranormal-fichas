@@ -33,6 +33,7 @@ export const PericiasTable: React.FC = () => {
   const [mostrarBonus, setMostrarBonus] = React.useState(false);
   const [mostrarOpcoes, setMostrarOpcoes] = React.useState(false);
   const [profissaoExpandida, setProfissaoExpandida] = React.useState(false);
+  const [animationParent] = useAutoAnimate<HTMLDivElement>();
   const [isFullyExpanded, setIsFullyExpanded] = React.useState(false);
   React.useEffect(() => {
     let t: any;
@@ -302,9 +303,9 @@ export const PericiasTable: React.FC = () => {
                       <td colSpan={5} className="p-0 border-0">
                         <div className={`grid transition-all duration-300 ease-in-out ${profissaoExpandida ? 'grid-rows-[1fr] opacity-100 border-b border-zinc-800/70' : 'grid-rows-[0fr] opacity-0'}`}>
                           <div className={isFullyExpanded ? "overflow-visible" : "overflow-hidden"}>
-                            <div className="px-4 py-3 bg-zinc-900/50 flex flex-col gap-2" >
+                            <div className="px-4 py-3 bg-zinc-900/50 flex flex-col gap-2" ref={animationParent}>
                               {profissoes.map((prof, idx) => (
-                                <div key={(prof as any).id || idx} className="flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                                <div key={(prof as any).id || idx} className="flex items-center gap-2">
                                   {editingProfIndex === idx || prof.nome === '' ? (
                                   <input
                                     autoFocus

@@ -124,8 +124,8 @@ export function ModalProtecoes({ isEmbedded, aberto, onFechar }: ModalProtecoesP
         <Collapse isOpen={mostrarFiltrosAvançados} className="z-50">
 
           <div className="flex flex-col gap-3 border-b border-zinc-800 bg-zinc-950 px-4 py-3">
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px] ">
+            <div className="flex flex-wrap items-center gap-3 w-full">
+              <div className="flex flex-col gap-1 flex-1 min-w-[120px]">
                 <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Categoria</label>
                 <CustomSelect
                   value={filtroCategoria}
@@ -137,21 +137,18 @@ export function ModalProtecoes({ isEmbedded, aberto, onFechar }: ModalProtecoesP
                   wrapperClassName="w-full"
                 />
               </div>
-            </div>
-            
-            <div className="flex flex-col gap-1">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Proficiência</label>
-              <CustomSelect
+              <div className="flex flex-col gap-1 flex-1 min-w-[120px]">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Proficiência</label>
+                <CustomSelect
                 value={filtro}
                 onChange={setFiltro}
                 options={filtros.map(f => ({ value: f.valor, label: f.label }))}
                 wrapperClassName="w-full"
               />
-            </div>
-          
-            <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Fonte</label>
-              <CustomSelect
+              </div>
+              <div className="flex flex-col gap-1 flex-1 min-w-[120px]">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Fonte</label>
+                <CustomSelect
                 value={filtroFonte}
                 onChange={setFiltroFonte}
                 options={[
@@ -163,6 +160,7 @@ export function ModalProtecoes({ isEmbedded, aberto, onFechar }: ModalProtecoesP
                 ]}
                 wrapperClassName="w-full"
               />
+              </div>
             </div>
           </div>
         </Collapse>

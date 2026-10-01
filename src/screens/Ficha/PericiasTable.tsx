@@ -137,49 +137,8 @@ export const PericiasTable: React.FC = () => {
               const bonusRegra13 = (nome === 'Vontade' && regrasAutomaticasAtivas.has(13)) ? 2 : 0;
               const bonusRegra25 = (nome === 'Reflexos' && regrasAutomaticasAtivas.has(25) && temProtecaoLeve) ? 2 : 0;
               
-              // Bônus de Itens (Vestimentas, Utensílios, Amuletos e Função Adicional)
-              const bonusInventario = itensHook?.itensInventario.reduce((acc, obj) => {
-                const nomeItem = obj.item.Nome_Item.toLowerCase();
-                const isVestimenta = nomeItem.includes('vestimenta');
-                const isAmuleto = nomeItem.includes('amuleto sagrado');
-                const isUtensilio = nomeItem.includes('utensílio') || nomeItem.includes('utensilio');
-                
-                let bonusDesteItem = 0;
-
-                // Checa perícias entre parênteses, ex: Vestimenta (Ocultismo, Crime) ou Celular (Crime)
-                const match = obj.item.Nome_Item.match(/\((.*?)\)/);
-                if (match) {
-                  const periciasNoItem = match[1].split(',').map(s => s.trim().toLowerCase());
-                  
-                  // Procura a perícia atual na lista (com ou sem *)
-                  const periciaEncontrada = periciasNoItem.find(p => p.replace('*', '') === nome.toLowerCase());
-                  
-                  if (periciaEncontrada) {
-                    // Vestimentas, Amuletos e Utensílios precisam estar equipados para dar o bônus
-                    if ((isVestimenta || isAmuleto) && !obj.equipado) {
-                      // não ganha nada
-                    } else {
-                      if (periciaEncontrada.includes('*')) {
-                        bonusDesteItem = 5;
-                      } else {
-                        bonusDesteItem = 2;
-                      }
-                    }
-                  }
-                }
-                
-                // Se for Amuleto e ainda não ganhou bônus nessa perícia, dá os +2 nativos de Religião/Vontade se equipado
-                if (isAmuleto && obj.equipado && bonusDesteItem === 0) {
-                  if (nome === 'Religião' || nome === 'Vontade') {
-                    bonusDesteItem = 2;
-                  }
-                }
-                
-                // Bônus de itens (equipamentos mundanos) não se acumulam, pega-se o maior.
-                return acc + bonusDesteItem;
-              }, 0) || 0;
-
-              // Adiciona também bônus de itens amaldiçoados (ex: Tênis Lépidos)
+                            // Usa o memo otimizado para não recalcular a cada render
+              const bonusInventario = bonusInventarioGlobal[nome] || 0;
               const bonusAmaldicoados = periciasHook.bonusVestimentas?.[nome] || 0;
               const bonusItemFinal = bonusInventario + bonusAmaldicoados;
 

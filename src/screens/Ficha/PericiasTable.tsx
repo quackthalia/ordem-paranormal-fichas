@@ -23,40 +23,16 @@ const BORDA_TREINO: Record<number, string> = {
 
 
 
-const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setProfissoes, regrasAtivas, limites, totais, status }) => {
-  const [mounted, setMounted] = React.useState(false);
-  const [closing, setClosing] = React.useState(false);
-  
-  React.useEffect(() => {
-    if (idx === 0) {
-      setMounted(true); // first item appears instantly with the main panel
-    } else {
-      requestAnimationFrame(() => requestAnimationFrame(() => setMounted(true)));
-    }
-  }, [idx]);
 
+const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setProfissoes, regrasAtivas, limites, totais, status }) => {
   const handleRemove = () => {
-    setClosing(true);
-    setTimeout(() => {
-      React.startTransition(() => {
-        setProfissoes(prev => prev.filter((_, i) => i !== idx));
-      });
-    }, 300);
+    React.startTransition(() => {
+      setProfissoes(prev => prev.filter((_, i) => i !== idx));
+    });
   };
 
   return (
-    <div 
-      className={`grid transition-all duration-300 ease-in-out ${(mounted && !closing) ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
-      onTransitionEnd={(e) => {
-        if (e.propertyName === 'grid-template-rows') {
-          const el = document.getElementById(`prof-inner-row-${idx}`);
-          if (el && mounted && !closing) {
-            el.style.overflow = 'visible';
-          }
-        }
-      }}
-    >
-      <div id={`prof-inner-row-${idx}`} className="min-h-0" style={{ overflow: 'hidden' }}>
+    <div id={`prof-inner-row-${idx}`} className="min-h-0">
         <div className="flex items-center gap-2 mb-2 pt-1">
           {editingProfIndex === idx || prof.nome === '' ? (
             <input
@@ -125,11 +101,11 @@ const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setPro
             onClick={handleRemove}
             className="text-zinc-600 hover:text-red-400 transition text-lg leading-none"
           >×</button>
-        </div>
-      </div>
+        
     </div>
   );
 };
+
 
 export const PericiasTable: React.FC = () => {
   const { 

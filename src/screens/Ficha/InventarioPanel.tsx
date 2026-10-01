@@ -1334,14 +1334,14 @@ export function InventarioPanel() {
             </div>
             {escolhaCriacaoAberta === 'Amaldiçoados' && (
               <div className="flex flex-col gap-2">
-                <button onClick={() => { setEscolhaCriacaoAberta(null); setCreatingItemCategory('ItemAmaldiçoado'); }} className="bg-zinc-900 border border-zinc-800 hover:border-purple-500 hover:bg-zinc-800 p-3 rounded text-zinc-300 font-bold transition">Item Amaldiçoado</button>
-                <button onClick={() => { setEscolhaCriacaoAberta(null); setCreatingItemCategory('ArmaAmaldiçoada'); }} className="bg-zinc-900 border border-zinc-800 hover:border-purple-500 hover:bg-zinc-800 p-3 rounded text-zinc-300 font-bold transition">Arma Amaldiçoada</button>
+                <button onClick={(e) => { e.stopPropagation(); e.preventDefault(); setEscolhaCriacaoAberta(null); setTimeout(() => setCreatingItemCategory('ItemAmaldiçoado'), 0); }} className="bg-zinc-900 border border-zinc-800 hover:border-purple-500 hover:bg-zinc-800 p-3 rounded text-zinc-300 font-bold transition">Item Amaldiçoado</button>
+                <button onClick={(e) => { e.stopPropagation(); e.preventDefault(); setEscolhaCriacaoAberta(null); setTimeout(() => setCreatingItemCategory('ArmaAmaldiçoada'), 0); }} className="bg-zinc-900 border border-zinc-800 hover:border-purple-500 hover:bg-zinc-800 p-3 rounded text-zinc-300 font-bold transition">Arma Amaldiçoada</button>
               </div>
             )}
             {escolhaCriacaoAberta === 'Itens Operacionais' && (
               <div className="flex flex-col gap-2">
-                <button onClick={() => { setEscolhaCriacaoAberta(null); setCreatingItemCategory('Itens Operacionais'); }} className="bg-zinc-900 border border-zinc-800 hover:border-green-500 hover:bg-zinc-800 p-3 rounded text-zinc-300 font-bold transition">Item Operacional</button>
-                <button onClick={() => { setEscolhaCriacaoAberta(null); setCreatingItemCategory('Recursos'); }} className="bg-zinc-900 border border-zinc-800 hover:border-green-500 hover:bg-zinc-800 p-3 rounded text-zinc-300 font-bold transition">Recursos</button>
+                <button onClick={(e) => { e.stopPropagation(); e.preventDefault(); setEscolhaCriacaoAberta(null); setTimeout(() => setCreatingItemCategory('Itens Operacionais'), 0); }} className="bg-zinc-900 border border-zinc-800 hover:border-green-500 hover:bg-zinc-800 p-3 rounded text-zinc-300 font-bold transition">Item Operacional</button>
+                <button onClick={(e) => { e.stopPropagation(); e.preventDefault(); setEscolhaCriacaoAberta(null); setTimeout(() => setCreatingItemCategory('Recursos'), 0); }} className="bg-zinc-900 border border-zinc-800 hover:border-green-500 hover:bg-zinc-800 p-3 rounded text-zinc-300 font-bold transition">Recursos</button>
               </div>
             )}
           </div>
@@ -1355,11 +1355,7 @@ export function InventarioPanel() {
             id: 'NEW',
             modificacoes: [], maldicoes: [], maldicoes_elementos: {},
             arma: {
-              Codigo_Arma: -1, Nome_Item: 'Nova Arma', Descricao_Item: '',
-              Tipo_Arma: 'Simples', Categoria_Item: '0', Dano_Item: '1d4',
-              Critico_Arma: '20', Dano_Critico_Arma: 'x2', Alcance_Arma: 'Curto',
-              Peso_Arma: 1, Tamanho_Arma: 'Uma Mão', Tipo_Dano_Arma: 'Impacto',
-              Espaços_Item: 1
+              Codigo_Arma: -1, Nome_Item: 'Nova Arma', Descricao_Item: '', Tipo_Arma: 'Corpo a Corpo', Categoria_Item: '0', Dano_Arma: '1d4', Critico_Arma: 20, Multiplicador_Arma: 2, Alcance_Item: 'Curto', Empunhadura_Arma: 'Uma Mão', Tipo_Dano_Arma: 'Impacto', 'Espaços_Item': 1, Proficiencia: 'Armas Simples'
             }
           }}
           onSave={(dados, mods, malds, maldEls) => {
@@ -1375,11 +1371,7 @@ export function InventarioPanel() {
             id: 'NEW',
             modificacoes: [], maldicoes: [], maldicoes_elementos: {},
             arma: {
-              Codigo_Arma: -1, Nome_Item: 'Nova Arma Amaldiçoada', Descricao_Item: '',
-              Tipo_Arma: 'Simples', Categoria_Item: '0', Dano_Item: '1d4',
-              Critico_Arma: '20', Dano_Critico_Arma: 'x2', Alcance_Arma: 'Curto',
-              Peso_Arma: 1, Tamanho_Arma: 'Uma Mão', Tipo_Dano_Arma: 'Impacto',
-              Espaços_Item: 1, isAmaldicoada: true
+              Codigo_Arma: -1, Nome_Item: 'Nova Arma Amaldiçoada', Descricao_Item: '', Tipo_Arma: 'Corpo a Corpo', Categoria_Item: '0', Dano_Arma: '1d4', Critico_Arma: 20, Multiplicador_Arma: 2, Alcance_Item: 'Curto', Empunhadura_Arma: 'Uma Mão', Tipo_Dano_Arma: 'Impacto', 'Espaços_Item': 1, Proficiencia: 'Armas Simples', isAmaldicoada: true
             }
           }}
           onSave={(dados, mods, malds, maldEls) => {

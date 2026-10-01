@@ -296,24 +296,29 @@ export const PericiasTable: React.FC = () => {
                             <div className="px-4 py-3 bg-zinc-900/50 flex flex-col gap-2">
                               {profissoes.map((prof, idx) => (
                                 <div key={idx} className="flex items-center gap-2">
+                                  {editingProfIndex === idx || prof.nome === '' ? (
                                   <input
+                                    autoFocus
                                     value={prof.nome}
                                     onChange={e => setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, nome: e.target.value } : p))}
                                     onKeyDown={e => {
                                       if (e.key === 'Enter') {
                                         e.preventDefault();
-                                        if (prof.nome.trim() !== '') {
-                                          if (idx === profissoes.length - 1) {
-                                            setProfissoes(prev => [...prev, { nome: '', treino: 5, outros: 0 }]);
-                                          } else {
-                                            e.currentTarget.blur();
-                                          }
-                                        }
+                                        setEditingProfIndex(null);
                                       }
                                     }}
+                                    onBlur={() => setEditingProfIndex(null)}
                                     placeholder="Nome da profissão..."
-                                    className="flex-1 rounded border border-transparent bg-transparent hover:border-zinc-800 focus:bg-zinc-900 focus:border-green-500 px-2 py-1 text-sm font-bold text-zinc-300 outline-none transition-colors"
+                                    className="flex-1 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm text-zinc-100 outline-none focus:border-green-500"
                                   />
+                                ) : (
+                                  <span 
+                                    className="flex-1 px-2 py-1 text-sm font-bold text-zinc-300 cursor-pointer hover:text-green-400 transition-colors truncate"
+                                    onClick={() => setEditingProfIndex(idx)}
+                                  >
+                                    {prof.nome}
+                                  </span>
+                                )}
                                   <CustomSelect
                                     value={String(prof.treino)}
                                     onChange={val => setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, treino: Number(val) } : p))}

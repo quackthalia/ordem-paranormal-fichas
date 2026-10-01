@@ -21,6 +21,95 @@ const BORDA_TREINO: Record<number, string> = {
   15: 'border-green-400',
 };
 
+
+
+const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setProfissoes, regrasAtivas, limites, totais }) => {
+  const [mounted, setMounted] = React.useState(false);
+  const [closing, setClosing] = React.useState(false);
+  
+  React.useEffect(() => {
+    if (idx === 0) {
+      setMounted(true); // first item appears instantly with the main panel
+    } else {
+      requestAnimationFrame(() => requestAnimationFrame(() => setMounted(true)));
+    }
+  }, [idx]);
+
+  const handleRemove = () => {
+    setClosing(true);
+    setTimeout(() => {
+      setProfissoes(prev => prev.filter((_, i) => i !== idx));
+    }, 300);
+  };
+
+  return (
+    <div 
+      className={`grid transition-all duration-300 ease-in-out ${(mounted && !closing) ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
+      onTransitionEnd={(e) => {
+        if (e.propertyName === 'grid-template-rows') {
+          const el = document.getElementById(`prof-inner-row-${idx}`);
+          if (el && mounted && !closing) {
+            el.style.overflow = 'visible';
+          }
+        }
+      }}
+    >
+      <div id={`prof-inner-row-${idx}`} style={{ overflow: 'hidden' }}>
+        <div className="flex items-center gap-2 mb-2 pt-1">
+          {editingProfIndex === idx || prof.nome === '' ? (
+            <input
+              autoFocus
+              value={prof.nome}
+              onChange={e => setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, nome: e.target.value } : p))}
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  setEditingProfIndex(null);
+                }
+              }}
+              onBlur={() => setEditingProfIndex(null)}
+              placeholder="Nome da profissão..."
+              className="flex-1 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm text-zinc-100 outline-none focus:border-green-500"
+            />
+          ) : (
+            <span 
+              className={`flex-1 px-2 py-1 text-sm font-normal cursor-pointer hover:opacity-75 transition-opacity truncate ${prof.treino >= 15 ? 'text-amber-400' : prof.treino >= 10 ? 'text-emerald-400' : prof.treino >= 5 ? 'text-green-500' : 'text-zinc-300'}`}
+              onClick={() => setEditingProfIndex(idx)}
+            >
+              {prof.nome}
+            </span>
+          )}
+          
+          <CustomSelect
+            value={String(prof.treino)}
+            onChange={val => {
+              const novoValor = Number(val);
+              setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, treino: novoValor } : p));
+            }}
+            options={[{value:'0',label:'0'},{value:'5',label:'5'},{value:'10',label:'10'},{value:'15',label:'15'}]}
+            wrapperClassName="w-14"
+            className={`cursor-pointer border-b bg-transparent text-center font-bold outline-none !px-0 py-0.5 ${prof.treino >= 15 ? 'text-amber-400 border-amber-400/50' : prof.treino >= 10 ? 'text-emerald-400 border-emerald-400/50' : prof.treino >= 5 ? 'text-green-500 border-green-500/50' : 'text-zinc-400 border-zinc-600'}`}
+            hideIcon={true}
+          />
+
+          <input
+            type="number"
+            value={prof.outros || ''}
+            placeholder="0"
+            onChange={e => setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, outros: Number(e.target.value) || 0 } : p))}
+            className={`w-11 border-b bg-transparent text-center font-bold outline-none ${prof.treino >= 15 ? 'text-amber-400 border-amber-400/50' : prof.treino >= 10 ? 'text-emerald-400 border-emerald-400/50' : prof.treino >= 5 ? 'text-green-500 border-green-500/50' : 'text-zinc-400 border-zinc-600'}`}
+          />
+          
+          <button
+            onClick={handleRemove}
+            className="text-zinc-600 hover:text-red-400 transition text-lg leading-none"
+          >×</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const PericiasTable: React.FC = () => {
   const { 
     status, periciasHook, regrasAtivas, setRegrasAtivas, regrasAutomaticasAtivas, protecoesHook,

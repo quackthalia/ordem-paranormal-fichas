@@ -189,7 +189,7 @@ export const PericiasTable: React.FC = () => {
                 <tr className="border-b border-zinc-800/70 transition hover:bg-zinc-800/30">
                   <td className={`px-2 py-1.5 font-bold text-sm ${corTexto}`}>
                     <div className="flex items-center gap-1">
-                      {nome === 'Profissão' && dadosPericia.treino >= 5 && (
+                      {nome === 'Profissão' && (
                         <button
                           onClick={() => {
                             const el = document.getElementById('profissao-panel');

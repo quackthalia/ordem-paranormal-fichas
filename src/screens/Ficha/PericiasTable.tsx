@@ -33,7 +33,6 @@ export const PericiasTable: React.FC = () => {
   const [mostrarBonus, setMostrarBonus] = React.useState(false);
   const [mostrarOpcoes, setMostrarOpcoes] = React.useState(false);
   const [profissaoExpandida, setProfissaoExpandida] = React.useState(false);
-  const [isFullyExpanded, setIsFullyExpanded] = React.useState(false);
   React.useEffect(() => {
     let t: any;
     if (profissaoExpandida) t = setTimeout(() => setIsFullyExpanded(true), 300);
@@ -306,9 +305,22 @@ export const PericiasTable: React.FC = () => {
                               initial={{ height: 0, opacity: 0 }}
                               animate={{ height: 'auto', opacity: 1 }}
                               exit={{ height: 0, opacity: 0 }}
-                              onAnimationComplete={() => setIsFullyExpanded(true)}
-                              onAnimationStart={() => setIsFullyExpanded(false)}
-                              className={`${isFullyExpanded ? 'overflow-visible' : 'overflow-hidden'} border-b border-zinc-800/70 bg-zinc-900/50`}
+                              onAnimationComplete={(definition) => {
+                                const el = document.getElementById('profissao-panel');
+                                // Only set visible if it finished opening (height: auto)
+                                if (el && (definition as any).opacity === 1) {
+                                  el.style.overflow = 'visible';
+                                }
+                              }}
+                              onAnimationStart={() => {
+                                const el = document.getElementById('profissao-panel');
+                                if (el) {
+                                  el.style.overflow = 'hidden';
+                                }
+                              }}
+                              id="profissao-panel"
+                              style={{ overflow: 'hidden' }}
+                              className="border-b border-zinc-800/70 bg-zinc-900/50"
                             >
                               <div className="px-4 py-3 flex flex-col">
                               <AnimatePresence initial={false}>

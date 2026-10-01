@@ -43,8 +43,10 @@ const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setPro
   };
 
   return (
-    <div className={`grid transition-all duration-300 ease-in-out ${(mounted && !closing) ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
-      <div id={`prof-inner-row-${idx}`} className="min-h-0 overflow-hidden">
+    <div 
+      className={`transition-all duration-300 ease-in-out ${(mounted && !closing) ? 'max-h-[100px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}
+      style={{ transitionProperty: 'max-height, opacity' }}
+    >
         <div className="flex items-center gap-2 mb-2 pt-1">
           {editingProfIndex === idx || prof.nome === '' ? (
             <input
@@ -114,7 +116,6 @@ const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setPro
             className="text-zinc-600 hover:text-red-400 transition text-lg leading-none"
           >×</button>
         </div>
-      </div>
     </div>
   );
 };

@@ -56,6 +56,7 @@ export function exportarFicha(rpg: any) {
 
     // Outros Hooks
     periciasStatus: rpg.periciasHook.periciasStatus,
+    profissoes: rpg.periciasHook.profissoes,
     poderesEscolhidos: rpg.poderesHook.poderesEscolhidos,
     origemSelecionada: rpg.origensHook.origemSelecionada,
     poderOrigemEditado: rpg.origensHook.poderOrigemEditado,
@@ -151,6 +152,7 @@ export function importarFicha(event: React.ChangeEvent<HTMLInputElement>, rpg: a
       }
 
       if (data.periciasStatus !== undefined) rpg.periciasHook.setPericiasStatus(data.periciasStatus);
+      if (data.profissoes !== undefined) rpg.periciasHook.setProfissoes(data.profissoes);
       if (data.poderesEscolhidos !== undefined) rpg.poderesHook.setPoderesEscolhidos(data.poderesEscolhidos);
       if (data.origemSelecionada !== undefined) rpg.origensHook.setOrigemSelecionada(data.origemSelecionada);
       if (data.poderOrigemEditado !== undefined) rpg.origensHook.setPoderOrigemEditado(data.poderOrigemEditado);

@@ -17,6 +17,8 @@ interface UsePericiasReturn {
   debugRegra33: { avaliou: boolean, evalJaTinha: boolean };
   bonusRegra40: Record<string, number>;
   bonusVestimentas: Record<string, number>;
+  profissoes: { nome: string; treino: number; outros: number }[];
+  setProfissoes: React.Dispatch<React.SetStateAction<{ nome: string; treino: number; outros: number }[]>>;
 }
 
 export function usePericias(
@@ -38,6 +40,7 @@ export function usePericias(
   const [error, setError] = useState<string | null>(null);
   const [jaTinhaProfissao33, setJaTinhaProfissao33] = useState<boolean>(false);
   const [avaliouRegra33, setAvaliouRegra33] = useState<boolean>(false);
+  const [profissoes, setProfissoes] = useState<{ nome: string; treino: number; outros: number }[]>([]);
 
   const [jaTinhaPericiaPoder, setJaTinhaPericiaPoder] = useState<Record<string, boolean>>({});
   const [avaliouPericiaPoder, setAvaliouPericiaPoder] = useState<Record<string, boolean>>({});
@@ -352,8 +355,10 @@ export function usePericias(
     let totalUpgradesGastos = 0;
 
     Object.entries(pericias).forEach(([nome, dados]) => {
-      // Ignora perÃ­cias marcadas como 'isLivre' (Modo Livre)
+      // Ignora perícias marcadas como 'isLivre' (Modo Livre)
       if (dados.isLivre) return;
+
+      if (nome === 'Profissão' && profissoes.length > 0) return;
 
       if (dados.treino >= 5 && !periciasGratis.includes(nome)) {
         totalTreinadasUsadas += 1;
@@ -362,8 +367,14 @@ export function usePericias(
       else if (dados.treino === 15) totalUpgradesGastos += 2;
     });
 
+    profissoes.forEach(prof => {
+      if (prof.treino >= 5) totalTreinadasUsadas += 1;
+      if (prof.treino === 10) totalUpgradesGastos += 1;
+      else if (prof.treino === 15) totalUpgradesGastos += 2;
+    });
+
     return { totalTreinadasUsadas, totalUpgradesGastos };
-  }, [pericias, periciasGratis]);
+  }, [pericias, periciasGratis, profissoes]);
 
   const handleMudarPericia = useCallback(
     (nome: string, campo: 'treino' | 'outros' | 'atributo', valor: number | AtributoKey) => {
@@ -467,6 +478,8 @@ export function usePericias(
     regrasAtivas,
     jaTinhaProfissao33,
     debugRegra33: { avaliou: avaliouRegra33, evalJaTinha: jaTinhaProfissao33 },
-    bonusRegra40
+    bonusRegra40,
+    profissoes,
+    setProfissoes
   };
 }

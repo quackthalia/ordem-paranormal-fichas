@@ -300,9 +300,17 @@ export const PericiasTable: React.FC = () => {
                                     {nome === 'Profissão' && (
                     <tr key="profissao-sub">
                       <td colSpan={5} className="p-0 border-0">
-                        <div className={`grid transition-all duration-300 ease-in-out ${profissaoExpandida ? 'grid-rows-[1fr] opacity-100 border-b border-zinc-800/70' : 'grid-rows-[0fr] opacity-0'}`}>
-                          <div className={isFullyExpanded ? "overflow-visible" : "overflow-hidden"}>
-                            <div className="px-4 py-3 bg-zinc-900/50 flex flex-col">
+                        <AnimatePresence initial={false}>
+                          {profissaoExpandida && (
+                            <motion.div 
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              onAnimationComplete={() => setIsFullyExpanded(true)}
+                              onAnimationStart={() => setIsFullyExpanded(false)}
+                              className={`${isFullyExpanded ? 'overflow-visible' : 'overflow-hidden'} border-b border-zinc-800/70 bg-zinc-900/50`}
+                            >
+                              <div className="px-4 py-3 flex flex-col">
                               <AnimatePresence initial={false}>
                               {profissoes.map((prof, idx) => (
                                 <motion.div 
@@ -395,8 +403,9 @@ export const PericiasTable: React.FC = () => {
                                 Adicionar Profissão
                               </button>
                             </div>
-                          </div>
-                        </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </td>
                     </tr>
                   )}

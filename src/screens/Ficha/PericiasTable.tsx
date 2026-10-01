@@ -32,6 +32,7 @@ export const PericiasTable: React.FC = () => {
   const [mostrarBonus, setMostrarBonus] = React.useState(false);
   const [mostrarOpcoes, setMostrarOpcoes] = React.useState(false);
   const [profissaoExpandida, setProfissaoExpandida] = React.useState(false);
+  const [editingProfIndex, setEditingProfIndex] = React.useState<number | null>(null);
   
 
   

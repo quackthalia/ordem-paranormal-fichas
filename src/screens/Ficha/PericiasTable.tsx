@@ -33,7 +33,13 @@ export const PericiasTable: React.FC = () => {
   const [mostrarBonus, setMostrarBonus] = React.useState(false);
   const [mostrarOpcoes, setMostrarOpcoes] = React.useState(false);
   const [profissaoExpandida, setProfissaoExpandida] = React.useState(false);
-  const [animationParent] = useAutoAnimate<HTMLDivElement>();
+  const [isFullyExpanded, setIsFullyExpanded] = React.useState(false);
+  React.useEffect(() => {
+    let t: any;
+    if (profissaoExpandida) t = setTimeout(() => setIsFullyExpanded(true), 300);
+    else setIsFullyExpanded(false);
+    return () => clearTimeout(t);
+  }, [profissaoExpandida]);
   const [editingProfIndex, setEditingProfIndex] = React.useState<number | null>(null);
   
 
@@ -295,10 +301,10 @@ export const PericiasTable: React.FC = () => {
                     <tr key="profissao-sub">
                       <td colSpan={5} className="p-0 border-0">
                         <div className={`grid transition-all duration-300 ease-in-out ${profissaoExpandida ? 'grid-rows-[1fr] opacity-100 border-b border-zinc-800/70' : 'grid-rows-[0fr] opacity-0'}`}>
-                          <div className={profissaoExpandida ? "overflow-visible" : "overflow-hidden"}>
-                            <div className="px-4 py-3 bg-zinc-900/50 flex flex-col gap-2" ref={animationParent}>
+                          <div className={isFullyExpanded ? "overflow-visible" : "overflow-hidden"}>
+                            <div className="px-4 py-3 bg-zinc-900/50 flex flex-col gap-2" >
                               {profissoes.map((prof, idx) => (
-                                <div key={(prof as any).id || idx} className="flex items-center gap-2">
+                                <div key={(prof as any).id || idx} className="flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
                                   {editingProfIndex === idx || prof.nome === '' ? (
                                   <input
                                     autoFocus
@@ -366,7 +372,7 @@ export const PericiasTable: React.FC = () => {
                                 </div>
                               ))}
                               <button
-                                onClick={() => { setProfissoes(prev => [...prev, { id: Math.random().toString(36).substr(2, 9), nome: '', treino: 5, outros: 0 }]); setEditingProfIndex(profissoes.length); }}
+                                onClick={() => { setProfissoes(prev => [...prev, { id: Math.random().toString(36).substr(2, 9), nome: '', treino: 0, outros: 0 }]); setEditingProfIndex(profissoes.length); }}
                                 className="self-start text-xs text-green-500 hover:text-green-300 transition flex items-center gap-1 mt-1"
                               >
                                 <svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='3'><line x1='12' y1='5' x2='12' y2='19'/><line x1='5' y1='12' x2='19' y2='12'/></svg>

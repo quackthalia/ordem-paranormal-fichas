@@ -23,7 +23,7 @@ const BORDA_TREINO: Record<number, string> = {
 
 
 
-const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setProfissoes, regrasAtivas, limites, totais }) => {
+const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setProfissoes, regrasAtivas, limites, totais, status }) => {
   const [mounted, setMounted] = React.useState(false);
   const [closing, setClosing] = React.useState(false);
   
@@ -38,7 +38,9 @@ const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setPro
   const handleRemove = () => {
     setClosing(true);
     setTimeout(() => {
-      setProfissoes(prev => prev.filter((_, i) => i !== idx));
+      React.startTransition(() => {
+        setProfissoes(prev => prev.filter((_, i) => i !== idx));
+      });
     }, 300);
   };
 
@@ -54,7 +56,7 @@ const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setPro
         }
       }}
     >
-      <div id={`prof-inner-row-${idx}`} style={{ overflow: 'hidden' }}>
+      <div id={`prof-inner-row-${idx}`} className="min-h-0" style={{ overflow: 'hidden' }}>
         <div className="flex items-center gap-2 mb-2 pt-1">
           {editingProfIndex === idx || prof.nome === '' ? (
             <input
@@ -84,6 +86,25 @@ const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setPro
             value={String(prof.treino)}
             onChange={val => {
               const novoValor = Number(val);
+              if (regrasAtivas) {
+                if (novoValor === 10 && status.nivel < 7) return;
+                if (novoValor === 15 && status.nivel < 14) return;
+                
+                const currentTreino = prof.treino;
+                let simTreinadas = totais.totalTreinadasUsadas;
+                let simUpgrades = totais.totalUpgradesGastos;
+                
+                if (currentTreino >= 5) simTreinadas -= 1;
+                if (currentTreino === 10) simUpgrades -= 1;
+                if (currentTreino === 15) simUpgrades -= 2;
+                
+                if (novoValor >= 5) simTreinadas += 1;
+                if (novoValor === 10) simUpgrades += 1;
+                if (novoValor === 15) simUpgrades += 2;
+                
+                if (simTreinadas > limites.maxTreinadas) return;
+                if (simUpgrades > limites.maxUpgrades) return;
+              }
               setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, treino: novoValor } : p));
             }}
             options={[{value:'0',label:'0'},{value:'5',label:'5'},{value:'10',label:'10'},{value:'15',label:'15'}]}
@@ -94,7 +115,7 @@ const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setPro
 
           <input
             type="number"
-            value={prof.outros || ''}
+            value={prof.outros === 0 ? '' : prof.outros}
             placeholder="0"
             onChange={e => setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, outros: Number(e.target.value) || 0 } : p))}
             className={`w-11 border-b bg-transparent text-center font-bold outline-none ${prof.treino >= 15 ? 'text-amber-400 border-amber-400/50' : prof.treino >= 10 ? 'text-emerald-400 border-emerald-400/50' : prof.treino >= 5 ? 'text-green-500 border-green-500/50' : 'text-zinc-400 border-zinc-600'}`}
@@ -395,103 +416,24 @@ export const PericiasTable: React.FC = () => {
                             }
                           }}
                         >
-                          <div id="profissao-panel" style={{ overflow: 'hidden' }}>
+                          <div id="profissao-panel" className="min-h-0" style={{ overflow: 'hidden' }}>
                             <div className="px-4 py-3 bg-zinc-900/50 flex flex-col">
-                              <AnimatePresence initial={false}>
+                              
                               {profissoes.map((prof, idx) => (
-                                <motion.div 
+                                <ProfissaoRow 
                                   key={(prof as any).id || idx}
-                                  initial={idx === 0 ? false : { opacity: 0, height: 0 }}
-                                  animate={{ opacity: 1, height: 'auto' }}
-                                  exit={{ opacity: 0, height: 0 }}
-                                  onAnimationComplete={(definition) => {
-                                    const el = document.getElementById(`prof-row-${(prof as any).id || idx}`);
-                                    if (el && (definition as any).opacity === 1) {
-                                      el.style.overflow = 'visible';
-                                    }
-                                  }}
-                                  onAnimationStart={() => {
-                                    const el = document.getElementById(`prof-row-${(prof as any).id || idx}`);
-                                    if (el) {
-                                      el.style.overflow = 'hidden';
-                                    }
-                                  }}
-                                  id={`prof-row-${(prof as any).id || idx}`}
-                                  style={{ overflow: 'hidden' }}
-                                >
-                                  <div className="flex items-center gap-2 mb-2">
-                                  {editingProfIndex === idx || prof.nome === '' ? (
-                                  <input
-                                    autoFocus
-                                    value={prof.nome}
-                                    onChange={e => setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, nome: e.target.value } : p))}
-                                    onKeyDown={e => {
-                                      if (e.key === 'Enter') {
-                                        e.preventDefault();
-                                        setEditingProfIndex(null);
-                                      }
-                                    }}
-                                    onBlur={() => setEditingProfIndex(null)}
-                                    placeholder="Nome da profissão..."
-                                    className="flex-1 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm text-zinc-100 outline-none focus:border-green-500"
-                                  />
-                                ) : (
-                                  <span 
-                                    className={`flex-1 px-2 py-1 text-sm font-normal cursor-pointer hover:opacity-75 transition-opacity truncate ${COR_TREINO[prof.treino] ?? 'text-zinc-300'}`}
-                                    onClick={() => setEditingProfIndex(idx)}
-                                  >
-                                    {prof.nome}
-                                  </span>
-                                )}
-                                  <CustomSelect
-                                    value={String(prof.treino)}
-                                    onChange={val => {
-                                      const novoValor = Number(val);
-                                      if (regrasAtivas) {
-                                        if (novoValor === 10 && status.nivel < 7) return;
-                                        if (novoValor === 15 && status.nivel < 14) return;
-                                        
-                                        const currentTreino = prof.treino;
-                                        let simTreinadas = totais.totalTreinadasUsadas;
-                                        let simUpgrades = totais.totalUpgradesGastos;
-                                        
-                                        if (currentTreino >= 5) simTreinadas -= 1;
-                                        if (currentTreino === 10) simUpgrades -= 1;
-                                        if (currentTreino === 15) simUpgrades -= 2;
-                                        
-                                        if (novoValor >= 5) simTreinadas += 1;
-                                        if (novoValor === 10) simUpgrades += 1;
-                                        if (novoValor === 15) simUpgrades += 2;
-                                        
-                                        if (simTreinadas > limites.maxTreinadas) return;
-                                        if (simUpgrades > limites.maxUpgrades) return;
-                                      }
-                                      setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, treino: novoValor } : p));
-                                    }}
-                                    options={[{value:'0',label:'0'},{value:'5',label:'5'},{value:'10',label:'10'},{value:'15',label:'15'}]}
-                                    wrapperClassName="w-14"
-                                    className={`cursor-pointer border-b bg-transparent text-center font-bold outline-none !px-0 py-0.5 ${COR_TREINO[prof.treino] ?? 'text-zinc-400'} ${BORDA_TREINO[prof.treino] ?? 'border-zinc-600'}`}
-                                    hideIcon={true}
-                                  />
-                                  <input
-                                    type="number"
-                                    value={prof.outros === 0 ? '' : prof.outros}
-                                    placeholder="0"
-                                    onChange={e => setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, outros: Number(e.target.value) || 0 } : p))}
-                                    className={`w-11 border-b bg-transparent text-center font-bold outline-none ${COR_TREINO[prof.treino] ?? 'text-zinc-400'} ${BORDA_TREINO[prof.treino] ?? 'border-zinc-600'}`}
-                                  />
-                                  <button
-                                    onClick={() => {
-                                      React.startTransition(() => {
-                                        setProfissoes(prev => prev.filter((_, i) => i !== idx));
-                                      });
-                                    }}
-                                    className="text-zinc-600 hover:text-red-400 transition text-lg leading-none"
-                                  >×</button>
-                                  </div>
-                                </motion.div>
+                                  prof={prof}
+                                  idx={idx}
+                                  editingProfIndex={editingProfIndex}
+                                  setEditingProfIndex={setEditingProfIndex}
+                                  setProfissoes={setProfissoes}
+                                  regrasAtivas={regrasAtivas}
+                                  limites={limites}
+                                  totais={totais}
+                                  status={status}
+                                />
                               ))}
-                              </AnimatePresence>
+
                               <button
                                 onClick={() => {
                                   if (regrasAtivas && totais.totalTreinadasUsadas >= limites.maxTreinadas) {

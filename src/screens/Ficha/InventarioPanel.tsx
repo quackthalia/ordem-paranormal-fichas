@@ -1322,6 +1322,142 @@ export function InventarioPanel() {
       
 
       
+      
+      {/* Modal de Escolha para Amaldiçoados e Operacionais */}
+      {escolhaCriacaoAberta && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onClick={() => setEscolhaCriacaoAberta(null)}>
+          <div className="bg-[#0a0a0a] border border-zinc-800 rounded-lg p-6 max-w-sm w-full flex flex-col gap-4 shadow-2xl relative overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-green-500/50 to-transparent" />
+            <div className="flex justify-between items-center">
+              <h3 className="text-zinc-100 font-display uppercase tracking-wider text-lg">O que deseja criar?</h3>
+              <button onClick={() => setEscolhaCriacaoAberta(null)} className="text-zinc-500 hover:text-zinc-300 text-xl">&times;</button>
+            </div>
+            {escolhaCriacaoAberta === 'Amaldiçoados' && (
+              <div className="flex flex-col gap-2">
+                <button onClick={() => { setEscolhaCriacaoAberta(null); setCreatingItemCategory('ItemAmaldiçoado'); }} className="bg-zinc-900 border border-zinc-800 hover:border-purple-500 hover:bg-zinc-800 p-3 rounded text-zinc-300 font-bold transition">Item Amaldiçoado</button>
+                <button onClick={() => { setEscolhaCriacaoAberta(null); setCreatingItemCategory('ArmaAmaldiçoada'); }} className="bg-zinc-900 border border-zinc-800 hover:border-purple-500 hover:bg-zinc-800 p-3 rounded text-zinc-300 font-bold transition">Arma Amaldiçoada</button>
+              </div>
+            )}
+            {escolhaCriacaoAberta === 'Itens Operacionais' && (
+              <div className="flex flex-col gap-2">
+                <button onClick={() => { setEscolhaCriacaoAberta(null); setCreatingItemCategory('Itens Operacionais'); }} className="bg-zinc-900 border border-zinc-800 hover:border-green-500 hover:bg-zinc-800 p-3 rounded text-zinc-300 font-bold transition">Item Operacional</button>
+                <button onClick={() => { setEscolhaCriacaoAberta(null); setCreatingItemCategory('Recursos'); }} className="bg-zinc-900 border border-zinc-800 hover:border-green-500 hover:bg-zinc-800 p-3 rounded text-zinc-300 font-bold transition">Recursos</button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Modais de Criação */}
+      {creatingItemCategory === 'Armas' && (
+        <ModalEditarArma
+          armaInventario={{
+            id: 'NEW',
+            modificacoes: [], maldicoes: [], maldicoes_elementos: {},
+            arma: {
+              Codigo_Arma: -1, Nome_Item: 'Nova Arma', Descricao_Item: '',
+              Tipo_Arma: 'Simples', Categoria_Item: '0', Dano_Item: '1d4',
+              Critico_Arma: '20', Dano_Critico_Arma: 'x2', Alcance_Arma: 'Curto',
+              Peso_Arma: 1, Tamanho_Arma: 'Uma Mão', Tipo_Dano_Arma: 'Impacto',
+              Espaços_Item: 1
+            }
+          }}
+          onSave={(dados, mods, malds, maldEls) => {
+            armasHook.adicionarArma({ ...dados, Codigo_Arma: -1, Espaços_Item: Number(dados['Espaços_Item'] || 1) } as any, mods, malds, maldEls);
+            setCreatingItemCategory(null);
+          }}
+          onClose={() => setCreatingItemCategory(null)}
+        />
+      )}
+      {creatingItemCategory === 'ArmaAmaldiçoada' && (
+        <ModalEditarArma
+          armaInventario={{
+            id: 'NEW',
+            modificacoes: [], maldicoes: [], maldicoes_elementos: {},
+            arma: {
+              Codigo_Arma: -1, Nome_Item: 'Nova Arma Amaldiçoada', Descricao_Item: '',
+              Tipo_Arma: 'Simples', Categoria_Item: '0', Dano_Item: '1d4',
+              Critico_Arma: '20', Dano_Critico_Arma: 'x2', Alcance_Arma: 'Curto',
+              Peso_Arma: 1, Tamanho_Arma: 'Uma Mão', Tipo_Dano_Arma: 'Impacto',
+              Espaços_Item: 1, isAmaldicoada: true
+            }
+          }}
+          onSave={(dados, mods, malds, maldEls) => {
+            armasHook.adicionarArma({ ...dados, Codigo_Arma: -1, Espaços_Item: Number(dados['Espaços_Item'] || 1), isAmaldicoada: true } as any, mods, malds, maldEls);
+            setCreatingItemCategory(null);
+          }}
+          onClose={() => setCreatingItemCategory(null)}
+        />
+      )}
+      {creatingItemCategory === 'Proteções' && (
+        <ModalEditarProtecao
+          protecaoInventario={{
+            id: 'NEW',
+            modificacoes: [], maldicoes: [],
+            protecao: {
+              Codigo_Protecao: -1, Nome_Protecao: 'Nova Proteção', Descricao_Protecao: '',
+              Defesa_Protecao: 1, Categoria_Protecao: '0', Espacos_Protecao: 1,
+              Proficiencia: 'Proteções Leves'
+            }
+          }}
+          onSave={(dados, mods, malds, maldEls) => {
+            protecoesHook.adicionarProtecao({ ...dados, Codigo_Protecao: -1, Espacos_Protecao: Number(dados.Espacos_Protecao || 1) } as any, mods, malds, maldEls as any);
+            setCreatingItemCategory(null);
+          }}
+          onClose={() => setCreatingItemCategory(null)}
+        />
+      )}
+      {creatingItemCategory === 'Munições' && (
+        <ModalEditarMunicao
+          municaoInventario={{
+            id: 'NEW',
+            modificacoes: [], maldicoes: [],
+            municao: {
+              Codigo_Municao: -1, Nome_Item: 'Nova Munição', Descricao_Item: '',
+              Tipo_Arma: 'Balas Longas', Categoria_Item: '0', Espaços_Item: 1
+            } as any
+          }}
+          onSave={(dados, mods, malds, maldEls) => {
+            municoesHook.adicionarMunicao({ ...dados, Codigo_Municao: -1, Espaços_Item: Number(dados['Espaços_Item'] || 1) } as any, mods, malds, maldEls as any);
+            setCreatingItemCategory(null);
+          }}
+          onClose={() => setCreatingItemCategory(null)}
+        />
+      )}
+      {creatingItemCategory === 'ItemAmaldiçoado' && (
+        <ModalEditarItemAmaldicoado
+          itemAmaldicoadoInventario={{
+            id: 'NEW',
+            item: {
+              Codigo_Ama: -1, Nome_Ama: 'Novo Item Amaldiçoado', Desc_Ama: '',
+              Elemento_Ama: 'Sangue', Categoria_Ama: 'II'
+            }
+          }}
+          onSave={(dados) => {
+            itensAmaldicoadosHook.adicionarItem({ ...dados, Codigo_Ama: -1 } as any);
+            setCreatingItemCategory(null);
+          }}
+          onClose={() => setCreatingItemCategory(null)}
+        />
+      )}
+      {(creatingItemCategory && !['Armas', 'ArmaAmaldiçoada', 'Proteções', 'Munições', 'ItemAmaldiçoado'].includes(creatingItemCategory)) && (
+        <ModalEditarItem
+          itemInventario={{
+            id: 'NEW',
+            modificacoes: [], maldicoes: [],
+            item: {
+              Codigo_Item: -1, Nome_Item: 'Novo Item', Descricao_Item: '',
+              Categoria_Item: '0', Espacos_Itens: 1, Grupo_Item: creatingItemCategory
+            }
+          }}
+          onSave={(dados, mods, malds, maldEls) => {
+            itensHook.adicionarItem({ ...dados, Codigo_Item: -1, Espacos_Itens: Number(dados.Espacos_Itens || 1), Grupo_Item: creatingItemCategory } as any, mods, malds, maldEls as any);
+            setCreatingItemCategory(null);
+          }}
+          onClose={() => setCreatingItemCategory(null)}
+        />
+      )}
+
       <ModalUnificadoItens 
         aberto={modalUnificadoAberto} 
         onFechar={() => setModalUnificadoAberto(false)} 

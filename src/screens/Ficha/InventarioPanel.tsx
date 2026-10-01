@@ -7,6 +7,10 @@ import { ModalProtecoes } from './ModalProtecoes';
 import { ModalItens } from './ModalItens';
 import { ModalItensAmaldicoados } from './ModalItensAmaldicoados';
 import { ModalUnificadoItens } from './ModalUnificadoItens';
+import { ModalArmas } from './ModalArmas';
+import { ModalProtecoes } from './ModalProtecoes';
+import { ModalMunicoes } from './ModalMunicoes';
+import { ModalItens } from './ModalItens';
 import { ModalEditarProtecao } from '../../components/ModalEditarProtecao';
 import { ModalEditarItem } from '../../components/ModalEditarItem';
 import { ModalEditarMunicao } from '../../components/ModalEditarMunicao';
@@ -955,7 +959,7 @@ export function InventarioPanel() {
           />
           {categoriaFiltro === 'Armas' && (
             <button
-              onClick={() => setModalUnificadoAberto(true)}
+              onClick={() => setModalArmasAberto(true)}
               className="bg-green-700 hover:bg-green-600 text-white px-4 py-1.5 rounded font-bold text-sm transition"
             >
               + Adicionar
@@ -967,7 +971,7 @@ export function InventarioPanel() {
                 setMunicaoFiltroNome(undefined);
                 setMunicaoFiltroCategoria(undefined);
                 setMunicaoTargetArmaId(undefined);
-                setModalUnificadoAberto(true);
+                setModalMunicoesAberto(true);
               }}
               className="bg-green-700 hover:bg-green-600 text-white px-4 py-1.5 rounded font-bold text-sm transition"
             >
@@ -976,7 +980,7 @@ export function InventarioPanel() {
           )}
           {categoriaFiltro === 'Proteções' && (
             <button
-              onClick={() => setModalUnificadoAberto(true)}
+              onClick={() => setModalProtecoesAberto(true)}
               className="bg-green-700 hover:bg-green-600 text-white px-4 py-1.5 rounded font-bold text-sm transition"
             >
               + Adicionar
@@ -986,7 +990,7 @@ export function InventarioPanel() {
             <button
               onClick={() => {
                 setAbaItensAberta(categoriaFiltro);
-                setModalUnificadoAberto(true);
+                setModalItensAberto(true);
               }}
               className="bg-green-700 hover:bg-green-600 text-white px-4 py-1.5 rounded font-bold text-sm transition"
             >
@@ -995,7 +999,7 @@ export function InventarioPanel() {
           )}
           {categoriaFiltro === 'Amaldiçoados' && (
             <button
-              onClick={() => setModalUnificadoAberto(true)}
+              onClick={() => setModalItensAmaldicoadosAberto(true)}
               className="bg-purple-700 hover:bg-purple-600 text-white px-4 py-1.5 rounded font-bold text-sm transition"
             >
               + Adicionar

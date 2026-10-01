@@ -101,7 +101,7 @@ const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setPro
             onClick={handleRemove}
             className="text-zinc-600 hover:text-red-400 transition text-lg leading-none"
           >×</button>
-        
+        </div>
     </div>
   );
 };

@@ -26,9 +26,9 @@ export function useProtecoes() {
     return () => { cancelled = true; };
   }, []);
 
-  const adicionarProtecao = useCallback((protecao: Protecao) => {
+  const adicionarProtecao = useCallback((protecao: Protecao, customModificacoes?: number[], customMaldicoes?: number[], customMaldicoesElementos?: Record<number, string>) => {
     const newId = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
-    setProtecoesInventario(prev => [...prev, { id: newId, protecao }]);
+    setProtecoesInventario(prev => [...prev, { id: newId, protecao: protecao, modificacoes: customModificacoes || [], maldicoes: customMaldicoes, maldicoes_elementos: customMaldicoesElementos }]);
   }, []);
 
   const removerProtecao = useCallback((id: string) => {

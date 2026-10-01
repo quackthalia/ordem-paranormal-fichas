@@ -26,9 +26,9 @@ export function useItens(maxVestimentas: number = 2) {
     return () => { cancelled = true; };
   }, []);
 
-  const adicionarItem = (item: ItemGeral) => {
+  const adicionarItem = (item: ItemGeral, customModificacoes?: number[], customMaldicoes?: number[], customMaldicoesElementos?: Record<number, string>) => {
     const newId = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
-    setItensInventario(prev => [...prev, { id: newId, item }]);
+    setItensInventario(prev => [...prev, { id: newId, item: item, modificacoes: customModificacoes || [], maldicoes: customMaldicoes, maldicoes_elementos: customMaldicoesElementos }]);
     return newId;
   };
 

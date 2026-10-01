@@ -26,9 +26,9 @@ export function useMunicoes() {
     return () => { cancelled = true; };
   }, []);
 
-  const adicionarMunicao = useCallback((municao: Municao) => {
+  const adicionarMunicao = useCallback((municao: Municao, customModificacoes?: number[], customMaldicoes?: number[], customMaldicoesElementos?: Record<number, string>) => {
     const newId = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
-    setMunicoesInventario(prev => [...prev, { id: newId, municao }]);
+    setMunicoesInventario(prev => [...prev, { id: newId, municao: municao, modificacoes: customModificacoes || [], maldicoes: customMaldicoes, maldicoes_elementos: customMaldicoesElementos }]);
     return newId; // Retorna o ID gerado para poder ser acoplado à arma logo após ser criado
   }, []);
 

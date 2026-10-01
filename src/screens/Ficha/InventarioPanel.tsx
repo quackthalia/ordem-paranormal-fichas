@@ -446,6 +446,8 @@ export function InventarioPanel() {
   }, [categoriaFiltro]);
 
   const [armaEditandoId, setArmaEditandoId] = useState<string | null>(null);
+  const [creatingItemCategory, setCreatingItemCategory] = useState<string | null>(null);
+  const [escolhaCriacaoAberta, setEscolhaCriacaoAberta] = useState<string | null>(null);
   const [protecaoEditandoId, setProtecaoEditandoId] = useState<string | null>(null);
 
   const [editingItem, setEditingItem] = useState<{ id: string, tipo: 'arma' | 'protecao' | 'item' | 'municao' | 'amaldicoado' } | null>(null);
@@ -953,6 +955,20 @@ export function InventarioPanel() {
             onChange={(e) => setBuscaItem(e.target.value)}
             className="flex-1 bg-zinc-900 border border-zinc-800 rounded px-3 py-1.5 text-sm text-zinc-100 outline-none focus:border-purple-500"
           />
+          {categoriaFiltro !== 'Geral' && (
+            <button
+              onClick={() => {
+                if (categoriaFiltro === 'Amaldiçoados' || categoriaFiltro === 'Itens Operacionais') {
+                  setEscolhaCriacaoAberta(categoriaFiltro);
+                } else {
+                  setCreatingItemCategory(categoriaFiltro);
+                }
+              }}
+              className="bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 text-zinc-300 px-3 py-1.5 rounded font-bold text-[11px] uppercase tracking-wider ml-2 transition"
+            >
+              Criar
+            </button>
+          )}
           {categoriaFiltro === 'Geral' && (
             <button
               onClick={() => setModalUnificadoAberto(true)}

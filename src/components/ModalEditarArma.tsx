@@ -85,6 +85,7 @@ export function ModalEditarArma({
 
   const renderLabel = (baseLabel: string, baseValue: any, finalValue: any, isMultiplier = false) => {
     let isModified = String(baseValue).trim().toLowerCase() !== String(finalValue).trim().toLowerCase();
+    if (armaInventario.id === 'NEW' && modsAtivas.length === 0 && maldsAtivas.length === 0) { isModified = false; }
       if ((baseValue === '-' || !baseValue || String(baseValue).trim().toLowerCase() === 'corpo a corpo') && String(finalValue).trim().toLowerCase() === 'corpo a corpo') {
         isModified = false;
       }

@@ -958,7 +958,7 @@ export function InventarioPanel() {
           {categoriaFiltro !== 'Geral' && (
             <button
               onClick={() => {
-                if (categoriaFiltro === 'Amaldiçoados' || categoriaFiltro === 'Itens Operacionais') {
+                if (categoriaFiltro === 'Amaldiçoados') {
                   setEscolhaCriacaoAberta(categoriaFiltro);
                 } else {
                   setCreatingItemCategory(categoriaFiltro);
@@ -1338,12 +1338,7 @@ export function InventarioPanel() {
                 <button onClick={(e) => { e.stopPropagation(); e.preventDefault(); setEscolhaCriacaoAberta(null); setTimeout(() => setCreatingItemCategory('ArmaAmaldiçoada'), 0); }} className="bg-zinc-900 border border-zinc-800 hover:border-purple-500 hover:bg-zinc-800 p-3 rounded text-zinc-300 font-bold transition">Arma Amaldiçoada</button>
               </div>
             )}
-            {escolhaCriacaoAberta === 'Itens Operacionais' && (
-              <div className="flex flex-col gap-2">
-                <button onClick={(e) => { e.stopPropagation(); e.preventDefault(); setEscolhaCriacaoAberta(null); setTimeout(() => setCreatingItemCategory('Itens Operacionais'), 0); }} className="bg-zinc-900 border border-zinc-800 hover:border-green-500 hover:bg-zinc-800 p-3 rounded text-zinc-300 font-bold transition">Item Operacional</button>
-                <button onClick={(e) => { e.stopPropagation(); e.preventDefault(); setEscolhaCriacaoAberta(null); setTimeout(() => setCreatingItemCategory('Recursos'), 0); }} className="bg-zinc-900 border border-zinc-800 hover:border-green-500 hover:bg-zinc-800 p-3 rounded text-zinc-300 font-bold transition">Recursos</button>
-              </div>
-            )}
+            
           </div>
         </div>
       )}

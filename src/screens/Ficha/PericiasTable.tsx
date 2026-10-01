@@ -191,7 +191,11 @@ export const PericiasTable: React.FC = () => {
                     <div className="flex items-center gap-1">
                       {nome === 'Profissão' && dadosPericia.treino >= 5 && (
                         <button
-                          onClick={() => setProfissaoExpandida(!profissaoExpandida)}
+                          onClick={() => {
+                            const el = document.getElementById('profissao-panel');
+                            if (el) el.style.overflow = 'hidden';
+                            setProfissaoExpandida(!profissaoExpandida);
+                          }}
                           className="text-zinc-500 hover:text-green-400 transition transform"
                           title="Expandir profissões"
                         >
@@ -291,30 +295,19 @@ export const PericiasTable: React.FC = () => {
                                     {nome === 'Profissão' && (
                     <tr key="profissao-sub">
                       <td colSpan={5} className="p-0 border-0">
-                        <AnimatePresence initial={false}>
-                          {profissaoExpandida && (
-                            <motion.div 
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: 'auto', opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              onAnimationComplete={(definition) => {
-                                const el = document.getElementById('profissao-panel');
-                                // Only set visible if it finished opening (height: auto)
-                                if (el && (definition as any).opacity === 1) {
-                                  el.style.overflow = 'visible';
-                                }
-                              }}
-                              onAnimationStart={() => {
-                                const el = document.getElementById('profissao-panel');
-                                if (el) {
-                                  el.style.overflow = 'hidden';
-                                }
-                              }}
-                              id="profissao-panel"
-                              style={{ overflow: 'hidden' }}
-                              className="border-b border-zinc-800/70 bg-zinc-900/50"
-                            >
-                              <div className="px-4 py-3 flex flex-col">
+                        <div 
+                          className={`grid transition-all duration-300 ease-in-out ${profissaoExpandida ? 'grid-rows-[1fr] opacity-100 border-b border-zinc-800/70' : 'grid-rows-[0fr] opacity-0'}`}
+                          onTransitionEnd={(e) => {
+                            if (e.propertyName === 'grid-template-rows') {
+                              const el = document.getElementById('profissao-panel');
+                              if (el && profissaoExpandida) {
+                                el.style.overflow = 'visible';
+                              }
+                            }
+                          }}
+                        >
+                          <div id="profissao-panel" style={{ overflow: 'hidden' }}>
+                            <div className="px-4 py-3 bg-zinc-900/50 flex flex-col">
                               <AnimatePresence initial={false}>
                               {profissoes.map((prof, idx) => (
                                 <motion.div 
@@ -420,9 +413,8 @@ export const PericiasTable: React.FC = () => {
                                 Adicionar Profissão
                               </button>
                             </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
+                          </div>
+                        </div>
                       </td>
                     </tr>
                   )}

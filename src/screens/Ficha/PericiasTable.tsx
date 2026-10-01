@@ -56,6 +56,44 @@ export const PericiasTable: React.FC = () => {
     return resultado;
   };
 
+  const bonusInventarioGlobal = React.useMemo(() => {
+    const mapa: Record<string, number> = {};
+    if (!itensHook?.itensInventario) return mapa;
+
+    itensHook.itensInventario.forEach(obj => {
+      const nomeItem = obj.item.Nome_Item.toLowerCase();
+      const isVestimenta = nomeItem.includes('vestimenta');
+      const isAmuleto = nomeItem.includes('amuleto sagrado');
+      const isUtensilio = nomeItem.includes('utensílio') || nomeItem.includes('utensilio');
+      const equipado = obj.equipado;
+
+      const match = obj.item.Nome_Item.match(/\((.*?)\)/);
+      if (match) {
+        const periciasNoItem = match[1].split(',').map(s => s.trim().toLowerCase());
+        periciasNoItem.forEach(p => {
+          const nomeBase = p.replace('*', '');
+          const originalName = Object.keys(pericias).find(k => k.toLowerCase() === nomeBase);
+          if (originalName) {
+            let bonusDesteItem = p.includes('*') ? 5 : 2;
+            if ((isVestimenta || isAmuleto) && !equipado) {
+              bonusDesteItem = 0;
+            }
+            if (bonusDesteItem > 0) {
+              mapa[originalName] = (mapa[originalName] || 0) + bonusDesteItem;
+            }
+          }
+        });
+      }
+
+      if (isAmuleto && equipado) {
+        mapa['Religião'] = (mapa['Religião'] || 0) + 2;
+        mapa['Vontade'] = (mapa['Vontade'] || 0) + 2;
+      }
+    });
+
+    return mapa;
+  }, [itensHook?.itensInventario, pericias]);
+
   return (
     <div className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-6">
       <div className="flex items-center justify-between mb-2 border-b border-zinc-800 pb-1">

@@ -89,6 +89,7 @@ export function ModalEditarArma({
         isModified = false;
       }
     const displayFinal = isMultiplier ? `x${finalValue}` : finalValue;
+    
     return (
       <div className="flex justify-between items-center mb-1.5 min-h-[22px]">
         <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block">
@@ -367,7 +368,7 @@ export function ModalEditarArma({
 
               
                 <div>
-                  {renderLabel('Dano', dano, statsFinais.dano)}
+                  {renderLabel('Dano', dano, statsFinais.danoFinal)}
                   <InputOtimizado value={dano} onChange={setDano} className={inputClass} placeholder="Ex: 1d6" />
                 </div>
                 
@@ -393,17 +394,17 @@ export function ModalEditarArma({
                 )}
 
                 <div>
-                  {renderLabel('Crítico', critico || '20', statsFinais.critico)}
+                  {renderLabel('Crítico', critico || '20', statsFinais.criticoFinal)}
                   <InputOtimizado value={critico} onChange={setCritico} type="number" className={inputClass} />
                 </div>
 
                 <div>
-                  {renderLabel('Multiplicador', multiplicador || '2', statsFinais.multiplicador, true)}
+                  {renderLabel('Multiplicador', multiplicador || '2', statsFinais.multCritFinal, true)}
                   <InputOtimizado value={multiplicador} onChange={setMultiplicador} type="number" className={inputClass} />
                 </div>
 
                 <div>
-                  {renderLabel('Alcance', alcance || '-', statsFinais.alcance)}
+                  {renderLabel('Alcance', alcance || '-', statsFinais.alcanceFinal)}
                   <CustomSelect
                     value={alcance}
                     onChange={val => setAlcance(val)}

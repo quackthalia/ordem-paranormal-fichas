@@ -60,12 +60,12 @@ export const ModalUnificadoItens: React.FC<ModalUnificadoItensProps> = ({
           </div>
           
           {/* Abas */}
-          <div className="flex flex-wrap border-b border-zinc-800">
+          <div className="flex flex-nowrap overflow-x-auto border-b border-zinc-800 custom-scrollbar scroll-smooth snap-x">
             {allTabs.map((aba) => (
               <button
                 key={aba}
                 onClick={() => setAbaAtual(aba)}
-                className={`min-w-[100px] flex-1 px-2 py-2.5 text-[10px] font-bold uppercase tracking-wider transition ${
+                className={`snap-start shrink-0 px-5 py-3 text-[10px] font-bold uppercase tracking-wider transition whitespace-nowrap ${
                   abaAtual === aba
                     ? 'border-b-2 border-green-500 bg-zinc-900 text-green-400'
                     : 'border-b-2 border-transparent text-zinc-500 hover:bg-zinc-900/50 hover:text-zinc-300'

@@ -46,6 +46,7 @@ export function ModalEditarItem({
   
   const [escolhendoFuncaoAdicional, setEscolhendoFuncaoAdicional] = useState<number | null>(null);
   const [escolhendoAprimorado, setEscolhendoAprimorado] = useState<number | null>(null);
+  const [periciaTemp, setPericiaTemp] = useState<string>('');
   
   const TODAS_PERICIAS = Object.keys(periciasHook?.pericias || {}).sort();
 
@@ -155,7 +156,7 @@ export function ModalEditarItem({
     if (podeAdicionarMod) {
       const mod = modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id);
       if (mod && mod.Nome_Modif.trim().toLowerCase() === 'função adicional') {
-        setEscolhendoFuncaoAdicional(id);
+        setEscolhendoFuncaoAdicional(id); setPericiaTemp("");
       } else if (mod && mod.Nome_Modif.trim().toLowerCase() === 'aprimorado') {
         const periciasDisponiveis = getPericiasDoItem().filter(p => {
           const match = nome.match(/\((.*?)\)/);
@@ -170,7 +171,7 @@ export function ModalEditarItem({
         if (periciasDisponiveis.length === 1) {
           aplicarAprimoradoNaPericia(periciasDisponiveis[0], id);
         } else {
-          setEscolhendoAprimorado(id);
+          setEscolhendoAprimorado(id); setPericiaTemp("");
         }
       } else {
         setModificacoes(prev => [...(prev || []), id]);
@@ -463,19 +464,8 @@ export function ModalEditarItem({
               <p className="text-[11px] font-bold uppercase tracking-widest text-zinc-500">Escolha a Perícia</p>
               <div className="w-full">
                 <CustomSelect
-                  value=""
-                  onChange={val => {
-                    if (val) {
-                      setModificacoes(prev => [...(prev || []), escolhendoFuncaoAdicional]);
-                      const match = nome.match(/\((.*?)\)/);
-                      if (match) {
-                        setNome(prev => prev.replace(/\((.*?)\)/, `($1, ${val})`));
-                      } else {
-                        setNome(prev => `${prev} (${val})`);
-                      }
-                      setEscolhendoFuncaoAdicional(null);
-                    }
-                  }}
+                  value={periciaTemp}
+                  onChange={val => setPericiaTemp(val)}
                   options={[
                     { value: "", label: "Selecione a perícia..." },
                     ...TODAS_PERICIAS.filter(p => {
@@ -497,6 +487,24 @@ export function ModalEditarItem({
                 className="rounded px-4 py-2 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors"
               >
                 Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  if (periciaTemp) {
+                    setModificacoes(prev => [...(prev || []), escolhendoFuncaoAdicional!]);
+                    const match = nome.match(/\((.*?)\)/);
+                    if (match) {
+                      setNome(prev => prev.replace(/\((.*?)\)/, `($1, ${periciaTemp})`));
+                    } else {
+                      setNome(prev => `${prev} (${periciaTemp})`);
+                    }
+                    setEscolhendoFuncaoAdicional(null);
+                  }
+                }}
+                disabled={!periciaTemp}
+                className="rounded bg-green-600 px-6 py-2 text-xs font-bold uppercase tracking-widest text-white shadow-[0_0_15px_rgba(22,163,74,0.4)] hover:bg-green-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Confirmar
               </button>
             </div>
           </div>
@@ -525,13 +533,7 @@ export function ModalEditarItem({
               <p className="text-[11px] font-bold uppercase tracking-widest text-zinc-500">Qual perícia Aprimorar?</p>
               <div className="w-full">
                 <CustomSelect
-                  value=""
-                  onChange={val => {
-                    if (val) {
-                      aplicarAprimoradoNaPericia(val, escolhendoAprimorado);
-                      setEscolhendoAprimorado(null);
-                    }
-                  }}
+                  value={periciaTemp} onChange={val => setPericiaTemp(val)}
                   options={[
                     { value: "", label: "Selecione a perícia..." },
                     ...getPericiasDoItem().filter(p => {
@@ -555,6 +557,18 @@ export function ModalEditarItem({
                 className="rounded px-4 py-2 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors"
               >
                 Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  if (periciaTemp) {
+                    aplicarAprimoradoNaPericia(periciaTemp, escolhendoAprimorado!);
+                    setEscolhendoAprimorado(null);
+                  }
+                }}
+                disabled={!periciaTemp}
+                className="rounded bg-green-600 px-6 py-2 text-xs font-bold uppercase tracking-widest text-white shadow-[0_0_15px_rgba(22,163,74,0.4)] hover:bg-green-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Confirmar
               </button>
             </div>
           </div>

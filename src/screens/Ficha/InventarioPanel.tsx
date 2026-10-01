@@ -3,6 +3,9 @@ import { useRPG } from '../../context/RPGContext';
 import type { Patente, LimiteCredito } from '../../hooks/useInventario';
 import { ModalArmas, formatarCritico } from './ModalArmas';
 import type { ArmaInventario, ProtecaoInventario, ItemGeralInventario, MunicaoInventario, ItemAmaldicoadoInventario } from '../../types';
+import { ModalProtecoes } from './ModalProtecoes';
+import { ModalItens } from './ModalItens';
+import { ModalMunicoes } from './ModalMunicoes';
 import { ModalItensAmaldicoados } from './ModalItensAmaldicoados';
 import { ModalUnificadoItens } from './ModalUnificadoItens';
 import { ModalEditarProtecao } from '../../components/ModalEditarProtecao';
@@ -1301,6 +1304,38 @@ export function InventarioPanel() {
 
       
       
+
+      
+      <ModalUnificadoItens 
+        aberto={modalUnificadoAberto} 
+        onFechar={() => setModalUnificadoAberto(false)} 
+        defaultAba={categoriaFiltro} 
+      />
+      <ModalArmas aberto={modalArmasAberto} onFechar={() => setModalArmasAberto(false)} />
+      <ModalProtecoes aberto={modalProteçõesAberto} onFechar={() => setModalProtecoesAberto(false)} />
+      <ModalItens aberto={modalItensAberto} onFechar={() => setModalItensAberto(false)} grupoAba={abaItensAberta} />
+      <ModalItensAmaldicoados aberto={modalItensAmaldicoadosAberto} fechar={() => setModalItensAmaldicoadosAberto(false)} />
+      {modalMunicoesAberto && (
+        <ModalMunicoes
+          aberto={modalMunicoesAberto}
+          fechar={() => setModalMunicoesAberto(false)}
+          armaFiltroNome={municaoFiltroNome}
+          armaFiltroCategoria={municaoFiltroCategoria}
+          onSelect={municao => {
+            if (municao.Codigo_Municao === 67) {
+              setFlechaExplosivaPendente(municao);
+              setModalGranadasAberto(true);
+              setModalMunicoesAberto(false);
+              return;
+            }
+            const idGerado = municoesHook?.adicionarMunicao(municao);
+            if (idGerado && municaoTargetArmaId) {
+              armasHook?.acoplarMunicao(municaoTargetArmaId, idGerado);
+            }
+            setModalMunicoesAberto(false);
+          }}
+        />
+      )}
 
       {armaEditandoId && (
         <ModalEditarArma

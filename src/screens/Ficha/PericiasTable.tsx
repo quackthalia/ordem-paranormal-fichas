@@ -392,7 +392,11 @@ export const PericiasTable: React.FC = () => {
                                     className={`w-11 border-b bg-transparent text-center font-bold outline-none ${COR_TREINO[prof.treino] ?? 'text-zinc-400'} ${BORDA_TREINO[prof.treino] ?? 'border-zinc-600'}`}
                                   />
                                   <button
-                                    onClick={() => setProfissoes(prev => prev.filter((_, i) => i !== idx))}
+                                    onClick={() => {
+                                      React.startTransition(() => {
+                                        setProfissoes(prev => prev.filter((_, i) => i !== idx));
+                                      });
+                                    }}
                                     className="text-zinc-600 hover:text-red-400 transition text-lg leading-none"
                                   >×</button>
                                   </div>
@@ -404,7 +408,9 @@ export const PericiasTable: React.FC = () => {
                                   if (regrasAtivas && totais.totalTreinadasUsadas >= limites.maxTreinadas) {
                                     return; // Não deixa criar se não tiver pontos
                                   }
-                                  setProfissoes(prev => [...prev, { id: Math.random().toString(36).substr(2, 9), nome: '', treino: 5, outros: 0 }]);
+                                  React.startTransition(() => {
+                                    setProfissoes(prev => [...prev, { id: Math.random().toString(36).substr(2, 9), nome: '', treino: 5, outros: 0 }]);
+                                  });
                                   setEditingProfIndex(profissoes.length);
                                 }}
                                 className="self-start text-xs text-green-500 hover:text-green-300 transition flex items-center gap-1 mt-1"

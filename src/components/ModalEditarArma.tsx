@@ -369,6 +369,11 @@ export function ModalEditarArma({
                   </div>
               </div>
 
+                <div className="col-span-1 md:col-span-2">
+                  <InputLabel label="Resistência" />
+                  <InputOtimizado value={resistencia} onChange={setResistencia} className={inputClass} placeholder="Ex: Fortitude, 20" />
+                </div>
+
               
                 <div>
                   {renderLabel('Dano', dano, statsFinais.danoFinal)}
@@ -435,11 +440,6 @@ export function ModalEditarArma({
                     step="0.5"
                   className={inputClass}
                 />
-
-              <div className="col-span-1 md:col-span-2">
-                <InputLabel label="Resistência" />
-                <InputOtimizado value={resistencia} onChange={setResistencia} className={inputClass} placeholder="Ex: Fortitude, 20" />
-              </div>
               </div>
             </div>
           </section>

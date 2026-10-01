@@ -323,8 +323,7 @@ export function ModalItensAmaldicoados({ isEmbedded, aberto, fechar }: ModalIten
       const maca = armasAmaldicoadas?.find(a => a.Nome_Item === 'Dupla Obsessiva (Maça)');
       if (maca) armasHook?.adicionarArma({ ...maca, Dano_Secundario: maca['Dano-Arma_Sec'], _tipo: 'arma', isAmaldicoada: true, isDuplaObsessivaLinked: true, isDuplaObsessivaCompanion: true });
     }
-    // TEMP DEBUG: Use alert to visually confirm action to user
-    console.log('Adicionou arma amaldicoada', item.Nome_Item);
+        console.log('Adicionou arma amaldicoada', item.Nome_Item);
   } else {
     if (item.Nome_Ama === 'Dedo Decepado') {
         window.localStorage.setItem('dedoDecepadoAguardando', JSON.stringify(item));
@@ -395,7 +394,7 @@ export function ModalItensAmaldicoados({ isEmbedded, aberto, fechar }: ModalIten
                           onClick={(e) => {
                             e.stopPropagation();
                             if (item._tipo === 'arma') {
-    armasHook?.adicionarArma({ ...item, isAmaldicoada: true, isDuplaObsessivaLinked: item.Nome_Item?.includes('Dupla Obsessiva') ? true : undefined }); alert('Arma Amaldiçoada enviada para o inventário com sucesso: ' + item.Nome_Item);
+    armasHook?.adicionarArma({ ...item, isAmaldicoada: true, isDuplaObsessivaLinked: item.Nome_Item?.includes('Dupla Obsessiva') ? true : undefined }); 
     if (item.Nome_Item === 'Dupla Obsessiva (Maça)') {
       const florete = armasAmaldicoadas?.find(a => a.Nome_Item === 'Dupla Obsessiva (Florete)');
       if (florete) armasHook?.adicionarArma({ ...florete, Dano_Secundario: florete['Dano-Arma_Sec'], _tipo: 'arma', isAmaldicoada: true, isDuplaObsessivaLinked: true, isDuplaObsessivaCompanion: true });
@@ -404,8 +403,7 @@ export function ModalItensAmaldicoados({ isEmbedded, aberto, fechar }: ModalIten
       const maca = armasAmaldicoadas?.find(a => a.Nome_Item === 'Dupla Obsessiva (Maça)');
       if (maca) armasHook?.adicionarArma({ ...maca, Dano_Secundario: maca['Dano-Arma_Sec'], _tipo: 'arma', isAmaldicoada: true, isDuplaObsessivaLinked: true, isDuplaObsessivaCompanion: true });
     }
-    // TEMP DEBUG: Use alert to visually confirm action to user
-    console.log('Adicionou arma amaldicoada', item.Nome_Item);
+        console.log('Adicionou arma amaldicoada', item.Nome_Item);
   } else {
     if (item.Nome_Ama === 'Dedo Decepado') {
         window.localStorage.setItem('dedoDecepadoAguardando', JSON.stringify(item));

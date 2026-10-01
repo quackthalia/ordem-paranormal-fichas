@@ -367,11 +367,13 @@ export function usePericias(
       else if (dados.treino === 15) totalUpgradesGastos += 2;
     });
 
-    profissoes.forEach(prof => {
+    if (pericias['Profissão']?.treino >= 5) {
+      profissoes.forEach(prof => {
       if (prof.treino >= 5) totalTreinadasUsadas += 1;
       if (prof.treino === 10) totalUpgradesGastos += 1;
       else if (prof.treino === 15) totalUpgradesGastos += 2;
-    });
+      });
+    }
 
     return { totalTreinadasUsadas, totalUpgradesGastos };
   }, [pericias, periciasGratis, profissoes]);

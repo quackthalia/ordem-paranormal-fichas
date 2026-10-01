@@ -292,7 +292,7 @@ export const PericiasTable: React.FC = () => {
                     />
                   </td>
                 </tr>
-                                    {nome === 'Profissão' && (
+                                    {nome === 'Profissão' && dadosPericia.treino >= 5 && (
                     <tr key="profissao-sub">
                       <td colSpan={5} className="p-0 border-0">
                         <div 
@@ -312,7 +312,7 @@ export const PericiasTable: React.FC = () => {
                               {profissoes.map((prof, idx) => (
                                 <motion.div 
                                   key={(prof as any).id || idx}
-                                  initial={{ opacity: 0, height: 0 }}
+                                  initial={idx === 0 ? false : { opacity: 0, height: 0 }}
                                   animate={{ opacity: 1, height: 'auto' }}
                                   exit={{ opacity: 0, height: 0 }}
                                   onAnimationComplete={(definition) => {

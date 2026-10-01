@@ -285,11 +285,6 @@ export function ModalEditarArma({
                     className={selectClass}
                   />
                 </div>
-
-                <div>
-                  <InputLabel label="DT" />
-                  <InputOtimizado value={dt} onChange={setDt} className={inputClass} placeholder="Ex: Agi (15)" />
-                </div>
                 
                 <div>
                   <InputLabel label="Resistência" />

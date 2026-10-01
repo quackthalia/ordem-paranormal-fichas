@@ -1827,7 +1827,7 @@ function SortableArmaItem({
                 ) : (
                   <span><span className="font-bold text-zinc-400">Crítico:</span> {formatarCritico(stats.critico, stats.multiplicador)}</span>
                 )}
-              {stringDT && <span><span className="font-bold text-green-400">DT:</span> {stringDT}</span>}
+              
               {arma.Resistencia_Item && <span><span className="font-bold text-zinc-400">Resistência:</span> {arma.Resistencia_Item}</span>}
             </div>
             {(modsAtuais.length > 0 || maldicoesAtuais.length > 0) && (

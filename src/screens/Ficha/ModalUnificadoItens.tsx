@@ -19,17 +19,23 @@ export const ModalUnificadoItens: React.FC<ModalUnificadoItensProps> = ({
 }) => {
   const { itensHook } = useRPG();
     const gruposUnicos = itensHook?.gruposUnicos || ['Itens Operacionais', 'Acessórios', 'Explosivos'];
-    const allTabs = [...gruposUnicos, 'Armas', 'Munições', 'Proteções', 'Amaldiçoados'];
+    const baseOrder = ['Armas', 'Munições', 'Proteções', 'Acessórios', 'Explosivos', 'Itens Operacionais', 'Medicamentos', 'Itens Paranormais', 'Amaldiçoados'];
+    const allTabs = [...baseOrder];
+    gruposUnicos?.forEach((g: string) => {
+      if (g !== 'Recursos' && !baseOrder.includes(g)) {
+        allTabs.push(g);
+      }
+    });
 
     const [abaAtual, setAbaAtual] = useState<string>(
-      (defaultAba === 'Geral' || defaultAba === 'Itens Gerais') ? 'Itens Operacionais' : defaultAba
+      (defaultAba === 'Geral' || defaultAba === 'Itens Gerais') ? 'Armas' : defaultAba
     );
 
   React.useEffect(() => {
     if (aberto) {
       document.body.style.overflow = 'hidden';
       if (defaultAba === 'Geral') {
-          setAbaAtual('Itens Operacionais');
+          setAbaAtual('Armas');
         } else if (defaultAba === 'Amaldiçoados') {
         setAbaAtual('Amaldiçoados');
       } else {

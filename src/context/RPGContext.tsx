@@ -383,17 +383,24 @@ const atributosBaseComBonus = useMemo(() => {
   const status = useStatus(classe, effectiveNex, effectiveNivel, atributosBaseComBonus, paranormalPenalty, regrasAutomaticasAtivas, bonusVestimentas.pv + bonusMaldicoes.pv, bonusVestimentas.pe + bonusMaldicoes.pe);
 
   
+    // Controle para evitar que o PE temporário do Agente de Nascença fique voltando infinitamente
+  const origin83Applied = React.useRef(false);
   React.useEffect(() => {
     if (regrasAutomaticasAtivas.has(83)) {
-      if ((regras['nex_experiencia'] && nivel >= 20) || (!regras['nex_experiencia'] && nex >= 95)) {
+      const reached = (regras['nex_experiencia'] && nivel >= 20) || (!regras['nex_experiencia'] && nex >= 95);
+      if (reached && !origin83Applied.current) {
+        origin83Applied.current = true;
+        // Só aplica se o usuário já não tiver PEs temporários configurados (para não sobrescrever o save dele)
         if (!status.hasPeTemp) {
           status.setHasPeTemp(true);
           status.setPeTempMax(10);
           status.setPeTempAtual(10);
         }
       }
+    } else {
+      origin83Applied.current = false;
     }
-  }, [regrasAutomaticasAtivas, nex, nivel, regras, status]);
+  }, [regrasAutomaticasAtivas, nex, nivel, regras]); // Removemos 'status' das dependências para não engatilhar ao desativar
 
 const atributosFinais = useMemo(() => {
     const obj = { ...atributosBaseComBonus };

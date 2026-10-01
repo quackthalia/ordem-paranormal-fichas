@@ -1299,9 +1299,7 @@ export function InventarioPanel() {
       </div>
 
       
-      {modalMunicoesAberto && (
-        
-      )}
+      
 
       {armaEditandoId && (
         <ModalEditarArma

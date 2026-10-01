@@ -87,7 +87,6 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
   
   const content = (
     <div className={isEmbedded ? "flex flex-col h-full w-full" : "w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ease-in-out flex flex-col h-[90vh]"} onClick={e => !isEmbedded && e.stopPropagation()}>
- e.stopPropagation()}>
 
         {/* Header */}
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">

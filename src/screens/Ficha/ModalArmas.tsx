@@ -15,6 +15,7 @@ export function formatarCritico(critico: number, multiplicador: number): string 
 }
 
 interface ModalArmasProps {
+  isEmbedded?: boolean;
   aberto: boolean;
   onFechar: () => void;
 }
@@ -139,13 +140,14 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
   if (!aberto) return null;
 
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onFechar}>
-      <div className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ease-in-out flex flex-col h-[90vh]" onClick={e => e.stopPropagation()}>
+  
+  const content = (
+    <div className={isEmbedded ? "flex flex-col h-full w-full" : "w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ease-in-out flex flex-col h-[90vh]"} onClick={e => !isEmbedded && e.stopPropagation()}>
+ e.stopPropagation()}>
         
         {/* Header */}
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
-          <div className="flex items-center justify-between mb-4">
+          {!isEmbedded && (<div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="font-display text-lg uppercase tracking-wide text-zinc-100">
                 ADICIONAR ARMA
@@ -153,7 +155,7 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
               <p className="mt-1 text-xs text-zinc-400">Selecione uma arma para adicionar ao inventário.</p>
             </div>
             <button onClick={onFechar} className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100">&times;</button>
-          </div>
+          </div>)}
           <div className="flex items-stretch gap-2">
             <input
               type="text"
@@ -475,7 +477,16 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
             </p>
           )}
         </div>
-      </div>
+          </div>
+  );
+
+  if (isEmbedded) return content;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onFechar}>
+      {content}
     </div>
+  );
+
   );
 }

@@ -6,6 +6,7 @@ import type { ArmaInventario, ProtecaoInventario, ItemGeralInventario, MunicaoIn
 import { ModalProtecoes } from './ModalProtecoes';
 import { ModalItens } from './ModalItens';
 import { ModalItensAmaldicoados } from './ModalItensAmaldicoados';
+import { ModalUnificadoItens } from './ModalUnificadoItens';
 import { ModalEditarProtecao } from '../../components/ModalEditarProtecao';
 import { ModalEditarItem } from '../../components/ModalEditarItem';
 import { ModalEditarMunicao } from '../../components/ModalEditarMunicao';
@@ -427,6 +428,7 @@ export function InventarioPanel() {
   const [categoriaFiltro, setCategoriaFiltro] = useState<string>('Armas');
   const [modalItensAberto, setModalItensAberto] = useState(false);
   const [modalItensAmaldicoadosAberto, setModalItensAmaldicoadosAberto] = useState(false);
+  const [modalUnificadoAberto, setModalUnificadoAberto] = useState(false);
   const [abaItensAberta, setAbaItensAberta] = useState<string>('');
   const [buscaItem, setBuscaItem] = useState('');
   const [municaoFiltroNome, setMunicaoFiltroNome] = useState<string | undefined>(undefined);
@@ -953,7 +955,7 @@ export function InventarioPanel() {
           />
           {categoriaFiltro === 'Armas' && (
             <button
-              onClick={() => setModalArmasAberto(true)}
+              onClick={() => setModalUnificadoAberto(true)}
               className="bg-green-700 hover:bg-green-600 text-white px-4 py-1.5 rounded font-bold text-sm transition"
             >
               + Adicionar
@@ -965,7 +967,7 @@ export function InventarioPanel() {
                 setMunicaoFiltroNome(undefined);
                 setMunicaoFiltroCategoria(undefined);
                 setMunicaoTargetArmaId(undefined);
-                setModalMunicoesAberto(true);
+                setModalUnificadoAberto(true);
               }}
               className="bg-green-700 hover:bg-green-600 text-white px-4 py-1.5 rounded font-bold text-sm transition"
             >
@@ -974,7 +976,7 @@ export function InventarioPanel() {
           )}
           {categoriaFiltro === 'Proteções' && (
             <button
-              onClick={() => setModalProtecoesAberto(true)}
+              onClick={() => setModalUnificadoAberto(true)}
               className="bg-green-700 hover:bg-green-600 text-white px-4 py-1.5 rounded font-bold text-sm transition"
             >
               + Adicionar
@@ -984,7 +986,7 @@ export function InventarioPanel() {
             <button
               onClick={() => {
                 setAbaItensAberta(categoriaFiltro);
-                setModalItensAberto(true);
+                setModalUnificadoAberto(true);
               }}
               className="bg-green-700 hover:bg-green-600 text-white px-4 py-1.5 rounded font-bold text-sm transition"
             >
@@ -993,7 +995,7 @@ export function InventarioPanel() {
           )}
           {categoriaFiltro === 'Amaldiçoados' && (
             <button
-              onClick={() => setModalItensAmaldicoadosAberto(true)}
+              onClick={() => setModalUnificadoAberto(true)}
               className="bg-purple-700 hover:bg-purple-600 text-white px-4 py-1.5 rounded font-bold text-sm transition"
             >
               + Adicionar
@@ -1039,7 +1041,7 @@ export function InventarioPanel() {
                             setMunicaoTargetArmaId(item.id);
                             setMunicaoFiltroNome(item.arma.Nome_Item);
                             setMunicaoFiltroCategoria(item.arma.Categoria_Item);
-                            setModalMunicoesAberto(true);
+                            setModalUnificadoAberto(true);
                           }
                         }}
                       />
@@ -1231,7 +1233,7 @@ export function InventarioPanel() {
                                       setMunicaoTargetArmaId(item.id);
                                       setMunicaoFiltroNome(item.arma.Nome_Item);
                                       setMunicaoFiltroCategoria(item.arma.Categoria_Item);
-                                      setModalMunicoesAberto(true);
+                                      setModalUnificadoAberto(true);
                                     }
                                   }}
                                 />
@@ -1292,29 +1294,9 @@ export function InventarioPanel() {
         </div>
       </div>
 
-      <ModalArmas
-        aberto={modalArmasAberto}
-        onFechar={() => setModalArmasAberto(false)}
-      />
+      
       {modalMunicoesAberto && (
-        <ModalMunicoes
-          onFechar={() => setModalMunicoesAberto(false)}
-          armaFiltroNome={municaoFiltroNome}
-          armaFiltroCategoria={municaoFiltroCategoria}
-          onSelect={municao => {
-            if (municao.Codigo_Municao === 67) {
-              setFlechaExplosivaPendente(municao);
-              setModalGranadasAberto(true);
-              setModalMunicoesAberto(false);
-              return;
-            }
-            const idGerado = municoesHook?.adicionarMunicao(municao);
-            if (idGerado && municaoTargetArmaId) {
-              armasHook?.acoplarMunicao(municaoTargetArmaId, idGerado);
-            }
-            setModalMunicoesAberto(false);
-          }}
-        />
+        
       )}
 
       {armaEditandoId && (
@@ -1335,20 +1317,10 @@ export function InventarioPanel() {
         />
       )}
 
-      <ModalProtecoes
-        aberto={modalProteçõesAberto}
-        onFechar={() => setModalProtecoesAberto(false)}
-      />
       
-      <ModalItensAmaldicoados
-        aberto={modalItensAmaldicoadosAberto}
-        fechar={() => setModalItensAmaldicoadosAberto(false)}
-      />
-      <ModalItens
-        aberto={modalItensAberto}
-        onFechar={() => setModalItensAberto(false)}
-        grupoAba={abaItensAberta}
-      />
+      
+      
+      
 
       {protecaoEditandoId && (
         <ModalEditarProtecao

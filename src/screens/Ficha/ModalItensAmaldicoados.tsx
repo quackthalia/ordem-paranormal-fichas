@@ -5,6 +5,7 @@ import { CustomSelect } from '../../components/CustomSelect';
 import { Collapse } from '../../components/Collapse';
 
 interface ModalItensAmaldicoadosProps {
+  isEmbedded?: boolean;
   aberto: boolean;
   fechar: () => void;
 }
@@ -123,7 +124,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
         onClick={e => e.stopPropagation()}
       >
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
-          <div className="flex items-center justify-between mb-4">
+          {!isEmbedded && (<div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="font-display text-lg uppercase tracking-wide text-zinc-100 flex items-center gap-2">
                 <span>💀</span> ADICIONAR ITEM AMALDIÇOADO
@@ -131,7 +132,7 @@ export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoado
               <p className="mt-1 text-xs text-zinc-400">Selecione um item amaldiçoado para adicionar ao inventário.</p>
             </div>
             <button onClick={fechar} className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100">&times;</button>
-          </div>
+          </div>)}
           <div className="flex items-stretch gap-2">
             <input
               type="text"

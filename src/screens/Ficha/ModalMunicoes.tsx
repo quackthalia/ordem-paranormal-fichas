@@ -8,6 +8,7 @@ import { CustomSelect } from '../../components/CustomSelect';
 import { Collapse } from '../../components/Collapse';
 
 interface ModalMunicoesProps {
+  isEmbedded?: boolean;
   onFechar: () => void;
   // Se for passado armaFiltro, exibe apenas as compatíveis
   armaFiltroNome?: string;
@@ -103,7 +104,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
         onClick={e => e.stopPropagation()}
       >
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
-          <div className="flex items-center justify-between mb-4">
+          {!isEmbedded && (<div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="font-display text-lg uppercase tracking-wide text-zinc-100">
                 {armaFiltroNome ? `MUNIÇÕES PARA ${armaFiltroNome.toUpperCase()}` : 'ADICIONAR MUNIÇÃO'}
@@ -111,7 +112,7 @@ export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, o
               <p className="mt-1 text-xs text-zinc-400">Selecione uma munição para adicionar ao inventário.</p>
             </div>
             <button onClick={onFechar} className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100">&times;</button>
-          </div>
+          </div>)}
           
           <div className="flex items-stretch gap-2">
             <input

@@ -18,7 +18,7 @@ interface UsePericiasReturn {
   bonusRegra40: Record<string, number>;
   bonusVestimentas: Record<string, number>;
   profissoes: { nome: string; treino: number; outros: number }[];
-  setProfissoes: React.Dispatch<React.SetStateAction<{ nome: string; treino: number; outros: number }[]>>;
+  setProfissãoes: React.Dispatch<React.SetStateAction<{ nome: string; treino: number; outros: number }[]>>;
 }
 
 export function usePericias(
@@ -40,7 +40,7 @@ export function usePericias(
   const [error, setError] = useState<string | null>(null);
   const [jaTinhaProfissao33, setJaTinhaProfissao33] = useState<boolean>(false);
   const [avaliouRegra33, setAvaliouRegra33] = useState<boolean>(false);
-  const [profissoes, setProfissoes] = useState<{ nome: string; treino: number; outros: number }[]>([]);
+  const [profissoes, setProfissãoes] = useState<{ nome: string; treino: number; outros: number }[]>([]);
 
   const [jaTinhaPericiaPoder, setJaTinhaPericiaPoder] = useState<Record<string, boolean>>({});
   const [avaliouPericiaPoder, setAvaliouPericiaPoder] = useState<Record<string, boolean>>({});
@@ -355,10 +355,10 @@ export function usePericias(
     let totalUpgradesGastos = 0;
 
     Object.entries(pericias).forEach(([nome, dados]) => {
-      // Ignora per�cias marcadas como 'isLivre' (Modo Livre)
+      // Ignora per�cias marcadas como 'isLivre' (Modo Livre)
       if (dados.isLivre) return;
 
-      if (nome === 'Profiss�o' && profissoes.length > 0) return;
+      if (nome === 'Profissão' && profissoes.length > 0) return;
 
       if (dados.treino >= 5 && !periciasGratis.includes(nome)) {
         totalTreinadasUsadas += 1;
@@ -480,6 +480,6 @@ export function usePericias(
     debugRegra33: { avaliou: avaliouRegra33, evalJaTinha: jaTinhaProfissao33 },
     bonusRegra40,
     profissoes,
-    setProfissoes
+    setProfissãoes
   };
 }

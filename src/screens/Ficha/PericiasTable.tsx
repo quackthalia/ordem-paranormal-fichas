@@ -22,7 +22,7 @@ const BORDA_TREINO: Record<number, string> = {
 
 export const PericiasTable: React.FC = () => {
   const { 
-    periciasHook, regrasAtivas, setRegrasAtivas, regrasAutomaticasAtivas, protecoesHook,
+    status, periciasHook, regrasAtivas, setRegrasAtivas, regrasAutomaticasAtivas, protecoesHook,
     
     itensHook
   } = useRPG();
@@ -322,7 +322,29 @@ export const PericiasTable: React.FC = () => {
                                 )}
                                   <CustomSelect
                                     value={String(prof.treino)}
-                                    onChange={val => setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, treino: Number(val) } : p))}
+                                    onChange={val => {
+                                      const novoValor = Number(val);
+                                      if (regrasAtivas) {
+                                        if (novoValor === 10 && status.nivel < 7) return;
+                                        if (novoValor === 15 && status.nivel < 14) return;
+                                        
+                                        const currentTreino = prof.treino;
+                                        let simTreinadas = totais.totalTreinadasUsadas;
+                                        let simUpgrades = totais.totalUpgradesGastos;
+                                        
+                                        if (currentTreino >= 5) simTreinadas -= 1;
+                                        if (currentTreino === 10) simUpgrades -= 1;
+                                        if (currentTreino === 15) simUpgrades -= 2;
+                                        
+                                        if (novoValor >= 5) simTreinadas += 1;
+                                        if (novoValor === 10) simUpgrades += 1;
+                                        if (novoValor === 15) simUpgrades += 2;
+                                        
+                                        if (simTreinadas > limites.maxTreinadas) return;
+                                        if (simUpgrades > limites.maxUpgrades) return;
+                                      }
+                                      setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, treino: novoValor } : p));
+                                    }}
                                     options={[{value:'0',label:'0'},{value:'5',label:'5'},{value:'10',label:'10'},{value:'15',label:'15'}]}
                                     wrapperClassName="w-14"
                                     className={`cursor-pointer border-b bg-transparent text-center font-bold outline-none !px-0 py-0.5 ${COR_TREINO[prof.treino] ?? 'text-zinc-400'} ${BORDA_TREINO[prof.treino] ?? 'border-zinc-600'}`}

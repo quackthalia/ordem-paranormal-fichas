@@ -293,7 +293,7 @@ export function ModalEditarArma({
                 
                 <div>
                   <InputLabel label="Resistência" />
-                  <InputOtimizado value={resistencia} onChange={setResistencia} className={inputClass} placeholder="Ex: Reflexos reduz à metade" />
+                  <InputOtimizado value={resistencia} onChange={setResistencia} className={inputClass} placeholder="Ex: Fortitude, 20" />
                 </div>
 
               <div>

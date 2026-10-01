@@ -33,12 +33,7 @@ export const PericiasTable: React.FC = () => {
   const [mostrarBonus, setMostrarBonus] = React.useState(false);
   const [mostrarOpcoes, setMostrarOpcoes] = React.useState(false);
   const [profissaoExpandida, setProfissaoExpandida] = React.useState(false);
-  React.useEffect(() => {
-    let t: any;
-    if (profissaoExpandida) t = setTimeout(() => setIsFullyExpanded(true), 300);
-    else setIsFullyExpanded(false);
-    return () => clearTimeout(t);
-  }, [profissaoExpandida]);
+
   const [editingProfIndex, setEditingProfIndex] = React.useState<number | null>(null);
   
 

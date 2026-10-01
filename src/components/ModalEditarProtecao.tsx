@@ -178,7 +178,7 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
           <div className="flex items-center gap-4">
             <div>
               <h2 className="font-display text-xl uppercase tracking-wider text-zinc-100 drop-shadow-md">
-                Editar Proteção
+                {protecao?.id === 'NEW' ? 'Criar Proteção' : 'Editar Proteção'}
               </h2>
               <p className="text-[11px] text-zinc-500 mt-1 uppercase tracking-widest font-semibold">
                 Configure os atributos, defesa e modificações

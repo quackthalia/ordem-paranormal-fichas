@@ -287,7 +287,7 @@ export function ModalEditarItem({
           <div className="flex items-center gap-4">
             <div>
               <h2 className="font-display text-xl uppercase tracking-wider text-zinc-100 drop-shadow-md">
-                Editar Item
+                {itemInventario.id === 'NEW' ? `Criar ${itemInventario.item.Grupo_Item || 'Item'}` : 'Editar Item'}
               </h2>
               <p className="text-[11px] text-zinc-500 mt-1 uppercase tracking-widest font-semibold">
                 Configure os atributos e detalhes do item

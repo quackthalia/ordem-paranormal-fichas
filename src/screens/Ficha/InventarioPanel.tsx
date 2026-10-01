@@ -1390,8 +1390,7 @@ export function InventarioPanel() {
         />
       )}
       {creatingItemCategory === 'Proteções' && (
-        <ModalEditarProtecao
-          protecaoInventario={{
+        <ModalEditarProtecao protecao={{
             id: 'NEW',
             modificacoes: [], maldicoes: [],
             protecao: {
@@ -1408,8 +1407,7 @@ export function InventarioPanel() {
         />
       )}
       {creatingItemCategory === 'Munições' && (
-        <ModalEditarMunicao
-          municaoInventario={{
+        <ModalEditarMunicao itemInventario={{
             id: 'NEW',
             modificacoes: [], maldicoes: [],
             municao: {
@@ -1425,8 +1423,7 @@ export function InventarioPanel() {
         />
       )}
       {creatingItemCategory === 'ItemAmaldiçoado' && (
-        <ModalEditarItemAmaldicoado
-          itemAmaldicoadoInventario={{
+        <ModalEditarItemAmaldicoado itemInventario={{
             id: 'NEW',
             item: {
               Codigo_Ama: -1, Nome_Ama: 'Novo Item Amaldiçoado', Desc_Ama: '',

@@ -84,8 +84,6 @@ export const ModalRituaisExtra: React.FC<ModalRituaisExtraProps> = ({
       // Regra 1: Banidos ou já aprendidos
       if (BANNED_RITUAIS.includes(r.Codigo_Ritual)) return false;
       
-      // Regra 2: Limite de Círculo (ou inferior)
-      if (r.Circulo_Ritual > limiteCirculo) return false;
       
       // Regra 3: Elemento Selecionado
       if (abaElemento) {
@@ -111,7 +109,7 @@ export const ModalRituaisExtra: React.FC<ModalRituaisExtraProps> = ({
 
       return true;
     }).sort((a, b) => sortPorElementoENome(a, b, r => r?.Elemento_Ritual, r => r?.Nome_Ritual));
-  }, [rituais, abaElemento, abaCirculo, limiteCirculo, rituaisAprendidosIds, busca]);
+  }, [rituais, abaElemento, abaCirculo, rituaisAprendidosIds, busca]);
   const scrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = 0;

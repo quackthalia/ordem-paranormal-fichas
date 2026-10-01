@@ -288,46 +288,62 @@ export const PericiasTable: React.FC = () => {
                     />
                   </td>
                 </tr>
-                  {nome === 'Profissão' && profissaoExpandida && (
+                                    {nome === 'Profissão' && (
                     <tr key="profissao-sub">
-                      <td colSpan={5} className="px-4 py-3 bg-zinc-900/50 border-b border-zinc-800/70">
-                        <div className="flex flex-col gap-2 py-1">
-                          {profissoes.map((prof, idx) => (
-                            <div key={idx} className="flex items-center gap-2">
-                              <input
-                                value={prof.nome}
-                                onChange={e => setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, nome: e.target.value } : p))}
-                                placeholder="Nome da profissão......"
-                                className="flex-1 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm text-zinc-100 outline-none focus:border-green-500"
-                              />
-                              <CustomSelect
-                                value={String(prof.treino)}
-                                onChange={val => setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, treino: Number(val) } : p))}
-                                options={[{value:'0',label:'0'},{value:'5',label:'5'},{value:'10',label:'10'},{value:'15',label:'15'}]}
-                                wrapperClassName="w-14"
-                                className={`cursor-pointer border-b bg-transparent text-center font-bold outline-none !px-0 py-0.5 ${COR_TREINO[prof.treino] ?? 'text-zinc-400'} ${BORDA_TREINO[prof.treino] ?? 'border-zinc-600'}`}
-                                hideIcon={true}
-                              />
-                              <input
-                                type="number"
-                                value={prof.outros || ''}
-                                placeholder="0"
-                                onChange={e => setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, outros: Number(e.target.value) || 0 } : p))}
-                                className={`w-11 border-b bg-transparent text-center font-bold outline-none ${COR_TREINO[prof.treino] ?? 'text-zinc-400'} ${BORDA_TREINO[prof.treino] ?? 'border-zinc-600'}`}
-                              />
+                      <td colSpan={5} className="p-0 border-0">
+                        <div className={`grid transition-all duration-300 ease-in-out ${profissaoExpandida ? 'grid-rows-[1fr] opacity-100 border-b border-zinc-800/70' : 'grid-rows-[0fr] opacity-0'}`}>
+                          <div className="overflow-hidden">
+                            <div className="px-4 py-3 bg-zinc-900/50 flex flex-col gap-2">
+                              {profissoes.map((prof, idx) => (
+                                <div key={idx} className="flex items-center gap-2">
+                                  <input
+                                    value={prof.nome}
+                                    onChange={e => setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, nome: e.target.value } : p))}
+                                    onKeyDown={e => {
+                                      if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        if (prof.nome.trim() !== '') {
+                                          if (idx === profissoes.length - 1) {
+                                            setProfissoes(prev => [...prev, { nome: '', treino: 5, outros: 0 }]);
+                                          } else {
+                                            e.currentTarget.blur();
+                                          }
+                                        }
+                                      }
+                                    }}
+                                    placeholder="Nome da profissão..."
+                                    className="flex-1 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm text-zinc-100 outline-none focus:border-green-500"
+                                  />
+                                  <CustomSelect
+                                    value={String(prof.treino)}
+                                    onChange={val => setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, treino: Number(val) } : p))}
+                                    options={[{value:'0',label:'0'},{value:'5',label:'5'},{value:'10',label:'10'},{value:'15',label:'15'}]}
+                                    wrapperClassName="w-14"
+                                    className={`cursor-pointer border-b bg-transparent text-center font-bold outline-none !px-0 py-0.5 ${COR_TREINO[prof.treino] ?? 'text-zinc-400'} ${BORDA_TREINO[prof.treino] ?? 'border-zinc-600'}`}
+                                    hideIcon={true}
+                                  />
+                                  <input
+                                    type="number"
+                                    value={prof.outros === 0 ? '' : prof.outros}
+                                    placeholder="0"
+                                    onChange={e => setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, outros: Number(e.target.value) || 0 } : p))}
+                                    className={`w-11 border-b bg-transparent text-center font-bold outline-none ${COR_TREINO[prof.treino] ?? 'text-zinc-400'} ${BORDA_TREINO[prof.treino] ?? 'border-zinc-600'}`}
+                                  />
+                                  <button
+                                    onClick={() => setProfissoes(prev => prev.filter((_, i) => i !== idx))}
+                                    className="text-zinc-600 hover:text-red-400 transition text-lg leading-none"
+                                  >×</button>
+                                </div>
+                              ))}
                               <button
-                                onClick={() => setProfissoes(prev => prev.filter((_, i) => i !== idx))}
-                                className="text-zinc-600 hover:text-red-400 transition text-lg leading-none"
-                              >�</button>
+                                onClick={() => setProfissoes(prev => [...prev, { nome: '', treino: 5, outros: 0 }])}
+                                className="self-start text-xs text-green-500 hover:text-green-300 transition flex items-center gap-1 mt-1"
+                              >
+                                <svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='3'><line x1='12' y1='5' x2='12' y2='19'/><line x1='5' y1='12' x2='19' y2='12'/></svg>
+                                Adicionar Profissão
+                              </button>
                             </div>
-                          ))}
-                          <button
-                            onClick={() => setProfissoes(prev => [...prev, { nome: '', treino: 5, outros: 0 }])}
-                            className="self-start text-xs text-green-500 hover:text-green-300 transition flex items-center gap-1 mt-1"
-                          >
-                            <svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='3'><line x1='12' y1='5' x2='12' y2='19'/><line x1='5' y1='12' x2='19' y2='12'/></svg>
-                            Adicionar Profissão
-                          </button>
+                          </div>
                         </div>
                       </td>
                     </tr>

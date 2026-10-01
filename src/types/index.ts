@@ -185,6 +185,7 @@ export interface Arma {
   'Agil?': boolean | null;
   Capacidade_Municao: number | null;
   dt_item: string | null;
+  Resistencia_Item?: string | null;
   'Automatica?': boolean | null;
   'Improvisada?'?: boolean | null;
   isDuplaObsessivaCompanion?: boolean;

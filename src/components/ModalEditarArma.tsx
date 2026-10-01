@@ -47,6 +47,7 @@ export function ModalEditarArma({
   const [categoria, setCategoria] = useState(arma.Categoria_Item || '');
   const [espacos, setEspacos] = useState(arma['Espaços_Item']?.toString() || '');
   const [dt, setDt] = useState(arma.dt_item || '');
+  const [resistencia, setResistencia] = useState(arma.Resistencia_Item || '');
 
   const [proficiencia, setProficiencia] = useState(arma.Proficiencia || 'Armas Simples');
   const [tipoArma, setTipoArma] = useState(arma.Tipo_Arma || 'Corpo a Corpo');
@@ -129,6 +130,7 @@ export function ModalEditarArma({
       Categoria_Item: categoria,
       'Espaços_Item': getEspacoNumber(espacos),
       dt_item: dt,
+      Resistencia_Item: resistencia,
       Proficiencia: proficiencia,
       Tipo_Arma: tipoArma,
       Empunhadura_Arma: empunhadura,
@@ -280,9 +282,19 @@ export function ModalEditarArma({
                     { value: "Armas Pesadas", label: "Armas Pesadas" }
                   ]}
                   wrapperClassName="w-full"
-                  className={selectClass}
-                />
-              </div>
+                    className={selectClass}
+                  />
+                </div>
+
+                <div>
+                  <InputLabel label="DT" />
+                  <InputOtimizado value={dt} onChange={setDt} className={inputClass} placeholder="Ex: Agi (15)" />
+                </div>
+                
+                <div>
+                  <InputLabel label="Resistência" />
+                  <InputOtimizado value={resistencia} onChange={setResistencia} className={inputClass} placeholder="Ex: Reflexos reduz à metade" />
+                </div>
 
               <div>
                 <InputLabel label="Tipo da Arma" />

@@ -97,12 +97,13 @@ export function ModalMunicoes({ isEmbedded, onFechar, armaFiltroNome, armaFiltro
   }, [busca, filtroCategoria, filtroTipo]);
 
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onFechar}>
-      <div 
-        className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ease-in-out flex flex-col h-[90vh]"
-        onClick={e => e.stopPropagation()}
-      >
+  
+  const content = (
+    <div 
+      className={isEmbedded ? "flex flex-col h-full w-full" : "w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ease-in-out flex flex-col h-[90vh]"} 
+      onClick={e => !isEmbedded && e.stopPropagation()}
+    >
+
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
           {!isEmbedded && (<div className="flex items-center justify-between mb-4">
             <div>
@@ -279,6 +280,13 @@ export function ModalMunicoes({ isEmbedded, onFechar, armaFiltroNome, armaFiltro
           )}
         </div>
       </div>
+  );
+
+  if (isEmbedded) return content;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onFechar}>
+      {content}
     </div>
   );
 }

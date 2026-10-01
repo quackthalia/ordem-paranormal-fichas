@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useRPG } from '../../context/RPGContext';
 import { ModalArmas } from './ModalArmas';
 import { ModalProtecoes } from './ModalProtecoes';
 import { ModalMunicoes } from './ModalMunicoes';
@@ -16,14 +17,20 @@ export const ModalUnificadoItens: React.FC<ModalUnificadoItensProps> = ({
   onFechar,
   defaultAba = 'Geral'
 }) => {
-  const [abaAtual, setAbaAtual] = useState<string>(defaultAba === 'Geral' ? 'Itens Gerais' : defaultAba);
+  const { itensHook } = useRPG();
+    const gruposUnicos = itensHook?.gruposUnicos || ['Itens Operacionais', 'Acessórios', 'Explosivos'];
+    const allTabs = [...gruposUnicos, 'Armas', 'Munições', 'Proteções', 'Amaldiçoados'];
+
+    const [abaAtual, setAbaAtual] = useState<string>(
+      (defaultAba === 'Geral' || defaultAba === 'Itens Gerais') ? 'Itens Operacionais' : defaultAba
+    );
 
   React.useEffect(() => {
     if (aberto) {
       document.body.style.overflow = 'hidden';
-      if (defaultAba === 'Geral' || defaultAba === 'Itens Operacionais' || defaultAba === 'Recursos') {
-        setAbaAtual('Itens Gerais');
-      } else if (defaultAba === 'Amaldiçoados') {
+      if (defaultAba === 'Geral') {
+          setAbaAtual('Itens Operacionais');
+        } else if (defaultAba === 'Amaldiçoados') {
         setAbaAtual('Amaldiçoados');
       } else {
         setAbaAtual(defaultAba);
@@ -54,7 +61,7 @@ export const ModalUnificadoItens: React.FC<ModalUnificadoItensProps> = ({
           
           {/* Abas */}
           <div className="flex flex-wrap border-b border-zinc-800">
-            {['Itens Gerais', 'Armas', 'Munições', 'Proteções', 'Amaldiçoados'].map((aba) => (
+            {allTabs.map((aba) => (
               <button
                 key={aba}
                 onClick={() => setAbaAtual(aba)}
@@ -73,9 +80,9 @@ export const ModalUnificadoItens: React.FC<ModalUnificadoItensProps> = ({
         {/* Conteúdo Dinâmico */}
         <div className="flex-1 min-h-0 relative">
           {abaAtual === 'Armas' && <ModalArmas aberto={true} onFechar={onFechar} isEmbedded />}
-          {abaAtual === 'Munições' && <ModalMunicoes aberto={true} fechar={onFechar} isEmbedded />}
+          {abaAtual === 'Munições' && <ModalMunicoes aberto={true} onFechar={onFechar} isEmbedded />}
           {abaAtual === 'Proteções' && <ModalProtecoes aberto={true} onFechar={onFechar} isEmbedded />}
-          {abaAtual === 'Itens Gerais' && <ModalItens aberto={true} onFechar={onFechar} isEmbedded />}
+          {gruposUnicos.includes(abaAtual) && <ModalItens aberto={true} onFechar={onFechar} isEmbedded grupoAba={abaAtual} />}
           {abaAtual === 'Amaldiçoados' && <ModalItensAmaldicoados aberto={true} fechar={onFechar} isEmbedded />}
         </div>
       </div>

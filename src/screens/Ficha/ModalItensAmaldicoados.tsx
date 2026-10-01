@@ -10,7 +10,7 @@ interface ModalItensAmaldicoadosProps {
   fechar: () => void;
 }
 
-export function ModalItensAmaldicoados({ aberto, fechar }: ModalItensAmaldicoadosProps) {
+export function ModalItensAmaldicoados({ isEmbedded, aberto, fechar }: ModalItensAmaldicoadosProps) {
 
   const { itensAmaldicoadosHook, armasHook } = useRPG();
   const { itens, armasAmaldicoadas, adicionarItem, loading } = itensAmaldicoadosHook;

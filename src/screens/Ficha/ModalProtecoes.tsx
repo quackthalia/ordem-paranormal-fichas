@@ -12,7 +12,7 @@ interface ModalProtecoesProps {
   onFechar: () => void;
 }
 
-export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
+export function ModalProtecoes({ isEmbedded, aberto, onFechar }: ModalProtecoesProps) {
 
   React.useEffect(() => {
     if (aberto) {
@@ -334,7 +334,5 @@ export function ModalProtecoes({ aberto, onFechar }: ModalProtecoesProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onFechar}>
       {content}
     </div>
-  );
-
   );
 }

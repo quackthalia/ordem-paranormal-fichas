@@ -20,7 +20,7 @@ interface ModalArmasProps {
   onFechar: () => void;
 }
 
-export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
+export function ModalArmas({ isEmbedded, aberto, onFechar }: ModalArmasProps) {
 
   React.useEffect(() => {
     if (aberto) {
@@ -485,7 +485,5 @@ export function ModalArmas({ aberto, onFechar }: ModalArmasProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onFechar}>
       {content}
     </div>
-  );
-
   );
 }

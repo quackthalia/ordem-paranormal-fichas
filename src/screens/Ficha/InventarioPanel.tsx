@@ -3,14 +3,8 @@ import { useRPG } from '../../context/RPGContext';
 import type { Patente, LimiteCredito } from '../../hooks/useInventario';
 import { ModalArmas, formatarCritico } from './ModalArmas';
 import type { ArmaInventario, ProtecaoInventario, ItemGeralInventario, MunicaoInventario, ItemAmaldicoadoInventario } from '../../types';
-import { ModalProtecoes } from './ModalProtecoes';
-import { ModalItens } from './ModalItens';
 import { ModalItensAmaldicoados } from './ModalItensAmaldicoados';
 import { ModalUnificadoItens } from './ModalUnificadoItens';
-import { ModalArmas } from './ModalArmas';
-import { ModalProtecoes } from './ModalProtecoes';
-import { ModalMunicoes } from './ModalMunicoes';
-import { ModalItens } from './ModalItens';
 import { ModalEditarProtecao } from '../../components/ModalEditarProtecao';
 import { ModalEditarItem } from '../../components/ModalEditarItem';
 import { ModalEditarMunicao } from '../../components/ModalEditarMunicao';
@@ -35,7 +29,6 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { restrictToWindowEdges, restrictToVerticalAxis, restrictToParentElement } from '@dnd-kit/modifiers';
 import type { Modifier } from '@dnd-kit/core';
-import { ModalMunicoes } from './ModalMunicoes';
 import { ModalGranadas } from './ModalGranadas';
 import { ModalAntena } from './ModalAntena';
 import { ModalEditarArma } from '../../components/ModalEditarArma';
@@ -957,6 +950,14 @@ export function InventarioPanel() {
             onChange={(e) => setBuscaItem(e.target.value)}
             className="flex-1 bg-zinc-900 border border-zinc-800 rounded px-3 py-1.5 text-sm text-zinc-100 outline-none focus:border-purple-500"
           />
+          {categoriaFiltro === 'Geral' && (
+            <button
+              onClick={() => setModalUnificadoAberto(true)}
+              className="bg-green-700 hover:bg-green-600 text-white px-4 py-1.5 rounded font-bold text-sm ml-2 transition"
+            >
+              + Adicionar
+            </button>
+          )}
           {categoriaFiltro === 'Armas' && (
             <button
               onClick={() => setModalArmasAberto(true)}

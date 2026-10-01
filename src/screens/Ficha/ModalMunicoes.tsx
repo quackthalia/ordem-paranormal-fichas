@@ -16,7 +16,7 @@ interface ModalMunicoesProps {
   onSelect?: (municao: Municao) => void;
 }
 
-export function ModalMunicoes({ onFechar, armaFiltroNome, armaFiltroCategoria, onSelect }: ModalMunicoesProps) {
+export function ModalMunicoes({ isEmbedded, onFechar, armaFiltroNome, armaFiltroCategoria, onSelect }: ModalMunicoesProps) {
 
   React.useEffect(() => {
     document.body.style.overflow = 'hidden';

@@ -189,11 +189,11 @@ export const PericiasTable: React.FC = () => {
                 <tr className="border-b border-zinc-800/70 transition hover:bg-zinc-800/30">
                   <td className={`px-2 py-1.5 font-bold text-sm ${corTexto}`}>
                     <div className="flex items-center gap-1">
-                      {nome === 'Profissão' && dadosPericia.treino >= 5 && (
+                      {nome === 'ProfissÃ£o' && dadosPericia.treino >= 5 && (
                         <button
                           onClick={() => setProfissaoExpandida(!profissaoExpandida)}
                           className="text-zinc-500 hover:text-green-400 transition transform"
-                          title="Expandir profissões"
+                          title="Expandir profissÃµes"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={profissaoExpandida ? "rotate-180" : ""}>
                             <polyline points="6 9 12 15 18 9"></polyline>
@@ -202,7 +202,7 @@ export const PericiasTable: React.FC = () => {
                       )}
                       <span 
                         className="cursor-pointer hover:underline hover:text-green-400 transition"
-                        onClick={() => setPericiaAberta({ nome, descricao: dadosPericia.descricao || 'Sem descrição.' })}
+                        onClick={() => setPericiaAberta({ nome, descricao: dadosPericia.descricao || 'Sem descriÃ§Ã£o..' })}
                       >
                         {nome}
                       </span>
@@ -288,7 +288,7 @@ export const PericiasTable: React.FC = () => {
                     />
                   </td>
                 </tr>
-                  {nome === 'Profissão' && profissaoExpandida && (
+                  {nome === 'ProfissÃ£o' && profissaoExpandida && (
                     <tr key="profissao-sub">
                       <td colSpan={5} className="px-4 py-3 bg-zinc-900/50 border-b border-zinc-800/70">
                         <div className="flex flex-col gap-2 py-1">
@@ -297,7 +297,7 @@ export const PericiasTable: React.FC = () => {
                               <input
                                 value={prof.nome}
                                 onChange={e => setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, nome: e.target.value } : p))}
-                                placeholder="Nome da profissão..."
+                                placeholder="Nome da profissÃ£o......"
                                 className="flex-1 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm text-zinc-100 outline-none focus:border-green-500"
                               />
                               <CustomSelect
@@ -318,7 +318,7 @@ export const PericiasTable: React.FC = () => {
                               <button
                                 onClick={() => setProfissoes(prev => prev.filter((_, i) => i !== idx))}
                                 className="text-zinc-600 hover:text-red-400 transition text-lg leading-none"
-                              >×</button>
+                              >ï¿½</button>
                             </div>
                           ))}
                           <button
@@ -326,7 +326,7 @@ export const PericiasTable: React.FC = () => {
                             className="self-start text-xs text-green-500 hover:text-green-300 transition flex items-center gap-1 mt-1"
                           >
                             <svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='3'><line x1='12' y1='5' x2='12' y2='19'/><line x1='5' y1='12' x2='19' y2='12'/></svg>
-                            Adicionar Profissão
+                            Adicionar ProfissÃ£o
                           </button>
                         </div>
                       </td>

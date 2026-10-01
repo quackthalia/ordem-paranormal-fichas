@@ -284,7 +284,20 @@ export const PericiasTable: React.FC = () => {
                                   initial={{ opacity: 0, height: 0 }}
                                   animate={{ opacity: 1, height: 'auto' }}
                                   exit={{ opacity: 0, height: 0 }}
-                                  className="overflow-hidden"
+                                  onAnimationComplete={(definition) => {
+                                    const el = document.getElementById(`prof-row-${(prof as any).id || idx}`);
+                                    if (el && (definition as any).opacity === 1) {
+                                      el.style.overflow = 'visible';
+                                    }
+                                  }}
+                                  onAnimationStart={() => {
+                                    const el = document.getElementById(`prof-row-${(prof as any).id || idx}`);
+                                    if (el) {
+                                      el.style.overflow = 'hidden';
+                                    }
+                                  }}
+                                  id={`prof-row-${(prof as any).id || idx}`}
+                                  style={{ overflow: 'hidden' }}
                                 >
                                   <div className="flex items-center gap-2 mb-2">
                                   {editingProfIndex === idx || prof.nome === '' ? (

@@ -141,24 +141,12 @@ export function ModalProtecoes({ isEmbedded, aberto, onFechar }: ModalProtecoesP
             
             <div className="flex flex-col gap-1">
               <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Proficiência</label>
-              <div className="flex flex-wrap gap-2">
-                {filtros.map(f => {
-                  const ativo = filtro === f.valor;
-                  return (
-                    <button
-                      key={f.valor}
-                      onClick={() => setFiltro(f.valor)}
-                      className={`rounded px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider transition border ${
-                        ativo
-                          ? 'bg-green-900/40 text-green-300 border-green-800'
-                          : 'bg-zinc-800/60 text-zinc-500 border-zinc-700 hover:text-zinc-300'
-                      }`}
-                    >
-                      {f.label}
-                    </button>
-                  );
-                })}
-              </div>
+              <CustomSelect
+                value={filtro}
+                onChange={setFiltro}
+                options={filtros.map(f => ({ value: f.valor, label: f.label }))}
+                wrapperClassName="w-full"
+              />
             </div>
           
             <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">

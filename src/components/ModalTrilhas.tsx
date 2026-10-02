@@ -78,6 +78,23 @@ export function ModalTrilhas({
   };
 
   const handleEscolher = (trilha: Trilha) => {
+    if (trilha.Codigo_Trilha === 1 && !modoVersatilidade) {
+      const armas = armasHook.armasInventario.filter(a => !a.arma.Nome_Item?.includes('Ataque Desarmado'));
+      if (armas.length === 0) {
+        alert("Você precisa ter pelo menos uma arma no inventário para escolher a trilha Aniquilador.");
+        return;
+      }
+      setEscolhendoArmaTrilha1(trilha);
+      return;
+    }
+
+    prosseguirEscolha(trilha);
+  };
+
+  const prosseguirEscolha = (trilha: Trilha, armaFavId?: string) => {
+    if (armaFavId) {
+      setPoderesExtras(prev => ({ ...prev, aniquilador_arma_favorita: armaFavId }));
+    }
     if (modoVersatilidade) {
       selecionarVersatilidade(trilha);
     } else {

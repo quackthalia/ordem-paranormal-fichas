@@ -433,7 +433,7 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
       >
         <div className="flex flex-col gap-1 w-full min-w-0 pr-3">
           <div className="flex items-center gap-1 min-w-0">
-            <span className="font-bold text-sm text-zinc-100 truncate">{arma.Nome_Item}</span>
+            <span className="font-bold text-sm text-zinc-100 truncate">{arma.Nome_Item}{isArmaFavorita ? ' (Arma Favorita)' : ''}</span>
             
             {(arma['Improvisada?'] || modsAtivas.some((m: any) => m?.Nome_Modif?.trim().toLowerCase() === 'apocalíptica' || m?.Nome_Modif?.trim().toLowerCase() === 'apocaliptica')) && (
                 <span className="relative group/imp cursor-help">

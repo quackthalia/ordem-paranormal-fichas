@@ -1839,10 +1839,11 @@ export const AbasPanel: React.FC = () => {
                                     }}
                                     className="rounded bg-zinc-800 border border-zinc-700 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-zinc-300 transition hover:bg-zinc-700 hover:text-zinc-100"
                                   >Editar</button>
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      if (ritual.Origem.startsWith('poder_57_')) {
+                                  {ritual.Origem !== 'trilha_conduite' && (
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        if (ritual.Origem.startsWith('poder_57_')) {
                                         const nivel = parseInt(ritual.Origem.replace('poder_57_', '').replace('combate_', ''), 10);
                                         const poderExistente = poderesEscolhidos[nivel];
                                         if (poderExistente && poderExistente.nome.toLowerCase().startsWith('aprender ritual (')) {
@@ -1864,7 +1865,8 @@ export const AbasPanel: React.FC = () => {
                                       rituaisHook.esquecerRitual(ritual.Origem);
                                     }}
                                     className="rounded bg-green-900/30 border border-green-800 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-green-500 transition hover:bg-green-900/50 hover:text-green-400"
-                                  >Remover</button>
+    >Remover</button>
+  )}
                                 </div>
 
                               </div>

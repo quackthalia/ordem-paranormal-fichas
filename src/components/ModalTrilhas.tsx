@@ -79,7 +79,7 @@ export function ModalTrilhas({
 
   const checarRequisito = (trilha: Trilha) => {
     if (trilha.Codigo_Trilha === 1 && !modoVersatilidade) {
-      const armas = armasHook.armasInventario.filter(a => !a.arma.Nome_Item?.includes('Ataque Desarmado'));
+      const armas = armasHook.armasInventario.filter(a => (!a.arma.Nome_Item?.includes('Ataque Desarmado') && !a.arma.Nome_Item?.includes('Coronhada')));
       if (armas.length === 0) {
         return "Requisito: Ter pelo menos uma arma no inventário";
       }
@@ -112,7 +112,7 @@ export function ModalTrilhas({
   };
 
   if (escolhendoArmaTrilha1) {
-    const armasFiltradas = armasHook.armasInventario.filter(a => !a.arma.Nome_Item?.includes('Ataque Desarmado'));
+    const armasFiltradas = armasHook.armasInventario.filter(a => (!a.arma.Nome_Item?.includes('Ataque Desarmado') && !a.arma.Nome_Item?.includes('Coronhada')));
     return (
       <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 p-4 font-sans backdrop-blur-sm">
         <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-[#0a0a0a] shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh]">

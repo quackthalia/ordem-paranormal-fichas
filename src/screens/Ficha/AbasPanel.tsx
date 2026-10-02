@@ -961,6 +961,9 @@ export const AbasPanel: React.FC = () => {
                                       else if (effectiveNex >= 65) nomeHab += ' (4 PE, +4d10)';
                                       else if (effectiveNex >= 40) nomeHab += ' (3 PE, +3d10)';
                                       else nomeHab += ' (2 PE, +2d10)';
+                                    } else if (t.Codigo_Trilha === 9 && nexLvl === 40) {
+                                      if (effectiveNex >= 65) nomeHab += ' (8 PE, +2d20)';
+                                      else if (effectiveNex >= 40) nomeHab += ' (4 PE, +1d10)';
                                     }
                                     const descHab = t[habDescKey] as string;
               

@@ -230,7 +230,16 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const trilhasHook = useTrilhas(classe);
   const poderesHook = usePoderes(classe);
   const origensHook = useOrigem();
-  
+
+  useEffect(() => {
+    if (trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 1 && poderesExtras["aniquilador_arma_favorita"]) {
+      setPoderesExtras(prev => {
+        const next = { ...prev };
+        delete next["aniquilador_arma_favorita"];
+        return next;
+      });
+    }
+  }, [trilhasHook.trilhaSelecionada?.Codigo_Trilha]);
 
   // Computa o conjunto de regras automáticas ativas
   const regrasAutomaticasAtivas = useMemo(() => {

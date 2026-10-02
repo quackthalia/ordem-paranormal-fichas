@@ -65,7 +65,7 @@ const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setPro
             />
           ) : (
             <span 
-              className={`flex-1 px-2 py-1 text-sm font-normal cursor-pointer hover:opacity-75 transition-opacity truncate ${prof.treino >= 15 ? 'text-amber-400' : prof.treino >= 10 ? 'text-emerald-400' : prof.treino >= 5 ? 'text-green-500' : 'text-zinc-300'}`}
+              className={`flex-1 px-2 py-1 text-sm font-normal cursor-pointer hover:opacity-75 transition-opacity truncate ${COR_TREINO[prof.treino] ?? 'text-zinc-300'}`}
               onClick={() => setEditingProfIndex(idx)}
             >
               {prof.nome}
@@ -99,7 +99,7 @@ const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setPro
             }}
             options={[{value:'0',label:'0'},{value:'5',label:'5'},{value:'10',label:'10'},{value:'15',label:'15'}]}
             wrapperClassName="w-14"
-            className={`cursor-pointer border-b bg-transparent text-center font-bold outline-none !px-0 py-0.5 ${prof.treino >= 15 ? 'text-amber-400 border-amber-400/50' : prof.treino >= 10 ? 'text-emerald-400 border-emerald-400/50' : prof.treino >= 5 ? 'text-green-500 border-green-500/50' : 'text-zinc-400 border-zinc-600'}`}
+            className={`cursor-pointer border-b bg-transparent text-center font-bold outline-none !px-0 py-0.5 ${COR_TREINO[prof.treino] ?? 'text-zinc-400'} ${BORDA_TREINO[prof.treino] ?? 'border-zinc-600'}`}
             hideIcon={true}
           />
 
@@ -108,7 +108,7 @@ const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setPro
             value={prof.outros === 0 ? '' : prof.outros}
             placeholder="0"
             onChange={e => setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, outros: Number(e.target.value) || 0 } : p))}
-            className={`w-11 border-b bg-transparent text-center font-bold outline-none ${prof.treino >= 15 ? 'text-amber-400 border-amber-400/50' : prof.treino >= 10 ? 'text-emerald-400 border-emerald-400/50' : prof.treino >= 5 ? 'text-green-500 border-green-500/50' : 'text-zinc-400 border-zinc-600'}`}
+            className={`w-11 border-b bg-transparent text-center font-bold outline-none ${COR_TREINO[prof.treino] ?? 'text-zinc-400'} ${BORDA_TREINO[prof.treino] ?? 'border-zinc-600'}`}
           />
           
           <button
@@ -289,7 +289,7 @@ export const PericiasTable: React.FC = () => {
                 <tr className="border-b border-zinc-800/70 transition hover:bg-zinc-800/30">
                   <td className={`px-2 py-1.5 font-bold text-sm ${corTexto}`}>
                     <div className="flex items-center gap-1">
-                      {nome === 'Profissão' && (
+                      {nome === 'Profissão' && dadosPericia.treino >= 5 && (
                         <button
                           onClick={() => {
                             const el = document.getElementById('profissao-panel');

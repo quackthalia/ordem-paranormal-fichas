@@ -516,7 +516,7 @@ const atributosFinais = useMemo(() => {
       const pName = trilha.Profissao_Pericia.trim();
       if (profissaoTrilhaRef.current !== pName) {
         periciasHook.setProfissoes(prev => {
-          const exists = prev.find(p => p.nome.toLowerCase() === pName.toLowerCase());
+          const exists = prev.find(p => (p.nome || '').toLowerCase() === pName.toLowerCase());
           if (exists) {
             setJaTinhaProfissaoTrilha(true);
             return prev;
@@ -529,7 +529,7 @@ const atributosFinais = useMemo(() => {
       }
     } else {
       if (profissaoTrilhaRef.current) {
-        periciasHook.setProfissoes(prev => prev.filter(p => !(p.nome.toLowerCase() === profissaoTrilhaRef.current!.toLowerCase() && (p as any).origem === 'trilha')));
+        periciasHook.setProfissoes(prev => prev.filter(p => !((p.nome || '').toLowerCase() === profissaoTrilhaRef.current!.toLowerCase() && (p as any).origem === 'trilha')));
         setJaTinhaProfissaoTrilha(false);
         profissaoTrilhaRef.current = null;
       }

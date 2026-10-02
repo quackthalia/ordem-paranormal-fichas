@@ -529,7 +529,8 @@ const atributosFinais = useMemo(() => {
       }
     } else {
       if (profissaoTrilhaRef.current) {
-        periciasHook.setProfissoes(prev => prev.filter(p => !((p.nome || '').toLowerCase() === profissaoTrilhaRef.current!.toLowerCase() && (p as any).origem === 'trilha')));
+        const oldName = profissaoTrilhaRef.current;
+        periciasHook.setProfissoes(prev => prev.filter(p => !((p.nome || '').toLowerCase() === oldName.toLowerCase() && (p as any).origem === 'trilha')));
         setJaTinhaProfissaoTrilha(false);
         profissaoTrilhaRef.current = null;
       }

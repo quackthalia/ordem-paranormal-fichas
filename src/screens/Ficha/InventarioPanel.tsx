@@ -1655,6 +1655,9 @@ function SortableArmaItem({
   const calcularEstatisticasFinaisArma = () => {
       let dano = arma.Dano_Arma || '';
       if (arma.Nome_Item?.toLowerCase().includes('arcabuz dos moretti')) dano = 'Veja Texto';
+      if (aniquiladorNivel99 && dano && dano !== 'Veja Texto') {
+        dano = dano.replace(/(\d+)d(\d+)/gi, (m, p1, p2) => `${Number(p1) + 1}d${p2}`);
+      }
       
     let espacos = calcularEspacosFinais(arma['Espaços_Item'], item.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas?.has(43));
     let automatica = !!arma['Automatica?'];

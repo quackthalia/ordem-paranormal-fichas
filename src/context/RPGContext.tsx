@@ -391,7 +391,10 @@ const atributosBaseComBonus = useMemo(() => {
     return obj;
   }, [atributos, bonusAtributos]);
 
-  const status = useStatus(classe, effectiveNex, effectiveNivel, atributosBaseComBonus, paranormalPenalty, regrasAutomaticasAtivas, bonusVestimentas.pv + bonusMaldicoes.pv, bonusVestimentas.pe + bonusMaldicoes.pe);
+  const temCascaGrossa = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 5 && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 5 && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
+  const bonusPvTrilha5 = temCascaGrossa ? effectiveNivel : 0;
+
+  const status = useStatus(classe, effectiveNex, effectiveNivel, atributosBaseComBonus, paranormalPenalty, regrasAutomaticasAtivas, bonusVestimentas.pv + bonusMaldicoes.pv + bonusPvTrilha5, bonusVestimentas.pe + bonusMaldicoes.pe);
 
   
     // Controle para evitar que o PE temporário do Agente de Nascença fique voltando infinitamente
@@ -608,6 +611,9 @@ const atributosFinais = useMemo(() => {
   
   const temProtecaoLeve = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('leve')) || false;
   const defOutrosBonusRegra25 = (regrasAutomaticasAtivas.has(25) && temProtecaoLeve) ? 2 : 0;
+  const isMachucado = status.pvAtual !== null && status.pvMax > 0 && status.pvAtual <= Math.floor(status.pvMax / 2);
+  const temInquebravel = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 5 && (regras['nex_experiencia'] ? effectiveNivel >= 20 : effectiveNex >= 99);
+  const defOutrosBonusTrilha5 = (temInquebravel && isMachucado) ? 5 : 0;
 
   const totalDefesaProtecoes = (protecoesHook?.protecoesInventario || []).reduce((acc, item) => {
     if (!item.equipado) return acc;
@@ -625,7 +631,7 @@ const atributosFinais = useMemo(() => {
     return acc + defVal;
   }, 0);
 
-  const defesaTotal = 10 + atributos.AGI + bonusAtributos.AGI + defEquip + defOutros + defOutrosBonusRegra4 + defOutrosBonusRegra12 + defOutrosBonusRegra21 + defOutrosBonusRegra25 + totalDefesaProtecoes + (bonusVestimentas?.defesa || 0) + (bonusMaldicoes?.defesa || 0);
+  const defesaTotal = 10 + atributos.AGI + bonusAtributos.AGI + defEquip + defOutros + defOutrosBonusRegra4 + defOutrosBonusRegra12 + defOutrosBonusRegra21 + defOutrosBonusRegra25 + defOutrosBonusTrilha5 + totalDefesaProtecoes + (bonusVestimentas?.defesa || 0) + (bonusMaldicoes?.defesa || 0);
 
   // ============================================================
   // UTILITÁRIOS

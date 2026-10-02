@@ -387,7 +387,7 @@ export function categoriaNumParaRoman(num: number): string {
   return 'IV';
 }
 
-export function calcularCategoriaFinal(categoriaBase: string | number | null | undefined, modificacoesIds?: number[], allModificacoes?: any[], isArmaID71?: boolean | string, maldicoesIds?: number[], allMaldicoes?: any[]): string {
+export function calcularCategoriaFinal(categoriaBase: string | number | null | undefined, modificacoesIds?: number[], allModificacoes?: any[], isArmaID71?: boolean | string, maldicoesIds?: number[], allMaldicoes?: any[], descontoFavorita: number = 0): string {
   const baseNum = categoriaRomanParaNum(categoriaBase);
   let modificador = modificacoesIds?.length || 0;
 
@@ -412,7 +412,7 @@ export function calcularCategoriaFinal(categoriaBase: string | number | null | u
     custoMaldicoes = 2 + (maldicoesIds.length - 1);
   }
 
-  const total = baseNum + modificador + custoMaldicoes;
+  const total = baseNum + modificador + custoMaldicoes - descontoFavorita;
   return categoriaNumParaRoman(Math.min(Math.max(0, total), 4));
 }
 export function calcularAtributosArmaFinais(

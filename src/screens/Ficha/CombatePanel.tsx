@@ -360,7 +360,11 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
     }
   }
 
-  const danoStrFull = danoSelecionado ? danoSelecionado + extrasStr : extrasStr;
+  let danoSelecionadoEditado = danoSelecionado;
+  if (aniquiladorNivel99 && danoSelecionadoEditado) {
+    danoSelecionadoEditado = danoSelecionadoEditado.replace(/(\d+)d(\d+)/gi, (m, p1, p2) => `${Number(p1) + 1}d${p2}`);
+  }
+  const danoStrFull = danoSelecionadoEditado ? danoSelecionadoEditado + extrasStr : extrasStr;
   const parsedDano = parseDanoString(danoStrFull, tipoBase, tipoSecundario);
 
   // ── Dano Secundário: respeita o separador | para armas multi-forma ──

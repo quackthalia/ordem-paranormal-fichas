@@ -459,8 +459,8 @@ function ProtecoesPanel() {
   const effectiveNivel = regras['nex_experiencia'] ? nivel : Math.floor(nex / 5);
   const effectiveNex = regras['nex_experiencia'] ? nivel * 5 : nex;
   const temMiraElite = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 6 && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 6 && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
-  if (temMiraElite && !proficiencias.includes('Armas (Balas Longas)')) {
-    proficienciasExtras.push('Armas (Balas Longas)');
+  if (temMiraElite && !proficiencias.includes('Armas de Fogo (Balas Longas)')) {
+    proficienciasExtras.push('Armas de Fogo (Balas Longas)');
   }
 
   const temProtecaoPesada = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('pesada')) || false;

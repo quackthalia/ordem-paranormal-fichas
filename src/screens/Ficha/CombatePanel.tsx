@@ -245,13 +245,31 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
   let bonusDanoAtributo = 0;
   const isFogoDisparo = ['fogo', 'disparo'].some(t => arma.Tipo_Arma?.toLowerCase().includes(t));
   const isArcoComposto = arma.Nome_Item?.trim().toLowerCase() === 'arco composto';
-  if (isArcoComposto) {
+  
+  if (temMiraElite && usaBalaLonga && !isArcoComposto) {
+    // Atirador de Elite (10%): Soma Intelecto em rolagens de dano de armas de fogo com balas longas.
+    // Ignoramos a caixinha selecionada e aplicamos diretamente, mas se a pessoa quiser somar outro, tentamos alinhar.
+    // Geralmente armas de fogo não somam atributo, então forçamos INT.
+    if (atributoDano === 'INT' || atributoDano === 'FOR' || atributoDano === 'AGI') {
+      bonusDanoAtributo = (atributosFinais.INT || 0);
+    } else if (atributoDano === 'PRE') {
+      bonusDanoAtributo = (atributosFinais.PRE || 0);
+    } else if (atributoDano === 'VIG') {
+      bonusDanoAtributo = (atributosFinais.VIG || 0);
+    }
+  } else if (isArcoComposto) {
     bonusDanoAtributo = (atributosFinais.FOR || 0);
   } else if (!isFogoDisparo) {
     if (atributoDano === 'FOR') {
       bonusDanoAtributo = (atributosFinais.FOR || 0);
     } else if (atributoDano === 'AGI' && isAgil) {
       bonusDanoAtributo = (atributosFinais.AGI || 0);
+    } else if (atributoDano === 'INT') {
+      bonusDanoAtributo = (atributosFinais.INT || 0);
+    } else if (atributoDano === 'PRE') {
+      bonusDanoAtributo = (atributosFinais.PRE || 0);
+    } else if (atributoDano === 'VIG') {
+      bonusDanoAtributo = (atributosFinais.VIG || 0);
     }
   }
 

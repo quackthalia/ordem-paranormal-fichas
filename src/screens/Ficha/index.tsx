@@ -28,7 +28,8 @@ export const FichaScreen: React.FC = () => {
     nexModalAberto,
     nexPoderEditando,
     afinidadeAtiva,
-    afinidadeEscolhida
+    afinidadeEscolhida,
+    itensHook
   } = useRPG();
 
     const effectiveNex = regras["nex_experiencia"] ? nivel * 5 : nex;
@@ -69,7 +70,42 @@ export const FichaScreen: React.FC = () => {
     } else if (!temFlagelador99 && (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_flagelador')) {
       rituaisHook.esquecerRitual('trilha_flagelador');
     }
-  }, [trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, effectiveNex, nivel, regras, rituaisHook.rituais, rituaisHook.rituaisAprendidos]);
+
+    // TRILHA 13: GRADUADO
+    const temGraduado99 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 13 && (regras['nex_experiencia'] ? nivel >= 20 : effectiveNex >= 99)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 13 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
+    const jaTemConhecendoMedo = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_graduado' || r.codigo_ritual === 17);
+
+    if (temGraduado99 && !jaTemConhecendoMedo) {
+      const baseRitual = (rituaisHook.rituais || []).find(r => r.Codigo_Ritual === 17);
+      if (baseRitual) {
+        rituaisHook.aprenderRitual({
+          codigo_ritual: 17,
+          nome: `${baseRitual.Nome_Ritual} (Graduado)`,
+          origem: 'trilha_graduado',
+          circulo: baseRitual.Circulo_Ritual,
+          elemento: baseRitual.Elemento_Ritual
+        });
+      }
+    } else if (!temGraduado99 && (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_graduado')) {
+      rituaisHook.esquecerRitual('trilha_graduado');
+    }
+
+    const temGraduado40 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 13 && (regras['nex_experiencia'] ? nivel >= 8 : effectiveNex >= 40));
+    const isInventarioLoaded = itensHook.itensInventario !== undefined && itensHook.itensInventario !== null;
+    if (temGraduado40 && isInventarioLoaded) {
+      const temGrimorio = itensHook.itensInventario.some((i) => i.item.Nome_Item === 'Grimório Ritualístico');
+      if (!temGrimorio) {
+         itensHook.adicionarItem({
+           Codigo_Item: 9999,
+           Nome_Item: 'Grimório Ritualístico',
+           Categoria_Item: 'II',
+           Espacos_Itens: '1',
+           Desc_Item: 'Seu Grimório. Quando o segura, você pode conjurar rituais sem precisar de gestos ou componentes materiais.',
+           Grupo_Item: 'Itens Operacionais'
+         });
+      }
+    }
+  }, [trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, effectiveNex, nivel, regras, rituaisHook.rituais, rituaisHook.rituaisAprendidos, itensHook.itensInventario]);
 
   const handleRefazer = () => {
     status.resetarStatus();

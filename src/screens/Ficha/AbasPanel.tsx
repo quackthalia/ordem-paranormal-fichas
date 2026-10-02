@@ -1389,7 +1389,7 @@ export const AbasPanel: React.FC = () => {
                 const rituaisAprendidosNesteCirculo = (rituaisHook.rituaisAprendidos || [])
                   .map(ra => {
                     const base = rituaisHook.rituais.find(r => r.Codigo_Ritual === ra.codigo_ritual);
-                    return base ? { ...base, Origem: ra.origem, ElementoEscolhidoPermanente: ra.elemento_escolhido, customNome: ra.customNome, customDesc: ra.customDesc, customProps: ra.customProps } : null;
+                    return base ? { ...base, Origem: ra.origem, ElementoEscolhidoPermanente: ra.elemento_escolhido, customNome: ra.customNome, customDesc: ra.customDesc, customProps: ra.customProps, learnedNome: ra.nome } : null;
                   })
                   .filter(r => r && r.Circulo_Ritual === circulo)
                   .sort((a, b) => {
@@ -1636,7 +1636,7 @@ export const AbasPanel: React.FC = () => {
                                 )}
                                 <div className="flex flex-col gap-1 justify-center py-1">
                                   <div className="flex items-center gap-2">
-                                    <span className="text-sm font-bold text-zinc-100">{ritual.customNome || ritual.Nome_Ritual}</span>
+                                    <span className="text-sm font-bold text-zinc-100">{ritual.customNome || (ritual.learnedNome && ritual.learnedNome !== ritual.Nome_Ritual ? ritual.learnedNome : (ritual.Origem === 'trilha_conduite' ? `${ritual.Nome_Ritual} (Conduíte)` : ritual.Nome_Ritual))}</span>
                                     <span className="rounded bg-blue-950/30 px-1.5 py-0.5 text-[10px] font-bold text-blue-400 border border-blue-900/50">
                                       {pe} PE
                                     </span>

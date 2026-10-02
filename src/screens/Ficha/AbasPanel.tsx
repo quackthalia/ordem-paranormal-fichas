@@ -950,7 +950,13 @@ export const AbasPanel: React.FC = () => {
 
                                     const habNameKey = `Nome_Habilidade_${nexLvl}` as keyof typeof t;
                                     const habDescKey = `Descricao_Habilidade_${nexLvl}` as keyof typeof t;
-                                    const nomeHab = t[habNameKey] as string;
+                                    let nomeHab = t[habNameKey] as string;
+                                    if (t.Codigo_Trilha === 7 && nexLvl === 10) {
+                                      if (effectiveNex >= 99) nomeHab += ' (+4d6)';
+                                      else if (effectiveNex >= 65) nomeHab += ' (+3d6)';
+                                      else if (effectiveNex >= 40) nomeHab += ' (+2d6)';
+                                      else nomeHab += ' (+1d6)';
+                                    }
                                     const descHab = t[habDescKey] as string;
               
                                     if (!nomeHab) return null;

@@ -1616,7 +1616,11 @@ function SortableArmaItem({
     isDragging,
   } = useSortable({ id, data: { type: 'arma' } });
 
-  const { municoesHook, armasHook, proficienciasTotais, modificacoesHook, maldicoesHook, atributosFinais, status, regrasAutomaticasAtivas, regras, itensHook } = useRPG();
+  const { municoesHook, armasHook, proficienciasTotais, modificacoesHook, maldicoesHook, atributosFinais, status, regrasAutomaticasAtivas, regras, itensHook, trilhasHook, poderesExtras, nivel, nex } = useRPG();
+  const effectiveNex = regras["nex_experiencia"] ? nivel * 5 : nex;
+  const isAniquilador = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 1;
+  const armaFavId = isAniquilador ? poderesExtras["aniquilador_arma_favorita"] : null;
+  const descontoFavorita = isAniquilador && armaFavId ? (effectiveNex >= 99 ? 3 : (effectiveNex >= 40 ? 2 : 1)) : 0;
   const hasProficiencia = proficienciasTotais.includes(arma.Proficiencia);
   const [expandirMods, setExpandirMods] = useState(false);
     const [expandirMalds, setExpandirMalds] = useState(false);

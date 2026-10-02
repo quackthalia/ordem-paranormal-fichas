@@ -398,7 +398,6 @@ export function InventarioPanel() {
   const isAniquilador = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 1;
   const armaFavId = isAniquilador ? poderesExtras["aniquilador_arma_favorita"] : null;
   const descontoFavorita = isAniquilador && armaFavId ? (effectiveNex >= 99 ? 3 : (effectiveNex >= 40 ? 2 : 1)) : 0;
-  const aniquiladorNivel99 = isAniquilador && item.id === armaFavId && effectiveNex >= 99;
 
   useEffect(() => {
     const handler = (e: any) => {

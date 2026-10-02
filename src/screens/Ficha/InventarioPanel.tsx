@@ -143,7 +143,9 @@ const calcularEspacosFinais = (espacoBase: number | string, modificacoesIds?: nu
 };
 
 function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stringDT, onEditar, toggleEquipado, isOverlay }: SortableItemGeralProps) {
-  const { maldicoesHook, modificacoesHook, regrasAutomaticasAtivas } = useRPG();
+  const { maldicoesHook, modificacoesHook, regrasAutomaticasAtivas, trilhasHook, regras, nivel, nex } = useRPG();
+  const effectiveNex = regras["nex_experiencia"] ? nivel * 5 : nex;
+  const temRemendao = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 10 && effectiveNex >= 40) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 10 && effectiveNex >= 50);
   
   const getCorElemento = (elemento: string) => {
     const e = elemento.trim().toLowerCase();
@@ -205,7 +207,7 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
           <div className="flex flex-col gap-1 flex-1 min-w-0 justify-center">
             <span className="font-bold text-sm text-zinc-100 truncate leading-none mt-0.5">{item.item.Nome_Item}</span>
             {!(item.item.Grupo_Item?.toLowerCase().includes('explosivo') || stringDT) && (
-              <span className="text-xs text-zinc-400 font-medium truncate">Categoria {calcularCategoriaFinal(item.item.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes, false, item.maldicoes, maldicoesHook?.maldicoes)}</span>
+              <span className="text-xs text-zinc-400 font-medium truncate">Categoria {calcularCategoriaFinal(item.item.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes, false, item.maldicoes, maldicoesHook?.maldicoes, temRemendao ? 1 : 0)}</span>
             )}
             
 
@@ -258,7 +260,7 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
       <Collapse isOpen={isExpanded} className={isDragging ? 'hidden' : ''}>
         <div className="border-t border-zinc-800 px-3 py-3 text-xs bg-zinc-950/80 flex flex-col gap-2 relative z-10" onClick={e => e.stopPropagation()}>
           <div className="flex flex-col gap-1 mt-1">
-            <span><span className="text-green-400 font-bold">Categoria:</span> {calcularCategoriaFinal(item.item.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes, false, item.maldicoes, maldicoesHook?.maldicoes)}</span>
+            <span><span className="text-green-400 font-bold">Categoria:</span> {calcularCategoriaFinal(item.item.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes, false, item.maldicoes, maldicoesHook?.maldicoes, temRemendao ? 1 : 0)}</span>
             <span><span className="text-green-400 font-bold">Espaços:</span> {calcularEspacosFinais(item.item.Espacos_Itens, item.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas?.has(43))}</span>
 
               {((Array.isArray(item.maldicoes) ? item.maldicoes : []).length > 0) && (
@@ -465,7 +467,9 @@ export function InventarioPanel() {
   const getItemAmaldicoadoParaEditar = () => editingItem?.tipo === 'amaldicoado' ? itensAmaldicoadosHook.itensAmaldicoadosInventario.find(i => i.id === editingItem.id) : null;
   const getSoqueiraComoArmaParaEditar = () => null;
 
-  const cargaMaxima = 5 + (atributosFinais.FOR * 5) + (regrasAutomaticasAtivas.has(23) ? 5 : 0) + (regrasAutomaticasAtivas.has(43) ? atributosFinais.INT : 0);
+  const temInventarioOtimizado = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 10 && effectiveNex >= 10) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 10 && effectiveNex >= 50);
+  const temRemendao = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 10 && effectiveNex >= 40) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 10 && effectiveNex >= 50);
+  const cargaMaxima = 5 + (atributosFinais.FOR * 5) + (regrasAutomaticasAtivas.has(23) ? 5 : 0) + (regrasAutomaticasAtivas.has(43) ? atributosFinais.INT : 0) + (temInventarioOtimizado ? (atributosFinais.INT * 5) : 0);
   
   const cargaAtual = useMemo(() => {
     let total = 0;
@@ -513,7 +517,7 @@ export function InventarioPanel() {
     });
 
     itensHook?.itensInventario?.forEach(i => {
-      const cat = calcularCategoriaFinal(i.item.Categoria_Item, i.modificacoes, modsAll, false, i.maldicoes, maldsAll);
+      const cat = calcularCategoriaFinal(i.item.Categoria_Item, i.modificacoes, modsAll, false, i.maldicoes, maldsAll, temRemendao ? 1 : 0);
       const idx = getCatIndex(cat);
       if (idx !== -1) noInventario[idx]++;
     });

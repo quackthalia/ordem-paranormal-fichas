@@ -132,6 +132,8 @@ interface RPGContextType {
   elementoRitual: Record<number, string>;
   setElementoRitual: React.Dispatch<React.SetStateAction<Record<number, string>>>;
   jaTinhaPericiaTrilha: boolean;
+  jaTinhaProfissaoTrilha: boolean;
+  trilhaProfissaoConcedida: string | null;
 
   afinidadeEscolhida: string | null;
   setAfinidadeEscolhida: React.Dispatch<React.SetStateAction<string | null>>;
@@ -505,6 +507,35 @@ const atributosFinais = useMemo(() => {
     (() => { const comb = {...bonusVestimentas.pericias}; Object.keys(bonusMaldicoes.pericias || {}).forEach(k => { comb[k] = (comb[k] || 0) + bonusMaldicoes.pericias[k]; }); return comb; })()
   );
 
+  const [jaTinhaProfissaoTrilha, setJaTinhaProfissaoTrilha] = useState(false);
+  const profissaoTrilhaRef = React.useRef<string | null>(null);
+
+  React.useEffect(() => {
+    const trilha = trilhasHook.trilhaSelecionada;
+    if (trilha && trilha.Profissao_Pericia) {
+      const pName = trilha.Profissao_Pericia.trim();
+      if (profissaoTrilhaRef.current !== pName) {
+        periciasHook.setProfissoes(prev => {
+          const exists = prev.find(p => p.nome.toLowerCase() === pName.toLowerCase());
+          if (exists) {
+            setJaTinhaProfissaoTrilha(true);
+            return prev;
+          } else {
+            setJaTinhaProfissaoTrilha(false);
+            return [...prev, { nome: pName, treino: 5, outros: 0, origem: 'trilha' } as any];
+          }
+        });
+        profissaoTrilhaRef.current = pName;
+      }
+    } else {
+      if (profissaoTrilhaRef.current) {
+        periciasHook.setProfissoes(prev => prev.filter(p => !(p.nome.toLowerCase() === profissaoTrilhaRef.current!.toLowerCase() && (p as any).origem === 'trilha')));
+        setJaTinhaProfissaoTrilha(false);
+        profissaoTrilhaRef.current = null;
+      }
+    }
+  }, [trilhasHook.trilhaSelecionada, periciasHook.setProfissoes]);
+
   const grauProfissao = periciasHook.pericias['Profissão']?.treino || 0;
   const inventarioHook = useInventario(origensHook.origemSelecionada?.Codigo_Regra, grauProfissao);
 
@@ -660,6 +691,8 @@ const atributosFinais = useMemo(() => {
     versaoRitual, setVersaoRitual,
     elementoRitual, setElementoRitual,
     jaTinhaPericiaTrilha,
+    jaTinhaProfissaoTrilha,
+    trilhaProfissaoConcedida: profissaoTrilhaRef.current,
     afinidadeEscolhida, setAfinidadeEscolhida, afinidadeAtiva,
     poderesExtras, setPoderesExtras,
     progressaoNexRecusados, setProgressaoNexRecusados,

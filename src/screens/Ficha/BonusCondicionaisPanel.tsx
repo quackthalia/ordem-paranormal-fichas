@@ -9,6 +9,8 @@ export const BonusCondicionaisPanel: React.FC = () => {
     poderesHook,
     periciasHook,
     jaTinhaPericiaTrilha,
+    jaTinhaProfissaoTrilha,
+    trilhaProfissaoConcedida,
     trilhasHook
   } = useRPG();
 

@@ -146,6 +146,7 @@ export interface Trilha {
   Descricao_Trilha: string;
   Especial_Trilha?: string;
   Perícia_Trilha: number;
+  Profissao_Pericia?: string | null;
   Codigo_Regra_10?: number;
   Nome_Habilidade_10: string;
   Descricao_Habilidade_10: string;

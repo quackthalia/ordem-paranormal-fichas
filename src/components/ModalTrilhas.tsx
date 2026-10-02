@@ -294,6 +294,28 @@ export function ModalTrilhas({
                                     {regras['nex_experiencia'] ? `NV ${calcularNivel(nexLvl)}` : `${nexLvl}%`}
                                   </span>
                                   <span className="font-bold text-zinc-200 text-xs">{nomeHab}</span>
+                                  {(trilha as any)[`Auto_${nexLvl}`] && (
+                                    <span
+                                      title={(trilha as any)[`Auto_${nexLvl}`].toLowerCase().trim() === 'sim' ? 'Totalmente automático' : 'Semi-automático'}
+                                      className={`shrink-0 flex items-center gap-1 px-1 py-0.5 rounded text-[0.55rem] font-bold uppercase tracking-wider ${
+                                        (trilha as any)[`Auto_${nexLvl}`].toLowerCase().trim() === 'sim'
+                                          ? 'bg-green-950/60 text-green-400 border border-green-800/50'
+                                          : 'bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
+                                      }`}
+                                    >
+                                      {(trilha as any)[`Auto_${nexLvl}`].toLowerCase().trim() === 'sim' ? (
+                                        <>
+                                          <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z"/></svg>
+                                          Auto
+                                        </>
+                                      ) : (
+                                        <>
+                                          <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z" opacity="0.5"/><path d="M19 3v4m0 4v10" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
+                                          Semi
+                                        </>
+                                      )}
+                                    </span>
+                                  )}
                                 </div>
                                 <span className="text-[10px] text-zinc-500">
                                   {isHabExpanded ? '▲' : '▼'}

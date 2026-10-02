@@ -19,7 +19,7 @@ export const BonusCondicionaisPanel: React.FC = () => {
       <h4 className="bg-zinc-950 px-4 py-2 text-center font-display tracking-widest text-zinc-300 uppercase border-b border-zinc-800">
         Modificadores de Dados
       </h4>
-      <div className="flex flex-col p-4 gap-4">
+      <div className="flex flex-col p-3 gap-3">
         {/* CONDICIONAIS */}
         <div className="flex flex-col gap-1.5">
           <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold ml-1 mb-1">Condicionais</label>

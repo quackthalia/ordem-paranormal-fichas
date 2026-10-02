@@ -97,6 +97,7 @@ export function useTrilhas(): UseTrilhasReturn {
         ...trilha,
         nome_pericia: nomeP,
       });
+      setTrilhasExpandidas(prev => prev.filter(i => i !== trilha.Codigo_Trilha));
     },
     [nomesPericias]
   );
@@ -109,6 +110,7 @@ export function useTrilhas(): UseTrilhasReturn {
         ...trilha,
         nome_pericia: nomeP,
       });
+      setTrilhasExpandidas(prev => prev.filter(i => i !== trilha.Codigo_Trilha + 10000));
     },
     [nomesPericias]
   );

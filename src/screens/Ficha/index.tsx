@@ -14,6 +14,11 @@ import { MatrixBackground } from './MatrixBackground';
 
 export const FichaScreen: React.FC = () => {
   const {
+    trilhasHook,
+    rituaisHook,
+    nex,
+    nivel,
+    regras,
     classe,
     setBonusAtributos,
     setTelaAtual,
@@ -25,6 +30,28 @@ export const FichaScreen: React.FC = () => {
     afinidadeAtiva,
     afinidadeEscolhida
   } = useRPG();
+
+    const effectiveNex = regras["nex_experiencia"] ? nivel * 5 : nex;
+
+  useEffect(() => {
+    const temConduite99 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 11 && (regras['nex_experiencia'] ? nivel >= 20 : effectiveNex >= 99)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 11 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
+    const jaTemCanalizarMedo = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'Conduíte' || r.codigo_ritual === 10);
+
+    if (temConduite99 && !jaTemCanalizarMedo) {
+      const baseRitual = (rituaisHook.rituais || []).find(r => r.Codigo_Ritual === 10);
+      if (baseRitual) {
+        rituaisHook.aprenderRitual({
+          codigo_ritual: 10,
+          nome: baseRitual.Nome_Ritual,
+          origem: 'Conduíte',
+          circulo: baseRitual.Circulo_Ritual,
+          elemento: baseRitual.Elemento_Ritual
+        });
+      }
+    } else if (!temConduite99 && (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'Conduíte')) {
+      rituaisHook.esquecerRitual('Conduíte');
+    }
+  }, [trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, effectiveNex, nivel, regras, rituaisHook.rituais, rituaisHook.rituaisAprendidos]);
 
   const handleRefazer = () => {
     status.resetarStatus();

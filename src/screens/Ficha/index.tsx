@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { useRPG } from '../../context/RPGContext';
 import { CustomSelect } from '../../components/CustomSelect';
+import { Collapse } from '../../components/Collapse';
 import { NEX_OPTIONS, capMaximoAtributo } from '../../utils/rpgRules';
 import { StatusPanel } from './StatusPanel';
 import { PericiasTable } from './PericiasTable';

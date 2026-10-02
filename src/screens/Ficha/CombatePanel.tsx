@@ -462,7 +462,7 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
             {(arma['Improvisada?'] || modsAtivas.some((m: any) => m?.Nome_Modif?.trim().toLowerCase() === 'apocalíptica' || m?.Nome_Modif?.trim().toLowerCase() === 'apocaliptica')) && (
                 <span className="relative group/imp cursor-help">
                   <span className="text-sm text-orange-400">🔨</span>
-                  <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 opacity-0 invisible group-hover/imp:opacity-100 group-hover/imp:visible transition-all duration-300 group-hover/imp:delay-500 delay-0 w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
+                  <span className="absolute left-full top-0 -mt-1 ml-2 opacity-0 invisible group-hover/imp:opacity-100 group-hover/imp:visible transition-all duration-300 group-hover/imp:delay-500 delay-0 w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
                     Arma improvisada: Sofre -1d20 em testes de ataque com essa arma.
                   </span>
                 </span>
@@ -470,7 +470,7 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
               {arma['Agil?'] && (
               <span className="relative group/agil cursor-help">
                 <span className="text-sm text-yellow-400">⚡</span>
-                <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 opacity-0 invisible group-hover/agil:opacity-100 group-hover/agil:visible transition-all duration-300 group-hover/agil:delay-500 delay-0 w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
+                <span className="absolute left-full top-0 -mt-1 ml-2 opacity-0 invisible group-hover/agil:opacity-100 group-hover/agil:visible transition-all duration-300 group-hover/agil:delay-500 delay-0 w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
                   Permite que você aplique sua Agilidade em vez de sua Força em testes de ataque e rolagens de dano.
                 </span>
               </span>
@@ -478,7 +478,7 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
             {automatica && (
               <span className="relative group/auto cursor-help">
                 <span className="text-sm text-blue-400">🔄</span>
-                <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 opacity-0 invisible group-hover/auto:opacity-100 group-hover/auto:visible transition-all duration-300 group-hover/auto:delay-500 delay-0 w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
+                <span className="absolute left-full top-0 -mt-1 ml-2 opacity-0 invisible group-hover/auto:opacity-100 group-hover/auto:visible transition-all duration-300 group-hover/auto:delay-500 delay-0 w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
                   Pode disparar rajadas. Quando dispara uma rajada, você sofre -1d20 no teste de ataque, mas causa 1 dado de dano adicional do mesmo tipo.
                 </span>
               </span>
@@ -486,7 +486,7 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
             {!hasProficiencia && (
               <span className="relative group/prof cursor-help">
                 <span className="text-sm text-red-500">⚠️</span>
-                <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 opacity-0 invisible group-hover/prof:opacity-100 group-hover/prof:visible transition-all duration-300 group-hover/prof:delay-500 delay-0 w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
+                <span className="absolute left-full top-0 -mt-1 ml-2 opacity-0 invisible group-hover/prof:opacity-100 group-hover/prof:visible transition-all duration-300 group-hover/prof:delay-500 delay-0 w-52 p-2 bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 rounded z-50 text-center shadow-lg pointer-events-none">
                   Você não possui proficiência com esta arma, recebendo -2d20 em testes de ataque com ela.
                 </span>
               </span>

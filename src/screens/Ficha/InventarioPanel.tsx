@@ -1627,6 +1627,9 @@ function SortableArmaItem({
   const compativeis = municoesHook?.getMunicoesCompativeis?.(arma.Nome_Item, arma.Categoria_Item) || [];
   const usaBalaLonga = compativeis.some((m: any) => m.Nome_Item?.toLowerCase().trim() === 'balas longas');
   const hasProficiencia = proficienciasTotais.includes(arma.Proficiencia) || (temMiraElite && usaBalaLonga);
+  if (arma.Nome_Item?.toLowerCase().includes('fuzil')) {
+    console.log('Inventario Fuzil', arma.Nome_Item, 'usaBalaLonga:', usaBalaLonga, 'temMiraElite:', temMiraElite, 'hasProf:', hasProficiencia);
+  }
   const [expandirMods, setExpandirMods] = useState(false);
     const [expandirMalds, setExpandirMalds] = useState(false);
 

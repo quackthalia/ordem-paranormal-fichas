@@ -1,0 +1,5606 @@
+[
+  {
+    "hash": "45f4d3d",
+    "author": "quackthalia",
+    "date": "2026-10-02 14:24:48 -0300",
+    "subject": "feat(trilhas): Automatiza trilha 6 Atirador de Elite (proficiencia e INT no dano de balas longas)"
+  },
+  {
+    "hash": "ffc0db6",
+    "author": "quackthalia",
+    "date": "2026-10-02 13:59:16 -0300",
+    "subject": "fix(trilhas): Corrige regex q falhou e aplica logs corretos no index.tsx para trilha 5"
+  },
+  {
+    "hash": "1aa94b2",
+    "author": "quackthalia",
+    "date": "2026-10-02 13:51:49 -0300",
+    "subject": "feat(trilhas): Automatiza trilha 5 Tropa de Choque (PV extra e bonus de Defesa/RD ao ficar Machucado em 99%)"
+  },
+  {
+    "hash": "11cab67",
+    "author": "quackthalia",
+    "date": "2026-10-02 13:43:26 -0300",
+    "subject": "fix(pericias): Corrige destruturacao de variaveis do useRPG na PericiasTable"
+  },
+  {
+    "hash": "2578b0c",
+    "author": "quackthalia",
+    "date": "2026-10-02 13:41:55 -0300",
+    "subject": "fix(context): Importa useEffect faltante em RPGContext"
+  },
+  {
+    "hash": "2e1bc1f",
+    "author": "quackthalia",
+    "date": "2026-10-02 13:39:44 -0300",
+    "subject": "feat(trilhas): Automatiza trilha 4 Operacoes Especiais e exibe badges de Auto/Semi para trilhas"
+  },
+  {
+    "hash": "1c80c79",
+    "author": "quackthalia",
+    "date": "2026-10-02 13:22:12 -0300",
+    "subject": "feat(trilhas): Limpa a arma favorita do Aniquilador automaticamente quando a trilha for desmarcada"
+  },
+  {
+    "hash": "c96f9fe",
+    "author": "quackthalia",
+    "date": "2026-10-02 13:17:32 -0300",
+    "subject": "feat(trilhas): Automatiza trilha 3 Guerreiro com reducao de margem de ameaca"
+  },
+  {
+    "hash": "3462e5e",
+    "author": "quackthalia",
+    "date": "2026-10-02 12:58:43 -0300",
+    "subject": "fix(armas): Predadora passa a usar margem base para duplicar margem de ameaca"
+  },
+  {
+    "hash": "5213220",
+    "author": "quackthalia",
+    "date": "2026-10-02 12:53:37 -0300",
+    "subject": "fix(inventario): Injeta calculo de dano extra no painel do inventario que havia sido ignorado"
+  },
+  {
+    "hash": "0af2dab",
+    "author": "quackthalia",
+    "date": "2026-10-02 11:29:19 -0300",
+    "subject": "fix(inventario): Corrige escopo da variavel aniquiladorNivel99 de forma limpa"
+  },
+  {
+    "hash": "9edcc5b",
+    "author": "quackthalia",
+    "date": "2026-10-02 11:25:31 -0300",
+    "subject": "fix(inventario): Corrige quebra de tela ao avaliar item inexistente no escopo errado"
+  },
+  {
+    "hash": "a2ae2db",
+    "author": "quackthalia",
+    "date": "2026-10-02 11:23:28 -0300",
+    "subject": "feat: Exibe dano extra e margem de ameaca reduzida da Arma Favorita do Aniquilador no painel de Inventario"
+  },
+  {
+    "hash": "2c63509",
+    "author": "quackthalia",
+    "date": "2026-10-02 11:21:39 -0300",
+    "subject": "fix(combate): Corrige referencia incorreta ao nex que impedia aumento de dano no nivel 99"
+  },
+  {
+    "hash": "cf3edbf",
+    "author": "quackthalia",
+    "date": "2026-10-02 11:16:23 -0300",
+    "subject": "style: Altera exibicao de Arma Favorita para ser apenas texto corrido no nome da arma, conforme solicitado"
+  },
+  {
+    "hash": "96b0be3",
+    "author": "quackthalia",
+    "date": "2026-10-02 11:13:43 -0300",
+    "subject": "style(inventario): Adiciona badge de Arma Favorita para facilitar a identificacao no inventario"
+  },
+  {
+    "hash": "6633a66",
+    "author": "quackthalia",
+    "date": "2026-10-02 11:12:21 -0300",
+    "subject": "fix(rpgRules): Corrige descontoFavorita ausente que impedia reducao de categoria"
+  },
+  {
+    "hash": "37df360",
+    "author": "quackthalia",
+    "date": "2026-10-02 11:09:57 -0300",
+    "subject": "style(trilhas): Altera estilo das informacoes da arma no modal para ficar igual ao do Inventario"
+  },
+  {
+    "hash": "34f1466",
+    "author": "quackthalia",
+    "date": "2026-10-02 11:07:23 -0300",
+    "subject": "style(trilhas): Exibe mais informacoes sobre cada arma no modal de Arma Favorita e aumenta largura"
+  },
+  {
+    "hash": "260091c",
+    "author": "quackthalia",
+    "date": "2026-10-02 11:05:59 -0300",
+    "subject": "fix(trilhas): Esconde Coronhada das opcoes de arma favorita"
+  },
+  {
+    "hash": "e939dee",
+    "author": "quackthalia",
+    "date": "2026-10-02 11:04:40 -0300",
+    "subject": "fix(trilhas): Exibe o modal de escolher arma favorita apos corrigir quebra de linha"
+  },
+  {
+    "hash": "146a38b",
+    "author": "quackthalia",
+    "date": "2026-10-02 11:01:40 -0300",
+    "subject": "fix(inventario): Passa armaFavId e isAniquilador para SortableArmaItem para corrigir erro"
+  },
+  {
+    "hash": "380c850",
+    "author": "quackthalia",
+    "date": "2026-10-02 10:56:44 -0300",
+    "subject": "style(trilhas): Desativa botao de escolher se requisito da trilha nao for cumprido, removendo alert"
+  },
+  {
+    "hash": "79310f7",
+    "author": "quackthalia",
+    "date": "2026-10-02 10:45:21 -0300",
+    "subject": "fix(trilhas): Aplica a validacao de arma no momento de escolher a trilha Aniquilador"
+  },
+  {
+    "hash": "de2f48f",
+    "author": "quackthalia",
+    "date": "2026-10-02 10:41:03 -0300",
+    "subject": "fix: Impede carregamento infinito no modal de trilhas"
+  },
+  {
+    "hash": "5fe4252",
+    "author": "quackthalia",
+    "date": "2026-10-02 10:27:14 -0300",
+    "subject": "feat(trilhas): Automatiza trilha 1 Aniquilador"
+  },
+  {
+    "hash": "ba285a3",
+    "author": "quackthalia",
+    "date": "2026-10-02 09:30:46 -0300",
+    "subject": "Diminuir padding e espacamento do bloco de condicoes, garantir que trilhas sempre venham fechadas ao serem selecionadas"
+  },
+  {
+    "hash": "dd8c789",
+    "author": "quackthalia",
+    "date": "2026-10-02 09:20:54 -0300",
+    "subject": "Corrigir renderização do bônus condicional usando regex para o replace que havia falhado silenciosamente"
+  },
+  {
+    "hash": "83b10c5",
+    "author": "quackthalia",
+    "date": "2026-10-02 09:16:43 -0300",
+    "subject": "Calcular bônus de +1d20 para profissoes da trilha de forma reativa (useMemo) em vez de setState, corrigindo problema no painel de dados"
+  },
+  {
+    "hash": "2eaec5e",
+    "author": "quackthalia",
+    "date": "2026-10-02 09:11:49 -0300",
+    "subject": "Corrigir crash ao remover trilha devido a fechamento de ref (closure bug)"
+  },
+  {
+    "hash": "9f7ba8d",
+    "author": "quackthalia",
+    "date": "2026-10-02 09:10:12 -0300",
+    "subject": "Corrigir erro ao ler toLowerCase de profissão vazia"
+  },
+  {
+    "hash": "66d196c",
+    "author": "quackthalia",
+    "date": "2026-10-02 09:07:27 -0300",
+    "subject": "Suporte a nova coluna Profissao_Pericia nas trilhas, auto-criando a sub-profissão caso não exista ou concedendo +1d20 se o jogador já tiver"
+  },
+  {
+    "hash": "4753949",
+    "author": "quackthalia",
+    "date": "2026-10-02 08:37:29 -0300",
+    "subject": "Corrigir bug de propagação de clique no modal de trilhas que fechava o bloco ao tentar ler uma habilidade"
+  },
+  {
+    "hash": "1171e95",
+    "author": "quackthalia",
+    "date": "2026-10-02 08:27:55 -0300",
+    "subject": "Adicionar animação suave (Collapse nativo) ao abrir e fechar a aba Outros nas defesas"
+  },
+  {
+    "hash": "ad8412c",
+    "author": "quackthalia",
+    "date": "2026-10-02 08:14:50 -0300",
+    "subject": "Ocultar seta de expansão quando profissão não está treinada e padronizar cores das sub-profissões com a tabela de perícias"
+  },
+  {
+    "hash": "c5f2ed5",
+    "author": "quackthalia",
+    "date": "2026-10-01 14:46:58 -0300",
+    "subject": "Mudar animação de ProfissaoRow de CSS Grid para max-height para corrigir bug de sobreposição de elementos durante a transição"
+  },
+  {
+    "hash": "55dba61",
+    "author": "quackthalia",
+    "date": "2026-10-01 14:28:48 -0300",
+    "subject": "Restaurar animações das linhas de profissão usando transição CSS Grid impecável"
+  },
+  {
+    "hash": "b972140",
+    "author": "quackthalia",
+    "date": "2026-10-01 14:25:41 -0300",
+    "subject": "Corrigir erro de sintaxe (div faltando) que quebrou a página"
+  },
+  {
+    "hash": "073dadf",
+    "author": "quackthalia",
+    "date": "2026-10-01 14:23:05 -0300",
+    "subject": "Remover qualquer tipo de animação das linhas internas de Profissão para garantir estabilidade absoluta e zero engasgos, mantendo a animação apenas no painel principal"
+  },
+  {
+    "hash": "c1b0ed6",
+    "author": "quackthalia",
+    "date": "2026-10-01 14:11:53 -0300",
+    "subject": "Corrigir script anterior que falhou silenciosamente, agora sim removendo o Framer Motion das linhas individuais e adicionando min-h-0 no Grid para impedir transbordamento"
+  },
+  {
+    "hash": "d49af10",
+    "author": "quackthalia",
+    "date": "2026-10-01 14:02:40 -0300",
+    "subject": "Remover Framer Motion por completo da tabela de perícias e substituí-lo por CSS Grid Nativo em componentes individuais, solucionando bugs insolúveis de medição de layout e engasgos"
+  },
+  {
+    "hash": "3bab864",
+    "author": "quackthalia",
+    "date": "2026-10-01 13:58:59 -0300",
+    "subject": "Otimizar Framer Motion usando startTransition do React 18 para as adições/remoções de profissões, liberando a thread principal e eliminando os engasgos"
+  },
+  {
+    "hash": "cdc1af0",
+    "author": "quackthalia",
+    "date": "2026-10-01 13:51:58 -0300",
+    "subject": "Corrigir falta de animação ao criar profissão primária permitindo que a TR permaneça no DOM para o CSS Grid transicionar corretamente"
+  },
+  {
+    "hash": "ce93ca1",
+    "author": "quackthalia",
+    "date": "2026-10-01 13:49:49 -0300",
+    "subject": "Automatizar painel de profissões: fecha e ignora totais ao zerar treino, auto-abre e injeta profissão primária sem dupla-animação ao treinar"
+  },
+  {
+    "hash": "9b232c9",
+    "author": "quackthalia",
+    "date": "2026-10-01 13:46:19 -0300",
+    "subject": "Remover animação do Framer Motion do painel principal (que causava glitch de medida de altura na tabela) e usar transição nativa de Grid, mantendo o fix do overflow"
+  },
+  {
+    "hash": "766b567",
+    "author": "quackthalia",
+    "date": "2026-10-01 13:43:38 -0300",
+    "subject": "Corrigir erro de compilação da tabela de perícias (variável undefined no uso do useMemo)"
+  },
+  {
+    "hash": "1623a40",
+    "author": "quackthalia",
+    "date": "2026-10-01 13:41:40 -0300",
+    "subject": "Corrigir lista suspensa presa nas sub-profissões (liberar overflow após a animação de cada linha individual)"
+  },
+  {
+    "hash": "f929ed4",
+    "author": "quackthalia",
+    "date": "2026-10-01 13:40:32 -0300",
+    "subject": "Otimizar cálculo de bônus de itens movendo-o para fora do map (memoization), resolvendo travamentos graves ao clicar em botões da tabela"
+  },
+  {
+    "hash": "984435b",
+    "author": "quackthalia",
+    "date": "2026-10-01 13:38:43 -0300",
+    "subject": "Remover useEffect fantasma"
+  },
+  {
+    "hash": "5727184",
+    "author": "quackthalia",
+    "date": "2026-10-01 13:36:42 -0300",
+    "subject": "Otimizar animação de expansão da Profissão para evitar re-renderizações (engasgos) usando manipulação de DOM direta"
+  },
+  {
+    "hash": "b08d86f",
+    "author": "quackthalia",
+    "date": "2026-10-01 13:35:10 -0300",
+    "subject": "Corrigir sobreposição do painel principal da profissão usando animação direta do framer-motion"
+  },
+  {
+    "hash": "fb6bf89",
+    "author": "quackthalia",
+    "date": "2026-10-01 13:32:15 -0300",
+    "subject": "Trocar auto-animate por framer-motion para animações de Profissão perfeitas, e impedir criação de novas se o limite de treinadas já foi atingido"
+  },
+  {
+    "hash": "1ae2f60",
+    "author": "quackthalia",
+    "date": "2026-10-01 13:24:41 -0300",
+    "subject": "Restaurar biblioteca auto-animate mantendo os fixes de animação da grid"
+  },
+  {
+    "hash": "8cd28a0",
+    "author": "quackthalia",
+    "date": "2026-10-01 13:23:38 -0300",
+    "subject": "Corrigir animação de expansão e botão adicionar"
+  },
+  {
+    "hash": "ba66351",
+    "author": "quackthalia",
+    "date": "2026-10-01 13:22:16 -0300",
+    "subject": "Adicionar auto-animate na lista de profissões"
+  },
+  {
+    "hash": "64e0659",
+    "author": "quackthalia",
+    "date": "2026-10-01 13:18:21 -0300",
+    "subject": "Corrigir bugs de limites na Profissão: não estava validando as sub-profissões nem calculando corretamente por erro de encoding"
+  },
+  {
+    "hash": "1f3d301",
+    "author": "quackthalia",
+    "date": "2026-10-01 13:15:12 -0300",
+    "subject": "Corrigir bugs na profissão (dropdown cortado, perda de foco ao digitar, e cor da label)"
+  },
+  {
+    "hash": "1776fb8",
+    "author": "quackthalia",
+    "date": "2026-10-01 13:11:06 -0300",
+    "subject": "Corrigir variavel de estado não definida (editingProfIndex)"
+  },
+  {
+    "hash": "ffbc48c",
+    "author": "quackthalia",
+    "date": "2026-10-01 13:09:58 -0300",
+    "subject": "Fazer nome da profissão virar texto fixo (span) ao dar enter ou perder foco"
+  },
+  {
+    "hash": "a272588",
+    "author": "quackthalia",
+    "date": "2026-10-01 13:08:07 -0300",
+    "subject": "Fazer enter apenas tirar o foco e deixar o input invisível quando não focado"
+  },
+  {
+    "hash": "ada7567",
+    "author": "quackthalia",
+    "date": "2026-10-01 13:06:37 -0300",
+    "subject": "Adicionar animação e tecla Enter na lista de Profissão"
+  },
+  {
+    "hash": "023d067",
+    "author": "quackthalia",
+    "date": "2026-10-01 13:03:12 -0300",
+    "subject": "Corrigir encoding corrompido de Profissão em PericiasTable"
+  },
+  {
+    "hash": "ab74893",
+    "author": "quackthalia",
+    "date": "2026-10-01 13:01:02 -0300",
+    "subject": "Adiciona funcionalidade de múltiplas profissões na tabela de perícias"
+  },
+  {
+    "hash": "a6498c8",
+    "author": "quackthalia",
+    "date": "2026-10-01 10:05:25 -0300",
+    "subject": "Mover campo Resistência para antes do campo Dano"
+  },
+  {
+    "hash": "84dcdab",
+    "author": "quackthalia",
+    "date": "2026-10-01 10:03:54 -0300",
+    "subject": "Reorganizar layout da arma: Proficiência e Tipo lado a lado, Resistência movida para baixo de Espaços"
+  },
+  {
+    "hash": "177879e",
+    "author": "quackthalia",
+    "date": "2026-10-01 10:00:55 -0300",
+    "subject": "Remover campo DT das armas (unificado na Resistência)"
+  },
+  {
+    "hash": "6a2ae1a",
+    "author": "quackthalia",
+    "date": "2026-10-01 09:58:44 -0300",
+    "subject": "Mudar placeholder do campo Resistência nas Armas"
+  },
+  {
+    "hash": "96068b8",
+    "author": "quackthalia",
+    "date": "2026-10-01 09:57:23 -0300",
+    "subject": "Adicionar campo de Resistência (Resistencia_Item) para Armas e exibi-lo no Inventário e Combate"
+  },
+  {
+    "hash": "b8f69d2",
+    "author": "quackthalia",
+    "date": "2026-10-01 09:52:06 -0300",
+    "subject": "Mesclar criação de Itens Operacionais e Recursos em um único botão e modal e forçar ocultação de labels Final em armas novas"
+  },
+  {
+    "hash": "b14e4a7",
+    "author": "quackthalia",
+    "date": "2026-10-01 09:45:46 -0300",
+    "subject": "Corrigir acesso às propriedades retornadas por calcularAtributosArmaFinais para não mostrar labels Final: undefined"
+  },
+  {
+    "hash": "1dc81cf",
+    "author": "quackthalia",
+    "date": "2026-10-01 09:42:02 -0300",
+    "subject": "Corrigir título do modal para armas amaldiçoadas"
+  },
+  {
+    "hash": "6e00f67",
+    "author": "quackthalia",
+    "date": "2026-10-01 09:34:36 -0300",
+    "subject": "Corrigir propriedades do objeto vazio de Arma e prevenir event bubbling no modal de escolha"
+  },
+  {
+    "hash": "45bd6d6",
+    "author": "quackthalia",
+    "date": "2026-10-01 09:28:56 -0300",
+    "subject": "Alterar título dos modais de edição para Criar dinamicamente"
+  },
+  {
+    "hash": "65aea3d",
+    "author": "quackthalia",
+    "date": "2026-10-01 09:25:08 -0300",
+    "subject": "Corrigir injeção dos modais de criação no InventarioPanel"
+  },
+  {
+    "hash": "480340c",
+    "author": "quackthalia",
+    "date": "2026-10-01 09:18:48 -0300",
+    "subject": "Adicionar botão Criar em cada aba do inventário com modal de criação customizado"
+  },
+  {
+    "hash": "a688cdc",
+    "author": "quackthalia",
+    "date": "2026-10-01 09:13:25 -0300",
+    "subject": "Corrigir layout dos filtros no Modal de Proteções"
+  },
+  {
+    "hash": "e24baa0",
+    "author": "quackthalia",
+    "date": "2026-10-01 09:12:05 -0300",
+    "subject": "Trocar filtro de Proficiência no Modal de Proteções para CustomSelect"
+  },
+  {
+    "hash": "0a2d572",
+    "author": "quackthalia",
+    "date": "2026-10-01 09:11:13 -0300",
+    "subject": "Definir Armas como a aba padrão do Modal Unificado"
+  },
+  {
+    "hash": "7d01551",
+    "author": "quackthalia",
+    "date": "2026-10-01 08:58:27 -0300",
+    "subject": "Remover alert de sucesso ao adicionar item amaldiçoado"
+  },
+  {
+    "hash": "9f1b7f5",
+    "author": "quackthalia",
+    "date": "2026-10-01 08:56:27 -0300",
+    "subject": "Alterar abas do Modal Unificado para scroll horizontal ao invés de wrap"
+  },
+  {
+    "hash": "f649b84",
+    "author": "quackthalia",
+    "date": "2026-10-01 08:48:13 -0300",
+    "subject": "Corrigir isEmbedded faltante em Munições e Amaldiçoados e adicionar sub-abas ao Modal Unificado"
+  },
+  {
+    "hash": "f22d46c",
+    "author": "quackthalia",
+    "date": "2026-10-01 08:43:44 -0300",
+    "subject": "Corrigir botões e modais ausentes após o replace"
+  },
+  {
+    "hash": "61552b4",
+    "author": "quackthalia",
+    "date": "2026-10-01 08:39:10 -0300",
+    "subject": "Adicionar botão + Adicionar de volta à aba de Itens Gerais"
+  },
+  {
+    "hash": "91f3148",
+    "author": "quackthalia",
+    "date": "2026-10-01 08:24:36 -0300",
+    "subject": "Corrigir erros de sintaxe no JSX dos modais e do painel de inventário causados pelo replace"
+  },
+  {
+    "hash": "61e1b64",
+    "author": "quackthalia",
+    "date": "2026-10-01 08:22:14 -0300",
+    "subject": "Limitar o Modal Unificado apenas à aba de Itens Gerais e restaurar modais específicos para outras abas do inventário"
+  },
+  {
+    "hash": "17842f9",
+    "author": "quackthalia",
+    "date": "2026-10-01 07:51:40 -0300",
+    "subject": "Criar modal unificado de inventário com abas (Armas, Proteções, Itens Gerais, etc) e adicionar botão na aba Geral"
+  },
+  {
+    "hash": "0ec4528",
+    "author": "quackthalia",
+    "date": "2026-10-01 07:45:34 -0300",
+    "subject": "Corrigir erro de referência de limiteCirculo no modal de Rituais Extra"
+  },
+  {
+    "hash": "bfad2d0",
+    "author": "quackthalia",
+    "date": "2026-10-01 07:44:36 -0300",
+    "subject": "Corrigir loop infinito da automação de PE temporário do Agente de Nascença que impedia o usuário de desativar o bônus"
+  },
+  {
+    "hash": "cb4e159",
+    "author": "quackthalia",
+    "date": "2026-10-01 07:41:23 -0300",
+    "subject": "Padronizar design do modal de Escolher Ritual Extra para ficar idêntico ao modal principal de rituais"
+  },
+  {
+    "hash": "7cc46d8",
+    "author": "quackthalia",
+    "date": "2026-10-01 07:21:53 -0300",
+    "subject": "Adicionar botões de confirmação nos modais de Função Adicional e Aprimorar Perícia"
+  },
+  {
+    "hash": "d876244",
+    "author": "quackthalia",
+    "date": "2026-10-01 07:18:34 -0300",
+    "subject": "Refatorar visual do modal de Aprimorar Perícia seguindo o novo padrão do sistema"
+  },
+  {
+    "hash": "6968bd4",
+    "author": "quackthalia",
+    "date": "2026-09-30 16:34:33 -0300",
+    "subject": "Remover overflow-hidden do modal de Função Adicional para permitir que a lista suspensa vaze para fora"
+  },
+  {
+    "hash": "56bff92",
+    "author": "quackthalia",
+    "date": "2026-09-30 16:32:21 -0300",
+    "subject": "Corrigir fechamento acidental do modal de Função Adicional ao interagir com a lista suspensa"
+  },
+  {
+    "hash": "28eeaea",
+    "author": "quackthalia",
+    "date": "2026-09-30 15:11:43 -0300",
+    "subject": "Refatorar visual do modal de Função Adicional e aplicar correção de clique do CustomSelect"
+  },
+  {
+    "hash": "af53304",
+    "author": "quackthalia",
+    "date": "2026-09-30 15:07:47 -0300",
+    "subject": "Restaurar checkbox de equipar em tamanho reduzido ao invés do botão textual"
+  },
+  {
+    "hash": "9dc77b6",
+    "author": "quackthalia",
+    "date": "2026-09-30 15:02:31 -0300",
+    "subject": "Refatorar botão de equipar para incluir proteções e melhorar o design"
+  },
+  {
+    "hash": "fd4e3e3",
+    "author": "quackthalia",
+    "date": "2026-09-30 14:57:31 -0300",
+    "subject": "Corrigir botão de equipar para suportar proteções e melhorar design; Remover exigência de estar equipado para utensílios"
+  },
+  {
+    "hash": "d03cbff",
+    "author": "quackthalia",
+    "date": "2026-09-30 14:44:37 -0300",
+    "subject": "Corrigir interceptação de cliques no CustomSelect dentro de modais adicionando onPointerDown"
+  },
+  {
+    "hash": "7b97731",
+    "author": "quackthalia",
+    "date": "2026-09-30 14:38:01 -0300",
+    "subject": "Corrigir menu suspenso de perícia que não abria ao adicionar Utensílios e Vestimentas (removido overflow-hidden dos cards)"
+  },
+  {
+    "hash": "f44a570",
+    "author": "quackthalia",
+    "date": "2026-09-30 14:33:37 -0300",
+    "subject": "Corrigir acúmulo de bônus de itens para voltar a somar todos os valores, mantendo correção dos itens amaldiçoados"
+  },
+  {
+    "hash": "2f7ae31",
+    "author": "quackthalia",
+    "date": "2026-09-30 14:29:30 -0300",
+    "subject": "Fix: Utensílios and Vestimentas bonus logic in Pericias"
+  },
+  {
+    "hash": "3d0e832",
+    "author": "quackthalia",
+    "date": "2026-09-30 14:23:27 -0300",
+    "subject": "UI: Revert Pericias rules panel to exact original design"
+  },
+  {
+    "hash": "79d9af5",
+    "author": "quackthalia",
+    "date": "2026-09-30 14:22:14 -0300",
+    "subject": "UI: Restore thick sleek design for Pericias rules panel"
+  },
+  {
+    "hash": "3599537",
+    "author": "quackthalia",
+    "date": "2026-09-30 14:20:46 -0300",
+    "subject": "UI: Restore thin full-width layout for Pericias rules panel"
+  },
+  {
+    "hash": "495ca86",
+    "author": "quackthalia",
+    "date": "2026-09-30 14:17:38 -0300",
+    "subject": "UI: Revert Pericias rules panel back to full width layout"
+  },
+  {
+    "hash": "94b8d7c",
+    "author": "quackthalia",
+    "date": "2026-09-30 14:16:19 -0300",
+    "subject": "UI: Standardize rules panel design across Attributes and Skills"
+  },
+  {
+    "hash": "24c08bb",
+    "author": "quackthalia",
+    "date": "2026-09-30 14:13:51 -0300",
+    "subject": "UI: Refine layout to prevent overlapping and remove duplicate panel"
+  },
+  {
+    "hash": "57b6cd0",
+    "author": "quackthalia",
+    "date": "2026-09-30 13:46:39 -0300",
+    "subject": "Fix: JSX syntax error in PericiasTable"
+  },
+  {
+    "hash": "35304a0",
+    "author": "quackthalia",
+    "date": "2026-09-30 12:45:32 -0300",
+    "subject": "chore: remove scripts"
+  },
+  {
+    "hash": "d8ee211",
+    "author": "quackthalia",
+    "date": "2026-09-30 12:45:21 -0300",
+    "subject": "UI: Refine rules placement and animation"
+  },
+  {
+    "hash": "c3e3a9a",
+    "author": "quackthalia",
+    "date": "2026-09-30 12:40:03 -0300",
+    "subject": "UI: Replace gear emoji with SVG icon"
+  },
+  {
+    "hash": "dd68baf",
+    "author": "quackthalia",
+    "date": "2026-09-30 12:38:51 -0300",
+    "subject": "UI: Hide rules configuration behind gear buttons for cleaner layout"
+  },
+  {
+    "hash": "9b698ea",
+    "author": "quackthalia",
+    "date": "2026-09-30 10:54:07 -0300",
+    "subject": "Fix: Clear isLivre flag when editing skill in rules mode"
+  },
+  {
+    "hash": "de45ff4",
+    "author": "quackthalia",
+    "date": "2026-09-30 10:51:44 -0300",
+    "subject": "Feat: Ensure free mode edits do not negatively impact rule-based limits"
+  },
+  {
+    "hash": "a23eb2f",
+    "author": "quackthalia",
+    "date": "2026-09-30 10:42:56 -0300",
+    "subject": "Fix: Restore missing closing tags from bad regex replace"
+  },
+  {
+    "hash": "cc04f39",
+    "author": "quackthalia",
+    "date": "2026-09-30 10:37:22 -0300",
+    "subject": "Feat: Separate attribute rules toggle from skill rules toggle"
+  },
+  {
+    "hash": "139f3de",
+    "author": "quackthalia",
+    "date": "2026-09-30 10:36:17 -0300",
+    "subject": "Fix: Bulletproof attribute clamp logic"
+  },
+  {
+    "hash": "2e222df",
+    "author": "quackthalia",
+    "date": "2026-09-30 10:32:45 -0300",
+    "subject": "Fix: Clamp attribute input values automatically when rules are active"
+  },
+  {
+    "hash": "182787f",
+    "author": "quackthalia",
+    "date": "2026-09-30 10:30:43 -0300",
+    "subject": "Fix: Make Ficha attributes freely typable again while still counting points"
+  },
+  {
+    "hash": "54dbd89",
+    "author": "quackthalia",
+    "date": "2026-09-30 10:18:38 -0300",
+    "subject": "Feat: Add attribute points limits and controls to character sheet"
+  },
+  {
+    "hash": "3ce420f",
+    "author": "quackthalia",
+    "date": "2026-09-25 16:05:32 -0300",
+    "subject": "Fix: add trim() to elemento matching in getSimboloUrl for robustness"
+  },
+  {
+    "hash": "706af19",
+    "author": "quackthalia",
+    "date": "2026-09-25 16:05:09 -0300",
+    "subject": "Fix variable hoisting in ModalRituaisExtra and clean up AbasPanel"
+  },
+  {
+    "hash": "935871b",
+    "author": "quackthalia",
+    "date": "2026-09-25 15:57:24 -0300",
+    "subject": "Feat: Add support for varying ritual images based on chosen element"
+  },
+  {
+    "hash": "1dbc828",
+    "author": "quackthalia",
+    "date": "2026-09-25 15:16:20 -0300",
+    "subject": "UI: Remove element badge from powers like Ritual Predileto"
+  },
+  {
+    "hash": "02cbc00",
+    "author": "quackthalia",
+    "date": "2026-09-25 15:14:07 -0300",
+    "subject": "UI: Refactor ModalEscolherRitualAprendido to show full ritual cards like ModalRituais"
+  },
+  {
+    "hash": "fbb67b7",
+    "author": "quackthalia",
+    "date": "2026-09-25 15:10:32 -0300",
+    "subject": "Fix Ritual Predileto applying ritual name as element instead of actual ritual element"
+  },
+  {
+    "hash": "a775f23",
+    "author": "quackthalia",
+    "date": "2026-09-25 14:45:27 -0300",
+    "subject": "Fix AS source filter matching in Modals"
+  },
+  {
+    "hash": "15f4e18",
+    "author": "quackthalia",
+    "date": "2026-09-25 14:43:35 -0300",
+    "subject": "Fix z-index of filters Collapse in ModalItensAmaldicoados"
+  },
+  {
+    "hash": "346858a",
+    "author": "quackthalia",
+    "date": "2026-09-25 14:41:50 -0300",
+    "subject": "UI: Restore CustomSelect hover effects while keeping dropdown container fully opaque"
+  },
+  {
+    "hash": "6a12803",
+    "author": "quackthalia",
+    "date": "2026-09-25 13:35:29 -0300",
+    "subject": "UI: Ensure 100% opacity on all CustomSelect items and container"
+  },
+  {
+    "hash": "c2d3326",
+    "author": "quackthalia",
+    "date": "2026-09-25 13:33:14 -0300",
+    "subject": "UI: Make filter wrappers in Modals 100% opaque"
+  },
+  {
+    "hash": "fa7bf47",
+    "author": "quackthalia",
+    "date": "2026-09-25 12:57:38 -0300",
+    "subject": "UI: Increase contrast of CustomSelect dropdown"
+  },
+  {
+    "hash": "ffe9a6f",
+    "author": "quackthalia",
+    "date": "2026-09-25 12:55:08 -0300",
+    "subject": "UI: Make CustomSelect dropdown fully opaque"
+  },
+  {
+    "hash": "3af0c25",
+    "author": "quackthalia",
+    "date": "2026-09-25 12:52:41 -0300",
+    "subject": "Fix JSX syntax error in AbasPanel.tsx"
+  },
+  {
+    "hash": "ad1c7a5",
+    "author": "quackthalia",
+    "date": "2026-09-25 10:48:46 -0300",
+    "subject": "Fix Dedo Decepado source label, sync removal, and multi-element Resistance RD calculation"
+  },
+  {
+    "hash": "7c54902",
+    "author": "quackthalia",
+    "date": "2026-09-25 10:35:50 -0300",
+    "subject": "Fix: Actually apply the regex replacement for '<Elemento>' in Dedo Decepado creation"
+  },
+  {
+    "hash": "9a83822",
+    "author": "quackthalia",
+    "date": "2026-09-25 10:33:41 -0300",
+    "subject": "Fix: Replace '<Elemento>' with chosen element in Dedo Decepado name and align badge"
+  },
+  {
+    "hash": "3536633",
+    "author": "quackthalia",
+    "date": "2026-09-25 10:25:39 -0300",
+    "subject": "Fix: Resolve undefined variable 'fonteCustom' in usePoderes"
+  },
+  {
+    "hash": "e4b0fd4",
+    "author": "quackthalia",
+    "date": "2026-09-25 10:23:54 -0300",
+    "subject": "UI: Render 'DEDO DECEPADO' in ModalPoderes title when picking a power for the cursed item"
+  },
+  {
+    "hash": "d170a70",
+    "author": "quackthalia",
+    "date": "2026-09-25 10:20:49 -0300",
+    "subject": "Fix: Add missing React state declaration for 'filtroFonte' in inventory modals"
+  },
+  {
+    "hash": "573eff3",
+    "author": "quackthalia",
+    "date": "2026-09-25 10:19:18 -0300",
+    "subject": "Fix: Resolve JSX parsing error in inventory modals caused by duplicate elements"
+  },
+  {
+    "hash": "b694024",
+    "author": "quackthalia",
+    "date": "2026-09-25 10:18:07 -0300",
+    "subject": "Fix: Remove duplicate hook declaration causing Vite 500 internal server error"
+  },
+  {
+    "hash": "8726766",
+    "author": "quackthalia",
+    "date": "2026-09-25 10:16:03 -0300",
+    "subject": "UI: Reduce header size in Inventario Geral to match other subcategories"
+  },
+  {
+    "hash": "e901335",
+    "author": "quackthalia",
+    "date": "2026-09-25 10:15:17 -0300",
+    "subject": "Fix: Shrink 'Filtros' button size and add full Fonte filter (OPRPG, SaH, AS, Homebrew) to all inventory modals"
+  },
+  {
+    "hash": "667263d",
+    "author": "quackthalia",
+    "date": "2026-09-25 10:11:50 -0300",
+    "subject": "Feat: Dedo Decepado cursed item opens power selection modal on add. Sets Sanity cost to 0, sets Element to chosen power, sets name to 'Dedo Decepado (Power)', and Power source to 'Dedo Decepado'"
+  },
+  {
+    "hash": "bc96ab2",
+    "author": "quackthalia",
+    "date": "2026-09-25 10:03:00 -0300",
+    "subject": "Fix: Replace expand emojis with standard SVG caret in SortableItemAmaldicoado"
+  },
+  {
+    "hash": "20f5a51",
+    "author": "quackthalia",
+    "date": "2026-09-25 10:00:14 -0300",
+    "subject": "Fix: Sort items in ModalItensAmaldicoados by Element (Sangue > Morte > Conhecimento > Energia > Medo > Varia) and then alphabetically"
+  },
+  {
+    "hash": "c055433",
+    "author": "quackthalia",
+    "date": "2026-09-25 09:59:33 -0300",
+    "subject": "Fix: Render 'Filtros' button and advanced filters panel in ModalItensAmaldicoados"
+  },
+  {
+    "hash": "a873ecf",
+    "author": "quackthalia",
+    "date": "2026-09-25 09:55:25 -0300",
+    "subject": "Feat: Display 'Fonte' inside inventory blocks for Armas, Municoes, Protecoes and Itens Amaldicoados"
+  },
+  {
+    "hash": "9d8db34",
+    "author": "quackthalia",
+    "date": "2026-09-25 09:25:54 -0300",
+    "subject": "Feat: Show form names (Desamparado/Conectado) from Especial_Arma in multi-form weapon dropdown"
+  },
+  {
+    "hash": "6ac1528",
+    "author": "quackthalia",
+    "date": "2026-09-25 09:24:37 -0300",
+    "subject": "Feat: Multi-form weapons (|) now correctly separate damage type and secondary damage per form (Gancho do Bisão)"
+  },
+  {
+    "hash": "2aee58b",
+    "author": "quackthalia",
+    "date": "2026-09-25 09:14:44 -0300",
+    "subject": "Fix: Ignore Dupla Obsessiva companion in InventarioPanel limit counters"
+  },
+  {
+    "hash": "e69bed2",
+    "author": "quackthalia",
+    "date": "2026-09-25 09:13:24 -0300",
+    "subject": "Feat: Ensure Dupla Obsessiva companion weapon is ignored in space and category calculations"
+  },
+  {
+    "hash": "20031f0",
+    "author": "quackthalia",
+    "date": "2026-09-25 09:10:21 -0300",
+    "subject": "Fix: Correct lookup path for linked deletion of Dupla Obsessiva in inventory"
+  },
+  {
+    "hash": "101949b",
+    "author": "quackthalia",
+    "date": "2026-09-25 09:01:51 -0300",
+    "subject": "Fix: Map secondary damage for linked Cursed Weapons (e.g. Dupla Obsessiva companion) when automatically pushed"
+  },
+  {
+    "hash": "af1f4e5",
+    "author": "quackthalia",
+    "date": "2026-09-25 08:55:19 -0300",
+    "subject": "Fix: Prevent 'Inventário vazio' message from showing when user has cursed items"
+  },
+  {
+    "hash": "d9224ac",
+    "author": "quackthalia",
+    "date": "2026-09-25 08:54:21 -0300",
+    "subject": "Fix: Change confusing 'poder paranormal' text to 'modificações' in item edit modals"
+  },
+  {
+    "hash": "2abe7fe",
+    "author": "quackthalia",
+    "date": "2026-09-25 08:53:31 -0300",
+    "subject": "Fix: Restore missing damage inputs in ModalEditarArma and auto-assign secondary damage type"
+  },
+  {
+    "hash": "cbcf8f8",
+    "author": "quackthalia",
+    "date": "2026-09-25 08:40:30 -0300",
+    "subject": "Fix: Sort parsed damage array to show dice before flat bonuses"
+  },
+  {
+    "hash": "284d236",
+    "author": "quackthalia",
+    "date": "2026-09-25 08:39:40 -0300",
+    "subject": "Fix: Include Dano Secundário in the compact damage header on CombatePanel"
+  },
+  {
+    "hash": "4d531af",
+    "author": "quackthalia",
+    "date": "2026-09-25 08:29:35 -0300",
+    "subject": "Fix: Map Dano-Arma_Sec to Dano_Secundario for cursed weapons from DB"
+  },
+  {
+    "hash": "a86bd42",
+    "author": "quackthalia",
+    "date": "2026-09-25 07:53:44 -0300",
+    "subject": "Fix: Remove debug block from CombatePanel"
+  },
+  {
+    "hash": "5c24b1e",
+    "author": "quackthalia",
+    "date": "2026-09-25 07:53:10 -0300",
+    "subject": "Feat: Add Tipo Secundário dropdown to ModalEditarArma to allow explicit definition of secondary damage types"
+  },
+  {
+    "hash": "08ac355",
+    "author": "quackthalia",
+    "date": "2026-09-24 15:39:01 -0300",
+    "subject": "Fix: Fallback secondary damage type to the weapon's element if it's a cursed weapon"
+  },
+  {
+    "hash": "aa7308b",
+    "author": "quackthalia",
+    "date": "2026-09-24 15:26:57 -0300",
+    "subject": "Fix: Apply secondary damage type to secondary dice roll in damage string if slash is present"
+  },
+  {
+    "hash": "41645ed",
+    "author": "quackthalia",
+    "date": "2026-09-24 15:16:06 -0300",
+    "subject": "Feat: Support separate damage types for primary and secondary damage if separated by slash"
+  },
+  {
+    "hash": "4997c22",
+    "author": "quackthalia",
+    "date": "2026-09-24 14:53:56 -0300",
+    "subject": "Fix: Properly restore auto-close on drag start"
+  },
+  {
+    "hash": "bc8398d",
+    "author": "quackthalia",
+    "date": "2026-09-24 14:52:32 -0300",
+    "subject": "Fix: Restore auto-close on drag and use hidden className to instantly hide Collapse"
+  },
+  {
+    "hash": "633087a",
+    "author": "quackthalia",
+    "date": "2026-09-24 14:44:19 -0300",
+    "subject": "Fix: Stop inventory items from auto-closing when drag starts to prevent glitchy animation"
+  },
+  {
+    "hash": "ca469da",
+    "author": "quackthalia",
+    "date": "2026-09-24 14:42:22 -0300",
+    "subject": "Fix: Drag overlay preserving item expanded state during drag"
+  },
+  {
+    "hash": "5c66ce4",
+    "author": "quackthalia",
+    "date": "2026-09-24 14:38:43 -0300",
+    "subject": "Feat: Add innate Arma Improvisada property to A Antena"
+  },
+  {
+    "hash": "5bc8615",
+    "author": "quackthalia",
+    "date": "2026-09-24 14:36:21 -0300",
+    "subject": "UI: Color badge close button based on element"
+  },
+  {
+    "hash": "addf124",
+    "author": "quackthalia",
+    "date": "2026-09-24 14:34:44 -0300",
+    "subject": "UI: Remove redundant element display in ModalAntena footer"
+  },
+  {
+    "hash": "6d9e8c3",
+    "author": "quackthalia",
+    "date": "2026-09-24 14:26:59 -0300",
+    "subject": "UI: Refine A Antena element colors for badge in inventory and remove bold font"
+  },
+  {
+    "hash": "27b9503",
+    "author": "quackthalia",
+    "date": "2026-09-24 14:23:13 -0300",
+    "subject": "Fix: Change combat ammo label dynamically and remove 'Ritual:' prefix from text"
+  },
+  {
+    "hash": "c590a61",
+    "author": "quackthalia",
+    "date": "2026-09-24 14:21:44 -0300",
+    "subject": "Fix: Adjust A Antena modal height to be strictly 85vh and move element color to a tag"
+  },
+  {
+    "hash": "9447c86",
+    "author": "quackthalia",
+    "date": "2026-09-24 14:16:27 -0300",
+    "subject": "Feat: Complete A Antena mechanics, custom modal, and visual feedback"
+  },
+  {
+    "hash": "b59d94a",
+    "author": "quackthalia",
+    "date": "2026-09-24 14:10:37 -0300",
+    "subject": "Fix: Resolve TypeError in modal rendering by properly matching base Ritual to RitualAprendido"
+  },
+  {
+    "hash": "4889c12",
+    "author": "quackthalia",
+    "date": "2026-09-24 13:56:03 -0300",
+    "subject": "Fix: Add missing rituaisHook destructuring in InventarioPanel to prevent ReferenceError when modal opens"
+  },
+  {
+    "hash": "2e52013",
+    "author": "quackthalia",
+    "date": "2026-09-24 13:28:25 -0300",
+    "subject": "chore: add debug alerts for A Antena click"
+  },
+  {
+    "hash": "dbf4502",
+    "author": "quackthalia",
+    "date": "2026-09-24 13:20:22 -0300",
+    "subject": "Fix: Trim weapon name check for A Antena to prevent fallback to Municao modal"
+  },
+  {
+    "hash": "c16b5a9",
+    "author": "quackthalia",
+    "date": "2026-09-24 12:43:27 -0300",
+    "subject": "Fix: Render ritual button for A Antena despite being Melee"
+  },
+  {
+    "hash": "bf4dce0",
+    "author": "quackthalia",
+    "date": "2026-09-24 12:40:38 -0300",
+    "subject": "Feat: Add Ritual selection modal for A Antena and +3 DT passive bonus"
+  },
+  {
+    "hash": "3ff16fc",
+    "author": "quackthalia",
+    "date": "2026-09-24 10:29:25 -0300",
+    "subject": "Fix: Mira Telescópica accent bug in InventarioPanel"
+  },
+  {
+    "hash": "8b6f96b",
+    "author": "quackthalia",
+    "date": "2026-09-24 10:24:30 -0300",
+    "subject": "Fix: Ignore category cost for factory mods on Fuzil Alheio and apply them retroactively"
+  },
+  {
+    "hash": "a9cb509",
+    "author": "quackthalia",
+    "date": "2026-09-24 10:17:22 -0300",
+    "subject": "Fix: Remove +Munição button from Fuzil Alheio"
+  },
+  {
+    "hash": "56d6990",
+    "author": "quackthalia",
+    "date": "2026-09-24 10:14:54 -0300",
+    "subject": "Fix: Remove +Munição button from Arcabuz dos Moretti in Combat Panel"
+  },
+  {
+    "hash": "73b574b",
+    "author": "quackthalia",
+    "date": "2026-09-24 10:13:23 -0300",
+    "subject": "Fix: Render 'Veja Texto' for Arcabuz dos Moretti damage in inventory"
+  },
+  {
+    "hash": "5adc892",
+    "author": "quackthalia",
+    "date": "2026-09-24 10:12:02 -0300",
+    "subject": "Fix: Remove +Munição button from Arcabuz dos Moretti"
+  },
+  {
+    "hash": "80b8d7a",
+    "author": "quackthalia",
+    "date": "2026-09-24 10:08:27 -0300",
+    "subject": "Style: Match amaldiçoados element header EXACTLY with rituals"
+  },
+  {
+    "hash": "c038bc5",
+    "author": "quackthalia",
+    "date": "2026-09-24 10:06:44 -0300",
+    "subject": "Style: Match weapon border colors with cursed elements"
+  },
+  {
+    "hash": "7c15e06",
+    "author": "quackthalia",
+    "date": "2026-09-24 10:04:50 -0300",
+    "subject": "Feat: Group Amaldiçoados by Element in Inventory"
+  },
+  {
+    "hash": "c9c8c0e",
+    "author": "quackthalia",
+    "date": "2026-09-24 10:02:41 -0300",
+    "subject": "Style: Update Amaldiçoados subcategory headers to match standard UI pattern"
+  },
+  {
+    "hash": "aedf2b1",
+    "author": "quackthalia",
+    "date": "2026-09-24 09:39:09 -0300",
+    "subject": "Fix: Change Punhos Enraivecidos damage type to Sangue"
+  },
+  {
+    "hash": "65903e7",
+    "author": "quackthalia",
+    "date": "2026-09-24 09:38:37 -0300",
+    "subject": "Fix: Add +2 attack bonus for Punhos Enraivecidos and Arcabuz dos Moretti"
+  },
+  {
+    "hash": "21e8c03",
+    "author": "quackthalia",
+    "date": "2026-09-24 08:40:16 -0300",
+    "subject": "Hotfix: Remove extra brace left by regex replacement"
+  },
+  {
+    "hash": "eae39fa",
+    "author": "quackthalia",
+    "date": "2026-09-24 08:33:12 -0300",
+    "subject": "Hotfix: Make Punhos Enraivecidos name matching bulletproof (case-insensitive and trim)"
+  },
+  {
+    "hash": "5527a6a",
+    "author": "quackthalia",
+    "date": "2026-09-24 08:16:03 -0300",
+    "subject": "Fix: Annul Artista Marcial completely when using Punhos Enraivecidos"
+  },
+  {
+    "hash": "3c4de30",
+    "author": "quackthalia",
+    "date": "2026-09-24 07:51:37 -0300",
+    "subject": "Feat: Override Ataque Desarmado with Punhos Enraivecidos correctly"
+  },
+  {
+    "hash": "a03e9c8",
+    "author": "quackthalia",
+    "date": "2026-09-24 07:46:03 -0300",
+    "subject": "Hotfix: Fix missing import and property name in InventarioPanel"
+  },
+  {
+    "hash": "f5cb527",
+    "author": "quackthalia",
+    "date": "2026-09-24 07:38:35 -0300",
+    "subject": "Hotfix: Remove duplicated const declarations in InventarioPanel"
+  },
+  {
+    "hash": "7ca191f",
+    "author": "quackthalia",
+    "date": "2026-09-24 07:03:43 -0300",
+    "subject": "Hotfix: Remove stray syntax brace in InventarioPanel"
+  },
+  {
+    "hash": "96ae4eb",
+    "author": "quackthalia",
+    "date": "2026-09-23 16:43:55 -0300",
+    "subject": "Hotfix: Fix TypeError breaking armasInventario and restore logic"
+  },
+  {
+    "hash": "8f25223",
+    "author": "quackthalia",
+    "date": "2026-09-23 16:25:30 -0300",
+    "subject": "Hotfix: Fix destructive regex syntax error in InventarioPanel"
+  },
+  {
+    "hash": "20b0f5e",
+    "author": "quackthalia",
+    "date": "2026-09-23 15:47:57 -0300",
+    "subject": "Hotfix: Add alert and debug weapon rendering"
+  },
+  {
+    "hash": "3dc7668",
+    "author": "quackthalia",
+    "date": "2026-09-23 15:29:20 -0300",
+    "subject": "Hotfix: Remove syntax error in ModalItensAmaldicoados onClick"
+  },
+  {
+    "hash": "4f505e8",
+    "author": "quackthalia",
+    "date": "2026-09-23 15:20:30 -0300",
+    "subject": "Hotfix: Fix toggleExpandir and render Armas Amaldiçoadas in InventarioPanel"
+  },
+  {
+    "hash": "94f5c3e",
+    "author": "quackthalia",
+    "date": "2026-09-23 14:37:02 -0300",
+    "subject": "Hotfix: Fix fetch logic to include Armas Amaldiçoadas"
+  },
+  {
+    "hash": "63c2027",
+    "author": "quackthalia",
+    "date": "2026-09-23 14:32:45 -0300",
+    "subject": "Hotfix: Fix ReferenceError in InventarioPanel"
+  },
+  {
+    "hash": "6369d25",
+    "author": "quackthalia",
+    "date": "2026-09-23 14:24:58 -0300",
+    "subject": "Implement special conditions for all Armas Amaldiçoadas"
+  },
+  {
+    "hash": "238ce71",
+    "author": "quackthalia",
+    "date": "2026-09-23 14:19:04 -0300",
+    "subject": "Add Armas Amaldiçoadas to the system with their specific UI and behaviors"
+  },
+  {
+    "hash": "7338779",
+    "author": "quackthalia",
+    "date": "2026-09-23 14:18:35 -0300",
+    "subject": "Add Dano_Secundario field to ModalEditarArma"
+  },
+  {
+    "hash": "93f4e8c",
+    "author": "quackthalia",
+    "date": "2026-09-23 13:46:54 -0300",
+    "subject": "Allow Estilingues to shoot Bolinhas and Granadas, showing grenade stats"
+  },
+  {
+    "hash": "fcc19cb",
+    "author": "quackthalia",
+    "date": "2026-09-23 13:36:25 -0300",
+    "subject": "Fix Arco Composto to always use FOR for damage, preserving AGI attack attribute"
+  },
+  {
+    "hash": "5e0b519",
+    "author": "quackthalia",
+    "date": "2026-09-23 13:33:35 -0300",
+    "subject": "Allow Arco Composto to add Força to damage rolls"
+  },
+  {
+    "hash": "2c389b6",
+    "author": "quackthalia",
+    "date": "2026-09-23 13:25:10 -0300",
+    "subject": "Fix maldições expansion block rendering in closed Arma card"
+  },
+  {
+    "hash": "97add86",
+    "author": "quackthalia",
+    "date": "2026-09-23 13:10:06 -0300",
+    "subject": "UI: Rename 'PV e RD da Arma' to 'Estatísticas'"
+  },
+  {
+    "hash": "1b110e3",
+    "author": "quackthalia",
+    "date": "2026-09-23 13:08:15 -0300",
+    "subject": "Feat: Add +10 PV and RD to weapons for each curse they possess"
+  },
+  {
+    "hash": "6e594d4",
+    "author": "quackthalia",
+    "date": "2026-09-23 13:01:43 -0300",
+    "subject": "UI: Rename 'Atributos do Grupo' to 'PV e RD da Arma' and group items closer using flex layout"
+  },
+  {
+    "hash": "f57f646",
+    "author": "quackthalia",
+    "date": "2026-09-23 12:55:16 -0300",
+    "subject": "Feat: Add optional rule toggle for Media de Dano in Combat panel"
+  },
+  {
+    "hash": "5ee48a7",
+    "author": "quackthalia",
+    "date": "2026-09-23 12:48:18 -0300",
+    "subject": "Fix: Properly render Atributos do Grupo collapse block in CombatePanel"
+  },
+  {
+    "hash": "79e8b72",
+    "author": "quackthalia",
+    "date": "2026-09-23 12:44:07 -0300",
+    "subject": "Fix: Fallback to base weapon Codigo_Grupo for older inventory items"
+  },
+  {
+    "hash": "c1417f4",
+    "author": "quackthalia",
+    "date": "2026-09-23 11:25:40 -0300",
+    "subject": "Feat: Add 'Atributos do Grupo' (RD/PV) collapsible block in Combate tab"
+  },
+  {
+    "hash": "800b4a7",
+    "author": "quackthalia",
+    "date": "2026-09-23 07:53:21 -0300",
+    "subject": "Fix: Dynamically check for Apocaliptica to show Improvisada badge"
+  },
+  {
+    "hash": "da3d22a",
+    "author": "quackthalia",
+    "date": "2026-09-23 07:51:05 -0300",
+    "subject": "Fix: Apocaliptica now properly reduces category by 1 and sets weapon as Improvisada automatically"
+  },
+  {
+    "hash": "52047b2",
+    "author": "quackthalia",
+    "date": "2026-09-23 07:48:39 -0300",
+    "subject": "UI: Add Arma Improvisada tooltip and icon to Combate tab"
+  },
+  {
+    "hash": "532a163",
+    "author": "quackthalia",
+    "date": "2026-09-23 07:46:27 -0300",
+    "subject": "UI: Change 'Improvisada' emoji to hammer"
+  },
+  {
+    "hash": "b723b75",
+    "author": "quackthalia",
+    "date": "2026-09-23 07:44:37 -0300",
+    "subject": "Fix: Save Arma Improvisada state correctly in ModalEditarArma"
+  },
+  {
+    "hash": "c4b483e",
+    "author": "quackthalia",
+    "date": "2026-09-23 07:42:36 -0300",
+    "subject": "UI: Fix font size and emoji for Arma Improvisada"
+  },
+  {
+    "hash": "9694d0d",
+    "author": "quackthalia",
+    "date": "2026-09-23 07:40:14 -0300",
+    "subject": "UI: Properly render 'Arma Improvisada' checkbox"
+  },
+  {
+    "hash": "8f0e3c4",
+    "author": "quackthalia",
+    "date": "2026-09-23 07:38:17 -0300",
+    "subject": "Feat: Add 'Improvisada' checkbox and icon tooltip for weapons"
+  },
+  {
+    "hash": "404d8f2",
+    "author": "quackthalia",
+    "date": "2026-09-23 07:28:18 -0300",
+    "subject": "Fix: Remove 'Explosivos' from weapon types and fix erroneous 'FINAL: Corpo a Corpo' badge"
+  },
+  {
+    "hash": "fcb88e9",
+    "author": "quackthalia",
+    "date": "2026-09-22 16:23:02 -0300",
+    "subject": "UI: Change weapon filter label to 'Proficiente'"
+  },
+  {
+    "hash": "7fddc47",
+    "author": "quackthalia",
+    "date": "2026-09-22 16:21:42 -0300",
+    "subject": "Feat: Add default proficiency filter in weapon selection modal"
+  },
+  {
+    "hash": "9c9944c",
+    "author": "quackthalia",
+    "date": "2026-09-22 14:39:59 -0300",
+    "subject": "Refactor ModalEditarTrilha to match the new UI layout of edit modals"
+  },
+  {
+    "hash": "55c83c0",
+    "author": "quackthalia",
+    "date": "2026-09-22 09:52:36 -0300",
+    "subject": "UI: Increase edit modal widths to max-w-4xl and add dropdowns for Ritual properties"
+  },
+  {
+    "hash": "42b12f4",
+    "author": "quackthalia",
+    "date": "2026-09-22 09:47:30 -0300",
+    "subject": "Refatorar modal de Personalizar Ritual para o novo layout"
+  },
+  {
+    "hash": "a417fac",
+    "author": "quackthalia",
+    "date": "2026-09-22 09:47:21 -0300",
+    "subject": "Refactor EDITAR PODER modal to match new UI design"
+  },
+  {
+    "hash": "e65327f",
+    "author": "quackthalia",
+    "date": "2026-09-22 09:30:12 -0300",
+    "subject": "UI: Fine-tune tab font size back to 11px to ensure readability while still preventing scroll on 1366px screens"
+  },
+  {
+    "hash": "6f1ed33",
+    "author": "quackthalia",
+    "date": "2026-09-22 09:23:48 -0300",
+    "subject": "UI: Reduce tab tracking and font size slightly to eliminate scrollbar while preserving flex-1 fill"
+  },
+  {
+    "hash": "882163f",
+    "author": "quackthalia",
+    "date": "2026-09-22 09:22:52 -0300",
+    "subject": "UI: Add flex-1 to tabs so they distribute evenly and eliminate empty edge space"
+  },
+  {
+    "hash": "2b2ed02",
+    "author": "quackthalia",
+    "date": "2026-09-22 09:17:19 -0300",
+    "subject": "UI: Ensure tabs fit on single line on 1366px screens without scrolling"
+  },
+  {
+    "hash": "b29d970",
+    "author": "quackthalia",
+    "date": "2026-09-22 09:15:37 -0300",
+    "subject": "UI: Keep AbasPanel tabs scrollable on very small screens, while maintaining single line layout for default monitors"
+  },
+  {
+    "hash": "372bb8c",
+    "author": "quackthalia",
+    "date": "2026-09-22 08:54:52 -0300",
+    "subject": "UI: Optimize AbasPanel tabs sizes to fit one line on smaller screens without scroll"
+  },
+  {
+    "hash": "806bef0",
+    "author": "quackthalia",
+    "date": "2026-09-22 08:52:30 -0300",
+    "subject": "UI: Add horizontal scroll to AbasPanel tabs"
+  },
+  {
+    "hash": "8da977e",
+    "author": "quackthalia",
+    "date": "2026-09-22 08:47:30 -0300",
+    "subject": "Fix: ModalArmas misaligned height & Maldicoes rules by name"
+  },
+  {
+    "hash": "39a74b3",
+    "author": "quackthalia",
+    "date": "2026-09-22 07:51:31 -0300",
+    "subject": "fix(ui): corrige alinhamento do cabecalho nos cards dos modais de adicao de itens"
+  },
+  {
+    "hash": "7d6b56e",
+    "author": "quackthalia",
+    "date": "2026-09-22 07:34:36 -0300",
+    "subject": "fix(ui): corrige ReferenceError val is not defined no getEspacoNumber"
+  },
+  {
+    "hash": "e9acb3c",
+    "author": "quackthalia",
+    "date": "2026-09-22 07:34:02 -0300",
+    "subject": "fix(ui): corrige alinhamento vertical dos inputs nos modais de edicao igualando altura das labels"
+  },
+  {
+    "hash": "e2c15a2",
+    "author": "quackthalia",
+    "date": "2026-09-22 07:30:20 -0300",
+    "subject": "fix(ui): move bloco de maldicoes para dentro da aba de expansao para nao quebrar layout da lista"
+  },
+  {
+    "hash": "ae46210",
+    "author": "quackthalia",
+    "date": "2026-09-22 07:26:31 -0300",
+    "subject": "fix(ui): corrige alinhamento de itens no inventario e lista de categorias no modal"
+  },
+  {
+    "hash": "bf860ae",
+    "author": "quackthalia",
+    "date": "2026-09-21 14:53:48 -0300",
+    "subject": "fix(modais): corrige erro de sintaxe de variaveis duplicadas em getEspacoNumber"
+  },
+  {
+    "hash": "2c522bc",
+    "author": "quackthalia",
+    "date": "2026-09-21 14:53:33 -0300",
+    "subject": "fix(modais): altera getEspacoNumber para function declaration a fim de evitar TDZ crash"
+  },
+  {
+    "hash": "dfefe04",
+    "author": "quackthalia",
+    "date": "2026-09-21 14:49:18 -0300",
+    "subject": "feat(modais): exibe os valores finais (calculados com mods) nos inputs de defesa e espaco, mas subtrai os mods no onChange para manter o base imaculado no save"
+  },
+  {
+    "hash": "158a5b5",
+    "author": "quackthalia",
+    "date": "2026-09-21 14:41:22 -0300",
+    "subject": "fix(modais): altera titulo das labels para deixar obvio que edita a base limpa"
+  },
+  {
+    "hash": "337b3d3",
+    "author": "quackthalia",
+    "date": "2026-09-21 14:39:42 -0300",
+    "subject": "fix(maldicoes): garante que o ID da maldicao seja tratado como numero para evitar falhas de comparacao"
+  },
+  {
+    "hash": "86c4e10",
+    "author": "quackthalia",
+    "date": "2026-09-21 14:34:39 -0300",
+    "subject": "fix(inventario): exibe os bonus de defesa oriundos de maldicoes de protecao no item card"
+  },
+  {
+    "hash": "502802b",
+    "author": "quackthalia",
+    "date": "2026-09-21 14:18:24 -0300",
+    "subject": "fix(modais): define getEspacoNumber ausente no modal de protecoes"
+  },
+  {
+    "hash": "3b49e13",
+    "author": "quackthalia",
+    "date": "2026-09-21 13:52:30 -0300",
+    "subject": "fix(inventario): corrige calculo de categoria final nos modais de edicao e troca InputOtimizado por CustomSelect"
+  },
+  {
+    "hash": "d2b399e",
+    "author": "quackthalia",
+    "date": "2026-09-21 13:46:42 -0300",
+    "subject": "fix(protecoes): corrige encoding corrompido que impedia match de modificacoes como Reforçada"
+  },
+  {
+    "hash": "92a6fd0",
+    "author": "quackthalia",
+    "date": "2026-09-21 13:14:31 -0300",
+    "subject": "fix(municoes): oculta aba de maldicoes e impede maldicoes de armas em municoes"
+  },
+  {
+    "hash": "a779bea",
+    "author": "quackthalia",
+    "date": "2026-09-21 12:52:41 -0300",
+    "subject": "Refatorar ModalEditarItem para usar layout padronizado e corrigir bug de espacos"
+  },
+  {
+    "hash": "9b6c4cb",
+    "author": "quackthalia",
+    "date": "2026-09-21 12:51:57 -0300",
+    "subject": "Refactor ModalEditarProtecao layout to match ModalEditarArma"
+  },
+  {
+    "hash": "4d0f33f",
+    "author": "quackthalia",
+    "date": "2026-09-21 12:51:50 -0300",
+    "subject": "Refactor ModalEditarMunicao to match ModalEditarArma UI layout"
+  },
+  {
+    "hash": "2f41c37",
+    "author": "quackthalia",
+    "date": "2026-09-21 12:51:36 -0300",
+    "subject": "Refatoração do ModalEditarItemAmaldicoado para padrão ModalEditarArma"
+  },
+  {
+    "hash": "6d26e4c",
+    "author": "quackthalia",
+    "date": "2026-09-21 10:41:42 -0300",
+    "subject": "fix(arma): fix ReferenceError on espacosFinais in ModalEditarArma"
+  },
+  {
+    "hash": "1f75f26",
+    "author": "quackthalia",
+    "date": "2026-09-21 10:27:14 -0300",
+    "subject": "fix(arma): fix ReferenceError on criticoFinal in ModalEditarArma"
+  },
+  {
+    "hash": "fa5822c",
+    "author": "quackthalia",
+    "date": "2026-09-21 10:12:32 -0300",
+    "subject": "style(municoes): move explosive damage info inside the expanded weapon details block"
+  },
+  {
+    "hash": "059f27c",
+    "author": "quackthalia",
+    "date": "2026-09-21 09:36:15 -0300",
+    "subject": "feat(municoes): support for blunt and explosive arrows"
+  },
+  {
+    "hash": "f0b66d8",
+    "author": "quackthalia",
+    "date": "2026-09-21 09:11:26 -0300",
+    "subject": "fix(poderes): properly hide tab bar when there is only one category available"
+  },
+  {
+    "hash": "c3e1d8a",
+    "author": "quackthalia",
+    "date": "2026-09-21 07:23:55 -0300",
+    "subject": "style(poderes): hide tab bar when only one power category is available (e.g. transcender)"
+  },
+  {
+    "hash": "a99c225",
+    "author": "quackthalia",
+    "date": "2026-09-21 07:20:49 -0300",
+    "subject": "style(progressao): remove descricao text and change transcender button to green"
+  },
+  {
+    "hash": "921c015",
+    "author": "quackthalia",
+    "date": "2026-09-21 07:14:14 -0300",
+    "subject": "fix(afinidade): fix affinity being granted when transcending before 50% NEX"
+  },
+  {
+    "hash": "4c1f5a4",
+    "author": "quackthalia",
+    "date": "2026-09-18 16:31:28 -0300",
+    "subject": "chore: add MatrixBackground and test files"
+  },
+  {
+    "hash": "000590a",
+    "author": "quackthalia",
+    "date": "2026-09-18 12:40:47 -0300",
+    "subject": "fix(progressao): fix rules of hooks violation caused by early return before useEffect"
+  },
+  {
+    "hash": "715f17d",
+    "author": "quackthalia",
+    "date": "2026-09-18 07:49:31 -0300",
+    "subject": "fix(modals): restore temApocaliptica variable for category calculation"
+  },
+  {
+    "hash": "45f4c3e",
+    "author": "quackthalia",
+    "date": "2026-09-18 07:37:57 -0300",
+    "subject": "fix(modals): fix reference error due to uninitialized state variable on weapon edit"
+  },
+  {
+    "hash": "e661a56",
+    "author": "quackthalia",
+    "date": "2026-09-18 07:35:11 -0300",
+    "subject": "docs(agents): refine element color rule to distinguish between buttons and inline tags"
+  },
+  {
+    "hash": "b0144b3",
+    "author": "quackthalia",
+    "date": "2026-09-18 07:32:59 -0300",
+    "subject": "style(badges): remove borders and restore legacy element badge style to match other modals"
+  },
+  {
+    "hash": "e45d23f",
+    "author": "quackthalia",
+    "date": "2026-09-18 07:31:00 -0300",
+    "subject": "fix(modals): fix background scroll lock bug on submodal close and show computed final stats inline for weapon edits"
+  },
+  {
+    "hash": "e437388",
+    "author": "quackthalia",
+    "date": "2026-09-18 07:24:25 -0300",
+    "subject": "style(badges): fix Aprimoramentos element badge shape to perfectly match the strict layout rule from other modals"
+  },
+  {
+    "hash": "0272230",
+    "author": "quackthalia",
+    "date": "2026-09-17 10:27:34 -0300",
+    "subject": "fix(modals): remove emoji, remove Varia/Medo from selectors, restore correct mod filtering and fix accents"
+  },
+  {
+    "hash": "230607a",
+    "author": "quackthalia",
+    "date": "2026-09-17 10:21:27 -0300",
+    "subject": "style: remove emojis and redesign AprimoramentosSelector to match the new modal identity"
+  },
+  {
+    "hash": "6d74523",
+    "author": "quackthalia",
+    "date": "2026-09-17 10:01:12 -0300",
+    "subject": "feat(modal): redesign ModalEditarArma with stunning paranormal visual identity"
+  },
+  {
+    "hash": "db77595",
+    "author": "quackthalia",
+    "date": "2026-09-17 09:17:06 -0300",
+    "subject": "fix(modal-itens): restore subfilters for Itens Operacionais and Recursos that were accidentally overwritten during masonry layout fix"
+  },
+  {
+    "hash": "0d92fe7",
+    "author": "quackthalia",
+    "date": "2026-09-17 08:46:17 -0300",
+    "subject": "fix(inventario): fix items limit counter ignoring modifications category bumps"
+  },
+  {
+    "hash": "f9ae624",
+    "author": "quackthalia",
+    "date": "2026-09-17 08:42:28 -0300",
+    "subject": "fix(inventario): fix ammo card header not showing dynamic category"
+  },
+  {
+    "hash": "68190c8",
+    "author": "quackthalia",
+    "date": "2026-09-17 08:39:27 -0300",
+    "subject": "fix(combate): fix weapons incorrectly receiving bonus damage from modification descriptions"
+  },
+  {
+    "hash": "5761de9",
+    "author": "quackthalia",
+    "date": "2026-09-17 08:35:39 -0300",
+    "subject": "fix(inventario): fix category calculation ignoring modifications for specific general items (Medicamento)"
+  },
+  {
+    "hash": "1d008a6",
+    "author": "quackthalia",
+    "date": "2026-09-17 08:32:13 -0300",
+    "subject": "fix(modals): prevent masonry columns misalignment and header cutoff"
+  },
+  {
+    "hash": "e5caeeb",
+    "author": "quackthalia",
+    "date": "2026-09-17 08:27:43 -0300",
+    "subject": "feat(municoes): display modifications in ammo name and show attached weapon info"
+  },
+  {
+    "hash": "579fcbc",
+    "author": "quackthalia",
+    "date": "2026-09-17 08:24:22 -0300",
+    "subject": "fix(inventario): prevent string concatenation bug on weapon multiplier"
+  },
+  {
+    "hash": "01668f5",
+    "author": "quackthalia",
+    "date": "2026-09-17 08:23:09 -0300",
+    "subject": "style(modal): standardize ModalEditarMunicao colors to match other edit modals"
+  },
+  {
+    "hash": "2ef59df",
+    "author": "quackthalia",
+    "date": "2026-09-17 08:04:33 -0300",
+    "subject": "fix(municoes): restrict ammo modifications strictly to 'municao' category"
+  },
+  {
+    "hash": "c04d4c4",
+    "author": "quackthalia",
+    "date": "2026-09-17 07:59:44 -0300",
+    "subject": "feat(combate): active ammo transfers its modifications to the weapon"
+  },
+  {
+    "hash": "41ce8d0",
+    "author": "quackthalia",
+    "date": "2026-09-17 07:49:01 -0300",
+    "subject": "style(inventario): redesign ammo capacity indicator to be cleaner"
+  },
+  {
+    "hash": "5234a44",
+    "author": "quackthalia",
+    "date": "2026-09-17 07:36:31 -0300",
+    "subject": "fix(combate): display only first ammo and use subtle close icon"
+  },
+  {
+    "hash": "28e56b0",
+    "author": "quackthalia",
+    "date": "2026-09-17 07:26:51 -0300",
+    "subject": "fix(combate): hide critical average for grenade launchers"
+  },
+  {
+    "hash": "bc2f313",
+    "author": "quackthalia",
+    "date": "2026-09-17 07:24:24 -0300",
+    "subject": "fix(combate): correctly inject ammo block into combat collapse area"
+  },
+  {
+    "hash": "bc96b7e",
+    "author": "quackthalia",
+    "date": "2026-09-17 07:20:41 -0300",
+    "subject": "fix(combate): move ammo field inside expanded block as a single inline text"
+  },
+  {
+    "hash": "fabf729",
+    "author": "quackthalia",
+    "date": "2026-09-16 16:36:17 -0300",
+    "subject": "fix(combate): remove duplicate grenade name from combat stats line"
+  },
+  {
+    "hash": "15aeb14",
+    "author": "quackthalia",
+    "date": "2026-09-16 16:32:23 -0300",
+    "subject": "fix(combate): restrict add ammo button to ranged weapons and adjust spacing"
+  },
+  {
+    "hash": "514eb96",
+    "author": "quackthalia",
+    "date": "2026-09-16 16:30:00 -0300",
+    "subject": "fix(combate): correctly inject modal state variables in CombatePanel"
+  },
+  {
+    "hash": "3884a44",
+    "author": "quackthalia",
+    "date": "2026-09-16 15:39:07 -0300",
+    "subject": "feat(combate): copy weapon ammunition management system to the Combat panel"
+  },
+  {
+    "hash": "3fcc2c6",
+    "author": "quackthalia",
+    "date": "2026-09-16 15:32:56 -0300",
+    "subject": "fix(armas): fix reference error by correctly injecting danoPrint scope in ModalArmas"
+  },
+  {
+    "hash": "b18f26c",
+    "author": "quackthalia",
+    "date": "2026-09-16 13:28:38 -0300",
+    "subject": "fix(armas): correct VejaTexto replacement in Inventario and format DT/Dano for Grenade Launcher in ModalArmas"
+  },
+  {
+    "hash": "c9237d7",
+    "author": "quackthalia",
+    "date": "2026-09-16 12:51:09 -0300",
+    "subject": "fix(inventario): properly handle non-numeric DT strings like 'Veja texto' rendering as NaN"
+  },
+  {
+    "hash": "bf8c3af",
+    "author": "quackthalia",
+    "date": "2026-09-16 12:46:34 -0300",
+    "subject": "fix(inventario): fully remove statusHook reference from InventarioPanel"
+  },
+  {
+    "hash": "1479faa",
+    "author": "quackthalia",
+    "date": "2026-09-16 11:22:44 -0300",
+    "subject": "fix(combate): fix statusHook reference and apply VejaTexto replacement globally"
+  },
+  {
+    "hash": "4705934",
+    "author": "quackthalia",
+    "date": "2026-09-16 11:18:53 -0300",
+    "subject": "fix(inventario): correct literal \\n string escaping breaking the inventory panel"
+  },
+  {
+    "hash": "fcca139",
+    "author": "quackthalia",
+    "date": "2026-09-16 11:16:10 -0300",
+    "subject": "fix(granadas): synchronize stats calculation in Inventory and Combat panels, fix DT column access, and match modal titles"
+  },
+  {
+    "hash": "c37168e",
+    "author": "quackthalia",
+    "date": "2026-09-16 11:06:24 -0300",
+    "subject": "chore: add absolute consistency rule to AGENTS.md"
+  },
+  {
+    "hash": "47e45ee",
+    "author": "quackthalia",
+    "date": "2026-09-16 11:03:43 -0300",
+    "subject": "fix: correct description field mapping for Granadas and normalize colors/icons to match Municoes exactly"
+  },
+  {
+    "hash": "fb806ef",
+    "author": "quackthalia",
+    "date": "2026-09-16 10:58:28 -0300",
+    "subject": "UI: reduce modal card sizes, paddings and collapse preview lines"
+  },
+  {
+    "hash": "6dbc8df",
+    "author": "quackthalia",
+    "date": "2026-09-16 10:57:07 -0300",
+    "subject": "fix: remove hardcoded min-h and max-h constraints from all masonry modals to prevent button squashing and excess empty space"
+  },
+  {
+    "hash": "41cc323",
+    "author": "quackthalia",
+    "date": "2026-09-16 10:49:39 -0300",
+    "subject": "Revert UI: densely optimize modal layout"
+  },
+  {
+    "hash": "ece381f",
+    "author": "quackthalia",
+    "date": "2026-09-16 10:42:24 -0300",
+    "subject": "fix: corrige ReferenceError do isExpanded no ModalMunicoes"
+  },
+  {
+    "hash": "19bbdd9",
+    "author": "quackthalia",
+    "date": "2026-09-16 10:38:04 -0300",
+    "subject": "fix: cria ModalGranadas usando o estilo do ModalMunicoes e corrige hook faltando no SortableArmaItem"
+  },
+  {
+    "hash": "2b5f656",
+    "author": "quackthalia",
+    "date": "2026-09-16 08:59:46 -0300",
+    "subject": "fix: move modal de granadas para dentro de InventarioPanel e usa callback onAddMunicao corretamente"
+  },
+  {
+    "hash": "4cba59b",
+    "author": "quackthalia",
+    "date": "2026-09-16 08:44:09 -0300",
+    "subject": "fix: adiciona declaracoes de isLancadorGranadas/granadaAcoplada/dtGranada no CombatePanel que estavam faltando"
+  },
+  {
+    "hash": "b59a3e4",
+    "author": "quackthalia",
+    "date": "2026-09-16 08:41:08 -0300",
+    "subject": "fix: corrige syntax error no JSX do InventarioPanel que impedia o build"
+  },
+  {
+    "hash": "6c1a042",
+    "author": "quackthalia",
+    "date": "2026-09-16 08:34:09 -0300",
+    "subject": "fix: corrige syntax error no hook useItens (escape code literal)"
+  },
+  {
+    "hash": "2c030a1",
+    "author": "quackthalia",
+    "date": "2026-09-16 08:30:43 -0300",
+    "subject": "fix: Modal de granadas agora puxa itens da tabela global de itens e os adiciona ao inventario antes de acoplar, seguindo o padrao de municoes"
+  },
+  {
+    "hash": "abc94e9",
+    "author": "quackthalia",
+    "date": "2026-09-16 08:16:57 -0300",
+    "subject": "feat: implementa mecanica customizada para Lançador de Granadas (acoplar itens, exibir dano da granada, substituir critico por DT)"
+  },
+  {
+    "hash": "97ef525",
+    "author": "quackthalia",
+    "date": "2026-09-16 08:06:29 -0300",
+    "subject": "fix: corrige ReferenceError adicionando argumento grauProfissao esquecido no useInventario"
+  },
+  {
+    "hash": "cef9077",
+    "author": "quackthalia",
+    "date": "2026-09-16 07:32:06 -0300",
+    "subject": "fix: corrige declaracao do inventarioHook no RPGContext (que tinha sumido no commit anterior)"
+  },
+  {
+    "hash": "83c108d",
+    "author": "quackthalia",
+    "date": "2026-09-16 07:30:44 -0300",
+    "subject": "feat: pericia de profissao agora garante um aumento alternante no limite de itens por categoria (+I pra treinado, +II pra veterano, +III pra expert)"
+  },
+  {
+    "hash": "ed025f0",
+    "author": "quackthalia",
+    "date": "2026-09-16 07:21:10 -0300",
+    "subject": "fix: renomeia labels do filtro para seus nomes originais (Itens Operacionais e Recursos)"
+  },
+  {
+    "hash": "aebbe9b",
+    "author": "quackthalia",
+    "date": "2026-09-16 07:20:33 -0300",
+    "subject": "fix: corrige calculo de DT nos itens e armas que estava resultando em NaN"
+  },
+  {
+    "hash": "b5ee91b",
+    "author": "quackthalia",
+    "date": "2026-09-16 07:19:04 -0300",
+    "subject": "feat: integra a nova categoria Recursos na aba de Itens Operacionais no inventario"
+  },
+  {
+    "hash": "4ee2dd1",
+    "author": "quackthalia",
+    "date": "2026-09-15 14:39:36 -0300",
+    "subject": "fix: aplica o bonus de +1 dado da regra 86 ao ataque desarmado caso o jogador possua uma soqueira no inventario"
+  },
+  {
+    "hash": "d6f19a0",
+    "author": "quackthalia",
+    "date": "2026-09-15 14:06:55 -0300",
+    "subject": "fix: aplica calculo de dados extras de dano da regra 86 no painel de combate (o commit anterior havia falhado nesse arquivo)"
+  },
+  {
+    "hash": "ad1fb50",
+    "author": "quackthalia",
+    "date": "2026-09-15 13:51:32 -0300",
+    "subject": "feat: adiciona suporte para regra automatica 86 (mais um dado para armas corpo-a-corpo)"
+  },
+  {
+    "hash": "35ad661",
+    "author": "quackthalia",
+    "date": "2026-09-15 13:06:20 -0300",
+    "subject": "fix: corrige ordem de aplicacao e logica da maldicao predadora"
+  },
+  {
+    "hash": "5942da9",
+    "author": "quackthalia",
+    "date": "2026-09-15 13:03:58 -0300",
+    "subject": "fix: corrige ordem de aplicacao e calculo da maldicao predadora para duplicar a margem de ameaca corretamente"
+  },
+  {
+    "hash": "9b3580e",
+    "author": "quackthalia",
+    "date": "2026-09-15 12:55:01 -0300",
+    "subject": "style: formata a exibiçao do critico para sempre mostrar a margem e o multiplicador (ex: 20/x2, 19/x2)"
+  },
+  {
+    "hash": "39c8e34",
+    "author": "quackthalia",
+    "date": "2026-09-15 12:41:55 -0300",
+    "subject": "fix: calcula e exibe as estatisticas alteradas por modificacoes (critico, alcance e multiplicador) no painel de combate"
+  },
+  {
+    "hash": "957f869",
+    "author": "quackthalia",
+    "date": "2026-09-15 12:39:27 -0300",
+    "subject": "feat: adiciona avisos de arma (agil, automatica, proficiencia) ao painel de combate"
+  },
+  {
+    "hash": "d7bec0c",
+    "author": "quackthalia",
+    "date": "2026-09-15 10:22:03 -0300",
+    "subject": "fix: passa maldicoes para a renderizacao da categoria de itens operacionais"
+  },
+  {
+    "hash": "497028b",
+    "author": "quackthalia",
+    "date": "2026-09-15 10:16:17 -0300",
+    "subject": "fix: corrige prev is not iterable na edicao de modificacoes e maldicoes quando o array base é indefinido"
+  },
+  {
+    "hash": "bbb2f63",
+    "author": "quackthalia",
+    "date": "2026-09-15 10:13:01 -0300",
+    "subject": "fix: corrige assinatura do onSave no ModalEditarItem para receber os parametros na ordem correta"
+  },
+  {
+    "hash": "9227c29",
+    "author": "quackthalia",
+    "date": "2026-09-15 10:09:28 -0300",
+    "subject": "fix: limpa logic de soqueira com precisao sem corromper syntax"
+  },
+  {
+    "hash": "859f29c",
+    "author": "quackthalia",
+    "date": "2026-09-15 10:04:44 -0300",
+    "subject": "fix: recupera InventarioPanel corrompido"
+  },
+  {
+    "hash": "9dcd136",
+    "author": "quackthalia",
+    "date": "2026-09-15 10:02:04 -0300",
+    "subject": "fix: corrige syntax error no painel de inventario e limpa logica antiga da soqueira"
+  },
+  {
+    "hash": "b657758",
+    "author": "quackthalia",
+    "date": "2026-09-15 09:56:50 -0300",
+    "subject": "fix: corrige ReferenceError novasMaldicoes na edicao de itens"
+  },
+  {
+    "hash": "db11eb5",
+    "author": "quackthalia",
+    "date": "2026-09-15 09:51:30 -0300",
+    "subject": "fix: corrige adicao de maldicoes em itens e bloqueio de limite de categoria"
+  },
+  {
+    "hash": "93b3a1c",
+    "author": "quackthalia",
+    "date": "2026-09-15 09:45:38 -0300",
+    "subject": "feat: integra soqueira ao ataque desarmado e corrige maldicoes"
+  },
+  {
+    "hash": "74bd5c0",
+    "author": "quackthalia",
+    "date": "2026-09-15 09:31:58 -0300",
+    "subject": "fix: corrige ReferenceError maldicoesHook is not defined no ModalEditarItem"
+  },
+  {
+    "hash": "a4f687b",
+    "author": "quackthalia",
+    "date": "2026-09-15 09:30:58 -0300",
+    "subject": "style: adiciona margem no botao de avancar da tela de atributos"
+  },
+  {
+    "hash": "66497d2",
+    "author": "quackthalia",
+    "date": "2026-09-15 09:16:22 -0300",
+    "subject": "feat: implementa regra do poder Artista Marcial (84) para o ataque desarmado, ajustando o dano de acordo com o NEX e alterando os atributos"
+  },
+  {
+    "hash": "3a6aabe",
+    "author": "quackthalia",
+    "date": "2026-09-15 07:24:19 -0300",
+    "subject": "feat: adiciona ataque desarmado como opcao padrao no painel de combate, com regra de dano 1d3 nao letal e forca"
+  },
+  {
+    "hash": "b653105",
+    "author": "quackthalia",
+    "date": "2026-09-15 07:16:07 -0300",
+    "subject": "style: renomeia titulos das sessoes de armas no painel de combate para Ataques Corpo a Corpo e Ataques a Distancia"
+  },
+  {
+    "hash": "a890eeb",
+    "author": "quackthalia",
+    "date": "2026-09-15 07:15:27 -0300",
+    "subject": "fix: atualiza a categoria de Medicamento para Medicamentos no painel de inventario pra refletir mudança no supabase"
+  },
+  {
+    "hash": "ca23477",
+    "author": "quackthalia",
+    "date": "2026-09-15 07:12:38 -0300",
+    "subject": "style: adiciona borda verde lateral aos itens do painel de combate para manter padrao visual do inventario"
+  },
+  {
+    "hash": "dbf03af",
+    "author": "quackthalia",
+    "date": "2026-09-15 07:09:40 -0300",
+    "subject": "fix: oculta a coronhada do painel de inventario e centraliza sua exibicao apenas no painel de combate"
+  },
+  {
+    "hash": "81a6f0a",
+    "author": "quackthalia",
+    "date": "2026-09-14 16:34:19 -0300",
+    "subject": "feat: suporte a multiplicacao de dados criticos via asterisco (*) e correcao da soma do multiplicador de critico para apenas dados base da arma"
+  },
+  {
+    "hash": "1c41cc2",
+    "author": "quackthalia",
+    "date": "2026-09-14 16:24:31 -0300",
+    "subject": "feat: agrupa multiplicadores fixos do mesmo tipo num unico dano bonus consolidado"
+  },
+  {
+    "hash": "d6437fb",
+    "author": "quackthalia",
+    "date": "2026-09-14 16:20:56 -0300",
+    "subject": "fix: move integracao de atributos de personagem do calculo de ataque bonus para o calculo de dano bonus das armas"
+  },
+  {
+    "hash": "e7dfb2d",
+    "author": "quackthalia",
+    "date": "2026-09-14 16:12:17 -0300",
+    "subject": "feat: integra atributos do personagem ao calculo do ataque bonus para armas de combate corpo a corpo e arremesso, respeitando propriedades ageis"
+  },
+  {
+    "hash": "74af2ab",
+    "author": "quackthalia",
+    "date": "2026-09-14 16:08:53 -0300",
+    "subject": "style: aplica background padrao de elemento na etiqueta da maldicao expandida sem borda"
+  },
+  {
+    "hash": "5f7a7a6",
+    "author": "quackthalia",
+    "date": "2026-09-14 16:02:53 -0300",
+    "subject": "style: altera exibicao do elemento da maldicao no inventario para formato textual padronizado"
+  },
+  {
+    "hash": "efd4e91",
+    "author": "quackthalia",
+    "date": "2026-09-14 15:48:11 -0300",
+    "subject": "fix: oculta campo de alcance de armas que nao possuem alcance preenchido"
+  },
+  {
+    "hash": "58276c1",
+    "author": "quackthalia",
+    "date": "2026-09-14 15:46:02 -0300",
+    "subject": "style: altera exibicao das maldicoes e modificacoes no combate para acompanhar estilo minimalista de arma fechada no inventario"
+  },
+  {
+    "hash": "014f038",
+    "author": "quackthalia",
+    "date": "2026-09-14 15:44:07 -0300",
+    "subject": "chore: altera label de Dano Secundario para Dado Bonus no ModalEditarArma"
+  },
+  {
+    "hash": "d6009a7",
+    "author": "quackthalia",
+    "date": "2026-09-14 15:42:50 -0300",
+    "subject": "feat: implementa seletor de dano para armas versateis no proprio nome da arma e recalcula medias e bônus dinamicamente"
+  },
+  {
+    "hash": "3017004",
+    "author": "quackthalia",
+    "date": "2026-09-14 15:38:44 -0300",
+    "subject": "fix: exibe dano base completo com / no titulo, usa nome extenso de Dano Secundario e centraliza exibicao no bloco inicial"
+  },
+  {
+    "hash": "3a14ccb",
+    "author": "quackthalia",
+    "date": "2026-09-14 15:01:54 -0300",
+    "subject": "fix: ajusta Cruel para dar bonus de dano (não ataque), adiciona Certeira/Alongada para ataque, extrai dano de armas versateis separados por barra (/)"
+  },
+  {
+    "hash": "5c4b259",
+    "author": "quackthalia",
+    "date": "2026-09-14 13:31:06 -0300",
+    "subject": "style: simplifica blocos escuros e usa texto verde padronizado, remove NENHUM dos atributos"
+  },
+  {
+    "hash": "6c47a6c",
+    "author": "quackthalia",
+    "date": "2026-09-14 13:14:06 -0300",
+    "subject": "style: ajustes visuais no combate (cores de elemento, tamanho dos cabecalhos, seletor de atributo e cores de fundo)"
+  },
+  {
+    "hash": "5c5aeba",
+    "author": "quackthalia",
+    "date": "2026-09-14 13:07:51 -0300",
+    "subject": "fix: corrige ordem dos parametros no onSave do ModalEditarArma que gravava maldicoes como modificacoes"
+  },
+  {
+    "hash": "e0e715f",
+    "author": "quackthalia",
+    "date": "2026-09-14 12:55:32 -0300",
+    "subject": "feat: interpreta maldições e modificações para somar dano bônus automaticamente"
+  },
+  {
+    "hash": "874c081",
+    "author": "quackthalia",
+    "date": "2026-09-14 12:43:45 -0300",
+    "subject": "fix: forca conversao pra array das maldicoes e mods na inicializacao dos modais"
+  },
+  {
+    "hash": "e8e0da1",
+    "author": "quackthalia",
+    "date": "2026-09-14 12:39:33 -0300",
+    "subject": "fix: corrige array indefinido no seletor de aprimoramentos e id de maldicao renderizada no combate"
+  },
+  {
+    "hash": "8416c67",
+    "author": "quackthalia",
+    "date": "2026-09-14 12:36:02 -0300",
+    "subject": "style: suaviza valores da ficha de combate e simplifica texto do botao de media"
+  },
+  {
+    "hash": "a8487dc",
+    "author": "quackthalia",
+    "date": "2026-09-14 11:26:41 -0300",
+    "subject": "style: aplica layout encaixotado com grid no bloco de combate e realoca infos primarias"
+  },
+  {
+    "hash": "f7106ac",
+    "author": "quackthalia",
+    "date": "2026-09-14 11:21:18 -0300",
+    "subject": "fix: remove escaping invalido de template string no jsx"
+  },
+  {
+    "hash": "62a6302",
+    "author": "quackthalia",
+    "date": "2026-09-14 11:17:12 -0300",
+    "subject": "fix: corrige syntax error no CombatePanel"
+  },
+  {
+    "hash": "57987b0",
+    "author": "quackthalia",
+    "date": "2026-09-14 10:54:24 -0300",
+    "subject": "style: refaz painel de combate para seguir a imagem de referencia, extraindo dados por linhas textuais e usando select pro atributo"
+  },
+  {
+    "hash": "3dec4d6",
+    "author": "quackthalia",
+    "date": "2026-09-14 10:12:44 -0300",
+    "subject": "style: refaz visual dos cards de arma para padrao encaixotado compacto"
+  },
+  {
+    "hash": "32f74c1",
+    "author": "quackthalia",
+    "date": "2026-09-14 10:09:36 -0300",
+    "subject": "style: esconde calculo de dano medio num Collapse interno e ajusta tamanho do titulo da arma no combate"
+  },
+  {
+    "hash": "14bf607",
+    "author": "quackthalia",
+    "date": "2026-09-14 10:07:42 -0300",
+    "subject": "style: converte cards de combate para blocos expansivos com Collapse"
+  },
+  {
+    "hash": "55b2577",
+    "author": "quackthalia",
+    "date": "2026-09-14 10:06:49 -0300",
+    "subject": "style: converte cards de combate para blocos expansivos com Collapse"
+  },
+  {
+    "hash": "fca52e2",
+    "author": "quackthalia",
+    "date": "2026-09-14 10:05:06 -0300",
+    "subject": "style: divide armas por tipo e escurece cards de calculo de combate"
+  },
+  {
+    "hash": "21d138e",
+    "author": "quackthalia",
+    "date": "2026-09-14 10:03:32 -0300",
+    "subject": "feat: cria aba de Combate com calculo dinamico de dano medio para armas"
+  },
+  {
+    "hash": "926a289",
+    "author": "quackthalia",
+    "date": "2026-09-14 09:06:57 -0300",
+    "subject": "style: remove Aviso de Requisitos redundante nos poderes extras"
+  },
+  {
+    "hash": "65050fd",
+    "author": "quackthalia",
+    "date": "2026-09-14 09:01:53 -0300",
+    "subject": "style: padroniza seletor de elemento da regra 18 nas origens para UI inline"
+  },
+  {
+    "hash": "2c70168",
+    "author": "quackthalia",
+    "date": "2026-09-14 08:50:44 -0300",
+    "subject": "feat: adiciona seletor de elemento para regra 18 no OrigensScreen"
+  },
+  {
+    "hash": "2f82fd6",
+    "author": "quackthalia",
+    "date": "2026-09-14 08:39:07 -0300",
+    "subject": "fix: corrige nome de variavel origensHook na Ficha causando erro branco"
+  },
+  {
+    "hash": "484d32b",
+    "author": "quackthalia",
+    "date": "2026-09-14 08:34:09 -0300",
+    "subject": "feat: implementa escolha de elemento para origens com regra 18"
+  },
+  {
+    "hash": "6c7c5c2",
+    "author": "quackthalia",
+    "date": "2026-09-14 08:30:26 -0300",
+    "subject": "style: altera label do slot da regra 16 para Origem"
+  },
+  {
+    "hash": "e36b50d",
+    "author": "quackthalia",
+    "date": "2026-09-11 09:30:53 -0300",
+    "subject": "feat: Regra 9 agora adiciona -1d20 em Diplomacia e +1 ponto de pericia"
+  },
+  {
+    "hash": "a9f436f",
+    "author": "quackthalia",
+    "date": "2026-09-11 07:45:17 -0300",
+    "subject": "style: remove indicadores inline de regras de pericia"
+  },
+  {
+    "hash": "e4e0260",
+    "author": "quackthalia",
+    "date": "2026-09-11 07:38:17 -0300",
+    "subject": "fix: ajusta calculo de DT para ignorar +1 PE/Turno da Regra 6"
+  },
+  {
+    "hash": "5a1e00b",
+    "author": "quackthalia",
+    "date": "2026-09-11 07:34:34 -0300",
+    "subject": "fix: corrige acento em Medio para arrumar limite de credito da Regra 3"
+  },
+  {
+    "hash": "c3e1d27",
+    "author": "quackthalia",
+    "date": "2026-09-11 07:29:18 -0300",
+    "subject": "fix: corrige modal de troca de origem esmagado"
+  },
+  {
+    "hash": "bd70aab",
+    "author": "quackthalia",
+    "date": "2026-09-11 07:28:21 -0300",
+    "subject": "feat: modal de mudanca de origem rapida"
+  },
+  {
+    "hash": "d6e5241",
+    "author": "quackthalia",
+    "date": "2026-09-11 07:24:45 -0300",
+    "subject": "fix: Ajusta a label do slot extra da Regra 1 para 'Origem'"
+  },
+  {
+    "hash": "8cc395c",
+    "author": "quackthalia",
+    "date": "2026-09-10 11:26:32 -0300",
+    "subject": "fix: restaura setNex(0) ao ativar regra nex_experiencia e fallback no select inicial"
+  },
+  {
+    "hash": "9f3ea16",
+    "author": "quackthalia",
+    "date": "2026-09-10 10:15:00 -0300",
+    "subject": "fix: preserva valor de nex ao trocar entre regra nex_experiencia"
+  },
+  {
+    "hash": "d5c6d8a",
+    "author": "quackthalia",
+    "date": "2026-09-10 09:59:58 -0300",
+    "subject": "fix: corrige imports no index da ficha que ficaram com \\\\n literal"
+  },
+  {
+    "hash": "51c0291",
+    "author": "quackthalia",
+    "date": "2026-09-10 09:04:01 -0300",
+    "subject": "feat: move indicador de nex para o painel de atributos"
+  },
+  {
+    "hash": "5cbcd7d",
+    "author": "quackthalia",
+    "date": "2026-09-10 08:42:00 -0300",
+    "subject": "fix: remove escaping bug and update nex status panel"
+  },
+  {
+    "hash": "b342da1",
+    "author": "quackthalia",
+    "date": "2026-09-10 07:15:20 -0300",
+    "subject": "ui: carga w-24 fixo, crédito flex-1 (ajuste sutil de proporção)"
+  },
+  {
+    "hash": "ed7dd02",
+    "author": "quackthalia",
+    "date": "2026-09-10 07:13:55 -0300",
+    "subject": "ui: crédito compacto (w-28), carga esticada (flex-1)"
+  },
+  {
+    "hash": "b936887",
+    "author": "quackthalia",
+    "date": "2026-09-10 07:11:39 -0300",
+    "subject": "ui: iguala altura do limite/em uso com os outros campos (text-xs -> text-sm)"
+  },
+  {
+    "hash": "f331b0a",
+    "author": "quackthalia",
+    "date": "2026-09-09 14:21:17 -0300",
+    "subject": "ui: alinha todas as linhas do inventário com os cards de itens (pr-2)"
+  },
+  {
+    "hash": "1319cef",
+    "author": "quackthalia",
+    "date": "2026-09-09 14:19:09 -0300",
+    "subject": "ui: remove max-w do limite/em uso para alinhar com as linhas de cima"
+  },
+  {
+    "hash": "314177c",
+    "author": "quackthalia",
+    "date": "2026-09-09 14:16:44 -0300",
+    "subject": "ui: reduz largura do bloco limite/em uso (max-w-xs) pra alinhar com itens"
+  },
+  {
+    "hash": "cb5014e",
+    "author": "quackthalia",
+    "date": "2026-09-09 14:14:09 -0300",
+    "subject": "ui: limita largura do bloco limite/em uso (max-w-sm)"
+  },
+  {
+    "hash": "b8bc1b8",
+    "author": "quackthalia",
+    "date": "2026-09-09 14:12:52 -0300",
+    "subject": "ui: mais espaço antes de limite/em uso e mesma altura dos outros campos"
+  },
+  {
+    "hash": "4999eab",
+    "author": "quackthalia",
+    "date": "2026-09-09 14:09:51 -0300",
+    "subject": "ui: inventário em 3 linhas alinhadas (prestígio+patente, crédito+carga, limite+em uso)"
+  },
+  {
+    "hash": "1e055e8",
+    "author": "quackthalia",
+    "date": "2026-09-09 14:05:54 -0300",
+    "subject": "ui: aumenta largura do select de patente (w-40 -> w-52)"
+  },
+  {
+    "hash": "ea4cbd3",
+    "author": "quackthalia",
+    "date": "2026-09-09 14:05:11 -0300",
+    "subject": "ui: inventário com larguras naturais por campo e limite/em uso contidos no painel"
+  },
+  {
+    "hash": "841a9ab",
+    "author": "quackthalia",
+    "date": "2026-09-09 14:02:56 -0300",
+    "subject": "ui: inventário sem card wrapper, 4 colunas iguais, limite/em uso full-width"
+  },
+  {
+    "hash": "45fe892",
+    "author": "quackthalia",
+    "date": "2026-09-09 14:00:09 -0300",
+    "subject": "ui: redesenha painel de status do inventário (prestígio, patente, crédito, carga, limites)"
+  },
+  {
+    "hash": "2d828b5",
+    "author": "quackthalia",
+    "date": "2026-09-09 13:55:57 -0300",
+    "subject": "fix: corrige texto de explicação dos poderes Semi-automáticos"
+  },
+  {
+    "hash": "9c6886e",
+    "author": "quackthalia",
+    "date": "2026-09-09 11:33:27 -0300",
+    "subject": "ui: centraliza configurações de atributos em barra horizontal acima do pentagrama"
+  },
+  {
+    "hash": "3808023",
+    "author": "quackthalia",
+    "date": "2026-09-09 11:09:29 -0300",
+    "subject": "ui: reestrutura layout da tela de atributos agrupando configurações e texto na coluna esquerda"
+  },
+  {
+    "hash": "1530113",
+    "author": "quackthalia",
+    "date": "2026-09-09 10:46:47 -0300",
+    "subject": "fix: corrige ReferenceError do useEffect no RPGContext"
+  },
+  {
+    "hash": "56a1e83",
+    "author": "quackthalia",
+    "date": "2026-09-09 10:27:48 -0300",
+    "subject": "feat: implementa regra automática 83 (Origem concedendo +5% de NEX / +1 Nível e 10 PE Temporários ao atingir limite)"
+  },
+  {
+    "hash": "cd7ced6",
+    "author": "quackthalia",
+    "date": "2026-09-09 09:12:51 -0300",
+    "subject": "ui: unifica e refina o layout dos cabeçalhos das telas de criação (Atributos, Origens, Classes) com espaçamento e separadores padronizados"
+  },
+  {
+    "hash": "2df2609",
+    "author": "quackthalia",
+    "date": "2026-09-09 09:10:51 -0300",
+    "subject": "ui: ajusta a largura e o tamanho da fonte do texto de atributos para melhor proporção"
+  },
+  {
+    "hash": "226723e",
+    "author": "quackthalia",
+    "date": "2026-09-09 09:09:25 -0300",
+    "subject": "ui: adiciona texto descritivo oficial da regra de atributos e organiza layout ao lado do pentagrama"
+  },
+  {
+    "hash": "07f538d",
+    "author": "quackthalia",
+    "date": "2026-09-09 08:59:06 -0300",
+    "subject": "ui: centraliza o texto da tela de origens e destaca a frase chave em negrito"
+  },
+  {
+    "hash": "f2c863b",
+    "author": "quackthalia",
+    "date": "2026-09-09 08:57:27 -0300",
+    "subject": "ui: adiciona texto descritivo oficial sobre o que representam as Origens na tela de escolha"
+  },
+  {
+    "hash": "75a21cf",
+    "author": "quackthalia",
+    "date": "2026-09-09 07:49:12 -0300",
+    "subject": "ui: adiciona texto descritivo oficial de introdução na tela de escolha de classe"
+  },
+  {
+    "hash": "103f9b8",
+    "author": "quackthalia",
+    "date": "2026-09-09 07:39:44 -0300",
+    "subject": "ui: centraliza o texto de descrição das classes para testes de design"
+  },
+  {
+    "hash": "2649ae8",
+    "author": "quackthalia",
+    "date": "2026-09-09 07:26:13 -0300",
+    "subject": "ui: corrige a exibição das perícias de especialista e ocultista na seleção de classe"
+  },
+  {
+    "hash": "6180295",
+    "author": "quackthalia",
+    "date": "2026-09-09 07:20:24 -0300",
+    "subject": "fix: previne layout shift global adicionando scrollbar-gutter stable no html, resolvendo o pulo na tela de origens"
+  },
+  {
+    "hash": "38b0a63",
+    "author": "quackthalia",
+    "date": "2026-09-09 07:14:04 -0300",
+    "subject": "ui: restaura a descrição completa das classes e padroniza as cores para verde (padrão da Ordem)"
+  },
+  {
+    "hash": "4a3c122",
+    "author": "quackthalia",
+    "date": "2026-09-09 07:09:09 -0300",
+    "subject": "revert: remove exibição de afinidade latente a pedido do usuário (só exibe quando transcender/ativar de vez)"
+  },
+  {
+    "hash": "d8db824",
+    "author": "quackthalia",
+    "date": "2026-09-08 15:01:15 -0300",
+    "subject": "feat: move o selo de Automático/Semi-Automático do cabeçalho fechado das habilidades para dentro do bloco expandido"
+  },
+  {
+    "hash": "5a50459",
+    "author": "quackthalia",
+    "date": "2026-09-08 14:41:48 -0300",
+    "subject": "feat: exibe o bloco de afinidade escolhida mesmo quando ela ainda está inativa (latente), evitando que a escolha do jogador desapareça"
+  },
+  {
+    "hash": "f5dc40b",
+    "author": "quackthalia",
+    "date": "2026-09-08 11:17:55 -0300",
+    "subject": "fix: corrige erro de variável ritualExpandido não definida que quebrava a tela"
+  },
+  {
+    "hash": "875a33b",
+    "author": "quackthalia",
+    "date": "2026-09-08 10:38:53 -0300",
+    "subject": "feat: permite expandir/retrair o conteúdo do ritual embutido no Selos Paranormais para poupar espaço"
+  },
+  {
+    "hash": "0369446",
+    "author": "quackthalia",
+    "date": "2026-09-08 10:10:08 -0300",
+    "subject": "ui: altera estilo do elemento do ritual para ficar igual ao badge do item amaldiçoado"
+  },
+  {
+    "hash": "50174d1",
+    "author": "quackthalia",
+    "date": "2026-09-08 09:01:33 -0300",
+    "subject": "fix: ajusta renderização de formatação da descrição (negrito só nos asteriscos e opacidade por versão) no Selos Paranormais"
+  },
+  {
+    "hash": "87c36f3",
+    "author": "quackthalia",
+    "date": "2026-09-08 08:38:20 -0300",
+    "subject": "ui: melhora o visual do bloco de ritual dentro do Selo Paranormal (badge de elemento, separador, etc)"
+  },
+  {
+    "hash": "1cdabb8",
+    "author": "quackthalia",
+    "date": "2026-09-08 08:25:38 -0300",
+    "subject": "feat: exibe descrição completa do ritual dentro do bloco de Selos Paranormais"
+  },
+  {
+    "hash": "2ade852",
+    "author": "quackthalia",
+    "date": "2026-09-08 08:16:42 -0300",
+    "subject": "fix: corrige clique de selecionar ritual no Selos Paranormais que falhava silenciosamente"
+  },
+  {
+    "hash": "65da195",
+    "author": "quackthalia",
+    "date": "2026-09-08 08:03:12 -0300",
+    "subject": "fix: corrige mapeamento de campos do RitualAprendido no SortableItemAmaldicoado"
+  },
+  {
+    "hash": "fc0bb95",
+    "author": "quackthalia",
+    "date": "2026-09-08 07:47:50 -0300",
+    "subject": "fix: exibe nome do ritual nos Selos Paranormais (titulo e bloco embutido)"
+  },
+  {
+    "hash": "61cec52",
+    "author": "quackthalia",
+    "date": "2026-09-08 07:37:46 -0300",
+    "subject": "feat: suporte para o item Selos Paranormais"
+  },
+  {
+    "hash": "5655404",
+    "author": "quackthalia",
+    "date": "2026-09-04 09:45:03 -0300",
+    "subject": "style(ficha): normalize background color of Trilha and Versatilidade block headers to match other powers"
+  },
+  {
+    "hash": "1039f8c",
+    "author": "quackthalia",
+    "date": "2026-09-04 09:15:54 -0300",
+    "subject": "style(atributos): increase pentagram size in AtributosScreen"
+  },
+  {
+    "hash": "c4df66d",
+    "author": "quackthalia",
+    "date": "2026-09-04 09:12:26 -0300",
+    "subject": "feat(atributos): replace list layout with pentagram diagram in AtributosScreen"
+  },
+  {
+    "hash": "af53de2",
+    "author": "quackthalia",
+    "date": "2026-09-04 09:07:41 -0300",
+    "subject": "style(atributos): micro-adjust VIG slightly outwards"
+  },
+  {
+    "hash": "003d17a",
+    "author": "quackthalia",
+    "date": "2026-09-04 09:07:06 -0300",
+    "subject": "style(atributos): nudge VIG slightly more inward"
+  },
+  {
+    "hash": "e830d68",
+    "author": "quackthalia",
+    "date": "2026-09-04 09:06:00 -0300",
+    "subject": "style(atributos): lower PRE and VIG slightly to find vertical sweet spot"
+  },
+  {
+    "hash": "9846910",
+    "author": "quackthalia",
+    "date": "2026-09-04 09:05:15 -0300",
+    "subject": "style(atributos): push PRE and VIG further outwards and higher up"
+  },
+  {
+    "hash": "0079703",
+    "author": "quackthalia",
+    "date": "2026-09-04 09:04:06 -0300",
+    "subject": "style(atributos): nudge PRE and VIG slightly outwards to find the sweet spot"
+  },
+  {
+    "hash": "73f5ba8",
+    "author": "quackthalia",
+    "date": "2026-09-04 08:47:17 -0300",
+    "subject": "style(atributos): move PRE and VIG further up and inward towards the center"
+  },
+  {
+    "hash": "b144624",
+    "author": "quackthalia",
+    "date": "2026-09-04 08:45:35 -0300",
+    "subject": "style(atributos): nudge FOR and INT slightly higher and more towards center"
+  },
+  {
+    "hash": "61838b1",
+    "author": "quackthalia",
+    "date": "2026-09-04 08:06:11 -0300",
+    "subject": "style(atributos): adjust layout positioning for attribute values in pentagram diagram"
+  },
+  {
+    "hash": "76e8ebc",
+    "author": "quackthalia",
+    "date": "2026-09-03 09:01:55 -0300",
+    "subject": "feat(atributos): replace old attribute circles with the new custom pentagram image layout"
+  },
+  {
+    "hash": "548b68f",
+    "author": "quackthalia",
+    "date": "2026-09-03 08:20:44 -0300",
+    "subject": "fix(rituais): sync masonry columns rendering in modals to ensure consistent image and layout updates"
+  },
+  {
+    "hash": "7cd0a3a",
+    "author": "quackthalia",
+    "date": "2026-09-03 08:16:17 -0300",
+    "subject": "fix(rituais): fix modal headers alignment and properly pass simbolosRituais"
+  },
+  {
+    "hash": "69b7e68",
+    "author": "quackthalia",
+    "date": "2026-09-03 08:12:35 -0300",
+    "subject": "style(rituais): shift element badges slightly upwards in closed ritual headers"
+  },
+  {
+    "hash": "7383c08",
+    "author": "quackthalia",
+    "date": "2026-09-03 08:07:18 -0300",
+    "subject": "fix(rituais): restore modal alignment and pass simbolosRituais to modals so images render correctly when expanded"
+  },
+  {
+    "hash": "e40ad76",
+    "author": "quackthalia",
+    "date": "2026-09-03 08:02:28 -0300",
+    "subject": "style(rituais): revert modal tabs to original full-width underline style"
+  },
+  {
+    "hash": "ec9d7f4",
+    "author": "quackthalia",
+    "date": "2026-09-03 08:00:15 -0300",
+    "subject": "style(rituais): only show thumbnail inside expanded content in add ritual modals"
+  },
+  {
+    "hash": "41d6c4d",
+    "author": "quackthalia",
+    "date": "2026-09-03 07:57:08 -0300",
+    "subject": "style(rituais): add thin vertical divider between ritual image and title"
+  },
+  {
+    "hash": "12e00d1",
+    "author": "quackthalia",
+    "date": "2026-09-03 07:55:08 -0300",
+    "subject": "style(collapse): increase default animation duration to 350ms to slow down block expansion globally"
+  },
+  {
+    "hash": "a8556a5",
+    "author": "quackthalia",
+    "date": "2026-09-03 07:52:05 -0300",
+    "subject": "style(rituais): sync element group headers in chosen rituals with poderes paranormais"
+  },
+  {
+    "hash": "a87c52a",
+    "author": "quackthalia",
+    "date": "2026-09-03 07:48:31 -0300",
+    "subject": "style(rituais): sync element tabs style with poderes paranormais"
+  },
+  {
+    "hash": "f757638",
+    "author": "quackthalia",
+    "date": "2026-09-03 07:41:25 -0300",
+    "subject": "style(rituais): shrink closed block ritual image"
+  },
+  {
+    "hash": "4ab6e88",
+    "author": "quackthalia",
+    "date": "2026-09-03 07:39:14 -0300",
+    "subject": "feat(rituais): smoothly slide title to the left when expanding"
+  },
+  {
+    "hash": "f2a3d79",
+    "author": "quackthalia",
+    "date": "2026-09-03 07:34:16 -0300",
+    "subject": "style(rituais): move thumbnail to left and element badge to top right, preserving original colors and moving PE"
+  },
+  {
+    "hash": "c09dd45",
+    "author": "quackthalia",
+    "date": "2026-09-03 07:17:51 -0300",
+    "subject": "perf(rituais): use dropbox direct cdn and remove preload bottleneck"
+  },
+  {
+    "hash": "f87ead7",
+    "author": "quackthalia",
+    "date": "2026-09-03 07:15:31 -0300",
+    "subject": "style(rituais): simplify thumbnail transition to a clean fade"
+  },
+  {
+    "hash": "f6d1623",
+    "author": "quackthalia",
+    "date": "2026-09-03 07:12:23 -0300",
+    "subject": "style(rituais): fix animation jump when expanding ritual with thumbnail"
+  },
+  {
+    "hash": "c9cbc70",
+    "author": "quackthalia",
+    "date": "2026-09-02 16:36:34 -0300",
+    "subject": "style(rituais): fix image position and size across all panels"
+  },
+  {
+    "hash": "b2d8abd",
+    "author": "quackthalia",
+    "date": "2026-09-02 15:46:09 -0300",
+    "subject": "fix(rituais): robust layout fix for expanded rituals"
+  },
+  {
+    "hash": "acf0a9c",
+    "author": "quackthalia",
+    "date": "2026-09-02 15:12:00 -0300",
+    "subject": "fix(rituais): ensure expanded image blocks exist in all modals and AbasPanel"
+  },
+  {
+    "hash": "b59dbeb",
+    "author": "quackthalia",
+    "date": "2026-09-02 14:47:34 -0300",
+    "subject": "style(rituais): apply perfect centered layout with huge sizes"
+  },
+  {
+    "hash": "4780de1",
+    "author": "quackthalia",
+    "date": "2026-09-02 14:39:03 -0300",
+    "subject": "fix(rituais): return simbolosRituais map from hook"
+  },
+  {
+    "hash": "f0d93d3",
+    "author": "quackthalia",
+    "date": "2026-09-02 14:35:55 -0300",
+    "subject": "style(rituais): increase symbol size and put on right side"
+  },
+  {
+    "hash": "cba19d8",
+    "author": "quackthalia",
+    "date": "2026-09-02 14:04:15 -0300",
+    "subject": "fix(poderes): support automatico properties with accents and case insensitive comparison"
+  },
+  {
+    "hash": "f0774ab",
+    "author": "quackthalia",
+    "date": "2026-09-02 14:00:31 -0300",
+    "subject": "fix(poderes): support Automatico? column name for class powers too"
+  },
+  {
+    "hash": "ce2af69",
+    "author": "quackthalia",
+    "date": "2026-09-02 13:54:08 -0300",
+    "subject": "fix(poderes): normalize Automatico properties from Supabase so they reach the frontend"
+  },
+  {
+    "hash": "d63c201",
+    "author": "quackthalia",
+    "date": "2026-09-02 10:36:30 -0300",
+    "subject": "feat(poderes): show auto/semi badges in power selection modals"
+  },
+  {
+    "hash": "bd4a4d7",
+    "author": "quackthalia",
+    "date": "2026-09-02 09:49:11 -0300",
+    "subject": "fix(poderes): support Automatico property for non-paranormal powers"
+  },
+  {
+    "hash": "f497c77",
+    "author": "quackthalia",
+    "date": "2026-09-02 09:44:39 -0300",
+    "subject": "fix(prerequisitos): use nex exactly instead of nivel to evaluate nex requirements and show NEX instead of Nivel in UX"
+  },
+  {
+    "hash": "b5e6dc3",
+    "author": "quackthalia",
+    "date": "2026-09-02 09:19:01 -0300",
+    "subject": "Fix click area to toggle powers in modals"
+  },
+  {
+    "hash": "47daea2",
+    "author": "quackthalia",
+    "date": "2026-09-02 08:31:25 -0300",
+    "subject": "Add Auto/Semi badges to power cards based on Automatico field"
+  },
+  {
+    "hash": "127d026",
+    "author": "quackthalia",
+    "date": "2026-09-02 08:18:34 -0300",
+    "subject": "Fix itemObj typo in ModalEditarItem"
+  },
+  {
+    "hash": "bc9634f",
+    "author": "quackthalia",
+    "date": "2026-09-02 08:15:55 -0300",
+    "subject": "Fix blocks border radius in AprimoramentosSelector modal"
+  },
+  {
+    "hash": "642cca1",
+    "author": "quackthalia",
+    "date": "2026-09-02 08:05:45 -0300",
+    "subject": "Group chosen paranormal powers by element"
+  },
+  {
+    "hash": "2b8925d",
+    "author": "quackthalia",
+    "date": "2026-09-02 08:01:49 -0300",
+    "subject": "Remove border class from element badge in powers block"
+  },
+  {
+    "hash": "a710433",
+    "author": "quackthalia",
+    "date": "2026-09-02 08:00:14 -0300",
+    "subject": "Fix left border colors and element badge layout"
+  },
+  {
+    "hash": "4b75230",
+    "author": "quackthalia",
+    "date": "2026-09-02 07:57:53 -0300",
+    "subject": "Update design of chosen powers block to use standard badges and green left border"
+  },
+  {
+    "hash": "60a2fc5",
+    "author": "quackthalia",
+    "date": "2026-09-02 07:22:14 -0300",
+    "subject": "Add background fill animation to Temporary HP bar"
+  },
+  {
+    "hash": "854b71d",
+    "author": "quackthalia",
+    "date": "2026-09-02 07:17:27 -0300",
+    "subject": "Animate Temporary HP bar appearing and disappearing"
+  },
+  {
+    "hash": "9328547",
+    "author": "quackthalia",
+    "date": "2026-09-01 08:43:41 -0300",
+    "subject": "Fix button clipping in power and track modals by adding shrink-0 and setting 170px height"
+  },
+  {
+    "hash": "047c2e3",
+    "author": "quackthalia",
+    "date": "2026-09-01 08:41:30 -0300",
+    "subject": "Increase closed card height to 155px and previewHeight to 4.5em for power and track modals"
+  },
+  {
+    "hash": "c378fc7",
+    "author": "quackthalia",
+    "date": "2026-09-01 08:14:21 -0300",
+    "subject": "Align power and track modals with fixed 130px closed height and standard Masonry"
+  },
+  {
+    "hash": "61ac96e",
+    "author": "quackthalia",
+    "date": "2026-09-01 07:49:14 -0300",
+    "subject": "Standardize card layouts and preview Collapse across all power modals"
+  },
+  {
+    "hash": "37239d4",
+    "author": "quackthalia",
+    "date": "2026-09-01 07:38:52 -0300",
+    "subject": "Remove Medo element tab from paranormal powers selection modals"
+  },
+  {
+    "hash": "3e3c994",
+    "author": "quackthalia",
+    "date": "2026-08-31 12:52:22 -0300",
+    "subject": "Fix: Set ritual cards in ModalRituais to h-full for dynamic natural height closed states"
+  },
+  {
+    "hash": "e37e76c",
+    "author": "quackthalia",
+    "date": "2026-08-31 12:45:19 -0300",
+    "subject": "Fix: Remove localMaxHeight state from Collapse to prevent animation glitches on mount and layout updates"
+  },
+  {
+    "hash": "d575182",
+    "author": "quackthalia",
+    "date": "2026-08-31 12:43:22 -0300",
+    "subject": "Fix: afinidadeAtiva useMemo in RPGContext now correctly uses level instead of NEX when rules are active, and includes level in dependency array"
+  },
+  {
+    "hash": "28b71c9",
+    "author": "quackthalia",
+    "date": "2026-08-31 12:42:19 -0300",
+    "subject": "Fix: Adjust closed card height for rituals in ModalRituais.tsx to eliminate empty space"
+  },
+  {
+    "hash": "0f40cd1",
+    "author": "quackthalia",
+    "date": "2026-08-31 12:39:50 -0300",
+    "subject": "Fix: Smooth closing transition for Collapse when changing max-height from none to 0px"
+  },
+  {
+    "hash": "9e1b761",
+    "author": "quackthalia",
+    "date": "2026-08-31 12:39:03 -0300",
+    "subject": "Fix: Collapse maxHeight set to 'none' when fully open to prevent layout overlap"
+  },
+  {
+    "hash": "810ec32",
+    "author": "quackthalia",
+    "date": "2026-08-31 08:48:13 -0300",
+    "subject": "Fix: Ocultista ritual slots calculation using level instead of NEX"
+  },
+  {
+    "hash": "d2fa227",
+    "author": "quackthalia",
+    "date": "2026-08-31 07:44:17 -0300",
+    "subject": "Fix: Add onClick handler to expand cursed item blocks in ModalItensAmaldicoados.tsx"
+  },
+  {
+    "hash": "0eee931",
+    "author": "quackthalia",
+    "date": "2026-08-31 07:43:33 -0300",
+    "subject": "Fix: Cursed items, Vestimenta select clipping, Trilha +1d20 bonus, Level-based prerequisite checks, NEX progression Transcend sanity penalty"
+  },
+  {
+    "hash": "8e2b3cf",
+    "author": "quackthalia",
+    "date": "2026-08-28 16:10:49 -0300",
+    "subject": "Fix: add defensive Array.isArray checks in maldicoesRules to prevent crash when corrupted data exists in armas/itens/municoes maldicoes fields"
+  },
+  {
+    "hash": "296ac45",
+    "author": "quackthalia",
+    "date": "2026-08-28 16:09:39 -0300",
+    "subject": "Fix: move Maldicoes block into Collapse in SortableProtecaoItem and fix element wipe bug on edit in ModalEditarProtecao"
+  },
+  {
+    "hash": "abc2999",
+    "author": "quackthalia",
+    "date": "2026-08-28 16:02:24 -0300",
+    "subject": "Fix: correct onSave signature in InventarioPanel modals to prevent corrupting modificacoes array with object data, and add defensive array checks to prevent crash from corrupted local storage state"
+  },
+  {
+    "hash": "2082c1d",
+    "author": "quackthalia",
+    "date": "2026-08-28 16:00:08 -0300",
+    "subject": "Fix: correct editarProtecao function signature in useProtecoes hook to accept maldicoes and maldicoesElementos arguments, resolving ReferenceError"
+  },
+  {
+    "hash": "63cc707",
+    "author": "quackthalia",
+    "date": "2026-08-28 15:44:52 -0300",
+    "subject": "UI: prevent flex shrink snap bug in secondary modals by correctly encapsulating taller content dimensions and enforcing shrink-0 constraints"
+  },
+  {
+    "hash": "8bb7fcf",
+    "author": "quackthalia",
+    "date": "2026-08-28 15:42:46 -0300",
+    "subject": "UI: correct collapse preview heights for secondary modals to properly fit within the newly optimized dense container dimensions, restoring visibility of action buttons"
+  },
+  {
+    "hash": "a5c1cb0",
+    "author": "quackthalia",
+    "date": "2026-08-28 15:39:39 -0300",
+    "subject": "UI: densely optimize modal layout by reducing padding, margins, and collapse preview lines to significantly decrease base block heights without causing flex shrink clipping"
+  },
+  {
+    "hash": "5bfca15",
+    "author": "quackthalia",
+    "date": "2026-08-28 15:38:06 -0300",
+    "subject": "UI: prevent flex items from shrinking when constrained by max-height to eliminate visual layout snapping upon expansion"
+  },
+  {
+    "hash": "bee1f44",
+    "author": "quackthalia",
+    "date": "2026-08-28 15:36:10 -0300",
+    "subject": "UI: restore transition-all to prevent visual snapping when lifting max-height constraint"
+  },
+  {
+    "hash": "408f820",
+    "author": "quackthalia",
+    "date": "2026-08-28 15:33:51 -0300",
+    "subject": "UI: remove conflicting transition on max-height to fix animation stutter when expanding cards"
+  },
+  {
+    "hash": "50cbef1",
+    "author": "quackthalia",
+    "date": "2026-08-28 15:31:46 -0300",
+    "subject": "UI: restore absolute max-height locking to guarantee masonry alignment now that scroll jump bug is fixed"
+  },
+  {
+    "hash": "6cd7718",
+    "author": "quackthalia",
+    "date": "2026-08-28 15:26:18 -0300",
+    "subject": "Fix: correct syntax error injected by regex and restore mathematically safe min-heights to guarantee masonry alignment"
+  },
+  {
+    "hash": "8dea637",
+    "author": "quackthalia",
+    "date": "2026-08-28 15:24:32 -0300",
+    "subject": "Fix: correctly remove conflicting inner onClicks that caused event bubbling cancellation on modals"
+  },
+  {
+    "hash": "373e709",
+    "author": "quackthalia",
+    "date": "2026-08-28 15:21:51 -0300",
+    "subject": "UI: optimize modal animations by removing conflicting max-h transitions, move click handlers to entire card area, and adjust minimum heights for compact look"
+  },
+  {
+    "hash": "d297f5e",
+    "author": "quackthalia",
+    "date": "2026-08-28 15:19:40 -0300",
+    "subject": "Fix: correct variable names in useEffect scroll dependency array for ModalItensAmaldicoados, ModalMunicoes, and ModalProtecoes"
+  },
+  {
+    "hash": "a67ccae",
+    "author": "quackthalia",
+    "date": "2026-08-28 14:56:37 -0300",
+    "subject": "Fix: prevent scroll jumping to top when expanding a card by correcting useEffect dependency arrays in all modals"
+  },
+  {
+    "hash": "6d9a194",
+    "author": "quackthalia",
+    "date": "2026-08-28 14:54:06 -0300",
+    "subject": "Fix: enforce absolute equality of closed card heights using min-h and max-h interpolation trick to guarantee masonry alignment without breaking animations"
+  },
+  {
+    "hash": "79fb25c",
+    "author": "quackthalia",
+    "date": "2026-08-28 14:51:20 -0300",
+    "subject": "Fix: revert min-heights to absolute mathematical bounds to prevent masonry row misalignment"
+  },
+  {
+    "hash": "d5d85fd",
+    "author": "quackthalia",
+    "date": "2026-08-28 14:45:30 -0300",
+    "subject": "Fix: fix typo in collapse preview height min- constraints across all modals and lock title heights to perfectly align natural card sizes"
+  },
+  {
+    "hash": "b47a5de",
+    "author": "quackthalia",
+    "date": "2026-08-28 14:42:12 -0300",
+    "subject": "UI: decrease min-height of all modal cards slightly to reduce empty vertical space while preserving alignment"
+  },
+  {
+    "hash": "06c456f",
+    "author": "quackthalia",
+    "date": "2026-08-28 14:40:16 -0300",
+    "subject": "Fix: replace hard height with min-height in masonry cards to align them perfectly without breaking CSS expand transitions"
+  },
+  {
+    "hash": "46f637e",
+    "author": "quackthalia",
+    "date": "2026-08-28 14:38:23 -0300",
+    "subject": "Fix: apply larger safe fixed heights to all closed modal cards to maintain perfect row alignment in masonry without squishing any content"
+  },
+  {
+    "hash": "b38fdb6",
+    "author": "quackthalia",
+    "date": "2026-08-28 14:35:42 -0300",
+    "subject": "Fix: remove fixed heights that were squishing cards and fix ammo attachment condition"
+  },
+  {
+    "hash": "91f23cb",
+    "author": "quackthalia",
+    "date": "2026-08-28 14:33:30 -0300",
+    "subject": "Fix: restore correct fixed heights (190px/170px) to avoid squished cards"
+  },
+  {
+    "hash": "eda3480",
+    "author": "quackthalia",
+    "date": "2026-08-28 14:32:17 -0300",
+    "subject": "Fix: add missing state declarations for maldicoes in ModalEditarProtecao"
+  },
+  {
+    "hash": "fa9c748",
+    "author": "quackthalia",
+    "date": "2026-08-28 14:30:41 -0300",
+    "subject": "Fix: apply fixed heights to unexpanded cards in all modals to perfectly align rows in masonry layout"
+  },
+  {
+    "hash": "308d4fc",
+    "author": "quackthalia",
+    "date": "2026-08-28 14:21:57 -0300",
+    "subject": "Fix: move early returns to end of hooks to fix React Rules of Hooks violations in Modals"
+  },
+  {
+    "hash": "5a9e9a0",
+    "author": "quackthalia",
+    "date": "2026-08-28 14:15:34 -0300",
+    "subject": "Fix: move scrollRef initialization after useMemo in Modals"
+  },
+  {
+    "hash": "9ba9f1d",
+    "author": "quackthalia",
+    "date": "2026-08-28 13:18:59 -0300",
+    "subject": "Corrige desalinhamento de colunas com min-w e reseta scroll nos modais ao filtrar"
+  },
+  {
+    "hash": "55c5f96",
+    "author": "quackthalia",
+    "date": "2026-08-28 13:08:03 -0300",
+    "subject": "Restaurada a verificacao de uso de municao para renderizar botao de Adicionar Municao"
+  },
+  {
+    "hash": "5bfeb58",
+    "author": "quackthalia",
+    "date": "2026-08-28 12:55:48 -0300",
+    "subject": "Corrige identificadores corrompidos por replace de acentos no ModalEditarArma"
+  },
+  {
+    "hash": "9210ed1",
+    "author": "quackthalia",
+    "date": "2026-08-28 10:25:26 -0300",
+    "subject": "Corrige acentos quebrados no ModalEditarArma apos corrupcao de encoding"
+  },
+  {
+    "hash": "947efd0",
+    "author": "quackthalia",
+    "date": "2026-08-28 10:22:01 -0300",
+    "subject": "Corrige erro de variaveis indefinidas no ModalEditarArma com efeitos de maldicoes"
+  },
+  {
+    "hash": "0901096",
+    "author": "quackthalia",
+    "date": "2026-08-28 10:19:31 -0300",
+    "subject": "Corrige ReferenceError temPredadora no ModalEditarArma"
+  },
+  {
+    "hash": "59e3968",
+    "author": "quackthalia",
+    "date": "2026-08-28 10:13:32 -0300",
+    "subject": "Modal de edicao de arma agora reflete efeitos das maldicoes (Erosiva, Lancinante, Predadora, Empuxo)"
+  },
+  {
+    "hash": "8ad1e34",
+    "author": "quackthalia",
+    "date": "2026-08-28 10:08:29 -0300",
+    "subject": "Implementa efeito da maldicao Empuxo (alcance Curto ou +1 categoria)"
+  },
+  {
+    "hash": "76442b8",
+    "author": "quackthalia",
+    "date": "2026-08-28 10:05:23 -0300",
+    "subject": "Lancinante agora adiciona +1d8* ao dano secundario"
+  },
+  {
+    "hash": "11fbfec",
+    "author": "quackthalia",
+    "date": "2026-08-28 10:01:36 -0300",
+    "subject": "Aumenta o tamanho da fonte dos aprimoramentos aplicados"
+  },
+  {
+    "hash": "6972901",
+    "author": "quackthalia",
+    "date": "2026-08-28 09:58:34 -0300",
+    "subject": "Usa o cinza escuro bg-zinc-950 para os blocos de aprimoramentos aplicados nos modais de edicao"
+  },
+  {
+    "hash": "4d4ac71",
+    "author": "quackthalia",
+    "date": "2026-08-28 09:56:11 -0300",
+    "subject": "Melhora o visual e a divisao das descricoes dos itens no inventario"
+  },
+  {
+    "hash": "0883175",
+    "author": "quackthalia",
+    "date": "2026-08-28 09:54:21 -0300",
+    "subject": "Redesign do cabecalho de expansao de maldicoes e modificacoes no painel de inventario"
+  },
+  {
+    "hash": "8733d0a",
+    "author": "quackthalia",
+    "date": "2026-08-28 09:48:32 -0300",
+    "subject": "Exibe descricoes das maldicoes nas armas e itens expandidos e refatora para usar Collapse"
+  },
+  {
+    "hash": "d43ed4f",
+    "author": "quackthalia",
+    "date": "2026-08-28 09:41:42 -0300",
+    "subject": "Mescla dano secundario ao dano principal da arma e renomeia Dado para Dano"
+  },
+  {
+    "hash": "186e4df",
+    "author": "quackthalia",
+    "date": "2026-08-28 09:06:44 -0300",
+    "subject": "Corrige typo de variavel idArma na edicao de armas"
+  },
+  {
+    "hash": "20789fa",
+    "author": "quackthalia",
+    "date": "2026-08-28 08:43:25 -0300",
+    "subject": "Remove elemento Medo do filtro de maldições"
+  },
+  {
+    "hash": "40b46e4",
+    "author": "quackthalia",
+    "date": "2026-08-28 08:42:29 -0300",
+    "subject": "Ajusta tons de cinza do modal de aprimoramentos para melhor contraste"
+  },
+  {
+    "hash": "92f318b",
+    "author": "quackthalia",
+    "date": "2026-08-28 08:19:53 -0300",
+    "subject": "Reverte Collapse nos aprimoramentos e melhora estilizacao dos cards"
+  },
+  {
+    "hash": "141e51e",
+    "author": "quackthalia",
+    "date": "2026-08-28 07:52:44 -0300",
+    "subject": "Permite visualizar aprimoramentos mesmo com limite atingido, bloqueando apenas o clique"
+  },
+  {
+    "hash": "40899df",
+    "author": "quackthalia",
+    "date": "2026-08-28 07:50:50 -0300",
+    "subject": "Remove borda das tags de elemento e ajusta aba de filtro para combinar com o modal de poderes"
+  },
+  {
+    "hash": "29898b7",
+    "author": "quackthalia",
+    "date": "2026-08-28 07:46:37 -0300",
+    "subject": "Corrige paleta de cores dos elementos no seletor de aprimoramentos e atualiza documentação"
+  },
+  {
+    "hash": "e2550a7",
+    "author": "quackthalia",
+    "date": "2026-08-28 07:43:58 -0300",
+    "subject": "Ajusta aparência dos itens no seletor para padronizar com a lista de poderes"
+  },
+  {
+    "hash": "c0651d1",
+    "author": "quackthalia",
+    "date": "2026-08-28 07:40:49 -0300",
+    "subject": "Ajusta layout do seletor para 1 coluna e ajusta largura do modal"
+  },
+  {
+    "hash": "dabc42e",
+    "author": "quackthalia",
+    "date": "2026-08-28 07:38:58 -0300",
+    "subject": "Ajusta tamanho do título Aprimoramentos para combinar com os labels"
+  },
+  {
+    "hash": "6b59766",
+    "author": "quackthalia",
+    "date": "2026-08-28 07:37:40 -0300",
+    "subject": "Fix modal: Altura fixa, largura aumentada para 3xl, e layout masonry com cards para os itens"
+  },
+  {
+    "hash": "36fba13",
+    "author": "quackthalia",
+    "date": "2026-08-28 07:30:40 -0300",
+    "subject": "Corrige sintaxe vazia após unificar os seletores nos outros modais (Proteção, Item, Munição)"
+  },
+  {
+    "hash": "ab1a158",
+    "author": "quackthalia",
+    "date": "2026-08-28 07:27:16 -0300",
+    "subject": "Unifica Modificações e Maldições em um único modal de Aprimoramentos com abas"
+  },
+  {
+    "hash": "139ef64",
+    "author": "quackthalia",
+    "date": "2026-08-28 07:19:58 -0300",
+    "subject": "Aumenta largura dos modais de seleção (max-w-md para max-w-xl)"
+  },
+  {
+    "hash": "bc7f026",
+    "author": "quackthalia",
+    "date": "2026-08-28 07:18:35 -0300",
+    "subject": "Restaura menus como Modais Flutuantes padronizados com o projeto (cores verdes ao invés de indigo)"
+  },
+  {
+    "hash": "83e6ceb",
+    "author": "quackthalia",
+    "date": "2026-08-28 07:15:25 -0300",
+    "subject": "Reverte para versão embutida padronizada para comparação"
+  },
+  {
+    "hash": "de82d87",
+    "author": "quackthalia",
+    "date": "2026-08-28 07:14:01 -0300",
+    "subject": "Transforma seleção de Modificações e Maldições em Modais Reais centralizados"
+  },
+  {
+    "hash": "6eb9c7f",
+    "author": "quackthalia",
+    "date": "2026-08-28 07:11:04 -0300",
+    "subject": "Padroniza os menus de seleção de modificação e maldição para acompanharem o visual do projeto (remover sombras, bordas espessas, backgrounds diferenciados)"
+  },
+  {
+    "hash": "ceec0c6",
+    "author": "quackthalia",
+    "date": "2026-08-28 07:08:36 -0300",
+    "subject": "Remove Medo das opções de filtros e elementos variáveis de maldições"
+  },
+  {
+    "hash": "60fef5c",
+    "author": "quackthalia",
+    "date": "2026-08-28 07:06:33 -0300",
+    "subject": "Animação de scroll suave acompanhando em tempo real a abertura dos painéis"
+  },
+  {
+    "hash": "5b4483e",
+    "author": "quackthalia",
+    "date": "2026-08-27 15:19:58 -0300",
+    "subject": "Ajusta timer do scroll automático para não engasgar com a animação e centraliza o bloco na visão"
+  },
+  {
+    "hash": "48393cc",
+    "author": "quackthalia",
+    "date": "2026-08-27 15:17:31 -0300",
+    "subject": "Adiciona auto-scroll ao abrir menu de modificações e maldições"
+  },
+  {
+    "hash": "1de3962",
+    "author": "quackthalia",
+    "date": "2026-08-27 15:11:06 -0300",
+    "subject": "Corrige destruturação da DefesaPanel"
+  },
+  {
+    "hash": "8b9b795",
+    "author": "quackthalia",
+    "date": "2026-08-27 15:09:29 -0300",
+    "subject": "Corrige destruturação esquecida de bonusVestimentas/bonusMaldicoes e expressões vírgula no StatusPanel e DefesaPanel"
+  },
+  {
+    "hash": "f4859f8",
+    "author": "quackthalia",
+    "date": "2026-08-27 15:07:23 -0300",
+    "subject": "Adiciona declaração de bonusMaldicoes perdida no RPGContext"
+  },
+  {
+    "hash": "6be048c",
+    "author": "quackthalia",
+    "date": "2026-08-27 15:05:34 -0300",
+    "subject": "Remove backslashes escapados incorretamente nos templates de className"
+  },
+  {
+    "hash": "c594360",
+    "author": "quackthalia",
+    "date": "2026-08-27 15:04:09 -0300",
+    "subject": "Corrige syntax error no callback onSave de InventarioPanel causado por replace agressivo"
+  },
+  {
+    "hash": "db9dd8e",
+    "author": "quackthalia",
+    "date": "2026-08-27 14:59:35 -0300",
+    "subject": "Remove caracteres corrompidos em InventarioPanel"
+  },
+  {
+    "hash": "589ce63",
+    "author": "quackthalia",
+    "date": "2026-08-27 14:54:29 -0300",
+    "subject": "Remove caracteres corrompidos dos comentários em maldicoesRules"
+  },
+  {
+    "hash": "ea589ac",
+    "author": "quackthalia",
+    "date": "2026-08-27 14:52:36 -0300",
+    "subject": "Corrige syntax error em maldicoesRules gerado pelo escape da crase"
+  },
+  {
+    "hash": "a620d90",
+    "author": "quackthalia",
+    "date": "2026-08-27 14:49:39 -0300",
+    "subject": "Corrige syntax error de template string em maldicoesRules"
+  },
+  {
+    "hash": "1260b98",
+    "author": "quackthalia",
+    "date": "2026-08-27 14:47:40 -0300",
+    "subject": "Redesign completo do seletor de Maldições e Modificações com visual mais limpo e moderno"
+  },
+  {
+    "hash": "1c322d4",
+    "author": "quackthalia",
+    "date": "2026-08-27 14:33:22 -0300",
+    "subject": "Permite escolher elemento para maldições com elemento 'Varia' (ex: Proteção Elemental)"
+  },
+  {
+    "hash": "adc4179",
+    "author": "quackthalia",
+    "date": "2026-08-27 14:26:38 -0300",
+    "subject": "Adiciona cálculo automático de bônus mecânicos das Maldições (Atributos, Perícias, Dano, PV, PE, Defesa, Resistências)"
+  },
+  {
+    "hash": "f271537",
+    "author": "quackthalia",
+    "date": "2026-08-27 14:09:23 -0300",
+    "subject": "Renderiza efeitos das maldições no bloco expandido de itens do inventário (Armas, Munições e Proteções)"
+  },
+  {
+    "hash": "9876aa4",
+    "author": "quackthalia",
+    "date": "2026-08-27 14:02:28 -0300",
+    "subject": "Passa as maldições no onSave dos modais de edição"
+  },
+  {
+    "hash": "bf88d76",
+    "author": "quackthalia",
+    "date": "2026-08-27 14:00:04 -0300",
+    "subject": "Corrige maldições não sendo salvas no estado global ao confirmar edição dos itens"
+  },
+  {
+    "hash": "70536b5",
+    "author": "quackthalia",
+    "date": "2026-08-27 13:56:59 -0300",
+    "subject": "Mescla renderização de modificações e maldições em uma única linha no preview fechado dos itens"
+  },
+  {
+    "hash": "cb4726f",
+    "author": "quackthalia",
+    "date": "2026-08-27 13:47:17 -0300",
+    "subject": "Corrige botão de Editar desaparecendo junto com botão de munição em armas corpo a corpo"
+  },
+  {
+    "hash": "f87f1d6",
+    "author": "quackthalia",
+    "date": "2026-08-27 13:44:57 -0300",
+    "subject": "Oculta botão de adicionar munição em armas corpo a corpo e de arremesso"
+  },
+  {
+    "hash": "a9f7b60",
+    "author": "quackthalia",
+    "date": "2026-08-27 13:43:36 -0300",
+    "subject": "Adiciona sub abas de elementos nas maldições e renderiza maldições com cores no preview dos itens"
+  },
+  {
+    "hash": "f89fbc5",
+    "author": "quackthalia",
+    "date": "2026-08-27 13:39:48 -0300",
+    "subject": "Organiza visual das maldições e adiciona abas Modificações/Maldições nos modais"
+  },
+  {
+    "hash": "9256a05",
+    "author": "quackthalia",
+    "date": "2026-08-27 13:32:36 -0300",
+    "subject": "Corrige MaldicoesSelector não sendo renderizado nos modais de edição de item"
+  },
+  {
+    "hash": "64025a3",
+    "author": "quackthalia",
+    "date": "2026-08-27 13:30:04 -0300",
+    "subject": "Corrige maldicoesHook não definido nos componentes de renderização do inventário"
+  },
+  {
+    "hash": "117ab6e",
+    "author": "quackthalia",
+    "date": "2026-08-27 13:24:06 -0300",
+    "subject": "Corrige erro de sintaxe no arquivo MaldicoesSelector"
+  },
+  {
+    "hash": "d470185",
+    "author": "quackthalia",
+    "date": "2026-08-27 13:21:56 -0300",
+    "subject": "Corrige cálculo da categoria final global no inventário"
+  },
+  {
+    "hash": "f6fb691",
+    "author": "quackthalia",
+    "date": "2026-08-27 13:21:01 -0300",
+    "subject": "Corrige custo das maldições e validação do limite da Categoria IV"
+  },
+  {
+    "hash": "ae09789",
+    "author": "quackthalia",
+    "date": "2026-08-27 13:20:05 -0300",
+    "subject": "Implementa sistema completo de Maldições com cálculo de categoria e restrições de elementos opressores"
+  },
+  {
+    "hash": "9c5caca",
+    "author": "quackthalia",
+    "date": "2026-08-27 12:59:57 -0300",
+    "subject": "Remove overflow-x-auto from PericiasTable to ensure no scrollbars"
+  },
+  {
+    "hash": "5c74eec",
+    "author": "quackthalia",
+    "date": "2026-08-27 09:55:31 -0300",
+    "subject": "Remove height constraints from PericiasTable to use window scroll"
+  },
+  {
+    "hash": "c870a9d",
+    "author": "quackthalia",
+    "date": "2026-08-27 09:50:51 -0300",
+    "subject": "Rename 'Situações Específicas' to 'Condicionais' in ModificadoresPanel"
+  },
+  {
+    "hash": "19786a4",
+    "author": "quackthalia",
+    "date": "2026-08-27 09:49:51 -0300",
+    "subject": "Replace bonus text button with dice emoji icon"
+  },
+  {
+    "hash": "c1a5a4e",
+    "author": "quackthalia",
+    "date": "2026-08-27 09:46:40 -0300",
+    "subject": "Move ModificadoresPanel to Pericias title header with Collapse animation"
+  },
+  {
+    "hash": "0697d27",
+    "author": "quackthalia",
+    "date": "2026-08-27 09:43:43 -0300",
+    "subject": "Fix ModificadoresPanel popover rendering missing in PericiasTable"
+  },
+  {
+    "hash": "b3135c0",
+    "author": "quackthalia",
+    "date": "2026-08-27 09:40:25 -0300",
+    "subject": "Change ModificadoresPanel into a floating popover above the skills table"
+  },
+  {
+    "hash": "6f032de",
+    "author": "quackthalia",
+    "date": "2026-08-27 09:38:45 -0300",
+    "subject": "Fix ModificadoresPanel not being rendered in index.tsx"
+  },
+  {
+    "hash": "fdc1954",
+    "author": "quackthalia",
+    "date": "2026-08-27 09:34:43 -0300",
+    "subject": "Move dice bonuses to a dedicated panel in the left column"
+  },
+  {
+    "hash": "dba713f",
+    "author": "quackthalia",
+    "date": "2026-08-27 08:47:31 -0300",
+    "subject": "Globally enforce scrollbar-gutter stable to prevent layout shift"
+  },
+  {
+    "hash": "e88d890",
+    "author": "quackthalia",
+    "date": "2026-08-27 08:33:45 -0300",
+    "subject": "Add Medo to element sub-navs"
+  },
+  {
+    "hash": "f34e8a5",
+    "author": "quackthalia",
+    "date": "2026-08-27 08:31:36 -0300",
+    "subject": "Remove lingering references to removed filters in cursed items modal"
+  },
+  {
+    "hash": "afceb93",
+    "author": "quackthalia",
+    "date": "2026-08-27 08:29:49 -0300",
+    "subject": "Fix undefined variable in itensFiltrados filter"
+  },
+  {
+    "hash": "d8ed9ef",
+    "author": "quackthalia",
+    "date": "2026-08-27 08:27:55 -0300",
+    "subject": "Fix syntax error in ModalRituais"
+  },
+  {
+    "hash": "5e25a80",
+    "author": "quackthalia",
+    "date": "2026-08-27 08:25:26 -0300",
+    "subject": "Fix undefined variable in cursed items modal due to cedilla encoding"
+  },
+  {
+    "hash": "f2150e4",
+    "author": "quackthalia",
+    "date": "2026-08-27 08:23:07 -0300",
+    "subject": "Standardize filters and add category separators to modal items"
+  },
+  {
+    "hash": "38beb09",
+    "author": "quackthalia",
+    "date": "2026-08-27 07:56:40 -0300",
+    "subject": "Increase preview height of expandable blocks to 4.5em across all modals"
+  },
+  {
+    "hash": "d10daac",
+    "author": "quackthalia",
+    "date": "2026-08-27 07:52:07 -0300",
+    "subject": "Fix ritual version dropdown width truncating text"
+  },
+  {
+    "hash": "3b1d947",
+    "author": "quackthalia",
+    "date": "2026-08-27 07:49:55 -0300",
+    "subject": "Revert \"Remove rigid prerequisite enforcement for selecting ritual versions\""
+  },
+  {
+    "hash": "23c8c8e",
+    "author": "quackthalia",
+    "date": "2026-08-27 07:48:02 -0300",
+    "subject": "Remove rigid prerequisite enforcement for selecting ritual versions"
+  },
+  {
+    "hash": "a5552a6",
+    "author": "quackthalia",
+    "date": "2026-08-27 07:30:40 -0300",
+    "subject": "Fix missing CustomSelect import in ModalRituaisExtra"
+  },
+  {
+    "hash": "a89d0b1",
+    "author": "quackthalia",
+    "date": "2026-08-27 07:28:42 -0300",
+    "subject": "Fix JSX syntax error in SortableItemAmaldicoado introduced during animation standardize"
+  },
+  {
+    "hash": "dec3d09",
+    "author": "quackthalia",
+    "date": "2026-08-27 07:27:28 -0300",
+    "subject": "Standardize Collapse animation speeds across all Modals and update agent rules"
+  },
+  {
+    "hash": "826470c",
+    "author": "quackthalia",
+    "date": "2026-08-27 07:25:47 -0300",
+    "subject": "Swap visual prominence between Ritual Circle and Element grouping headers"
+  },
+  {
+    "hash": "348e5c8",
+    "author": "quackthalia",
+    "date": "2026-08-27 07:22:29 -0300",
+    "subject": "Update ritual dice format to white"
+  },
+  {
+    "hash": "8ef88df",
+    "author": "quackthalia",
+    "date": "2026-08-27 07:17:27 -0300",
+    "subject": "Fix chosen cursed items lacking Collapse animation"
+  },
+  {
+    "hash": "9999041",
+    "author": "quackthalia",
+    "date": "2026-08-27 07:16:10 -0300",
+    "subject": "Fix munitions modal alignment: use Collapse to standardize base card height in masonry layout"
+  },
+  {
+    "hash": "d81bff2",
+    "author": "quackthalia",
+    "date": "2026-08-27 07:13:07 -0300",
+    "subject": "Update ammo chip style to use green theme"
+  },
+  {
+    "hash": "01bd412",
+    "author": "quackthalia",
+    "date": "2026-08-27 07:12:17 -0300",
+    "subject": "Neutralize ammo color theme across inventory and weapon chips"
+  },
+  {
+    "hash": "b008ed2",
+    "author": "quackthalia",
+    "date": "2026-08-27 07:03:06 -0300",
+    "subject": "Refactor attached ammo visual: display as inline pill/chip components"
+  },
+  {
+    "hash": "f305f0e",
+    "author": "quackthalia",
+    "date": "2026-08-26 10:40:28 -0300",
+    "subject": "Move attached ammo list to render inside the weapon's Collapse block"
+  },
+  {
+    "hash": "9d71cc2",
+    "author": "quackthalia",
+    "date": "2026-08-26 10:38:41 -0300",
+    "subject": "Replace ammo remove button emoji with SVG icon"
+  },
+  {
+    "hash": "0b9d9bf",
+    "author": "quackthalia",
+    "date": "2026-08-26 10:37:19 -0300",
+    "subject": "Fix ammo rendering: actually inject the JSX block that displays the attached ammunition"
+  },
+  {
+    "hash": "186d720",
+    "author": "quackthalia",
+    "date": "2026-08-26 10:34:46 -0300",
+    "subject": "Fix ammo button silent failure: ensure prop is mapped in array render"
+  },
+  {
+    "hash": "9f6a473",
+    "author": "quackthalia",
+    "date": "2026-08-26 10:32:08 -0300",
+    "subject": "Fix TypeError when adding ammo to weapons without category or proper name"
+  },
+  {
+    "hash": "ac20b4e",
+    "author": "quackthalia",
+    "date": "2026-08-26 10:27:59 -0300",
+    "subject": "Fix add ammo button not triggering: replace unreliable window setters hack with proper React props"
+  },
+  {
+    "hash": "c3b61c9",
+    "author": "quackthalia",
+    "date": "2026-08-26 10:26:05 -0300",
+    "subject": "Fix weapon ammo attachment: remove capability condition and restore coupled ammo list rendering"
+  },
+  {
+    "hash": "ddb8df6",
+    "author": "quackthalia",
+    "date": "2026-08-26 10:23:00 -0300",
+    "subject": "Fix Trilha syntax bug correctly without duplicating JSX syntax"
+  },
+  {
+    "hash": "42d9c96",
+    "author": "quackthalia",
+    "date": "2026-08-26 10:20:37 -0300",
+    "subject": "Standardize styling of chosen Trilha/Versatilidade block to match other abilities"
+  },
+  {
+    "hash": "f6397ab",
+    "author": "quackthalia",
+    "date": "2026-08-26 10:09:55 -0300",
+    "subject": "Fix element sorting to use standard order and reduce indentation"
+  },
+  {
+    "hash": "6dfb479",
+    "author": "quackthalia",
+    "date": "2026-08-26 10:08:57 -0300",
+    "subject": "Restore Add Ammunition button and logic to expanded weapon cards"
+  },
+  {
+    "hash": "95b44ce",
+    "author": "quackthalia",
+    "date": "2026-08-26 10:02:33 -0300",
+    "subject": "Adjust DT and element category text sizes in AbasPanel"
+  },
+  {
+    "hash": "c34fb47",
+    "author": "quackthalia",
+    "date": "2026-08-26 10:00:19 -0300",
+    "subject": "Fix atributos not defined, enlarge DT display, add clearer sub-category indentation"
+  },
+  {
+    "hash": "d8db5dc",
+    "author": "quackthalia",
+    "date": "2026-08-26 09:53:14 -0300",
+    "subject": "Fix Uncaught ReferenceError: atributos is not defined in AbasPanel"
+  },
+  {
+    "hash": "e8c6ce6",
+    "author": "quackthalia",
+    "date": "2026-08-26 09:50:26 -0300",
+    "subject": "Group learned rituals by element and display base DT in AbasPanel"
+  },
+  {
+    "hash": "e3cdd64",
+    "author": "quackthalia",
+    "date": "2026-08-26 09:37:35 -0300",
+    "subject": "Lock body scroll when opening inline edit modals in AbasPanel, PericiasTable, and ProgressaoNEXPanel"
+  },
+  {
+    "hash": "5f69376",
+    "author": "quackthalia",
+    "date": "2026-08-26 09:31:34 -0300",
+    "subject": "Increase description preview height from 36px to 54px for all Item Modals except Weapons"
+  },
+  {
+    "hash": "8057c6e",
+    "author": "quackthalia",
+    "date": "2026-08-26 08:13:09 -0300",
+    "subject": "Fix right column still showing hybrid rituals as solid red"
+  },
+  {
+    "hash": "2eb1388",
+    "author": "quackthalia",
+    "date": "2026-08-26 08:11:11 -0300",
+    "subject": "Revert ModalRituais filter UI to use tabs and increase previewHeight to 90px"
+  },
+  {
+    "hash": "148b7be",
+    "author": "quackthalia",
+    "date": "2026-08-26 07:58:48 -0300",
+    "subject": "Fix Uncaught ReferenceError by properly removing the old filter tabs UI and replacing them with Collapse"
+  },
+  {
+    "hash": "bd844fa",
+    "author": "quackthalia",
+    "date": "2026-08-26 07:52:32 -0300",
+    "subject": "Fix import syntax error in ModalRituais.tsx"
+  },
+  {
+    "hash": "47d9148",
+    "author": "quackthalia",
+    "date": "2026-08-26 07:48:58 -0300",
+    "subject": "Revamp ModalRituais: add new standard filters, split hybrid element colors, increase preview height"
+  },
+  {
+    "hash": "b36dd5c",
+    "author": "quackthalia",
+    "date": "2026-08-26 07:41:50 -0300",
+    "subject": "Revert standard Collapse transition to 0.25s and use custom 0.35s duration only for Advanced Filters"
+  },
+  {
+    "hash": "7284a98",
+    "author": "quackthalia",
+    "date": "2026-08-26 07:37:55 -0300",
+    "subject": "Fix fractional pixel drift in Masonry by using absolute 36px instead of 3.2em"
+  },
+  {
+    "hash": "549f594",
+    "author": "quackthalia",
+    "date": "2026-08-26 07:31:13 -0300",
+    "subject": "Fix search button alignment, slow down Collapse transition"
+  },
+  {
+    "hash": "b305d08",
+    "author": "quackthalia",
+    "date": "2026-08-26 07:18:16 -0300",
+    "subject": "Shrink all modal cards to smallest possible identical height to fix Masonry alignment perfectly"
+  },
+  {
+    "hash": "e183da5",
+    "author": "quackthalia",
+    "date": "2026-08-26 07:14:10 -0300",
+    "subject": "Fix CustomSelect overlapping issues by removing redundant z-index wrappers in Modals"
+  },
+  {
+    "hash": "44a69fb",
+    "author": "quackthalia",
+    "date": "2026-08-26 07:12:02 -0300",
+    "subject": "Fix Masonry grid alignment by forcing constant min-height on descriptions, and move Armas source below description"
+  },
+  {
+    "hash": "503dec0",
+    "author": "quackthalia",
+    "date": "2026-08-25 15:53:36 -0300",
+    "subject": "Restore standard cubic-bezier timing and 0.25s duration to Collapse"
+  },
+  {
+    "hash": "849f306",
+    "author": "quackthalia",
+    "date": "2026-08-25 15:49:04 -0300",
+    "subject": "Smooth out Collapse close animation and prevent resize interruptions"
+  },
+  {
+    "hash": "39ba33f",
+    "author": "quackthalia",
+    "date": "2026-08-25 15:46:38 -0300",
+    "subject": "Apply Collapse component to advanced filter bars in Modals"
+  },
+  {
+    "hash": "ae75fab",
+    "author": "quackthalia",
+    "date": "2026-08-25 11:07:36 -0300",
+    "subject": "Fix snap on Collapse close by bypassing React useEffect lag with exact boolean condition"
+  },
+  {
+    "hash": "ff3b7c9",
+    "author": "quackthalia",
+    "date": "2026-08-25 10:25:20 -0300",
+    "subject": "Fix missing close animation on Collapse by replacing 'none' with an ultra-fast 0.01s transition"
+  },
+  {
+    "hash": "a97d2bc",
+    "author": "quackthalia",
+    "date": "2026-08-25 10:19:21 -0300",
+    "subject": "Disable transition on Collapse when fully open to prevent nested expansion lag and overlap"
+  },
+  {
+    "hash": "4087c7c",
+    "author": "quackthalia",
+    "date": "2026-08-25 10:16:29 -0300",
+    "subject": "Remove reason from blocked ritual versions and make inactive descriptions more readable"
+  },
+  {
+    "hash": "d9455d8",
+    "author": "quackthalia",
+    "date": "2026-08-25 10:11:46 -0300",
+    "subject": "Replace isExpanded conditionals with Collapse component in inventory items for smooth animation"
+  },
+  {
+    "hash": "11f92b2",
+    "author": "quackthalia",
+    "date": "2026-08-25 10:09:20 -0300",
+    "subject": "Fix mapping of CustomSelect options in AbasPanel to support disabled and subtitle properties for ritual versions"
+  },
+  {
+    "hash": "4ae5aa8",
+    "author": "quackthalia",
+    "date": "2026-08-25 10:07:27 -0300",
+    "subject": "Fix state reset on unmount for ModalPoderes and ModalTrilhas"
+  },
+  {
+    "hash": "52c64d7",
+    "author": "quackthalia",
+    "date": "2026-08-25 10:00:34 -0300",
+    "subject": "Reduce default closed card heights globally to 190px, and powers to 170px for a more compact view"
+  },
+  {
+    "hash": "34464a9",
+    "author": "quackthalia",
+    "date": "2026-08-25 09:59:10 -0300",
+    "subject": "Remove previewHeight from chosen rituals and trilhas in the main sheet"
+  },
+  {
+    "hash": "bf1241c",
+    "author": "quackthalia",
+    "date": "2026-08-25 09:56:40 -0300",
+    "subject": "Fix masonry alignment by applying min-h-[220px] instead of h-[190px], avoiding snapping while keeping perfect alignment"
+  },
+  {
+    "hash": "f245338",
+    "author": "quackthalia",
+    "date": "2026-08-25 08:32:08 -0300",
+    "subject": "Remove h-190px to fix collapse animations and add line-clamp-2 to titles"
+  },
+  {
+    "hash": "75db0ca",
+    "author": "quackthalia",
+    "date": "2026-08-25 08:24:41 -0300",
+    "subject": "Apply state reset rule to all modals"
+  },
+  {
+    "hash": "a4ebb83",
+    "author": "quackthalia",
+    "date": "2026-08-25 08:19:22 -0300",
+    "subject": "Add modal state reset rule to AGENTS.md"
+  },
+  {
+    "hash": "c954768",
+    "author": "quackthalia",
+    "date": "2026-08-25 08:14:43 -0300",
+    "subject": "Fix masonry alignment by applying fixed closed height (190px)"
+  },
+  {
+    "hash": "96fb735",
+    "author": "quackthalia",
+    "date": "2026-08-25 08:10:17 -0300",
+    "subject": "Fix flex column widths, title heights, and Fonte positioning"
+  },
+  {
+    "hash": "c32dfec",
+    "author": "quackthalia",
+    "date": "2026-08-25 07:56:11 -0300",
+    "subject": "Fix remaining ModalPoderes Collapse tags"
+  },
+  {
+    "hash": "94f9052",
+    "author": "quackthalia",
+    "date": "2026-08-25 07:52:31 -0300",
+    "subject": "Fix ModalItens layout and Collapse animations"
+  },
+  {
+    "hash": "9590200",
+    "author": "quackthalia",
+    "date": "2026-08-25 07:48:04 -0300",
+    "subject": "Fix ModalPoderes Collapse animations"
+  },
+  {
+    "hash": "644c446",
+    "author": "quackthalia",
+    "date": "2026-08-25 07:45:23 -0300",
+    "subject": "Fix ModalPoderesExtra.tsx grid layout and Collapse"
+  },
+  {
+    "hash": "e16b918",
+    "author": "quackthalia",
+    "date": "2026-08-24 13:27:51 -0300",
+    "subject": "Fix ModalPoderOutraOrigem grid layout and Collapse"
+  },
+  {
+    "hash": "8153510",
+    "author": "quackthalia",
+    "date": "2026-08-24 13:23:36 -0300",
+    "subject": "Fix ModalPoderOutraClasse grid layout and Collapse"
+  },
+  {
+    "hash": "829c82a",
+    "author": "quackthalia",
+    "date": "2026-08-24 13:13:48 -0300",
+    "subject": "Fix ModalPoderOutraClasse layout and animations"
+  },
+  {
+    "hash": "ea177c1",
+    "author": "quackthalia",
+    "date": "2026-08-24 13:10:09 -0300",
+    "subject": "Fix animations and classes in ModalPoderesExtra"
+  },
+  {
+    "hash": "25ca0fb",
+    "author": "quackthalia",
+    "date": "2026-08-24 13:08:11 -0300",
+    "subject": "Fix ModalPoderes layout and animations"
+  },
+  {
+    "hash": "61320aa",
+    "author": "quackthalia",
+    "date": "2026-08-24 12:59:28 -0300",
+    "subject": "Fix selected trilhas and rituais animations in AbasPanel"
+  },
+  {
+    "hash": "ed2cd9c",
+    "author": "quackthalia",
+    "date": "2026-08-24 12:53:13 -0300",
+    "subject": "Fix ModalTrilhas layout (masonry) and animation"
+  },
+  {
+    "hash": "9ca4c3a",
+    "author": "quackthalia",
+    "date": "2026-08-24 12:17:13 -0300",
+    "subject": "Fix list rituais and trilhas selected animations and ModalTrilhas layout"
+  },
+  {
+    "hash": "9ace3d8",
+    "author": "quackthalia",
+    "date": "2026-08-24 11:20:59 -0300",
+    "subject": "Fix ModalRituais layout/animations and update AGENTS.md rules"
+  },
+  {
+    "hash": "d066888",
+    "author": "quackthalia",
+    "date": "2026-08-12 16:43:14 -0300",
+    "subject": "refactor: improve powers modal layout and element badges styling"
+  },
+  {
+    "hash": "90b5a42",
+    "author": "quackthalia",
+    "date": "2026-08-12 12:55:24 -0300",
+    "subject": "style(inventario): usa a cor do elemento para a borda esquerda do item"
+  },
+  {
+    "hash": "e4ae41c",
+    "author": "quackthalia",
+    "date": "2026-08-12 12:52:25 -0300",
+    "subject": "style(inventario): move elemento para a direita e reverte estilos para letras coloridas"
+  },
+  {
+    "hash": "5f49e5d",
+    "author": "quackthalia",
+    "date": "2026-08-12 12:47:44 -0300",
+    "subject": "fix(inventario): corrige fechamento do modal ao adicionar item amaldicoado"
+  },
+  {
+    "hash": "83bc5fa",
+    "author": "quackthalia",
+    "date": "2026-08-12 12:39:02 -0300",
+    "subject": "feat(inventario): adiciona modal de edicao para itens amaldicoados"
+  },
+  {
+    "hash": "570d2bc",
+    "author": "quackthalia",
+    "date": "2026-08-12 11:18:35 -0300",
+    "subject": "fix(inventario): fecha modal ao adicionar item e muda titulo do item para branco"
+  },
+  {
+    "hash": "2be0e27",
+    "author": "quackthalia",
+    "date": "2026-08-12 10:45:48 -0300",
+    "subject": "style(inventario): reverte sang, con, ene e varia para apenas texto, diminui tamanho das badges de medo e morte"
+  },
+  {
+    "hash": "6133c3a",
+    "author": "quackthalia",
+    "date": "2026-08-12 10:41:25 -0300",
+    "subject": "style(inventario): adiciona transparencia de 50% nos elementos e 80% no medo"
+  },
+  {
+    "hash": "eded04f",
+    "author": "quackthalia",
+    "date": "2026-08-12 10:38:40 -0300",
+    "subject": "style(inventario): padroniza todos os elementos como badges coloridas com texto branco"
+  },
+  {
+    "hash": "ebee621",
+    "author": "quackthalia",
+    "date": "2026-08-12 10:33:08 -0300",
+    "subject": "style(inventario): ajusta tamanho das badges de Medo e Morte para igualar aos outros textos"
+  },
+  {
+    "hash": "ae4bda0",
+    "author": "quackthalia",
+    "date": "2026-08-12 10:27:15 -0300",
+    "subject": "style(inventario): inverte cores de Medo e Morte para labels"
+  },
+  {
+    "hash": "520bc8d",
+    "author": "quackthalia",
+    "date": "2026-08-12 10:23:51 -0300",
+    "subject": "style(inventario): ajusta cor de Morte para preto mais escuro com sombra"
+  },
+  {
+    "hash": "9e62c2d",
+    "author": "quackthalia",
+    "date": "2026-08-12 10:14:44 -0300",
+    "subject": "feat(inventario): adicionar filtro Varia e ordernar lista por elementos"
+  },
+  {
+    "hash": "9ab16d3",
+    "author": "quackthalia",
+    "date": "2026-08-12 10:11:37 -0300",
+    "subject": "fix(inventario): manter altura fixa no modal itens amaldicoados"
+  },
+  {
+    "hash": "77ab06d",
+    "author": "quackthalia",
+    "date": "2026-08-12 10:08:21 -0300",
+    "subject": "feat(inventario): UI verde itens amaldicoados e refatoracoes"
+  },
+  {
+    "hash": "b348676",
+    "author": "deyvid",
+    "date": "2026-08-11 19:50:02 -0300",
+    "subject": "fix: corrige pré-requisitos de rituais, bugs de PD e poderes extra de outra classe/origem"
+  },
+  {
+    "hash": "7bd17d6",
+    "author": "quackthalia",
+    "date": "2026-08-11 16:14:04 -0300",
+    "subject": "feat(inventario): lida com a soqueira modificada como arma, regras da arma 71 e conserta tamanho dos modais"
+  },
+  {
+    "hash": "3f1d4f4",
+    "author": "quackthalia",
+    "date": "2026-08-10 16:32:20 -0300",
+    "subject": "feat: implementar regras de modificações, limites de inventário, DT de explosivos e correção de filtros no modal de poderes"
+  },
+  {
+    "hash": "6a07ba6",
+    "author": "quackthalia",
+    "date": "2026-08-06 15:30:31 -0300",
+    "subject": "feat: implement advanced filters for inventory, fix item ID matching, and perfect modal centering"
+  },
+  {
+    "hash": "1155154",
+    "author": "quackthalia",
+    "date": "2026-08-05 16:35:18 -0300",
+    "subject": "feat: implementar sistema de inventario (armas, municoes e protecoes)"
+  },
+  {
+    "hash": "0d6f96d",
+    "author": "quackthalia",
+    "date": "2026-08-05 14:25:56 -0300",
+    "subject": "fix: oculta mensagem de não implementado na aba Munições"
+  },
+  {
+    "hash": "b3249ec",
+    "author": "quackthalia",
+    "date": "2026-08-05 14:18:44 -0300",
+    "subject": "fix: melhora lógica de compatibilidade de munições para aceitar partes do nome"
+  },
+  {
+    "hash": "3fd15a5",
+    "author": "quackthalia",
+    "date": "2026-08-05 14:16:06 -0300",
+    "subject": "chore: adiciona alerta visual ao falhar o drop por incompatibilidade"
+  },
+  {
+    "hash": "4546417",
+    "author": "quackthalia",
+    "date": "2026-08-05 14:11:40 -0300",
+    "subject": "fix: resolve drop target id missing in dnd-kit cross context drag"
+  },
+  {
+    "hash": "da798f6",
+    "author": "quackthalia",
+    "date": "2026-08-05 14:08:28 -0300",
+    "subject": "fix: adiciona DragOverlay para resolver clipping de z-index em DndContext"
+  },
+  {
+    "hash": "3a296e2",
+    "author": "quackthalia",
+    "date": "2026-08-05 14:06:03 -0300",
+    "subject": "fix: ajusta limite de drag and drop para permitir arrastar até as armas"
+  },
+  {
+    "hash": "bb9acbc",
+    "author": "quackthalia",
+    "date": "2026-08-05 13:54:20 -0300",
+    "subject": "feat: adiciona drag and drop de munições soltas para dentro de armas compatíveis"
+  },
+  {
+    "hash": "424fbab",
+    "author": "quackthalia",
+    "date": "2026-08-05 13:51:20 -0300",
+    "subject": "style: atualiza layout do modal de editar arma e corrige opções de dropdown"
+  },
+  {
+    "hash": "f6a0f2e",
+    "author": "quackthalia",
+    "date": "2026-08-05 13:47:45 -0300",
+    "subject": "feat: adiciona modal de edição de armas completo e configurável"
+  },
+  {
+    "hash": "22f1650",
+    "author": "quackthalia",
+    "date": "2026-08-05 13:39:14 -0300",
+    "subject": "style: troca emoji de remover por SVG e mostra nome da arma na qual a munição está acoplada"
+  },
+  {
+    "hash": "c1c13d6",
+    "author": "quackthalia",
+    "date": "2026-08-05 12:43:30 -0300",
+    "subject": "fix: adiciona botão de munição em armas que não têm capacidade definida mas possuem munições compatíveis"
+  },
+  {
+    "hash": "11d5809",
+    "author": "quackthalia",
+    "date": "2026-08-05 12:37:13 -0300",
+    "subject": "fix: resolve conflito entre modifiers do dnd-kit garantindo eixo vertical estrito e limite superior"
+  },
+  {
+    "hash": "f2f1889",
+    "author": "quackthalia",
+    "date": "2026-08-05 12:35:54 -0300",
+    "subject": "fix: cria modifier customizado restrictToTopEdge e restaura restrictToVerticalAxis"
+  },
+  {
+    "hash": "41d129f",
+    "author": "quackthalia",
+    "date": "2026-08-05 12:27:19 -0300",
+    "subject": "fix: troca restrictToParentElement por restrictToWindowEdges para evitar clip do bloco"
+  },
+  {
+    "hash": "d11ee79",
+    "author": "quackthalia",
+    "date": "2026-08-05 12:26:20 -0300",
+    "subject": "feat: adiciona dnd-kit modifiers e restringe drag and drop verticalmente e ao container pai"
+  },
+  {
+    "hash": "7d08833",
+    "author": "quackthalia",
+    "date": "2026-08-05 12:23:38 -0300",
+    "subject": "fix: adiciona peso e limite de categoria das munições ao total do inventário"
+  },
+  {
+    "hash": "820c57b",
+    "author": "quackthalia",
+    "date": "2026-08-05 11:28:26 -0300",
+    "subject": "fix: resolve falso positivo de submetralhadora e metralhadora com regex"
+  },
+  {
+    "hash": "326b866",
+    "author": "quackthalia",
+    "date": "2026-08-05 11:26:02 -0300",
+    "subject": "style: corrige icone de arrastar da municao para ser o mesmo da arma"
+  },
+  {
+    "hash": "c2b7cb6",
+    "author": "quackthalia",
+    "date": "2026-08-05 11:25:06 -0300",
+    "subject": "style: transforma bloco de munição solta em bloco expansível seguindo o padrão"
+  },
+  {
+    "hash": "0eba778",
+    "author": "quackthalia",
+    "date": "2026-08-05 11:22:49 -0300",
+    "subject": "style: padroniza bloco de munição solta com o bloco de armas"
+  },
+  {
+    "hash": "528da2f",
+    "author": "quackthalia",
+    "date": "2026-08-05 11:21:10 -0300",
+    "subject": "style: padroniza modal de munições com modal de armas"
+  },
+  {
+    "hash": "6ab355a",
+    "author": "quackthalia",
+    "date": "2026-08-05 11:19:09 -0300",
+    "subject": "fix: corrige nome da tabela Municoes no supabase"
+  },
+  {
+    "hash": "10815bc",
+    "author": "quackthalia",
+    "date": "2026-08-05 11:17:09 -0300",
+    "subject": "feat: implementa o sistema de munições, modal e aba de munições no inventário"
+  },
+  {
+    "hash": "9e850e8",
+    "author": "quackthalia",
+    "date": "2026-08-05 10:56:20 -0300",
+    "subject": "fix: altera a posição dos tooltips das armas para evitar corte pela rolagem"
+  },
+  {
+    "hash": "bee774d",
+    "author": "quackthalia",
+    "date": "2026-08-05 10:46:36 -0300",
+    "subject": "fix: altera transition genérica para transition-colors para corrigir a sensibilidade do dnd-kit"
+  },
+  {
+    "hash": "ee35d03",
+    "author": "quackthalia",
+    "date": "2026-08-05 10:43:53 -0300",
+    "subject": "fix: altera CSS.Transform para CSS.Translate para evitar esticamento da arma ao arrastar"
+  },
+  {
+    "hash": "2f964f5",
+    "author": "quackthalia",
+    "date": "2026-08-05 10:42:05 -0300",
+    "subject": "fix: propaga flex-1 min-h-0 pelo flex de Seção de Inventário"
+  },
+  {
+    "hash": "5cb53cf",
+    "author": "quackthalia",
+    "date": "2026-08-05 10:40:29 -0300",
+    "subject": "fix: substitui h-full por flex-1 min-h-0 na raiz do inventário para garantir rolagem"
+  },
+  {
+    "hash": "10bada3",
+    "author": "quackthalia",
+    "date": "2026-08-05 10:38:31 -0300",
+    "subject": "fix: adiciona min-h-0 ao flex child para forçar o surgimento do scroll no inventário"
+  },
+  {
+    "hash": "dab4ce5",
+    "author": "quackthalia",
+    "date": "2026-08-05 10:36:08 -0300",
+    "subject": "fix: adiciona scroll para a lista de itens no painel de inventário"
+  },
+  {
+    "hash": "6de05aa",
+    "author": "quackthalia",
+    "date": "2026-08-05 10:31:00 -0300",
+    "subject": "fix: torna o calculo de carga das armas mais robusto e id aleatório seguro"
+  },
+  {
+    "hash": "3c31ea5",
+    "author": "quackthalia",
+    "date": "2026-08-05 10:23:16 -0300",
+    "subject": "fix: fecha bloco do inventário ao iniciar drag and drop"
+  },
+  {
+    "hash": "d471da9",
+    "author": "quackthalia",
+    "date": "2026-08-05 10:20:52 -0300",
+    "subject": "fix: resolve erro de importação de DragEndEvent e remove código duplicado"
+  },
+  {
+    "hash": "66cb2bb",
+    "author": "quackthalia",
+    "date": "2026-08-05 10:19:32 -0300",
+    "subject": "feat: implementa reordenação de itens no inventário com dnd-kit"
+  },
+  {
+    "hash": "f5c35b0",
+    "author": "quackthalia",
+    "date": "2026-08-05 10:12:51 -0300",
+    "subject": "fix: corrige concatenação de espaços e mapeamento de categorias de itens no inventário"
+  },
+  {
+    "hash": "c73a6a8",
+    "author": "quackthalia",
+    "date": "2026-08-05 10:07:49 -0300",
+    "subject": "style: ajusta visual dos botões de categoria e restaura caixas de dado/crítico"
+  },
+  {
+    "hash": "56c1b47",
+    "author": "quackthalia",
+    "date": "2026-08-05 10:03:52 -0300",
+    "subject": "fix: corrige erro de sintaxe JSX e encerramento de divs no inventário"
+  },
+  {
+    "hash": "14403f9",
+    "author": "quackthalia",
+    "date": "2026-08-05 10:00:41 -0300",
+    "subject": "feat: move botões de categoria para o topo e ajusta tooltip do ícone"
+  },
+  {
+    "hash": "576a0d8",
+    "author": "quackthalia",
+    "date": "2026-08-05 09:54:28 -0300",
+    "subject": "style: remove caixas de dado/crítico, restaura tooltips e ajusta fontes"
+  },
+  {
+    "hash": "b013cc2",
+    "author": "quackthalia",
+    "date": "2026-08-05 09:49:52 -0300",
+    "subject": "style: move dado e crítico para debaixo do título da arma"
+  },
+  {
+    "hash": "fe4fa87",
+    "author": "quackthalia",
+    "date": "2026-08-05 09:46:23 -0300",
+    "subject": "style: restaura cabeçalho da arma, diminui botão de adicionar e melhora proporções"
+  },
+  {
+    "hash": "7a7bf71",
+    "author": "quackthalia",
+    "date": "2026-08-05 09:42:27 -0300",
+    "subject": "style: ajusta layout da lista de armas, remove roxo e check mark"
+  },
+  {
+    "hash": "81c7eef",
+    "author": "quackthalia",
+    "date": "2026-08-05 09:39:26 -0300",
+    "subject": "style: uniformiza lista de armas e remove ícone incorreto"
+  },
+  {
+    "hash": "02ba276",
+    "author": "quackthalia",
+    "date": "2026-08-05 09:36:17 -0300",
+    "subject": "style(inventario): estiliza botões laterais como abas contínuas"
+  },
+  {
+    "hash": "552c295",
+    "author": "quackthalia",
+    "date": "2026-08-05 09:18:47 -0300",
+    "subject": "style(inventario): muda botões de categorias para barra lateral com ícones"
+  },
+  {
+    "hash": "3326db2",
+    "author": "quackthalia",
+    "date": "2026-08-05 09:00:40 -0300",
+    "subject": "fix(useArmas): corrige import para type-only"
+  },
+  {
+    "hash": "d3370f7",
+    "author": "quackthalia",
+    "date": "2026-08-05 08:58:25 -0300",
+    "subject": "feat(inventario): implementa sistema de armas com modal, blocos expansíveis, carga e contagem por categoria"
+  },
+  {
+    "hash": "4336b13",
+    "author": "quackthalia",
+    "date": "2026-07-29 12:51:52 -0300",
+    "subject": "style(PericiasTable): adiciona o nome da trilha no bônus de perícia"
+  },
+  {
+    "hash": "5f11726",
+    "author": "quackthalia",
+    "date": "2026-07-29 12:50:29 -0300",
+    "subject": "style(PericiasTable): simplifica o texto do bônus da trilha"
+  },
+  {
+    "hash": "731ef42",
+    "author": "quackthalia",
+    "date": "2026-07-29 12:48:51 -0300",
+    "subject": "fix(PericiasTable): adiciona destructuring ausente de trilhasHook"
+  },
+  {
+    "hash": "15e62f3",
+    "author": "quackthalia",
+    "date": "2026-07-29 12:46:28 -0300",
+    "subject": "feat(PericiasTable): adiciona aviso de +1d20 para perícia da trilha (se o personagem já era treinado)"
+  },
+  {
+    "hash": "9c83a1a",
+    "author": "quackthalia",
+    "date": "2026-07-29 12:40:11 -0300",
+    "subject": "fix(PericiasTable): remove o texto do placeholder quando a regra 65 está ativa"
+  },
+  {
+    "hash": "aea066e",
+    "author": "quackthalia",
+    "date": "2026-07-29 08:14:53 -0300",
+    "subject": "fix(regras): adiciona as resistências da regra 65 que faltaram"
+  },
+  {
+    "hash": "424a027",
+    "author": "quackthalia",
+    "date": "2026-07-29 07:33:09 -0300",
+    "subject": "feat(regras): implementação da regra automática 65"
+  },
+  {
+    "hash": "d2c52d4",
+    "author": "quackthalia",
+    "date": "2026-07-28 10:27:23 -0300",
+    "subject": "feat(regras): implementação das regras automáticas 62, 63 e 64"
+  },
+  {
+    "hash": "cd8692b",
+    "author": "quackthalia",
+    "date": "2026-07-28 10:20:35 -0300",
+    "subject": "feat(AbasPanel): melhora os textos dos slots extras gerados pela regra 61 (Recompensa Racional)"
+  },
+  {
+    "hash": "1d9c69d",
+    "author": "quackthalia",
+    "date": "2026-07-28 10:16:47 -0300",
+    "subject": "fix(AbasPanel): importa periciasHook em AbasPanel para prevenir ReferenceError"
+  },
+  {
+    "hash": "1c110e0",
+    "author": "quackthalia",
+    "date": "2026-07-28 10:10:43 -0300",
+    "subject": "fix(regras): correção na validação de NEX ao usar a regra opcional Nível de Experiência"
+  },
+  {
+    "hash": "e36706c",
+    "author": "quackthalia",
+    "date": "2026-07-28 09:08:46 -0300",
+    "subject": "fix(regras): correção da regra 46 que validava os requisitos de Recompensa Racional de forma falha"
+  },
+  {
+    "hash": "5f49fdf",
+    "author": "quackthalia",
+    "date": "2026-07-28 08:54:53 -0300",
+    "subject": "fix(regras): correção da regra 60 (status não estava sendo importado)"
+  },
+  {
+    "hash": "d0b34ee",
+    "author": "quackthalia",
+    "date": "2026-07-28 08:10:40 -0300",
+    "subject": "feat(regras): implementação das regras 59, 60 e 61"
+  },
+  {
+    "hash": "45aff57",
+    "author": "quackthalia",
+    "date": "2026-07-28 08:05:44 -0300",
+    "subject": "feat(regras): implementação das regras 56 (percepcao e visao no escuro), 57 (furtividade +5) e 58 (furtividade +10)"
+  },
+  {
+    "hash": "07195a0",
+    "author": "quackthalia",
+    "date": "2026-07-28 07:58:08 -0300",
+    "subject": "feat(regras): Regra 55 agora da passivamente +5 nas pericias de diplomacia intimidação e intuição"
+  },
+  {
+    "hash": "4957a32",
+    "author": "quackthalia",
+    "date": "2026-07-28 07:53:37 -0300",
+    "subject": "fix(regras): penalidade de sanidade de poderes paranormais agora é sincronizada corretamente com o useStatus (calculando o valor real da penalidade por classe em vez da mera quantidade)"
+  },
+  {
+    "hash": "95a8167",
+    "author": "quackthalia",
+    "date": "2026-07-28 07:46:15 -0300",
+    "subject": "fix(regras): Sangue Fervente agora sobe o atributo visualmente na interface (regras 53 e 54) e ganha UI de botoes mais bonita"
+  },
+  {
+    "hash": "e508c0b",
+    "author": "quackthalia",
+    "date": "2026-07-28 07:37:07 -0300",
+    "subject": "fix(ui): adiciona afinidadeEditando no destructuring do contexto no modal"
+  },
+  {
+    "hash": "0fb0074",
+    "author": "quackthalia",
+    "date": "2026-07-28 07:34:41 -0300",
+    "subject": "fix(ui): prioriza a leitura do texto customizado de afinidade salvo pelo usuario"
+  },
+  {
+    "hash": "8a2a8e6",
+    "author": "quackthalia",
+    "date": "2026-07-28 07:32:44 -0300",
+    "subject": "feat(ui): carrega o texto da afinidade ao editar um poder e ajusta layout do modal"
+  },
+  {
+    "hash": "cbd2b3a",
+    "author": "quackthalia",
+    "date": "2026-07-28 07:27:10 -0300",
+    "subject": "feat(ui): converte campo afinidade para rich text e adiciona fechamento no click fora"
+  },
+  {
+    "hash": "66f411e",
+    "author": "quackthalia",
+    "date": "2026-07-28 07:19:32 -0300",
+    "subject": "fix(poderes): Sangue Fervente (Afinidade) agora mantem o PV passivo do Sangue de Ferro"
+  },
+  {
+    "hash": "a8a528d",
+    "author": "quackthalia",
+    "date": "2026-07-28 07:15:19 -0300",
+    "subject": "fix(poderes): exibe tipo ou classe real do poder em vez do cod hardcoded"
+  },
+  {
+    "hash": "da85dc5",
+    "author": "quackthalia",
+    "date": "2026-07-28 07:11:09 -0300",
+    "subject": "fix: Correcao do ModalPoderOutraClasse para filtrar corretamente pelo nex da habilidade, e correcao dos logs."
+  },
+  {
+    "hash": "11e6ea4",
+    "author": "quackthalia",
+    "date": "2026-07-23 16:30:27 -0300",
+    "subject": "feat: implementar regras 34, 35 e 36"
+  },
+  {
+    "hash": "0b940a6",
+    "author": "quackthalia",
+    "date": "2026-07-22 16:46:06 -0300",
+    "subject": "feat: implementar regras 25 a 30 e Aba de Bônus de Dados"
+  },
+  {
+    "hash": "1735d78",
+    "author": "quackthalia",
+    "date": "2026-07-22 14:29:31 -0300",
+    "subject": "fix(poderes): adiciona variavel deletada acidentalmente em AbasPanel"
+  },
+  {
+    "hash": "36fa7cd",
+    "author": "quackthalia",
+    "date": "2026-07-22 14:25:18 -0300",
+    "subject": "fix(poderes): corrige tracking de afinidade para poderes com variaveis no nome"
+  },
+  {
+    "hash": "5ab7537",
+    "author": "quackthalia",
+    "date": "2026-07-22 14:10:17 -0300",
+    "subject": "fix(regras): corrige importacao do codigo_regra para poderes paranormais e arruma a afinidade 19"
+  },
+  {
+    "hash": "2653bf8",
+    "author": "quackthalia",
+    "date": "2026-07-22 14:07:22 -0300",
+    "subject": "fix(poderes): corrige identificacao de poderes com variaveis e remove select manual da regra 18"
+  },
+  {
+    "hash": "f1db986",
+    "author": "quackthalia",
+    "date": "2026-07-22 14:00:59 -0300",
+    "subject": "feat(ui): adiciona ordem customizada para proficiencias de armas e protecoes"
+  },
+  {
+    "hash": "df74101",
+    "author": "quackthalia",
+    "date": "2026-07-22 13:59:24 -0300",
+    "subject": "fix(ui): consolida itensExtras e itens antes de ordenar em BadgeBlock"
+  },
+  {
+    "hash": "170e626",
+    "author": "quackthalia",
+    "date": "2026-07-22 13:56:49 -0300",
+    "subject": "fix(regras): corrige check de prereq de nex e ordena badges"
+  },
+  {
+    "hash": "27da7b0",
+    "author": "quackthalia",
+    "date": "2026-07-22 13:51:34 -0300",
+    "subject": "fix(regras): corrige leitura de codigoRegra de poderesEscolhidos"
+  },
+  {
+    "hash": "95b1eaa",
+    "author": "quackthalia",
+    "date": "2026-07-22 13:46:45 -0300",
+    "subject": "feat(regras): adiciona regras 19, 20 e 21 (Proteções Pesadas e Elemento)"
+  },
+  {
+    "hash": "c0f76d7",
+    "author": "quackthalia",
+    "date": "2026-07-22 13:39:25 -0300",
+    "subject": "fix(regras): importa regrasAutomaticasAtivas no DefesaPanel"
+  },
+  {
+    "hash": "5522949",
+    "author": "quackthalia",
+    "date": "2026-07-22 13:37:33 -0300",
+    "subject": "refactor(regras): unifica regras ativas (Origens + Poderes) via regrasAutomaticasAtivas"
+  },
+  {
+    "hash": "3f15033",
+    "author": "quackthalia",
+    "date": "2026-07-22 13:26:45 -0300",
+    "subject": "feat(regras): implementa Regras 16, 17 e 18"
+  },
+  {
+    "hash": "2f02b50",
+    "author": "quackthalia",
+    "date": "2026-07-22 13:05:54 -0300",
+    "subject": "feat(regras): implementa Regras 13, 14 e 15"
+  },
+  {
+    "hash": "0d27e14",
+    "author": "quackthalia",
+    "date": "2026-07-22 12:52:33 -0300",
+    "subject": "feat(regras): implementa Regra 12 (+2 def e +3m desloc)"
+  },
+  {
+    "hash": "c2399e4",
+    "author": "quackthalia",
+    "date": "2026-07-22 11:25:24 -0300",
+    "subject": "fix(regras): corrige contagem de rituais de sangue na regra 11"
+  },
+  {
+    "hash": "92578a7",
+    "author": "quackthalia",
+    "date": "2026-07-22 11:23:16 -0300",
+    "subject": "feat(regras): implementa Regra 11 (RD Mental 2 + 1 a cada 2 de sangue)"
+  },
+  {
+    "hash": "699da83",
+    "author": "quackthalia",
+    "date": "2026-07-22 11:05:46 -0300",
+    "subject": "feat(regras): implementa Regra 10 (+5 PV)"
+  },
+  {
+    "hash": "5eb7003",
+    "author": "quackthalia",
+    "date": "2026-07-22 11:02:11 -0300",
+    "subject": "feat(regras): implementa Regra 9 (RD 2)"
+  },
+  {
+    "hash": "ecb4469",
+    "author": "quackthalia",
+    "date": "2026-07-22 10:40:28 -0300",
+    "subject": "feat(regras): implementa Regra 8 (+2 em Outros de Diplomacia)"
+  },
+  {
+    "hash": "be4d3e4",
+    "author": "quackthalia",
+    "date": "2026-07-22 10:27:14 -0300",
+    "subject": "feat(regras): implementa Regra 7 (+1 Sanidade por nivel)"
+  },
+  {
+    "hash": "74e48d8",
+    "author": "quackthalia",
+    "date": "2026-07-22 10:15:26 -0300",
+    "subject": "feat(regras): implementa Regra 6 (+1 PE em niveis impares e +1 Limite de PE)"
+  },
+  {
+    "hash": "dc3b835",
+    "author": "quackthalia",
+    "date": "2026-07-22 10:13:22 -0300",
+    "subject": "fix(regras): altera badges extras para usarem as cores padrao de badge"
+  },
+  {
+    "hash": "c029f56",
+    "author": "quackthalia",
+    "date": "2026-07-22 10:07:43 -0300",
+    "subject": "feat(regras): implementa Regra 5 (resistência mental baseado em INT)"
+  },
+  {
+    "hash": "2e16d43",
+    "author": "quackthalia",
+    "date": "2026-07-22 09:58:52 -0300",
+    "subject": "fix(regras): remove cor vermelha de destaque do defOutros na regra 4"
+  },
+  {
+    "hash": "4dba289",
+    "author": "quackthalia",
+    "date": "2026-07-22 09:55:32 -0300",
+    "subject": "feat(regras): implementa Regra 4 de bonus de +2 de defesa em outros"
+  },
+  {
+    "hash": "ff9bde4",
+    "author": "quackthalia",
+    "date": "2026-07-22 09:16:52 -0300",
+    "subject": "feat(inventario): patente selecionada altera o prestigio diretamente"
+  },
+  {
+    "hash": "fb1ccaa",
+    "author": "quackthalia",
+    "date": "2026-07-22 09:11:45 -0300",
+    "subject": "fix(inventario): tira gap imenso da esquerda das labels"
+  },
+  {
+    "hash": "9abbaa6",
+    "author": "quackthalia",
+    "date": "2026-07-22 09:10:18 -0300",
+    "subject": "fix(inventario): usa min-w para labels e permite flex wrap fluido"
+  },
+  {
+    "hash": "f174142",
+    "author": "quackthalia",
+    "date": "2026-07-22 09:07:44 -0300",
+    "subject": "fix(inventario): forca layout grid restrito"
+  },
+  {
+    "hash": "33b9667",
+    "author": "quackthalia",
+    "date": "2026-07-22 09:06:31 -0300",
+    "subject": "fix(inventario): restaura visual padrao mantendo layout alinhado"
+  },
+  {
+    "hash": "f593635",
+    "author": "quackthalia",
+    "date": "2026-07-22 09:03:12 -0300",
+    "subject": "fix(inventario): usa import type para Patente e LimiteCredito no InventarioPanel"
+  },
+  {
+    "hash": "779af19",
+    "author": "quackthalia",
+    "date": "2026-07-22 09:02:02 -0300",
+    "subject": "feat(inventario): cria aba basica de inventario com regra 3 de limite de credito"
+  },
+  {
+    "hash": "589884c",
+    "author": "quackthalia",
+    "date": "2026-07-22 07:28:57 -0300",
+    "subject": "feat(regras): adiciona suporte a Regra 2 (aumento de vida por nivel)"
+  },
+  {
+    "hash": "af8016f",
+    "author": "quackthalia",
+    "date": "2026-07-21 15:12:27 -0300",
+    "subject": "fix(regras): renomeia poder para Transcender (Origem) e evita que reduza sanidade novamente"
+  },
+  {
+    "hash": "6f89987",
+    "author": "quackthalia",
+    "date": "2026-07-21 15:08:50 -0300",
+    "subject": "fix(regras): evita duplicacao do poder da regra 1 na lista de poderes extras"
+  },
+  {
+    "hash": "4bc9ce9",
+    "author": "quackthalia",
+    "date": "2026-07-21 15:05:19 -0300",
+    "subject": "fix(regras): passa codigoRegra para o useStatus para que ele aplique a sanidade reduzida da Regra 1"
+  },
+  {
+    "hash": "c877578",
+    "author": "quackthalia",
+    "date": "2026-07-21 14:58:17 -0300",
+    "subject": "fix(regras): importa calcularStatusBase no RPGContext"
+  },
+  {
+    "hash": "a3e9847",
+    "author": "quackthalia",
+    "date": "2026-07-21 14:54:49 -0300",
+    "subject": "feat(regras): adiciona suporte a Regra 1 (sanidade pela metade e poder paranormal extra)"
+  },
+  {
+    "hash": "fda3e47",
+    "author": "quackthalia",
+    "date": "2026-07-21 14:22:51 -0300",
+    "subject": "style(origens): ajusta largura da tela para 820px"
+  },
+  {
+    "hash": "c2b3001",
+    "author": "quackthalia",
+    "date": "2026-07-21 14:10:11 -0300",
+    "subject": "style(origens): ajusta largura da tela para 4xl"
+  },
+  {
+    "hash": "551cb21",
+    "author": "quackthalia",
+    "date": "2026-07-21 14:09:25 -0300",
+    "subject": "style(origens): aumenta largura maxima da tela de origens para acomodar as abas"
+  },
+  {
+    "hash": "3148f2d",
+    "author": "quackthalia",
+    "date": "2026-07-21 14:05:22 -0300",
+    "subject": "style(origens): ajusta formato e scroll horizontal das abas de grupos"
+  },
+  {
+    "hash": "69c03ed",
+    "author": "quackthalia",
+    "date": "2026-07-21 14:04:01 -0300",
+    "subject": "fix(origens): corrige nome da tabela Grupo de Origens no supabase"
+  },
+  {
+    "hash": "5111308",
+    "author": "quackthalia",
+    "date": "2026-07-21 14:02:39 -0300",
+    "subject": "feat(origens): adiciona filtro de grupos por abas e refatora checagem de origem artistica (regra 36) para usar Codigo_Grupo 5"
+  },
+  {
+    "hash": "3131bd7",
+    "author": "quackthalia",
+    "date": "2026-07-21 13:26:42 -0300",
+    "subject": "feat(origens): adiciona barra de busca na listagem de origens"
+  },
+  {
+    "hash": "08c1cc1",
+    "author": "quackthalia",
+    "date": "2026-07-21 09:56:32 -0300",
+    "subject": "feat(origens): implementa novas regras automáticas de perícias de origens e check para Regra 6"
+  },
+  {
+    "hash": "8cf791f",
+    "author": "quackthalia",
+    "date": "2026-07-21 08:44:37 -0300",
+    "subject": "style(ficha): adiciona max-width e quebra de palavras nas badges de status, e alinha paddings"
+  },
+  {
+    "hash": "3080b17",
+    "author": "quackthalia",
+    "date": "2026-07-21 08:40:02 -0300",
+    "subject": "style(ficha): substitui texto por icone svg animado no botao de expandir"
+  },
+  {
+    "hash": "041b925",
+    "author": "quackthalia",
+    "date": "2026-07-21 08:38:39 -0300",
+    "subject": "feat(ficha): agrupa propriedades secundarias em um toggle collapsible de Outros"
+  },
+  {
+    "hash": "fe2c479",
+    "author": "quackthalia",
+    "date": "2026-07-21 08:35:10 -0300",
+    "subject": "style(ficha): aumenta min-width dos labels para alinhar nova aba de vulnerabilidades"
+  },
+  {
+    "hash": "93a1a18",
+    "author": "quackthalia",
+    "date": "2026-07-21 08:33:47 -0300",
+    "subject": "feat(ficha): adiciona campo de Vulnerabilidades no painel de status"
+  },
+  {
+    "hash": "9ffc3cb",
+    "author": "quackthalia",
+    "date": "2026-07-21 08:30:26 -0300",
+    "subject": "feat(ficha): corrige verificação de poderes paranormais, remove sub-aba redundante e adiciona Sentidos e Imunidades"
+  },
+  {
+    "hash": "d7ebbc7",
+    "author": "quackthalia",
+    "date": "2026-07-21 08:03:28 -0300",
+    "subject": "feat(ficha): implementa scroll nas abas, corrige espaçamento da progressão e limpeza de poderes paranormais"
+  },
+  {
+    "hash": "b47269e",
+    "author": "quackthalia",
+    "date": "2026-07-20 16:00:14 -0300",
+    "subject": "style: remove label de descricao acima das toolbars"
+  },
+  {
+    "hash": "7ae49a6",
+    "author": "quackthalia",
+    "date": "2026-07-20 15:55:06 -0300",
+    "subject": "feat: adiciona barra de formatacao com botoes de negrito e italico em todos os editores de texto"
+  },
+  {
+    "hash": "285bf6c",
+    "author": "quackthalia",
+    "date": "2026-07-20 15:28:48 -0300",
+    "subject": "fix: ajusta o escopo da variavel effectiveNex no painel de habilidades"
+  },
+  {
+    "hash": "475a311",
+    "author": "quackthalia",
+    "date": "2026-07-20 15:26:40 -0300",
+    "subject": "style: converte edicao inline para modal popup"
+  },
+  {
+    "hash": "d2c986e",
+    "author": "quackthalia",
+    "date": "2026-07-20 15:24:52 -0300",
+    "subject": "style: padroniza o botao de editar da progressao nex pra ficar igual ao resto do app"
+  },
+  {
+    "hash": "268fc5b",
+    "author": "quackthalia",
+    "date": "2026-07-20 15:22:31 -0300",
+    "subject": "fix: adiciona progressaoNexEditados no destructuring e corrige o calculo de status para usar nivel em vez de nex"
+  },
+  {
+    "hash": "471c8b8",
+    "author": "quackthalia",
+    "date": "2026-07-20 15:17:07 -0300",
+    "subject": "feat: adiciona edicao inline para blocos de progressao nex"
+  },
+  {
+    "hash": "25a5288",
+    "author": "quackthalia",
+    "date": "2026-07-20 15:07:33 -0300",
+    "subject": "fix: restringe o modal de poderes para apenas paranormais ao clicar em Transcender"
+  },
+  {
+    "hash": "2b03a04",
+    "author": "quackthalia",
+    "date": "2026-07-20 15:03:45 -0300",
+    "subject": "fix: separa slot de transcender e slot de poder de classe pra n haver sobrescrita"
+  },
+  {
+    "hash": "2c8af9d",
+    "author": "quackthalia",
+    "date": "2026-07-20 14:55:55 -0300",
+    "subject": "fix: adiciona type no import de ProgressaoNexItem para resolver erro de compilacao do Vite"
+  },
+  {
+    "hash": "ede6093",
+    "author": "quackthalia",
+    "date": "2026-07-20 14:50:52 -0300",
+    "subject": "fix: devolve a tipagem perdida de ProgressaoNexItem"
+  },
+  {
+    "hash": "9dc70dd",
+    "author": "quackthalia",
+    "date": "2026-07-20 14:49:06 -0300",
+    "subject": "style: padroniza design do bloco de progressao nex com o resto do app"
+  },
+  {
+    "hash": "d912be8",
+    "author": "quackthalia",
+    "date": "2026-07-20 14:44:38 -0300",
+    "subject": "feat: refatora progressao nex panel pra ser blocos e ter edicao de poderes"
+  },
+  {
+    "hash": "e3ad6d8",
+    "author": "quackthalia",
+    "date": "2026-07-20 14:34:15 -0300",
+    "subject": "fix: reverte nome da tabela para Progressao NEX"
+  },
+  {
+    "hash": "dcb88c4",
+    "author": "quackthalia",
+    "date": "2026-07-20 14:32:55 -0300",
+    "subject": "fix: remove papaparse e conserta nome da tabela de progressao"
+  },
+  {
+    "hash": "5bd7471",
+    "author": "quackthalia",
+    "date": "2026-07-20 14:27:41 -0300",
+    "subject": "chore: adiciona log de debug para pre requisitos"
+  },
+  {
+    "hash": "64643f8",
+    "author": "quackthalia",
+    "date": "2026-07-20 14:19:28 -0300",
+    "subject": "fix: adiciona fallback para CSV em useProgressaoNex.ts caso o Supabase falhe por RLS e instala papaparse"
+  },
+  {
+    "hash": "1027306",
+    "author": "quackthalia",
+    "date": "2026-07-20 14:14:57 -0300",
+    "subject": "fix: Habilidades não desbloqueavam ao upar de Nível com regra NEX & Experiência ativa"
+  },
+  {
+    "hash": "75425d1",
+    "author": "quackthalia",
+    "date": "2026-07-20 14:11:22 -0300",
+    "subject": "fix: remove papaparse e puxa Progressão NEX do Supabase"
+  },
+  {
+    "hash": "19ef344",
+    "author": "quackthalia",
+    "date": "2026-07-20 14:07:37 -0300",
+    "subject": "chore: clean up diff files"
+  },
+  {
+    "hash": "dea2cbd",
+    "author": "quackthalia",
+    "date": "2026-07-20 14:07:21 -0300",
+    "subject": "Corrige bug no componente ProgressaoNEXPanel que não foi importado"
+  },
+  {
+    "hash": "f86d910",
+    "author": "quackthalia",
+    "date": "2026-07-20 14:04:24 -0300",
+    "subject": "Implementa verificação de pré-requisitos de afinidade"
+  },
+  {
+    "hash": "4de2415",
+    "author": "quackthalia",
+    "date": "2026-07-20 13:46:04 -0300",
+    "subject": "Permite validação de pré-requisitos para códigos acima de 30"
+  },
+  {
+    "hash": "bf0c608",
+    "author": "quackthalia",
+    "date": "2026-07-20 13:44:20 -0300",
+    "subject": "Corrige nome da coluna do Supabase para regras de poderes paranormais"
+  },
+  {
+    "hash": "af54c13",
+    "author": "quackthalia",
+    "date": "2026-07-20 13:42:34 -0300",
+    "subject": "Corrige verificação de pré-requisitos para poderes paranormais"
+  },
+  {
+    "hash": "b24e6fc",
+    "author": "quackthalia",
+    "date": "2026-07-20 13:35:24 -0300",
+    "subject": "Move a Progressão de NEX para o final da aba Habilidades"
+  },
+  {
+    "hash": "a8ead8c",
+    "author": "quackthalia",
+    "date": "2026-07-20 13:33:05 -0300",
+    "subject": "Implementa regra de Progressão de NEX e separa de Nível"
+  },
+  {
+    "hash": "ff8e80e",
+    "author": "quackthalia",
+    "date": "2026-07-20 12:59:37 -0300",
+    "subject": "Corrige bug no carregamento de poderes da classe (Especialista e Ocultista)"
+  },
+  {
+    "hash": "8058d26",
+    "author": "quackthalia",
+    "date": "2026-07-20 12:45:47 -0300",
+    "subject": "Implementa regras 31-48 e refatora ContextoPreRequisitos"
+  },
+  {
+    "hash": "33f5ac2",
+    "author": "quackthalia",
+    "date": "2026-07-20 09:19:04 -0300",
+    "subject": "fix(UI): ajustes em trilhas, defesa e cores duplas em rituais extra"
+  },
+  {
+    "hash": "dfebc8b",
+    "author": "quackthalia",
+    "date": "2026-07-17 16:37:15 -0300",
+    "subject": "feat: melhorias no layout single-page, lógica de Sanidade/Paranormal, Modal de Perícia e separação de bloqueios cronológicos"
+  },
+  {
+    "hash": "5667aed",
+    "author": "quackthalia",
+    "date": "2026-07-17 09:56:40 -0300",
+    "subject": "feat: implementar regras de pre-requisito 16-20, mecânica de escolha de Elemento e desbloqueio cronológico de slots"
+  },
+  {
+    "hash": "6c3a47e",
+    "author": "quackthalia",
+    "date": "2026-07-16 16:45:44 -0300",
+    "subject": "feat: implement prerequisite rules 6-10 and fix Trilha powers validation"
+  },
+  {
+    "hash": "c5fae50",
+    "author": "quackthalia",
+    "date": "2026-07-15 16:47:22 -0300",
+    "subject": "feat: add affinity system, ritual version constraints, and ui layout polish"
+  },
+  {
+    "hash": "ec1e403",
+    "author": "quackthalia",
+    "date": "2026-07-15 12:47:39 -0300",
+    "subject": "fix: Preservar configurações (como a Fonte) feitas pelo usuário no poder Aprender Ritual ao selecionar o ritual"
+  },
+  {
+    "hash": "fa7bfb5",
+    "author": "quackthalia",
+    "date": "2026-07-15 12:42:14 -0300",
+    "subject": "style: Removido delay na troca do modal de poderes para modal de rituais para evitar piscar a tela de fundo"
+  },
+  {
+    "hash": "22259bd",
+    "author": "quackthalia",
+    "date": "2026-07-15 12:38:26 -0300",
+    "subject": "fix: Correção da origem de slots de combate para o poder Aprender Ritual para garantir o cálculo correto de elemento"
+  },
+  {
+    "hash": "d2c1105",
+    "author": "quackthalia",
+    "date": "2026-07-15 12:34:36 -0300",
+    "subject": "style: Removida transição forçada de aba ao abrir popup de rituais pelo poder Aprender Ritual"
+  },
+  {
+    "hash": "13a3566",
+    "author": "quackthalia",
+    "date": "2026-07-15 12:30:55 -0300",
+    "subject": "feat: Adicionado atalho para abrir o Modal de Rituais diretamente após escolher o poder Aprender Ritual"
+  },
+  {
+    "hash": "fdd6a3b",
+    "author": "quackthalia",
+    "date": "2026-07-15 12:17:06 -0300",
+    "subject": "fix: Tratamento de exceção para rituais ou habilidades sem nome na ordenação alfabética para evitar crash do React"
+  },
+  {
+    "hash": "90e780f",
+    "author": "quackthalia",
+    "date": "2026-07-15 12:06:12 -0300",
+    "subject": "feat: Adicionada ordenação fixa por elemento e ordem alfabética para poderes paranormais e rituais"
+  },
+  {
+    "hash": "6663c55",
+    "author": "quackthalia",
+    "date": "2026-07-15 11:54:39 -0300",
+    "subject": "fix: Ocultado campo de edição da descrição principal no modal de versatilidade"
+  },
+  {
+    "hash": "58800b8",
+    "author": "quackthalia",
+    "date": "2026-07-15 11:51:45 -0300",
+    "subject": "feat: Restaura botão de Editar na Versatilidade que abre o editor personalizado"
+  },
+  {
+    "hash": "78d5ecc",
+    "author": "quackthalia",
+    "date": "2026-07-15 11:49:52 -0300",
+    "subject": "fix: Garantir que a trilha atual seja ocultada no modal de versatilidade usando coerção numérica"
+  },
+  {
+    "hash": "73defb4",
+    "author": "quackthalia",
+    "date": "2026-07-15 11:46:13 -0300",
+    "subject": "fix: Adicionado versatilidadeSelecionada ao useMemo da lista de habilidades para reatividade"
+  },
+  {
+    "hash": "df2880f",
+    "author": "quackthalia",
+    "date": "2026-07-15 11:26:07 -0300",
+    "subject": "feat: Adicionado sistema de escolha de Trilha de Versatilidade em NEX 50%"
+  },
+  {
+    "hash": "4fb8593",
+    "author": "quackthalia",
+    "date": "2026-07-15 11:12:55 -0300",
+    "subject": "style: Altera rótulo de NEX de Trilhas para respeitar a regra opcional de nex_experiencia (Nível)"
+  },
+  {
+    "hash": "93105ce",
+    "author": "quackthalia",
+    "date": "2026-07-15 10:47:03 -0300",
+    "subject": "feat: ModalEditarTrilha agora esconde as habilidades de NEX superior ao do personagem"
+  },
+  {
+    "hash": "096df2f",
+    "author": "quackthalia",
+    "date": "2026-07-15 10:45:31 -0300",
+    "subject": "fix: Correção para carregar as descrições da Trilha no Modal de Edição"
+  },
+  {
+    "hash": "d29aa99",
+    "author": "quackthalia",
+    "date": "2026-07-15 10:43:06 -0300",
+    "subject": "feat: Adicionado ModalEditarTrilha para permitir a edição dos textos e descrições da Trilha Escolhida"
+  },
+  {
+    "hash": "a54a09c",
+    "author": "quackthalia",
+    "date": "2026-07-15 10:38:06 -0300",
+    "subject": "fix: Remoção de badge chamativa da perícia e adição dos botões de editar e remover Trilha"
+  },
+  {
+    "hash": "7260de8",
+    "author": "quackthalia",
+    "date": "2026-07-15 10:35:26 -0300",
+    "subject": "fix: Padronização visual do ModalTrilhas e correção da re-renderização ao selecionar trilha"
+  },
+  {
+    "hash": "be1b956",
+    "author": "quackthalia",
+    "date": "2026-07-15 10:28:59 -0300",
+    "subject": "fix: Uso de 'import type' para Trilha no ModalTrilhas para evitar SyntaxError no Vite"
+  },
+  {
+    "hash": "0c081b7",
+    "author": "quackthalia",
+    "date": "2026-07-15 10:26:01 -0300",
+    "subject": "feat: Implementação do sistema de Trilhas"
+  },
+  {
+    "hash": "1c5c836",
+    "author": "Nathalia ⋆˚✿",
+    "date": "2026-07-14 20:30:36 -0300",
+    "subject": "fix: prevenir crash ao abrir modal de rituais com lista vazia de aprendidos"
+  },
+  {
+    "hash": "135c3dd",
+    "author": "Nathalia ⋆˚✿",
+    "date": "2026-07-14 20:22:17 -0300",
+    "subject": "feat: bloqueia selecao duplicada de rituais e poderes, implementando limites unicos para guardiao da tropa, recuperacao flagelante e aprender ritual baseado no intelecto"
+  },
+  {
+    "hash": "bc60d98",
+    "author": "Nathalia ⋆˚✿",
+    "date": "2026-07-14 19:48:50 -0300",
+    "subject": "fix: aplicar regra de nivel ao inves de NEX nos slots vazios de rituais"
+  },
+  {
+    "hash": "58c0283",
+    "author": "Nathalia ⋆˚✿",
+    "date": "2026-07-14 19:45:32 -0300",
+    "subject": "feat: implementar slots dinamicos e limites de circulo para rituais de ocultista"
+  },
+  {
+    "hash": "43dcf78",
+    "author": "quackthalia",
+    "date": "2026-07-14 16:39:45 -0300",
+    "subject": "docs: atualizar resumo com infos do ModalPoderes"
+  },
+  {
+    "hash": "302a5c9",
+    "author": "quackthalia",
+    "date": "2026-07-14 16:33:01 -0300",
+    "subject": "feat: reordenar abas de poderes (gerais antes de paranormais)"
+  },
+  {
+    "hash": "0875eb1",
+    "author": "quackthalia",
+    "date": "2026-07-14 16:28:57 -0300",
+    "subject": "docs: adicionar resumo do projeto para memoria do agente"
+  },
+  {
+    "hash": "98bc5ef",
+    "author": "quackthalia",
+    "date": "2026-07-14 16:27:23 -0300",
+    "subject": "chore: adicionar regra de auto-commit do agente"
+  },
+  {
+    "hash": "22b73f3",
+    "author": "quackthalia",
+    "date": "2026-07-14 16:19:12 -0300",
+    "subject": "Rituais modificados mais uma vez"
+  },
+  {
+    "hash": "a674e68",
+    "author": "quackthalia",
+    "date": "2026-07-14 16:17:31 -0300",
+    "subject": "Lógica dos Rituais finalmente completa (ou quase)"
+  },
+  {
+    "hash": "1d76d30",
+    "author": "Nathalia ⋆˚✿",
+    "date": "2026-07-13 21:41:06 -0300",
+    "subject": "Lógica dos Rituais melhorada"
+  },
+  {
+    "hash": "5a7944e",
+    "author": "Nathalia ⋆˚✿",
+    "date": "2026-07-13 21:13:08 -0300",
+    "subject": "Primeiro teste de implementar rituais na ficha"
+  },
+  {
+    "hash": "cb21f15",
+    "author": "Nathalia ⋆˚✿",
+    "date": "2026-07-12 22:20:48 -0300",
+    "subject": "Criado aba de regras opcionais com algumas delas já adicionadas"
+  },
+  {
+    "hash": "2ab2aa5",
+    "author": "Nathalia ⋆˚✿",
+    "date": "2026-07-11 21:46:51 -0300",
+    "subject": "Corrigido lógica de Bloqueio e Reflexos"
+  },
+  {
+    "hash": "d883a66",
+    "author": "Nathalia ⋆˚✿",
+    "date": "2026-07-11 21:35:29 -0300",
+    "subject": "Poderes Gerais separados dos poderes de NEX"
+  },
+  {
+    "hash": "bdc49db",
+    "author": "quackthalia",
+    "date": "2026-07-10 13:40:11 -0300",
+    "subject": "Poderes Paranormais - Parte visual finalizada"
+  },
+  {
+    "hash": "1bbed42",
+    "author": "quackthalia",
+    "date": "2026-07-10 12:46:41 -0300",
+    "subject": "Poderes Paranormais quase totalmente feitos"
+  },
+  {
+    "hash": "91f88e5",
+    "author": "quackthalia",
+    "date": "2026-07-10 07:28:28 -0300",
+    "subject": "Consertado problema dos poderes de Combate."
+  },
+  {
+    "hash": "0e7b3cb",
+    "author": "quackthalia",
+    "date": "2026-07-09 16:46:35 -0300",
+    "subject": "ae commit message for your changes. Lines starting"
+  },
+  {
+    "hash": "40df6b9",
+    "author": "quackthalia",
+    "date": "2026-07-09 10:28:48 -0300",
+    "subject": "Não lembro"
+  },
+  {
+    "hash": "c754c7f",
+    "author": "quackthalia",
+    "date": "2026-07-09 07:59:52 -0300",
+    "subject": "Merge branch 'main' of https://github.com/quackthalia/ordem-paranormal-fichas"
+  },
+  {
+    "hash": "081f17d",
+    "author": "quackthalia",
+    "date": "2026-07-09 07:58:14 -0300",
+    "subject": "Não sei"
+  },
+  {
+    "hash": "439007b",
+    "author": "Nathalia ⋆˚✿",
+    "date": "2026-07-09 07:55:12 -0300",
+    "subject": "Merge pull request #2 from BarDeyvid/melhorias-claude"
+  },
+  {
+    "hash": "e4cc3af",
+    "author": "Deyvid Barcelos",
+    "date": "2026-07-08 20:14:31 -0300",
+    "subject": "Migração para Tailwind CSS e novo visual"
+  },
+  {
+    "hash": "5727d67",
+    "author": "Deyvid Barcelos",
+    "date": "2026-07-08 19:53:50 -0300",
+    "subject": "Correções de bugs, limpeza e melhorias gerais"
+  },
+  {
+    "hash": "61e512c",
+    "author": "quackthalia",
+    "date": "2026-07-08 16:37:50 -0300",
+    "subject": "Merge branch 'main' of https://github.com/quackthalia/ordem-paranormal-fichas"
+  },
+  {
+    "hash": "fa12ee0",
+    "author": "quackthalia",
+    "date": "2026-07-08 16:37:25 -0300",
+    "subject": "N to entendendo nada"
+  },
+  {
+    "hash": "76b8616",
+    "author": "Nathalia ⋆˚✿",
+    "date": "2026-07-08 16:30:25 -0300",
+    "subject": "Merge pull request #1 from BarDeyvid/arrumando_problemas"
+  },
+  {
+    "hash": "57001b7",
+    "author": "Deyvid Barcelos",
+    "date": "2026-07-08 19:27:30 +0000",
+    "subject": "Arrumando problemas da nath"
+  },
+  {
+    "hash": "2bf0511",
+    "author": "quackthalia",
+    "date": "2026-07-08 15:50:58 -0300",
+    "subject": "Dividi tudo o código em vários pedaços, mas ta dando erro XD"
+  },
+  {
+    "hash": "d8a80a3",
+    "author": "quackthalia",
+    "date": "2026-07-07 16:46:58 -0300",
+    "subject": "Muita coisa"
+  },
+  {
+    "hash": "be28c2c",
+    "author": "quackthalia",
+    "date": "2026-07-06 15:06:13 -0300",
+    "subject": "Coisa pra caralho pqp... Última coisa foi adicionar as habilidades de origem na ficha"
+  },
+  {
+    "hash": "cd9ed9c",
+    "author": "quackthalia",
+    "date": "2026-07-06 13:06:24 -0300",
+    "subject": "Criado todo o sistema de resistências e proficiências, além da aba da direita criada"
+  },
+  {
+    "hash": "bb31b04",
+    "author": "quackthalia",
+    "date": "2026-07-03 16:16:30 -0300",
+    "subject": "Todo sistema de origens adicionado"
+  },
+  {
+    "hash": "4ab9276",
+    "author": "quackthalia",
+    "date": "2026-07-03 13:09:50 -0300",
+    "subject": "Código interado a base de dados"
+  },
+  {
+    "hash": "ff38600",
+    "author": "quackthalia",
+    "date": "2026-07-03 10:16:14 -0300",
+    "subject": "Instalado Base de Dados"
+  },
+  {
+    "hash": "a7974ca",
+    "author": "quackthalia",
+    "date": "2026-07-03 09:14:28 -0300",
+    "subject": "Retirado notificação das perícias"
+  },
+  {
+    "hash": "64c4991",
+    "author": "quackthalia",
+    "date": "2026-07-02 16:44:08 -0300",
+    "subject": "Começando a arrumar as perícias"
+  },
+  {
+    "hash": "3c093f7",
+    "author": "quackthalia",
+    "date": "2026-07-02 08:37:58 -0300",
+    "subject": "Adicionado Defesa, Bloqueio e Esquiva"
+  },
+  {
+    "hash": "aada263",
+    "author": "quackthalia",
+    "date": "2026-07-02 07:39:19 -0300",
+    "subject": "Lógica de classes aprofundada"
+  },
+  {
+    "hash": "cd5e4fc",
+    "author": "quackthalia",
+    "date": "2026-07-01 16:19:55 -0300",
+    "subject": "Adicionado base do sistema de perícias"
+  },
+  {
+    "hash": "b8ba38a",
+    "author": "quackthalia",
+    "date": "2026-07-01 15:55:13 -0300",
+    "subject": "Pe e Vida temporários + Algumas alterações estéticas"
+  },
+  {
+    "hash": "8d0d54b",
+    "author": "quackthalia",
+    "date": "2026-07-01 15:03:49 -0300",
+    "subject": "Adicionado Pontos de Atributo temporários"
+  },
+  {
+    "hash": "8cd42ff",
+    "author": "quackthalia",
+    "date": "2026-07-01 14:01:30 -0300",
+    "subject": "Criada Lógica de Classes, Vida, PE e Sanidade"
+  },
+  {
+    "hash": "49ce1ef",
+    "author": "quackthalia",
+    "date": "2026-06-30 16:19:20 -0300",
+    "subject": "Criação da Lógica de Atributos v1"
+  },
+  {
+    "hash": "caf14c8",
+    "author": "quackthalia",
+    "date": "2026-06-30 15:24:11 -0300",
+    "subject": "Criando estrutura inicial do projeto"
+  }
+]

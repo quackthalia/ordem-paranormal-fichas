@@ -167,7 +167,11 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
   const isPontaria = ['arremesso', 'disparo', 'fogo'].some(t => arma.Tipo_Arma?.toLowerCase().includes(t));
   const pericia = isPontaria ? 'Pontaria' : 'Luta';
   const isAgil = arma['Agil?'] || isPontaria;
-  const hasProficiencia = proficienciasTotais.includes(arma.Proficiencia);
+  const effectiveNivel = regras['nex_experiencia'] ? nivel : Math.floor(nex / 5);
+  const temMiraElite = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 6 && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 6 && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
+  const compativeis = municoesHook?.getMunicoesCompativeis?.(arma.Nome_Item, arma.Categoria_Item) || [];
+  const usaBalaLonga = compativeis.some((m: any) => m.Nome_Item?.toLowerCase().trim() === 'balas longas');
+  const hasProficiencia = proficienciasTotais.includes(arma.Proficiencia) || (temMiraElite && usaBalaLonga);
   let automatica = false;
   modsAtivas.forEach(m => {
     if (!m) return;
@@ -176,7 +180,7 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
       automatica = true;
     }
   });
-  const defaultAtributo = isAgil ? 'AGI' : 'FOR';
+  const defaultAtributo = (temMiraElite && usaBalaLonga && !arma.Nome_Item?.toLowerCase().includes('arco') && !arma.Nome_Item?.toLowerCase().includes('arremesso')) ? 'INT' : (isAgil ? 'AGI' : 'FOR');
 
   const [atributoDano, setAtributoDano] = React.useState(defaultAtributo);
   const [danoIdx, setDanoIdx] = React.useState(0);

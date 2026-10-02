@@ -1623,7 +1623,10 @@ function SortableArmaItem({
   const descontoFavorita = isAniquilador && armaFavId ? (effectiveNex >= 99 ? 3 : (effectiveNex >= 40 ? 2 : 1)) : 0;
   const aniquiladorNivel99 = isAniquilador && item.id === armaFavId && effectiveNex >= 99;
   const temGuerreiro = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 3 && effectiveNex >= 10) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 3 && effectiveNex >= 50);
-  const hasProficiencia = proficienciasTotais.includes(arma.Proficiencia);
+  const temMiraElite = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 6 && (regras['nex_experiencia'] ? nivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 6 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
+  const compativeis = municoesHook?.getMunicoesCompativeis?.(arma.Nome_Item, arma.Categoria_Item) || [];
+  const usaBalaLonga = compativeis.some((m: any) => m.Nome_Item?.toLowerCase().trim() === 'balas longas');
+  const hasProficiencia = proficienciasTotais.includes(arma.Proficiencia) || (temMiraElite && usaBalaLonga);
   const [expandirMods, setExpandirMods] = useState(false);
     const [expandirMalds, setExpandirMalds] = useState(false);
 

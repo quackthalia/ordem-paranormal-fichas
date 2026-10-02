@@ -77,13 +77,21 @@ export function ModalTrilhas({
     );
   };
 
-  const handleEscolher = (trilha: Trilha) => {
+  const checarRequisito = (trilha: Trilha) => {
     if (trilha.Codigo_Trilha === 1 && !modoVersatilidade) {
       const armas = armasHook.armasInventario.filter(a => !a.arma.Nome_Item?.includes('Ataque Desarmado'));
       if (armas.length === 0) {
-        alert("Você precisa ter pelo menos uma arma no inventário para escolher a trilha Aniquilador.");
-        return;
+        return "Requisito: Ter pelo menos uma arma no inventário";
       }
+    }
+    return null;
+  };
+
+  const handleEscolher = (trilha: Trilha) => {
+    const erro = checarRequisito(trilha);
+    if (erro) return;
+
+    if (trilha.Codigo_Trilha === 1 && !modoVersatilidade) {
       setEscolhendoArmaTrilha1(trilha);
       return;
     }
@@ -247,12 +255,21 @@ export function ModalTrilhas({
                     </Collapse>
 
                     <div className="flex flex-nowrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 shrink-0">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); handleEscolher(trilha); }}
-                        className="ml-auto shrink-0 px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
-                      >
-                        Escolher
-                      </button>
+                      {(() => {
+                        const erroReq = checarRequisito(trilha);
+                        return (
+                          <button
+                            title={erroReq || undefined}
+                            onClick={(e) => { e.stopPropagation(); if (!erroReq) handleEscolher(trilha); }}
+                            className={erroReq 
+                              ? "ml-auto shrink-0 px-3 py-1 bg-zinc-800 text-zinc-500 rounded font-bold text-[10px] uppercase tracking-wider cursor-not-allowed border border-zinc-700/50"
+                              : "ml-auto shrink-0 px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                            }
+                          >
+                            Escolher
+                          </button>
+                        );
+                      })()}
                     </div>
                   </div>
                 );
@@ -338,12 +355,21 @@ export function ModalTrilhas({
                     </Collapse>
 
                     <div className="flex flex-nowrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 shrink-0">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); handleEscolher(trilha); }}
-                        className="ml-auto shrink-0 px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
-                      >
-                        Escolher
-                      </button>
+                      {(() => {
+                        const erroReq = checarRequisito(trilha);
+                        return (
+                          <button
+                            title={erroReq || undefined}
+                            onClick={(e) => { e.stopPropagation(); if (!erroReq) handleEscolher(trilha); }}
+                            className={erroReq 
+                              ? "ml-auto shrink-0 px-3 py-1 bg-zinc-800 text-zinc-500 rounded font-bold text-[10px] uppercase tracking-wider cursor-not-allowed border border-zinc-700/50"
+                              : "ml-auto shrink-0 px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                            }
+                          >
+                            Escolher
+                          </button>
+                        );
+                      })()}
                     </div>
                   </div>
                 );

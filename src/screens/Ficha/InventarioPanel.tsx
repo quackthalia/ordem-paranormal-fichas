@@ -1624,12 +1624,9 @@ function SortableArmaItem({
   const aniquiladorNivel99 = isAniquilador && item.id === armaFavId && effectiveNex >= 99;
   const temGuerreiro = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 3 && effectiveNex >= 10) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 3 && effectiveNex >= 50);
   const temMiraElite = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 6 && (regras['nex_experiencia'] ? nivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 6 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
-  const compativeis = municoesHook?.getMunicoesCompativeis?.(arma.Nome_Item, arma.Categoria_Item) || [];
-  const usaBalaLonga = compativeis.some((m: any) => m.Nome_Item?.toLowerCase().trim() === 'balas longas');
+  const usaBalaLonga = arma.Nome_Item?.toLowerCase().includes('fuzil') || (arma.Nome_Item?.toLowerCase().includes('metralhadora') && !arma.Nome_Item?.toLowerCase().includes('sub')) || arma.Nome_Item?.toLowerCase().includes('sniper');
   const hasProficiencia = proficienciasTotais.includes(arma.Proficiencia) || (temMiraElite && usaBalaLonga);
-  if (arma.Nome_Item?.toLowerCase().includes('fuzil')) {
-    console.log('Inventario Fuzil', arma.Nome_Item, 'usaBalaLonga:', usaBalaLonga, 'temMiraElite:', temMiraElite, 'hasProf:', hasProficiencia);
-  }
+  
   const [expandirMods, setExpandirMods] = useState(false);
     const [expandirMalds, setExpandirMalds] = useState(false);
 

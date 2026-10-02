@@ -102,12 +102,9 @@ export function ModalArmas({ isEmbedded, aberto, onFechar }: ModalArmasProps) {
       const effectiveNex = regras['nex_experiencia'] ? nivel * 5 : nex;
       const effectiveNivel = regras['nex_experiencia'] ? nivel : Math.floor(nex / 5);
       const temMiraElite = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 6 && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 6 && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
-      const compativeis = municoesHook?.getMunicoesCompativeis?.(arma.Nome_Item, arma.Categoria_Item) || [];
-      const usaBalaLonga = compativeis.some((m: any) => m.Nome_Item?.toLowerCase().trim() === 'balas longas');
+      const usaBalaLonga = arma.Nome_Item?.toLowerCase().includes('fuzil') || (arma.Nome_Item?.toLowerCase().includes('metralhadora') && !arma.Nome_Item?.toLowerCase().includes('sub')) || arma.Nome_Item?.toLowerCase().includes('sniper');
       const hasProficiencia = proficienciasTotais.includes(arma.Proficiencia) || (temMiraElite && usaBalaLonga);
-      if (arma.Nome_Item?.toLowerCase().includes('fuzil')) {
-         console.log('Fuzil', arma.Nome_Item, 'usaBalaLonga:', usaBalaLonga, 'temMiraElite:', temMiraElite, 'effectiveNex:', effectiveNex, 'hasProf:', hasProficiencia);
-      }
+      
       if (!mostrarSemProficiencia && !hasProficiencia) return false;
     // 1. Filtro Proficiência (Simples, Táticas, Pesadas)
     if (filtro !== 'Todas' && arma.Proficiencia !== filtro) return false;
@@ -279,12 +276,9 @@ export function ModalArmas({ isEmbedded, aberto, onFechar }: ModalArmasProps) {
                 const effectiveNex = regras['nex_experiencia'] ? nivel * 5 : nex;
                 const effectiveNivel = regras['nex_experiencia'] ? nivel : Math.floor(nex / 5);
                 const temMiraElite = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 6 && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 6 && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
-                const compativeis = municoesHook?.getMunicoesCompativeis?.(arma.Nome_Item, arma.Categoria_Item) || [];
-                const usaBalaLonga = compativeis.some((m: any) => m.Nome_Item?.toLowerCase().trim() === 'balas longas');
+                const usaBalaLonga = arma.Nome_Item?.toLowerCase().includes('fuzil') || (arma.Nome_Item?.toLowerCase().includes('metralhadora') && !arma.Nome_Item?.toLowerCase().includes('sub')) || arma.Nome_Item?.toLowerCase().includes('sniper');
       const hasProficiencia = proficienciasTotais.includes(arma.Proficiencia) || (temMiraElite && usaBalaLonga);
-      if (arma.Nome_Item?.toLowerCase().includes('fuzil')) {
-         console.log('Fuzil', arma.Nome_Item, 'usaBalaLonga:', usaBalaLonga, 'temMiraElite:', temMiraElite, 'effectiveNex:', effectiveNex, 'hasProf:', hasProficiencia);
-      }
+      
                 return (
                   <div key={arma.Codigo_Arma} onClick={() => toggleExpandir(arma.Codigo_Arma)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-2 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out cursor-pointer  cursor-pointer`}
                   >
@@ -392,12 +386,9 @@ export function ModalArmas({ isEmbedded, aberto, onFechar }: ModalArmasProps) {
                 const effectiveNex = regras['nex_experiencia'] ? nivel * 5 : nex;
                 const effectiveNivel = regras['nex_experiencia'] ? nivel : Math.floor(nex / 5);
                 const temMiraElite = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 6 && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 6 && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
-                const compativeis = municoesHook?.getMunicoesCompativeis?.(arma.Nome_Item, arma.Categoria_Item) || [];
-                const usaBalaLonga = compativeis.some((m: any) => m.Nome_Item?.toLowerCase().trim() === 'balas longas');
+                const usaBalaLonga = arma.Nome_Item?.toLowerCase().includes('fuzil') || (arma.Nome_Item?.toLowerCase().includes('metralhadora') && !arma.Nome_Item?.toLowerCase().includes('sub')) || arma.Nome_Item?.toLowerCase().includes('sniper');
       const hasProficiencia = proficienciasTotais.includes(arma.Proficiencia) || (temMiraElite && usaBalaLonga);
-      if (arma.Nome_Item?.toLowerCase().includes('fuzil')) {
-         console.log('Fuzil', arma.Nome_Item, 'usaBalaLonga:', usaBalaLonga, 'temMiraElite:', temMiraElite, 'effectiveNex:', effectiveNex, 'hasProf:', hasProficiencia);
-      }
+      
                 return (
                   <div key={arma.Codigo_Arma} onClick={() => toggleExpandir(arma.Codigo_Arma)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-2 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col  overflow-hidden transition-all duration-300 ease-in-out cursor-pointer  cursor-pointer`}
                   >

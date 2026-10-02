@@ -133,24 +133,36 @@ export function ModalTrilhas({
               <div 
                 key={a.id} 
                 onClick={() => prosseguirEscolha(escolhendoArmaTrilha1, a.id)}
-                className="cursor-pointer border border-zinc-800 bg-zinc-900/40 p-4 rounded-xl hover:border-green-500/50 hover:bg-zinc-900/80 transition flex items-center justify-between group"
+                className="cursor-pointer rounded border border-zinc-800 bg-zinc-950/60 hover:bg-zinc-900/60 p-3 transition flex items-center justify-between group"
               >
-                <div className="flex flex-col gap-2">
-                  <div className="font-bold text-zinc-100 flex items-center gap-2">
+                <div className="flex flex-col gap-1 min-w-0 justify-center">
+                  <span className="font-bold text-sm text-zinc-100 truncate leading-none mt-0.5 flex items-center gap-2">
                     {a.arma.Nome_Item}
-                    {a.arma.Elemento_Arma && (
-                      <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400">
+                    {a.arma.isAmaldicoada && a.arma.Elemento_Arma && (
+                      <span className={`text-[10px] font-bold rounded-sm truncate uppercase tracking-wider w-fit ${
+                        a.arma.Elemento_Arma.toLowerCase().includes('medo') ? 'bg-zinc-200/80 text-zinc-950 px-1' :
+                        a.arma.Elemento_Arma.toLowerCase().includes('sangue') ? 'text-red-500' :
+                        a.arma.Elemento_Arma.toLowerCase().includes('morte') ? 'bg-black/50 text-white px-1' :
+                        a.arma.Elemento_Arma.toLowerCase().includes('conhecimento') ? 'text-yellow-500' :
+                        a.arma.Elemento_Arma.toLowerCase().includes('energia') ? 'text-purple-500' :
+                        'text-zinc-400'
+                      }`}>
                         {a.arma.Elemento_Arma}
                       </span>
                     )}
+                  </span>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-300 mt-0.5">
+                    <span><span className="font-bold text-green-400">Dano:</span> {a.arma.Dano_Arma || '-'}</span>
+                    <span><span className="font-bold text-zinc-400">Crítico:</span> {a.arma.Critico_Arma || 20}/x{a.arma.Multiplicador_Critico || 2}</span>
+                    <span><span className="font-bold text-zinc-400">Alcance:</span> {a.arma.Alcance_Item || '-'}</span>
+                    <span><span className="font-bold text-green-400">Categoria base:</span> {a.arma.Categoria_Item}</span>
                   </div>
-                  <div className="flex flex-wrap items-center gap-2 text-[11px] font-medium text-zinc-400">
-                    <span className="bg-zinc-950 px-2 py-1 rounded border border-zinc-800/80">Dano: <span className="text-zinc-200">{a.arma.Dano_Arma || '-'}</span></span>
-                    <span className="bg-zinc-950 px-2 py-1 rounded border border-zinc-800/80">Crítico: <span className="text-zinc-200">{a.arma.Critico_Arma || 20}/x{a.arma.Multiplicador_Critico || 2}</span></span>
-                    {a.arma.Categoria_Item && <span className="bg-zinc-950 px-2 py-1 rounded border border-zinc-800/80">Cat base: <span className="text-zinc-200">{a.arma.Categoria_Item}</span></span>}
-                    {a.modificacoes?.length > 0 && <span className="bg-zinc-950 px-2 py-1 rounded border border-zinc-800/80">{a.modificacoes.length} mod(s)</span>}
-                    {a.maldicoes?.length > 0 && <span className="bg-purple-950/30 px-2 py-1 rounded border border-purple-800/50 text-purple-400">{a.maldicoes.length} maldição(ões)</span>}
-                  </div>
+                  {(a.modificacoes?.length > 0 || a.maldicoes?.length > 0) && (
+                    <div className="flex gap-2 text-[10px] mt-1 text-zinc-500">
+                       {a.modificacoes?.length > 0 && <span>{a.modificacoes.length} Modificações</span>}
+                       {a.maldicoes?.length > 0 && <span>{a.maldicoes.length} Maldições</span>}
+                    </div>
+                  )}
                 </div>
                 <div className="text-[10px] uppercase tracking-wider font-bold text-green-500/0 group-hover:text-green-500/100 transition-colors ml-4 whitespace-nowrap">
                   Escolher ➔

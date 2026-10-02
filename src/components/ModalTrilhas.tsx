@@ -115,7 +115,7 @@ export function ModalTrilhas({
     const armasFiltradas = armasHook.armasInventario.filter(a => (!a.arma.Nome_Item?.includes('Ataque Desarmado') && !a.arma.Nome_Item?.includes('Coronhada')));
     return (
       <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 p-4 font-sans backdrop-blur-sm">
-        <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-[#0a0a0a] shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="w-full max-w-2xl rounded-2xl border border-zinc-800 bg-[#0a0a0a] shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh]">
           <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-green-500/50 to-transparent" />
           
           <div className="flex items-start justify-between border-b border-zinc-800/80 p-5 bg-zinc-900/20">
@@ -133,10 +133,28 @@ export function ModalTrilhas({
               <div 
                 key={a.id} 
                 onClick={() => prosseguirEscolha(escolhendoArmaTrilha1, a.id)}
-                className="cursor-pointer border border-zinc-800 bg-zinc-900/50 p-3 rounded hover:border-green-500/50 hover:bg-zinc-800 transition"
+                className="cursor-pointer border border-zinc-800 bg-zinc-900/40 p-4 rounded-xl hover:border-green-500/50 hover:bg-zinc-900/80 transition flex items-center justify-between group"
               >
-                <div className="font-bold text-zinc-200">{a.arma.Nome_Item}</div>
-                <div className="text-xs text-zinc-500 mt-1">Clique para escolher como Arma Favorita</div>
+                <div className="flex flex-col gap-2">
+                  <div className="font-bold text-zinc-100 flex items-center gap-2">
+                    {a.arma.Nome_Item}
+                    {a.arma.Elemento_Arma && (
+                      <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400">
+                        {a.arma.Elemento_Arma}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 text-[11px] font-medium text-zinc-400">
+                    <span className="bg-zinc-950 px-2 py-1 rounded border border-zinc-800/80">Dano: <span className="text-zinc-200">{a.arma.Dano_Arma || '-'}</span></span>
+                    <span className="bg-zinc-950 px-2 py-1 rounded border border-zinc-800/80">Crítico: <span className="text-zinc-200">{a.arma.Critico_Arma || 20}/x{a.arma.Multiplicador_Critico || 2}</span></span>
+                    {a.arma.Categoria_Item && <span className="bg-zinc-950 px-2 py-1 rounded border border-zinc-800/80">Cat base: <span className="text-zinc-200">{a.arma.Categoria_Item}</span></span>}
+                    {a.modificacoes?.length > 0 && <span className="bg-zinc-950 px-2 py-1 rounded border border-zinc-800/80">{a.modificacoes.length} mod(s)</span>}
+                    {a.maldicoes?.length > 0 && <span className="bg-purple-950/30 px-2 py-1 rounded border border-purple-800/50 text-purple-400">{a.maldicoes.length} maldição(ões)</span>}
+                  </div>
+                </div>
+                <div className="text-[10px] uppercase tracking-wider font-bold text-green-500/0 group-hover:text-green-500/100 transition-colors ml-4 whitespace-nowrap">
+                  Escolher ➔
+                </div>
               </div>
             ))}
           </div>

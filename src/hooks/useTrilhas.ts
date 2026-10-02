@@ -33,6 +33,7 @@ export function useTrilhas(): UseTrilhasReturn {
     async function carregar() {
       setLoading(true);
       setError(null);
+      try {
 
       // Busca trilhas
       const { data: dataTrilhas, error: errTrilhas } = await supabase
@@ -49,10 +50,11 @@ export function useTrilhas(): UseTrilhasReturn {
       }
 
       // Busca Regras Trilhas
-      const { data: dataRegras } = await supabase
+      const { data: dataRegras, error: errRegras } = await supabase
         .from('Regras Trilhas')
-        .select('*')
-        .catch(() => ({ data: [] })); // Ignora erro se não existir ainda
+        .select('*');
+      
+      if (errRegras) console.error("Erro Regras Trilhas:", errRegras);
 
       if (dataTrilhas) {
         const trilhasComRegras = dataTrilhas.map(t => {
@@ -86,8 +88,11 @@ export function useTrilhas(): UseTrilhasReturn {
         });
         setNomesPericias(mapa);
       }
-
-      setLoading(false);
+      } catch (err: any) {
+        console.error("Erro inesperado no carregar trilhas:", err);
+      } finally {
+        setLoading(false);
+      }
     }
 
     carregar();

@@ -91,6 +91,12 @@ export const BonusCondicionaisPanel: React.FC = () => {
                 <span>+1d20 em testes de {trilhasHook.trilhaSelecionada.nome_pericia} ({trilhasHook.trilhaSelecionada.Nome_Trilha})</span>
               </div>
             )}
+            {trilhasHook.trilhaSelecionada && jaTinhaProfissaoTrilha && trilhasHook.trilhaSelecionada.Profissao_Pericia && (
+              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                <span>+1d20 em testes de Profissão ({trilhasHook.trilhaSelecionada.Profissao_Pericia}) ({trilhasHook.trilhaSelecionada.Nome_Trilha})</span>
+              </div>
+            )}
             {regrasAutomaticasAtivas.has(9) && (
               <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
                 <span className="text-green-500 font-bold mt-[-1px]">•</span>

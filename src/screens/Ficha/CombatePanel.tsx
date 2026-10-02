@@ -121,8 +121,8 @@ interface ArmaCombateCardProps {
 }
 
 const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandida, toggleExpandir, modificacoesHook, maldicoesHook, onAddMunicao, municoesHook, itensHook, armasHook }) => {
-  const { atributosFinais, proficienciasTotais, regrasAutomaticasAtivas, status, regras, trilhasHook, poderesExtras, nivel } = useRPG();
-  const effectiveNex = regras['nex_experiencia'] ? (nivel * 5) : (status?.nex || 0); // fallback
+  const { atributosFinais, proficienciasTotais, regrasAutomaticasAtivas, status, regras, trilhasHook, poderesExtras, nivel, nex } = useRPG();
+  const effectiveNex = regras['nex_experiencia'] ? (nivel * 5) : nex;
   const isAniquilador = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 1;
   const armaFavId = isAniquilador ? poderesExtras["aniquilador_arma_favorita"] : null;
   const isArmaFavorita = armaInv.id === armaFavId;

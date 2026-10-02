@@ -229,7 +229,7 @@ function AtributosFicha() {
 // COMPONENTE INTERNO: DEFESA
 // ============================================================
 function DefesaPanel() {
-  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras, periciasHook, atributosFinais, regrasAutomaticasAtivas, protecoes, protecoesHook, totalDefesaProtecoes, bonusVestimentas, bonusMaldicoes } = useRPG();
+  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras, periciasHook, atributosFinais, regrasAutomaticasAtivas, protecoes, protecoesHook, totalDefesaProtecoes, bonusVestimentas, bonusMaldicoes, trilhasHook, status, regras, nivel, nex } = useRPG();
 
   const [bloqueio, setBloqueio] = React.useState(0);
   const [esquiva, setEsquiva] = React.useState(0);
@@ -288,7 +288,10 @@ function DefesaPanel() {
                   const bonusRegra21 = (regrasAutomaticasAtivas.has(21) && temProtecaoPesada) ? 2 : 0;
                   const temProtecaoLeve = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('leve')) || false;
                   const bonusRegra25 = (regrasAutomaticasAtivas.has(25) && temProtecaoLeve) ? 2 : 0;
-                  return defOutros + defOutrosBonusRegra + bonusRegra21 + bonusRegra25 + totalDefesaProtecoes + (bonusVestimentas?.defesa || 0) + (bonusMaldicoes?.defesa || 0) || '';
+                  const isMachucado = status.pvAtual !== null && status.pvMax > 0 && status.pvAtual <= Math.floor(status.pvMax / 2);
+                  const temInquebravel = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 5 && (regras['nex_experiencia'] ? (nivel >= 20) : (nex >= 99));
+                  const bonusTrilha5 = (temInquebravel && isMachucado) ? 5 : 0;
+                  return defOutros + defOutrosBonusRegra + bonusRegra21 + bonusRegra25 + bonusTrilha5 + totalDefesaProtecoes + (bonusVestimentas?.defesa || 0) + (bonusMaldicoes?.defesa || 0) || '';
                 })()}
                 placeholder="0"
                 title="Outros bônus de defesa"
@@ -299,7 +302,10 @@ function DefesaPanel() {
                   const bonusRegra21 = (regrasAutomaticasAtivas.has(21) && temProtecaoPesada) ? 2 : 0;
                   const temProtecaoLeve = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('leve')) || false;
                   const bonusRegra25 = (regrasAutomaticasAtivas.has(25) && temProtecaoLeve) ? 2 : 0;
-                  setDefOutros(Math.max(0, valDigitado - defOutrosBonusRegra - bonusRegra21 - bonusRegra25 - totalDefesaProtecoes));
+                  const isMachucado = status.pvAtual !== null && status.pvMax > 0 && status.pvAtual <= Math.floor(status.pvMax / 2);
+                  const temInquebravel = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 5 && (regras['nex_experiencia'] ? (nivel >= 20) : (nex >= 99));
+                  const bonusTrilha5 = (temInquebravel && isMachucado) ? 5 : 0;
+                  setDefOutros(Math.max(0, valDigitado - defOutrosBonusRegra - bonusRegra21 - bonusRegra25 - bonusTrilha5 - totalDefesaProtecoes));
                 }}
                 className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-green-600"
               />
@@ -347,7 +353,8 @@ function ProtecoesPanel() {
     imunidades, setImunidades,
     vulnerabilidades, setVulnerabilidades,
     regrasAutomaticasAtivas, atributosFinais, poderesHook, rituaisHook, periciasHook, status,
-    protecoesHook, modificacoesHook, bonusVestimentas, bonusMaldicoes, origensHook
+    protecoesHook, modificacoesHook, bonusVestimentas, bonusMaldicoes, origensHook,
+    trilhasHook, regras, nivel, nex
   } = useRPG();
   const [mostrarOutros, setMostrarOutros] = React.useState(false);
 
@@ -368,6 +375,13 @@ function ProtecoesPanel() {
     if (machucado) {
       danoResist += 5;
     }
+  }
+
+  // TRILHA 5: Inquebrável (99%) - Resistência a Dano 5 quando machucado
+  const temInquebravelTrilha5 = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 5 && (regras['nex_experiencia'] ? (nivel >= 20) : (nex >= 99));
+  const isMachucadoTrilha5 = status.pvAtual !== null && status.pvMax > 0 && status.pvAtual <= Math.floor(status.pvMax / 2);
+  if (temInquebravelTrilha5 && isMachucadoTrilha5) {
+    danoResist += 5;
   }
 
   if (danoResist > 0) {

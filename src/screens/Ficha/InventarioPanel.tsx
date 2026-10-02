@@ -1622,6 +1622,7 @@ function SortableArmaItem({
   const armaFavId = isAniquilador ? poderesExtras["aniquilador_arma_favorita"] : null;
   const descontoFavorita = isAniquilador && armaFavId ? (effectiveNex >= 99 ? 3 : (effectiveNex >= 40 ? 2 : 1)) : 0;
   const aniquiladorNivel99 = isAniquilador && item.id === armaFavId && effectiveNex >= 99;
+  const temGuerreiro = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 3 && effectiveNex >= 10) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 3 && effectiveNex >= 50);
   const hasProficiencia = proficienciasTotais.includes(arma.Proficiencia);
   const [expandirMods, setExpandirMods] = useState(false);
     const [expandirMalds, setExpandirMalds] = useState(false);
@@ -1662,6 +1663,8 @@ function SortableArmaItem({
     let espacos = calcularEspacosFinais(arma['Espaços_Item'], item.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas?.has(43));
     let automatica = !!arma['Automatica?'];
     let critico = Number(arma.Critico_Arma || 20);
+    const isCorpoACorpo = arma.Tipo_Arma?.toLowerCase().includes('corpo') || arma.Alcance_Item?.toLowerCase().includes('corpo');
+    if (temGuerreiro && isCorpoACorpo) critico -= 2;
     if (aniquiladorNivel99) critico -= 2;
     let alcance = arma.Alcance_Item || '';
     let multiplicador = Number(arma.Multiplicador_Arma || 2);

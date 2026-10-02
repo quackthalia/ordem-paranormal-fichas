@@ -127,6 +127,7 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
   const armaFavId = isAniquilador ? poderesExtras["aniquilador_arma_favorita"] : null;
   const isArmaFavorita = armaInv.id === armaFavId;
   const aniquiladorNivel99 = isAniquilador && isArmaFavorita && effectiveNex >= 99;
+  const temGuerreiro = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 3 && effectiveNex >= 10) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 3 && effectiveNex >= 50);
   const [mostrarDanoMedio, setMostrarDanoMedio] = React.useState(false);
   const [mostrarStatsGrupo, setMostrarStatsGrupo] = React.useState(false);
   
@@ -182,6 +183,8 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
 
   let extrasStr = '';
   let critico = Number(arma.Critico_Arma || 20);
+  const isCorpoACorpo = arma.Tipo_Arma?.toLowerCase().includes('corpo') || arma.Alcance_Item?.toLowerCase().includes('corpo');
+  if (temGuerreiro && isCorpoACorpo) critico -= 2;
   if (aniquiladorNivel99) critico -= 2;
   let multCrit = Number(arma.Multiplicador_Arma || 2);
   let alcance = arma.Alcance_Item || 'Corpo a Corpo';

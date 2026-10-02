@@ -1813,6 +1813,11 @@ function SortableArmaItem({
           <div className="flex flex-col gap-1 flex-1 min-w-0 justify-center">
             <span className="font-bold text-sm text-zinc-100 truncate leading-none mt-0.5 flex items-center gap-2">
   {arma.Nome_Item}
+  {item.id === armaFavId && (
+    <span className="text-[10px] bg-green-900/30 text-green-500 border border-green-500/30 px-1.5 py-0.5 rounded tracking-wider uppercase whitespace-nowrap">
+      Arma Favorita
+    </span>
+  )}
   {arma.isAmaldicoada && arma.Elemento_Arma && (
     <span className={`text-[10px] font-bold rounded-sm truncate uppercase tracking-wider w-fit ${
       arma.Elemento_Arma.toLowerCase().includes('medo') ? 'bg-zinc-200/80 text-zinc-950 px-1' :

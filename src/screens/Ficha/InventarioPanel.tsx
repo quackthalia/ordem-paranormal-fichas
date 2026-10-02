@@ -398,6 +398,7 @@ export function InventarioPanel() {
   const isAniquilador = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 1;
   const armaFavId = isAniquilador ? poderesExtras["aniquilador_arma_favorita"] : null;
   const descontoFavorita = isAniquilador && armaFavId ? (effectiveNex >= 99 ? 3 : (effectiveNex >= 40 ? 2 : 1)) : 0;
+  const aniquiladorNivel99 = isAniquilador && item.id === armaFavId && effectiveNex >= 99;
 
   useEffect(() => {
     const handler = (e: any) => {
@@ -1658,6 +1659,7 @@ function SortableArmaItem({
     let espacos = calcularEspacosFinais(arma['Espaços_Item'], item.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas?.has(43));
     let automatica = !!arma['Automatica?'];
     let critico = Number(arma.Critico_Arma || 20);
+    if (aniquiladorNivel99) critico -= 2;
     let alcance = arma.Alcance_Item || '';
     let multiplicador = Number(arma.Multiplicador_Arma || 2);
     let danoSecundario = arma.Dano_Secundario || '';

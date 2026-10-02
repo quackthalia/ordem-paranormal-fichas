@@ -124,7 +124,7 @@ const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setPro
 export const PericiasTable: React.FC = () => {
   const { 
     status, periciasHook, regrasAtivas, setRegrasAtivas, regrasAutomaticasAtivas, protecoesHook,
-    
+    trilhasHook, nivel, nex, regras,
     itensHook
   } = useRPG();
   const { pericias, handleMudarPericia, limites, totais, profissoes, setProfissoes } = periciasHook;

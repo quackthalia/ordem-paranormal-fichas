@@ -51,6 +51,24 @@ export const FichaScreen: React.FC = () => {
     } else if (!temConduite99 && (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_conduite')) {
       rituaisHook.esquecerRitual('trilha_conduite');
     }
+
+    const temFlagelador99 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 12 && (regras['nex_experiencia'] ? nivel >= 20 : effectiveNex >= 99)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 12 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
+    const jaTemMedoTangivel = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_flagelador' || r.codigo_ritual === 53);
+
+    if (temFlagelador99 && !jaTemMedoTangivel) {
+      const baseRitual = (rituaisHook.rituais || []).find(r => r.Codigo_Ritual === 53);
+      if (baseRitual) {
+        rituaisHook.aprenderRitual({
+          codigo_ritual: 53,
+          nome: `${baseRitual.Nome_Ritual} (Flagelador)`,
+          origem: 'trilha_flagelador',
+          circulo: baseRitual.Circulo_Ritual,
+          elemento: baseRitual.Elemento_Ritual
+        });
+      }
+    } else if (!temFlagelador99 && (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_flagelador')) {
+      rituaisHook.esquecerRitual('trilha_flagelador');
+    }
   }, [trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, effectiveNex, nivel, regras, rituaisHook.rituais, rituaisHook.rituaisAprendidos]);
 
   const handleRefazer = () => {

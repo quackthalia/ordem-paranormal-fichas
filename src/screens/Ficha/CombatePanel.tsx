@@ -211,8 +211,8 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
     const desc = m.Descricao_Mald || '';
     const nomeM = m.Nome_Mald?.trim().toLowerCase() || '';
     if (nomeM === 'predadora') {
-      const margem = 21 - critico;
-      critico = 21 - (margem * 2);
+      const margemBase = 21 - Number(arma.Critico_Arma || 20);
+      critico -= margemBase;
       const ord = ['Curto', 'Medio', 'Longo', 'Extremo', 'Ilimitado'];
       const idx = ord.indexOf(alcance);
       if (idx !== -1 && idx < ord.length - 1) alcance = ord[idx + 1];

@@ -1732,8 +1732,8 @@ function SortableArmaItem({
           danoSecundario = danoSecundario ? `${danoSecundario} + 1d8*` : '+1d8*';
         }
         if (nomeM === 'predadora') {
-          const margem = 21 - critico;
-          critico = 21 - (margem * 2);
+          const margemBase = 21 - Number(arma.Critico_Arma || 20);
+          critico -= margemBase;
           const ord = ['Curto', 'Medio', 'Longo', 'Extremo', 'Ilimitado'];
           const idx = ord.indexOf(alcance);
           if (idx !== -1 && idx < ord.length - 1) {

@@ -1621,6 +1621,7 @@ function SortableArmaItem({
   const isAniquilador = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 1;
   const armaFavId = isAniquilador ? poderesExtras["aniquilador_arma_favorita"] : null;
   const descontoFavorita = isAniquilador && armaFavId ? (effectiveNex >= 99 ? 3 : (effectiveNex >= 40 ? 2 : 1)) : 0;
+  const aniquiladorNivel99 = isAniquilador && item.id === armaFavId && effectiveNex >= 99;
   const hasProficiencia = proficienciasTotais.includes(arma.Proficiencia);
   const [expandirMods, setExpandirMods] = useState(false);
     const [expandirMalds, setExpandirMalds] = useState(false);

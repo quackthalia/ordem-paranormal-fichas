@@ -31,7 +31,7 @@ export function ModalTrilhas({
     return () => { document.body.style.overflow = 'unset'; };
   }, []);
 
-  const { classe, trilhasHook, regras } = useRPG();
+  const { classe, trilhasHook, regras, armasHook, poderesExtras, setPoderesExtras } = useRPG();
   const {
     trilhas,
     loading,
@@ -48,6 +48,7 @@ export function ModalTrilhas({
   const [habilidadesExpandidas, setHabilidadesExpandidas] = useState<number[]>([]);
   const [busca, setBusca] = useState('');
   const [trilhasModalExpandidas, setTrilhasModalExpandidas] = useState<number[]>([]);
+  const [escolhendoArmaTrilha1, setEscolhendoArmaTrilha1] = useState<Trilha | null>(null);
 
   const trilhasFiltradas = useMemo(() => {
     return trilhas.filter((t) => {

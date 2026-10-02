@@ -48,9 +48,28 @@ export function useTrilhas(): UseTrilhasReturn {
         return;
       }
 
+      // Busca Regras Trilhas
+      const { data: dataRegras } = await supabase
+        .from('Regras Trilhas')
+        .select('*')
+        .catch(() => ({ data: [] })); // Ignora erro se não existir ainda
+
       if (dataTrilhas) {
+        const trilhasComRegras = dataTrilhas.map(t => {
+          const regra = dataRegras?.find((r: any) => r.Codigo_Trilha === t.Codigo_Trilha);
+          if (regra) {
+            return {
+              ...t,
+              Auto_10: regra['Auto_10%'],
+              Auto_40: regra['Auto_40%'],
+              Auto_65: regra['Auto_65%'],
+              Auto_99: regra['Auto_99%'],
+            };
+          }
+          return t;
+        });
         // Ordena A-Z
-        setTrilhas(dataTrilhas.sort((a, b) => a.Nome_Trilha.localeCompare(b.Nome_Trilha)));
+        setTrilhas(trilhasComRegras.sort((a: any, b: any) => a.Nome_Trilha.localeCompare(b.Nome_Trilha)));
       }
 
       // Busca nomes das perícias

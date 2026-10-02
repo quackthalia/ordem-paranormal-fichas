@@ -393,7 +393,11 @@ const getBadgeCloseClasses = (minv: any) => {
 
 
 export function InventarioPanel() {
-  const { maldicoesHook, inventarioHook, atributosFinais, regrasAutomaticasAtivas, armasHook, municoesHook, protecoesHook, itensHook, itensAmaldicoadosHook, toggleVestimentaGeral, status, modificacoesHook, proficienciasTotais, rituaisHook, poderesHook } = useRPG();
+  const { maldicoesHook, inventarioHook, atributosFinais, regrasAutomaticasAtivas, armasHook, municoesHook, protecoesHook, itensHook, itensAmaldicoadosHook, toggleVestimentaGeral, status, modificacoesHook, proficienciasTotais, rituaisHook, poderesHook, poderesExtras, regras, nivel, trilhasHook, nex } = useRPG();
+  const effectiveNex = regras["nex_experiencia"] ? nivel * 5 : nex;
+  const isAniquilador = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 1;
+  const armaFavId = isAniquilador ? poderesExtras["aniquilador_arma_favorita"] : null;
+  const descontoFavorita = isAniquilador && armaFavId ? (effectiveNex >= 99 ? 3 : (effectiveNex >= 40 ? 2 : 1)) : 0;
 
   useEffect(() => {
     const handler = (e: any) => {
@@ -491,7 +495,7 @@ export function InventarioPanel() {
 
     armasHook?.armasInventario?.forEach(a => {
       if (a.arma.isDuplaObsessivaCompanion) return;
-      const cat = calcularCategoriaFinal(a.arma.Categoria_Item, a.modificacoes, modsAll, a.arma.Codigo_Arma === 71 ? true : a.arma.Nome_Item, a.maldicoes, maldsAll);
+      const cat = calcularCategoriaFinal(a.arma.Categoria_Item, a.modificacoes, modsAll, a.arma.Codigo_Arma === 71 ? true : a.arma.Nome_Item, a.maldicoes, maldsAll, a.id === armaFavId ? descontoFavorita : 0);
       const idx = getCatIndex(cat);
       if (idx !== -1) noInventario[idx]++;
     });
@@ -1918,7 +1922,7 @@ function SortableArmaItem({
             <span className="italic text-zinc-400">{arma.Tipo_Arma}</span>
           </div>
           <div className="flex flex-col gap-1 text-xs text-zinc-300">
-            <span><span className="text-green-400 font-bold">Categoria:</span> {calcularCategoriaFinal(arma.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes, arma.Codigo_Arma === 71 ? true : arma.Nome_Item, item.maldicoes, maldicoesHook?.maldicoes)}</span>
+            <span><span className="text-green-400 font-bold">Categoria:</span> {calcularCategoriaFinal(arma.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes, arma.Codigo_Arma === 71 ? true : arma.Nome_Item, item.maldicoes, maldicoesHook?.maldicoes, item.id === armaFavId ? descontoFavorita : 0)}</span>
             {stats.alcance && <span><span className="text-green-400 font-bold">Alcance:</span> {stats.alcance}</span>}
             <span><span className="text-green-400 font-bold">Tipo:</span> {municoesAcopladasList[0]?.municao?.Codigo_Municao === 63 ? 'Impacto' : arma.Tipo_Dano_Arma}</span>
               {municoesAcopladasList[0]?.municao?.Codigo_Municao === 67 && municoesAcopladasList[0]?.municao?.granada_dano && (

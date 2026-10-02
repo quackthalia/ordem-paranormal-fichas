@@ -159,6 +159,10 @@ export interface Trilha {
   Codigo_Regra_99?: number;
   Nome_Habilidade_99: string;
   Descricao_Habilidade_99: string;
+  Auto_10?: string;
+  Auto_40?: string;
+  Auto_65?: string;
+  Auto_99?: string;
   Fonte_Trilha: string;
 }
 

@@ -421,10 +421,12 @@ export function calcularAtributosArmaFinais(
   multCritBase: number,
   alcanceBase: string,
   modsAtivas: any[],
-  maldicoesAtivas: any[]
+  maldicoesAtivas: any[],
+  aumentarPassosDano: number = 0,
+  bonusMargemAmeaca: number = 0
 ) {
   let danoFinal = danoBase || '';
-  let criticoFinal = Number(criticoBase) || 20;
+  let criticoFinal = (Number(criticoBase) || 20) - bonusMargemAmeaca;
   let multCritFinal = Number(multCritBase) || 2;
   let alcanceFinal = alcanceBase || 'Corpo a Corpo';
   let extrasDanoStr = '';
@@ -458,6 +460,12 @@ export function calcularAtributosArmaFinais(
        danoFinal = danoFinal.replace(/(\d+)d(\d+)/gi, (m, p1, p2) => `${Number(p1) + 1}d${p2}`);
     }
   });
+
+  if (aumentarPassosDano > 0) {
+    for (let i = 0; i < aumentarPassosDano; i++) {
+      danoFinal = danoFinal.replace(/(\d+)d(\d+)/gi, (m, p1, p2) => `${Number(p1) + 1}d${p2}`);
+    }
+  }
 
   return {
     danoFinal: (danoFinal + extrasDanoStr).trim(),

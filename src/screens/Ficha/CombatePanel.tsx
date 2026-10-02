@@ -121,7 +121,12 @@ interface ArmaCombateCardProps {
 }
 
 const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandida, toggleExpandir, modificacoesHook, maldicoesHook, onAddMunicao, municoesHook, itensHook, armasHook }) => {
-  const { atributosFinais, proficienciasTotais, regrasAutomaticasAtivas, status, regras } = useRPG();
+  const { atributosFinais, proficienciasTotais, regrasAutomaticasAtivas, status, regras, trilhasHook, poderesExtras, nivel } = useRPG();
+  const effectiveNex = regras['nex_experiencia'] ? (nivel * 5) : (status?.nex || 0); // fallback
+  const isAniquilador = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 1;
+  const armaFavId = isAniquilador ? poderesExtras["aniquilador_arma_favorita"] : null;
+  const isArmaFavorita = armaInv.id === armaFavId;
+  const aniquiladorNivel99 = isAniquilador && isArmaFavorita && effectiveNex >= 99;
   const [mostrarDanoMedio, setMostrarDanoMedio] = React.useState(false);
   const [mostrarStatsGrupo, setMostrarStatsGrupo] = React.useState(false);
   
@@ -177,6 +182,7 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
 
   let extrasStr = '';
   let critico = Number(arma.Critico_Arma || 20);
+  if (aniquiladorNivel99) critico -= 2;
   let multCrit = Number(arma.Multiplicador_Arma || 2);
   let alcance = arma.Alcance_Item || 'Corpo a Corpo';
   

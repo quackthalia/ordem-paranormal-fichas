@@ -111,6 +111,40 @@ export function ModalTrilhas({
     onClose();
   };
 
+  if (escolhendoArmaTrilha1) {
+    const armasFiltradas = armasHook.armasInventario.filter(a => !a.arma.Nome_Item?.includes('Ataque Desarmado'));
+    return (
+      <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 p-4 font-sans backdrop-blur-sm">
+        <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-[#0a0a0a] shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-green-500/50 to-transparent" />
+          
+          <div className="flex items-start justify-between border-b border-zinc-800/80 p-5 bg-zinc-900/20">
+            <div>
+              <h2 className="font-display text-lg font-bold uppercase tracking-wider text-zinc-100 flex items-center gap-2">
+                <span className="text-green-500">❖</span> Arma Favorita
+              </h2>
+              <p className="mt-1 text-xs text-zinc-400">Selecione uma arma do seu inventário.</p>
+            </div>
+            <button onClick={() => setEscolhendoArmaTrilha1(null)} className="text-zinc-500 hover:text-white transition">✕</button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-5 custom-scrollbar flex flex-col gap-3">
+            {armasFiltradas.map((a) => (
+              <div 
+                key={a.id} 
+                onClick={() => prosseguirEscolha(escolhendoArmaTrilha1, a.id)}
+                className="cursor-pointer border border-zinc-800 bg-zinc-900/50 p-3 rounded hover:border-green-500/50 hover:bg-zinc-800 transition"
+              >
+                <div className="font-bold text-zinc-200">{a.arma.Nome_Item}</div>
+                <div className="text-xs text-zinc-500 mt-1">Clique para escolher como Arma Favorita</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onClose}>
       <div

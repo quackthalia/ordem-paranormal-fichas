@@ -507,7 +507,14 @@ const atributosFinais = useMemo(() => {
     (() => { const comb = {...bonusVestimentas.pericias}; Object.keys(bonusMaldicoes.pericias || {}).forEach(k => { comb[k] = (comb[k] || 0) + bonusMaldicoes.pericias[k]; }); return comb; })()
   );
 
-  const [jaTinhaProfissaoTrilha, setJaTinhaProfissaoTrilha] = useState(false);
+  const jaTinhaProfissaoTrilha = useMemo(() => {
+    const trilha = trilhasHook.trilhaSelecionada;
+    if (!trilha || !trilha.Profissao_Pericia) return false;
+    const pName = trilha.Profissao_Pericia.trim().toLowerCase();
+    // Verifica se a profissão existe E não foi injetada por nós (ou seja, foi criada manualmente pelo jogador)
+    return periciasHook.profissoes.some(p => (p.nome || '').toLowerCase() === pName && (p as any).origem !== 'trilha');
+  }, [trilhasHook.trilhaSelecionada, periciasHook.profissoes]);
+
   const profissaoTrilhaRef = React.useRef<string | null>(null);
 
   React.useEffect(() => {
@@ -518,10 +525,8 @@ const atributosFinais = useMemo(() => {
         periciasHook.setProfissoes(prev => {
           const exists = prev.find(p => (p.nome || '').toLowerCase() === pName.toLowerCase());
           if (exists) {
-            setJaTinhaProfissaoTrilha(true);
             return prev;
           } else {
-            setJaTinhaProfissaoTrilha(false);
             return [...prev, { nome: pName, treino: 5, outros: 0, origem: 'trilha' } as any];
           }
         });
@@ -531,7 +536,6 @@ const atributosFinais = useMemo(() => {
       if (profissaoTrilhaRef.current) {
         const oldName = profissaoTrilhaRef.current;
         periciasHook.setProfissoes(prev => prev.filter(p => !((p.nome || '').toLowerCase() === oldName.toLowerCase() && (p as any).origem === 'trilha')));
-        setJaTinhaProfissaoTrilha(false);
         profissaoTrilhaRef.current = null;
       }
     }

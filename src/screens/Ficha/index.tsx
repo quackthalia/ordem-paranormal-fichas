@@ -35,21 +35,21 @@ export const FichaScreen: React.FC = () => {
 
   useEffect(() => {
     const temConduite99 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 11 && (regras['nex_experiencia'] ? nivel >= 20 : effectiveNex >= 99)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 11 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
-    const jaTemCanalizarMedo = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'Conduíte' || r.codigo_ritual === 10);
+    const jaTemCanalizarMedo = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_conduite' || r.codigo_ritual === 10);
 
     if (temConduite99 && !jaTemCanalizarMedo) {
       const baseRitual = (rituaisHook.rituais || []).find(r => r.Codigo_Ritual === 10);
       if (baseRitual) {
         rituaisHook.aprenderRitual({
           codigo_ritual: 10,
-          nome: baseRitual.Nome_Ritual,
-          origem: 'Conduíte',
+          nome: `${baseRitual.Nome_Ritual} (Conduíte)`,
+          origem: 'trilha_conduite',
           circulo: baseRitual.Circulo_Ritual,
           elemento: baseRitual.Elemento_Ritual
         });
       }
-    } else if (!temConduite99 && (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'Conduíte')) {
-      rituaisHook.esquecerRitual('Conduíte');
+    } else if (!temConduite99 && (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_conduite')) {
+      rituaisHook.esquecerRitual('trilha_conduite');
     }
   }, [trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, effectiveNex, nivel, regras, rituaisHook.rituais, rituaisHook.rituaisAprendidos]);
 

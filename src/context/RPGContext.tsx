@@ -394,7 +394,10 @@ const atributosBaseComBonus = useMemo(() => {
   const temCascaGrossa = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 5 && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 5 && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
   const bonusPvTrilha5 = temCascaGrossa ? effectiveNivel : 0;
 
-  const status = useStatus(classe, effectiveNex, effectiveNivel, atributosBaseComBonus, paranormalPenalty, regrasAutomaticasAtivas, bonusVestimentas.pv + bonusMaldicoes.pv + bonusPvTrilha5, bonusVestimentas.pe + bonusMaldicoes.pe);
+  const temIntuitivo40 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 14 && (regras['nex_experiencia'] ? effectiveNivel >= 8 : effectiveNex >= 40));
+  const bonusPeTurnoTrilha14 = temIntuitivo40 ? atributosBaseComBonus.PRE : 0;
+
+  const status = useStatus(classe, effectiveNex, effectiveNivel, atributosBaseComBonus, paranormalPenalty, regrasAutomaticasAtivas, bonusVestimentas.pv + bonusMaldicoes.pv + bonusPvTrilha5, bonusVestimentas.pe + bonusMaldicoes.pe, bonusPeTurnoTrilha14);
 
   
     // Controle para evitar que o PE temporário do Agente de Nascença fique voltando infinitamente

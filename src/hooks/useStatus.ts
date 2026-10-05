@@ -50,7 +50,8 @@ export function useStatus(
   paranormalPenalty: number = 0,
   regrasAtivas?: Set<number>,
   bonusPv: number = 0,
-  bonusPe: number = 0
+  bonusPe: number = 0,
+  bonusPeTurno: number = 0
 ): UseStatusReturn {
   // Estados com null = "não inicializado" (melhor que -1)
   const [pvAtual, setPvAtual] = useState<number | null>(null);
@@ -78,7 +79,7 @@ export function useStatus(
   const calcMaxPv = baseStatus.pvMax + bonusPv;
   const calcMaxPe = baseStatus.peMax + bonusPe;
   const calcMaxSan = Math.max(0, baseStatus.sanMax - paranormalPenalty);
-  const peTurno = baseStatus.peTurno;
+  const peTurno = baseStatus.peTurno + bonusPeTurno;
 
   const peTurnoDT = regrasAtivas?.has(6) ? peTurno - 1 : peTurno;
 

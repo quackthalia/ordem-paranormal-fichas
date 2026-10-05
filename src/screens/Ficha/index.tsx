@@ -91,6 +91,25 @@ export const FichaScreen: React.FC = () => {
     }
 
     const temGraduado40 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 13 && (regras['nex_experiencia'] ? nivel >= 8 : effectiveNex >= 40));
+
+    // TRILHA 14: INTUITIVO
+    const temIntuitivo99 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 14 && (regras['nex_experiencia'] ? nivel >= 20 : effectiveNex >= 99)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 14 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
+    const jaTemPresencaMedo = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_intuitivo' || r.codigo_ritual === 64);
+
+    if (temIntuitivo99 && !jaTemPresencaMedo) {
+      const baseRitual = (rituaisHook.rituais || []).find(r => r.Codigo_Ritual === 64);
+      if (baseRitual) {
+        rituaisHook.aprenderRitual({
+          codigo_ritual: 64,
+          nome: ` (Intuitivo)`,
+          origem: 'trilha_intuitivo',
+          circulo: baseRitual.Circulo_Ritual,
+          elemento: baseRitual.Elemento_Ritual
+        });
+      }
+    } else if (!temIntuitivo99 && (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_intuitivo')) {
+      rituaisHook.esquecerRitual('trilha_intuitivo');
+    }
     const isInventarioLoaded = itensHook.itensInventario !== undefined && itensHook.itensInventario !== null;
     if (temGraduado40 && isInventarioLoaded) {
       const temGrimorio = itensHook.itensInventario.some((i) => i.item.Nome_Item === 'Grimório Ritualístico');
@@ -596,6 +615,18 @@ function ProtecoesPanel() {
   }
 
   const imunidadesExtras = [...imunidades];
+  // TRILHA 14: Intuitivo
+  const temIntuitivo10 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 14 && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 14 && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
+  const temIntuitivo65 = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 14 && (regras['nex_experiencia'] ? effectiveNivel >= 13 : effectiveNex >= 65);
+  if (temIntuitivo10) {
+    if (temIntuitivo65) {
+      resistenciasExtras.push('Paranormal 15');
+      resistenciasExtras.push('Mental 10');
+    } else {
+      resistenciasExtras.push('Paranormal 5');
+    }
+  }
+
   // REGRA 46: Imunidades extras Frio e Calor
   if (regrasAutomaticasAtivas.has(46)) {
     if (!imunidadesExtras.includes('Frio')) imunidadesExtras.push('Frio');

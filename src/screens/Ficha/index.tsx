@@ -101,7 +101,7 @@ export const FichaScreen: React.FC = () => {
       if (baseRitual) {
         rituaisHook.aprenderRitual({
           codigo_ritual: 64,
-          nome: ` (Intuitivo)`,
+          nome: `${baseRitual.Nome_Ritual} (Intuitivo)`,
           origem: 'trilha_intuitivo',
           circulo: baseRitual.Circulo_Ritual,
           elemento: baseRitual.Elemento_Ritual
@@ -111,22 +111,30 @@ export const FichaScreen: React.FC = () => {
       rituaisHook.esquecerRitual('trilha_intuitivo');
     }
 
-    // TRILHA 15: LÂMINA PARANORMAL
+    // TRILHA 15: Lï¿½MINA PARANORMAL
     const temLamina10 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
-    const jaTemAmaldicoarArmaTrilha = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_lamina_paranormal');
-    const jaTemAmaldicoarArmaNormal = (rituaisHook.rituaisAprendidos || []).some(r => r.codigo_ritual === 3 && r.origem !== 'trilha_lamina_paranormal');
+    const jaTemAmaldicoarArmaTrilha = (rituaisHook.rituaisAprendidos || []).find((r: any) => r.origem === 'trilha_lamina_paranormal');
+    const jaTemAmaldicoarArmaNormal = (rituaisHook.rituaisAprendidos || []).find((r: any) => r.codigo_ritual === 3 && r.origem !== 'trilha_lamina_paranormal');
 
     if (temLamina10 && !jaTemAmaldicoarArmaTrilha && !jaTemAmaldicoarArmaNormal) {
       const baseRitual = (rituaisHook.rituais || []).find(r => r.Codigo_Ritual === 3);
       if (baseRitual) {
         rituaisHook.aprenderRitual({
           codigo_ritual: 3,
-          nome: ` (Lâmina Paranormal)`,
+          nome: `${baseRitual.Nome_Ritual} (LÃ¢mina Paranormal)`,
           origem: 'trilha_lamina_paranormal',
           circulo: baseRitual.Circulo_Ritual,
           elemento: baseRitual.Elemento_Ritual
         });
       }
+    } else if (temLamina10 && jaTemAmaldicoarArmaNormal && !jaTemAmaldicoarArmaNormal.customProps?.normal?.Execucao_Ritual?.includes('Movimento')) {
+       const existingProps = jaTemAmaldicoarArmaNormal.customProps || {};
+       rituaisHook.editarRitual(jaTemAmaldicoarArmaNormal.origem, jaTemAmaldicoarArmaNormal.customNome, jaTemAmaldicoarArmaNormal.customDesc, {
+           ...existingProps,
+           normal: { ...(existingProps.normal || {}), Execucao_Ritual: 'Movimento (+1 PE)' },
+           discente: { ...(existingProps.discente || {}), Execucao_Ritual: 'Movimento (+1 PE)' },
+           verdadeiro: { ...(existingProps.verdadeiro || {}), Execucao_Ritual: 'Movimento (+1 PE)' }
+       });
     } else if (!temLamina10 && jaTemAmaldicoarArmaTrilha) {
       rituaisHook.esquecerRitual('trilha_lamina_paranormal');
     }
@@ -139,7 +147,7 @@ export const FichaScreen: React.FC = () => {
       if (baseRitual) {
         rituaisHook.aprenderRitual({
           codigo_ritual: 49,
-          nome: ` (Lâmina Paranormal)`,
+          nome: `${baseRitual.Nome_Ritual} (LÃ¢mina Paranormal)`,
           origem: 'trilha_lamina_paranormal_99',
           circulo: baseRitual.Circulo_Ritual,
           elemento: baseRitual.Elemento_Ritual

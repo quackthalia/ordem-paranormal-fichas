@@ -1580,7 +1580,8 @@ export const AbasPanel: React.FC = () => {
                           rituaisAprendidosNesteCirculoFiltrados.forEach(ritual => {
                             if (!ritual) return;
                             const isLista = ritual.Elemento_Ritual.toLowerCase() === 'lista' || ritual.Elemento_Ritual.toLowerCase() === 'varia';
-                            const elementoEscolhido = isLista ? (ritual.ElementoEscolhidoPermanente || 'Sangue') : ritual.Elemento_Ritual;
+                            const elementoCustom = ritual.customProps?.['normal']?.Elemento_Ritual || ritual.customProps?.['discente']?.Elemento_Ritual || ritual.customProps?.['verdadeiro']?.Elemento_Ritual;
+                          const elementoEscolhido = elementoCustom || (isLista ? (ritual.ElementoEscolhidoPermanente || 'Sangue') : ritual.Elemento_Ritual);
                             
                             let finalElemento = elementoEscolhido;
                             if (elementoEscolhido.toLowerCase().includes(' e ')) {
@@ -1628,7 +1629,8 @@ export const AbasPanel: React.FC = () => {
 
                         const isLista = ritual.Elemento_Ritual.toLowerCase() === 'lista' || ritual.Elemento_Ritual.toLowerCase() === 'varia';
                         // Usa a escolha permanente feita na hora de aprender
-                        const elementoEscolhido = isLista ? (ritual.ElementoEscolhidoPermanente || 'Sangue') : ritual.Elemento_Ritual;
+                        const elementoCustom = ritual.customProps?.['normal']?.Elemento_Ritual || ritual.customProps?.['discente']?.Elemento_Ritual || ritual.customProps?.['verdadeiro']?.Elemento_Ritual;
+                          const elementoEscolhido = elementoCustom || (isLista ? (ritual.ElementoEscolhidoPermanente || 'Sangue') : ritual.Elemento_Ritual);
 
                         const corElemento = obterCorBadge(elementoEscolhido);
                         const corPrimaria = obterCorElementoPrimario(elementoEscolhido);
@@ -1655,15 +1657,7 @@ export const AbasPanel: React.FC = () => {
                         const alvo = ritual.customProps?.[versao]?.Alvo_Ritual || obterValorVersao(ritual.Alvo_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
                         const duracao = ritual.customProps?.[versao]?.Duracao_Ritual || obterValorVersao(ritual.Duracao_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
                         let execucao = ritual.customProps?.[versao]?.Execucao_Ritual || obterValorVersao(ritual.Execucao_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
-                        const effectiveNex = regras['nex_experiencia'] ? nivel * 5 : nex;
-                        const effectiveNivel = regras['nex_experiencia'] ? nivel : Math.floor(nex / 5);
-                        const temLamina10 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 15 && effectiveNivel >= 2) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 15 && effectiveNivel >= 10);
-                        if (temLamina10 && ritual.Codigo_Ritual === 3) {
-                          const jaTemAmaldicoarArmaNormal = (rituaisHook.rituaisAprendidos || []).some((r: any) => r.codigo_ritual === 3 && r.origem !== 'trilha_lamina_paranormal');
-                          if (jaTemAmaldicoarArmaNormal && execucao === "Padrão") {
-                            execucao = "Movimento (+1 PE)";
-                          }
-                        }
+
 
                         const efeito = ritual.customProps?.[versao]?.Efeito_Ritual || obterValorVersao(ritual.Efeito_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
                         const resistencia = ritual.customProps?.[versao]?.Resistencia_Ritual || obterValorVersao(ritual.Resistencia_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
@@ -2170,7 +2164,8 @@ export const AbasPanel: React.FC = () => {
                   <h4 className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Sobrescrever Propriedades</h4>
                   <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                   {[
-                    { key: 'Execucao_Ritual', label: 'ExecuÃ§Ã£o' },
+                    { key: 'Elemento_Ritual', label: 'Elemento' },
+                      { key: 'Execucao_Ritual', label: 'Execução' },
                     { key: 'PE_Ritual', label: 'Custo' },
                     { key: 'Alcance_Ritual', label: 'Alcance' },
                     { key: 'Area_Ritual', label: 'Ãrea' },
@@ -2184,7 +2179,9 @@ export const AbasPanel: React.FC = () => {
                     const currentValue = (ritualPropsEditando?.[ritualVersaoEditando] as any)?.[prop.key] || '';
                     
                     let opts = null;
-                    if (prop.key === 'Execucao_Ritual') opts = ['Padrão', 'Movimento', 'Movimento (+1 PE)', 'Livre', 'Reação', 'Completa'];
+                                          if (prop.key === 'Elemento_Ritual') opts = ['Sangue', 'Morte', 'Energia', 'Conhecimento', 'Medo'];
+                      if (prop.key === 'Elemento_Ritual') opts = ['Sangue', 'Morte', 'Energia', 'Conhecimento', 'Medo'];
+                      if (prop.key === 'Execucao_Ritual') opts = ['Padrão', 'Movimento', 'Movimento (+1 PE)', 'Livre', 'Reação', 'Completa'];
                     if (prop.key === 'Alcance_Ritual') opts = ['Pessoal', 'Toque', 'Curto', 'MÃ©dio', 'Longo', 'Extremo', 'Ilimitado'];
                     if (prop.key === 'Resistencia_Ritual') opts = ['Nenhuma', 'Fortitude', 'Reflexos', 'Vontade', 'Fortitude reduz Ã  metade', 'Reflexos reduz Ã  metade', 'Vontade reduz Ã  metade', 'Fortitude anula', 'Reflexos anula', 'Vontade anula'];
                     if (prop.key === 'Duracao_Ritual') opts = ['InstantÃ¢nea', '1 rodada', 'Cena', 'Sustentada', 'Sustentada (1 rodada)', '1 dia'];

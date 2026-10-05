@@ -1445,7 +1445,12 @@ export const AbasPanel: React.FC = () => {
                     const base = rituaisHook.rituais.find(r => r.Codigo_Ritual === ra.codigo_ritual);
                     return base ? { ...base, Origem: ra.origem, ElementoEscolhidoPermanente: ra.elemento_escolhido, customNome: ra.customNome, customDesc: ra.customDesc, customProps: ra.customProps, learnedNome: ra.nome } : null;
                   })
-                  .filter(r => r && r.Circulo_Ritual === circulo)
+                  .filter(r => {
+                    if (!r || r.Circulo_Ritual !== circulo) return false;
+                    const isGrimorio = r.Origem?.startsWith('graduado_40');
+                    const hasGrimorioActive = isGraduado40 || (rituaisHook.rituaisAprendidos || []).some(ra => ra.origem?.startsWith('graduado_40'));
+                    return (hasGrimorioActive && subAbaRituais === 'grimorio') ? isGrimorio : !isGrimorio;
+                  })
                   .sort((a, b) => {
                     if (!a || !b) return 0;
                     return sortPorElementoENome(

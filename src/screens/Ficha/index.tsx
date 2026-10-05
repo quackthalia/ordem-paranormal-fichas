@@ -123,9 +123,10 @@ export const FichaScreen: React.FC = () => {
           codigo_ritual: 3,
           nome: `${baseRitual.Nome_Ritual} (Lâmina Paranormal)`,
           origem: 'trilha_lamina_paranormal',
-          circulo: baseRitual.Circulo_Ritual,
-          elemento: baseRitual.Elemento_Ritual
-        });
+            circulo: baseRitual.Circulo_Ritual,
+            elemento: baseRitual.Elemento_Ritual,
+            elemento_escolhido: poderesExtras.lamina_elemento || 'Sangue'
+          });
       }
     } else if (temLamina10 && jaTemAmaldicoarArmaNormal && !jaTemAmaldicoarArmaNormal.customProps?.normal?.Execucao_Ritual?.includes('Movimento')) {
        const existingProps = jaTemAmaldicoarArmaNormal.customProps || {};

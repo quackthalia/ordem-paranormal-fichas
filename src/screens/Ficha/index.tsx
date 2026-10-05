@@ -129,14 +129,20 @@ export const FichaScreen: React.FC = () => {
             elemento_escolhido: poderesExtras.lamina_elemento || 'Sangue'
           });
       }
-    } else if (temLamina10 && jaTemAmaldicoarArmaNormal && !jaTemAmaldicoarArmaNormal.customProps?.normal?.Execucao_Ritual?.includes('Movimento')) {
-       const existingProps = jaTemAmaldicoarArmaNormal.customProps || {};
-       rituaisHook.editarRitual(jaTemAmaldicoarArmaNormal.origem, jaTemAmaldicoarArmaNormal.customNome, jaTemAmaldicoarArmaNormal.customDesc, {
-           ...existingProps,
-           normal: { ...(existingProps.normal || {}), Execucao_Ritual: 'Movimento (+1 PE)' },
-           discente: { ...(existingProps.discente || {}), Execucao_Ritual: 'Movimento (+1 PE)' },
-           verdadeiro: { ...(existingProps.verdadeiro || {}), Execucao_Ritual: 'Movimento (+1 PE)' }
-       });
+    } else if (temLamina10 && jaTemAmaldicoarArmaNormal) {
+       // Já tem o ritual por outra fonte: a cópia da trilha some e o ritual existente vira Movimento (+1 PE)
+       if (jaTemAmaldicoarArmaTrilha) {
+         rituaisHook.esquecerRitual('trilha_lamina_paranormal');
+       }
+       if (!jaTemAmaldicoarArmaNormal.customProps?.normal?.Execucao_Ritual?.includes('Movimento')) {
+         const existingProps = jaTemAmaldicoarArmaNormal.customProps || {};
+         rituaisHook.editarRitual(jaTemAmaldicoarArmaNormal.origem, jaTemAmaldicoarArmaNormal.customNome, jaTemAmaldicoarArmaNormal.customDesc, {
+             ...existingProps,
+             normal: { ...(existingProps.normal || {}), Execucao_Ritual: 'Movimento (+1 PE)' },
+             discente: { ...(existingProps.discente || {}), Execucao_Ritual: 'Movimento (+1 PE)' },
+             verdadeiro: { ...(existingProps.verdadeiro || {}), Execucao_Ritual: 'Movimento (+1 PE)' }
+         });
+       }
     } else if (!temLamina10 && jaTemAmaldicoarArmaTrilha) {
       rituaisHook.esquecerRitual('trilha_lamina_paranormal');
     }

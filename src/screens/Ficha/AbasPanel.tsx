@@ -2039,36 +2039,33 @@ export const AbasPanel: React.FC = () => {
           onSelect={(ritual, elementoVaria) => {
               const origemExtra = `extra_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
 
+              let propsLamina: any = undefined;
+              let elementoFinal = elementoVaria;
               if (ritual.Codigo_Ritual === 3) {
-                   const effectiveNivel = regras['nex_experiencia'] ? nivel : Math.floor(nex / 5);
-                   const isLamina = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 15 && effectiveNivel >= 2) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 15 && effectiveNivel >= 10);
                    const amaldicoarTrilha = (rituaisHook.rituaisAprendidos || []).find((r: any) => r.codigo_ritual === 3 && r.origem === 'trilha_lamina_paranormal');
-                   
-                   if (isLamina && amaldicoarTrilha) {
-                      const elTrilha = amaldicoarTrilha.customProps?.normal?.Elemento_Ritual || amaldicoarTrilha.elemento_escolhido || 'Sangue';
+                   if (amaldicoarTrilha) {
+                      const elTrilha = amaldicoarTrilha.elemento_escolhido || amaldicoarTrilha.customProps?.normal?.Elemento_Ritual || 'Sangue';
                       if (elementoVaria && elementoVaria !== elTrilha) {
                          alert('Você só pode aprender Amaldiçoar Arma de novo com o MESMO ELEMENTO que escolheu para a Trilha Lâmina Paranormal (' + elTrilha + ')!');
                          return;
                       }
-
-                      const existingProps = amaldicoarTrilha.customProps || {};
-                      rituaisHook.editarRitual('trilha_lamina_paranormal', amaldicoarTrilha.customNome, amaldicoarTrilha.customDesc, {
-                         ...existingProps,
-                         normal: { ...(existingProps.normal || {}), Execucao_Ritual: 'Movimento (+1 PE)' },
-                         discente: { ...(existingProps.discente || {}), Execucao_Ritual: 'Movimento (+1 PE)' },
-                         verdadeiro: { ...(existingProps.verdadeiro || {}), Execucao_Ritual: 'Movimento (+1 PE)' }
-                      });
-                      setModalRituaisExtraAberto(false);
-                      return;
+                      elementoFinal = elTrilha;
+                      propsLamina = {
+                         normal: { Execucao_Ritual: 'Movimento (+1 PE)' },
+                         discente: { Execucao_Ritual: 'Movimento (+1 PE)' },
+                         verdadeiro: { Execucao_Ritual: 'Movimento (+1 PE)' }
+                      };
+                      rituaisHook.esquecerRitual('trilha_lamina_paranormal');
                    }
               }
               
               rituaisHook.aprenderRitual({
               codigo_ritual: ritual.Codigo_Ritual,
               origem: origemExtra,
-              elemento_escolhido: elementoVaria,
+              elemento_escolhido: elementoFinal,
               customNome: ritual.Nome_Ritual,
-              customDesc: ritual.Descricao_Ritual
+              customDesc: ritual.Descricao_Ritual,
+              ...(propsLamina ? { customProps: propsLamina } : {}),
             });
             
             setModalRituaisExtraAberto(false);
@@ -2092,45 +2089,34 @@ export const AbasPanel: React.FC = () => {
           onSelect={(ritual, elementoVaria) => {
               const origem = escolhendoRitualPlaceholder.origem;
 
+              // Lâmina Paranormal: pegar Amaldiçoar Arma de novo -> só no mesmo elemento da trilha.
+              // O ritual entra normalmente no slot já com Execução "Movimento (+1 PE)" e a cópia
+              // concedida pela trilha é removida (o useEffect da Ficha garante isso também).
+              let propsLamina: any = undefined;
+              let elementoFinal = elementoVaria;
               if (ritual.Codigo_Ritual === 3) {
-                   const effectiveNivel = regras['nex_experiencia'] ? nivel : Math.floor(nex / 5);
-                   const isLamina = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 15 && effectiveNivel >= 2) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 15 && effectiveNivel >= 10);
                    const amaldicoarTrilha = (rituaisHook.rituaisAprendidos || []).find((r: any) => r.codigo_ritual === 3 && r.origem === 'trilha_lamina_paranormal');
-                   
-                   if (isLamina && amaldicoarTrilha) {
-                      const elTrilha = amaldicoarTrilha.customProps?.normal?.Elemento_Ritual || amaldicoarTrilha.elemento_escolhido || 'Sangue';
+                   if (amaldicoarTrilha) {
+                      const elTrilha = amaldicoarTrilha.elemento_escolhido || amaldicoarTrilha.customProps?.normal?.Elemento_Ritual || 'Sangue';
                       if (elementoVaria && elementoVaria !== elTrilha) {
                          alert('Você só pode aprender Amaldiçoar Arma de novo com o MESMO ELEMENTO que escolheu para a Trilha Lâmina Paranormal (' + elTrilha + ')!');
                          return;
                       }
-
-                      const existingProps = amaldicoarTrilha.customProps || {};
-                      rituaisHook.editarRitual('trilha_lamina_paranormal', amaldicoarTrilha.customNome, amaldicoarTrilha.customDesc, {
-                         ...existingProps,
-                         normal: { ...(existingProps.normal || {}), Execucao_Ritual: 'Movimento (+1 PE)' },
-                         discente: { ...(existingProps.discente || {}), Execucao_Ritual: 'Movimento (+1 PE)' },
-                         verdadeiro: { ...(existingProps.verdadeiro || {}), Execucao_Ritual: 'Movimento (+1 PE)' }
-                      });
-                      
-                      // Se for de poder, precisa atualizar o poder também
-                      if (origem.startsWith('poder_')) {
-                        const chave = origem.replace('poder_57_', '').replace('combate_', '');
-                        const chaveNum = parseInt(chave, 10);
-                        const key = isNaN(chaveNum) ? chave : chaveNum;
-                        const poderAtual = poderesEscolhidos[key];
-                        if (poderAtual) {
-                          poderesHook.escolherPoder(key, { ...poderAtual, Elemento: elementoVaria || ritual.Elemento_Ritual } as any);
-                        }
-                      }
-                      setEscolhendoRitualPlaceholder(null);
-                      return;
+                      elementoFinal = elTrilha;
+                      propsLamina = {
+                         normal: { Execucao_Ritual: 'Movimento (+1 PE)' },
+                         discente: { Execucao_Ritual: 'Movimento (+1 PE)' },
+                         verdadeiro: { Execucao_Ritual: 'Movimento (+1 PE)' }
+                      };
+                      rituaisHook.esquecerRitual('trilha_lamina_paranormal');
                    }
               }
               
               rituaisHook.aprenderRitual({
               codigo_ritual: ritual.Codigo_Ritual,
               origem: origem,
-              elemento_escolhido: elementoVaria,
+              elemento_escolhido: elementoFinal,
+              ...(propsLamina ? { customProps: propsLamina } : {}),
             });
 
             // Se for de poder, atualiza o poder na lista de poderes escolhidos para mostrar o ritual escolhido!

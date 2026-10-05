@@ -9,6 +9,7 @@ interface ModalRituaisProps {
   onSelect: (ritual: Ritual, elemento?: string) => void;
   limiteCirculo: number;
   rituaisAprendidosIds?: number[];
+  elementosPermitidosPorRitual?: Record<number, string[]>;
 }
 
 const ELEMENTOS = ['Sangue', 'Conhecimento', 'Energia', 'Morte', 'Medo', 'Varia'];
@@ -65,6 +66,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
   onSelect,
   limiteCirculo,
   rituaisAprendidosIds = [],
+  elementosPermitidosPorRitual = {},
 }) => {
 
   React.useEffect(() => {
@@ -323,7 +325,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                       {isEscolhendo ? (
                         <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
                           <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1">Elemento:</span>
-                          {['Sangue', 'Morte', 'Conhecimento', 'Energia'].map(elem => (
+                          {(elementosPermitidosPorRitual[codigo] || ['Sangue', 'Morte', 'Conhecimento', 'Energia']).map(elem => (
                             <button
                               key={elem}
                               onClick={(e) => {
@@ -341,7 +343,14 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            isVaria ? setEscolhendoElementoId(codigo) : onSelect(ritual, undefined);
+                            const permitidos = elementosPermitidosPorRitual[codigo];
+                            if (isVaria && permitidos && permitidos.length === 1) {
+                              onSelect(ritual, permitidos[0]);
+                            } else if (isVaria) {
+                              setEscolhendoElementoId(codigo);
+                            } else {
+                              onSelect(ritual, undefined);
+                            }
                           }}
                           className="px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider ml-auto"
                         >
@@ -456,7 +465,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                       {isEscolhendo ? (
                         <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
                           <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1">Elemento:</span>
-                          {['Sangue', 'Morte', 'Conhecimento', 'Energia'].map(elem => (
+                          {(elementosPermitidosPorRitual[codigo] || ['Sangue', 'Morte', 'Conhecimento', 'Energia']).map(elem => (
                             <button
                               key={elem}
                               onClick={(e) => {
@@ -474,7 +483,14 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            isVaria ? setEscolhendoElementoId(codigo) : onSelect(ritual, undefined);
+                            const permitidos = elementosPermitidosPorRitual[codigo];
+                            if (isVaria && permitidos && permitidos.length === 1) {
+                              onSelect(ritual, permitidos[0]);
+                            } else if (isVaria) {
+                              setEscolhendoElementoId(codigo);
+                            } else {
+                              onSelect(ritual, undefined);
+                            }
                           }}
                           className="px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider ml-auto"
                         >

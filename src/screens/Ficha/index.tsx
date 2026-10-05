@@ -30,7 +30,8 @@ export const FichaScreen: React.FC = () => {
     afinidadeAtiva,
     afinidadeEscolhida,
     itensHook,
-    poderesExtras
+    poderesExtras,
+    setPoderesExtras
   } = useRPG();
 
     const effectiveNex = regras["nex_experiencia"] ? nivel * 5 : nex;
@@ -112,27 +113,30 @@ export const FichaScreen: React.FC = () => {
       rituaisHook.esquecerRitual('trilha_intuitivo');
     }
 
-    // TRILHA 15: L�MINA PARANORMAL
+    // TRILHA 15: LÂMINA PARANORMAL
     const temLamina10 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
-    const jaTemAmaldicoarArmaTrilha = (rituaisHook.rituaisAprendidos || []).find((r: any) => r.origem === 'trilha_lamina_paranormal');
-    const jaTemAmaldicoarArmaNormal = (rituaisHook.rituaisAprendidos || []).find((r: any) => r.codigo_ritual === 3 && r.origem !== 'trilha_lamina_paranormal');
+    const jaTemAmaldicoarArmaTrilha = (rituaisHook.rituaisAprendidos || []).find((r: any) => Number(r.codigo_ritual) === 3 && r.origem === 'trilha_lamina_paranormal');
+    const jaTemAmaldicoarArmaNormal = (rituaisHook.rituaisAprendidos || []).find((r: any) => Number(r.codigo_ritual) === 3 && r.origem !== 'trilha_lamina_paranormal');
 
     if (temLamina10 && !jaTemAmaldicoarArmaTrilha && !jaTemAmaldicoarArmaNormal) {
-      const baseRitual = (rituaisHook.rituais || []).find(r => r.Codigo_Ritual === 3);
+      const baseRitual = (rituaisHook.rituais || []).find(r => Number(r.Codigo_Ritual) === 3);
       if (baseRitual) {
         rituaisHook.aprenderRitual({
           codigo_ritual: 3,
           nome: `${baseRitual.Nome_Ritual} (Lâmina Paranormal)`,
           origem: 'trilha_lamina_paranormal',
-            circulo: baseRitual.Circulo_Ritual,
-            elemento: baseRitual.Elemento_Ritual,
-            elemento_escolhido: poderesExtras.lamina_elemento || 'Sangue'
-          });
+          circulo: baseRitual.Circulo_Ritual,
+          elemento: baseRitual.Elemento_Ritual,
+          elemento_escolhido: poderesExtras.lamina_elemento || 'Sangue'
+        });
       }
     } else if (temLamina10 && jaTemAmaldicoarArmaNormal) {
        // Já tem o ritual por outra fonte: a cópia da trilha some e o ritual existente vira Movimento (+1 PE)
        if (jaTemAmaldicoarArmaTrilha) {
          rituaisHook.esquecerRitual('trilha_lamina_paranormal');
+       }
+       if (jaTemAmaldicoarArmaNormal.elemento_escolhido && poderesExtras.lamina_elemento !== jaTemAmaldicoarArmaNormal.elemento_escolhido) {
+         setPoderesExtras(prev => ({ ...prev, lamina_elemento: jaTemAmaldicoarArmaNormal.elemento_escolhido }));
        }
        if (!jaTemAmaldicoarArmaNormal.customProps?.normal?.Execucao_Ritual?.includes('Movimento')) {
          const existingProps = jaTemAmaldicoarArmaNormal.customProps || {};

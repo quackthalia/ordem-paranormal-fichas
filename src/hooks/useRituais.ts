@@ -126,7 +126,12 @@ export function useRituais(): UseRituaisReturn & {
   const editarRitual = (origem: string, customNome?: string, customDesc?: string, customProps?: import('../types').RitualAprendido['customProps']) => {
     setRituaisAprendidos(prev => prev.map(r => {
       if (r.origem === origem) {
-        return { ...r, customNome, customDesc, customProps };
+        return {
+          ...r,
+          customNome: customNome !== undefined ? customNome : r.customNome,
+          customDesc: customDesc !== undefined ? customDesc : r.customDesc,
+          customProps: customProps !== undefined ? customProps : r.customProps
+        };
       }
       return r;
     }));

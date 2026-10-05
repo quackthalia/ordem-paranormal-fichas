@@ -105,9 +105,9 @@ export function ModalTrilhas({
     }
 
     if (trilha.Codigo_Trilha === 15) {
-      const jaTemAmaldicoarNormal = (rituaisHook.rituaisAprendidos || []).find((r: any) => r.codigo_ritual === 3 && r.origem !== 'trilha_lamina_paranormal');
+      const jaTemAmaldicoarNormal = (rituaisHook.rituaisAprendidos || []).find((r: any) => Number(r.codigo_ritual) === 3);
       if (jaTemAmaldicoarNormal) {
-        const el = jaTemAmaldicoarNormal.customProps?.normal?.Elemento_Ritual || jaTemAmaldicoarNormal.elemento_escolhido || 'Sangue';
+        const el = jaTemAmaldicoarNormal.elemento_escolhido || jaTemAmaldicoarNormal.customProps?.normal?.Elemento_Ritual || 'Sangue';
         prosseguirEscolhaLamina(trilha, el);
         return;
       }
@@ -396,11 +396,14 @@ export function ModalTrilhas({
                           }
                           
                           if (isEscolhendoLamina) {
+                            const jaTemAmaldicoar = (rituaisHook.rituaisAprendidos || []).find((r: any) => Number(r.codigo_ritual) === 3);
+                            const elJaExistente = jaTemAmaldicoar?.elemento_escolhido || jaTemAmaldicoar?.customProps?.normal?.Elemento_Ritual;
+                            const elementosExibir = elJaExistente ? [elJaExistente] : ['Sangue', 'Morte', 'Conhecimento', 'Energia'];
 
                             return (
                               <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800 ml-auto" onClick={e => e.stopPropagation()}>
                                 <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1">Elemento:</span>
-                                {['Sangue', 'Morte', 'Conhecimento', 'Energia'].map(elem => (
+                                {elementosExibir.map(elem => (
                                   <button
                                     key={elem}
                                     onClick={(e) => {
@@ -538,11 +541,14 @@ export function ModalTrilhas({
                           }
                           
                           if (isEscolhendoLamina) {
+                            const jaTemAmaldicoar = (rituaisHook.rituaisAprendidos || []).find((r: any) => Number(r.codigo_ritual) === 3);
+                            const elJaExistente = jaTemAmaldicoar?.elemento_escolhido || jaTemAmaldicoar?.customProps?.normal?.Elemento_Ritual;
+                            const elementosExibir = elJaExistente ? [elJaExistente] : ['Sangue', 'Morte', 'Conhecimento', 'Energia'];
 
                             return (
                               <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800 ml-auto" onClick={e => e.stopPropagation()}>
                                 <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1">Elemento:</span>
-                                {['Sangue', 'Morte', 'Conhecimento', 'Energia'].map(elem => (
+                                {elementosExibir.map(elem => (
                                   <button
                                     key={elem}
                                     onClick={(e) => {

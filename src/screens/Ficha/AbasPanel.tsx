@@ -2037,7 +2037,7 @@ export const AbasPanel: React.FC = () => {
           rituaisAprendidosIds={(rituaisHook.rituaisAprendidos || []).filter((r: any) => !(r.codigo_ritual === 3 && r.origem === 'trilha_lamina_paranormal' && !(rituaisHook.rituaisAprendidos || []).some((x: any) => x.codigo_ritual === 3 && x.origem !== 'trilha_lamina_paranormal'))).map((r: any) => r.codigo_ritual)}
           onClose={() => setModalRituaisExtraAberto(false)}
           onSelect={(ritual, elementoVaria) => {
-              const origemExtra = `extra_\1791221139603_\reatg`;
+              const origemExtra = `extra_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
 
               if (ritual.Codigo_Ritual === 3) {
                    const effectiveNivel = regras['nex_experiencia'] ? nivel : Math.floor(nex / 5);

@@ -952,6 +952,19 @@ export function InventarioPanel() {
           >
             💀
           </button>
+          {((itensHook?.itensInventario?.some(i => i.item.Nome_Item === 'Grimório Ritualístico')) || (trilhasHook?.trilhaSelecionada?.Codigo_Trilha === 13 && effectiveNex >= 40)) && (
+            <button
+              onClick={() => setCategoriaFiltro('Grimório')}
+              title="Grimório Ritualístico"
+              className={`w-12 h-12 flex items-center justify-center rounded-t text-2xl transition border-b-2 ${
+                categoriaFiltro === 'Grimório' 
+                  ? 'bg-zinc-900 text-blue-400 border-b-blue-500' 
+                  : 'text-zinc-600 hover:text-zinc-300 hover:bg-zinc-900/50 border-b-transparent'
+              }`}
+            >
+              📖
+            </button>
+          )}
         </div>
 
         {/* Filtros e Busca */}
@@ -1320,7 +1333,17 @@ export function InventarioPanel() {
             </DragOverlay>
           </DndContext>
 
-          {categoriaFiltro !== 'Armas' && categoriaFiltro !== 'Geral' && categoriaFiltro !== 'Munições' && categoriaFiltro !== 'Proteções' && categoriaFiltro !== 'Amaldiçoados' && !itensHook?.gruposUnicos.includes(categoriaFiltro) && (
+          {categoriaFiltro === 'Grimório' && (
+            <div className="flex flex-col items-center justify-center py-10 opacity-70">
+              <span className="text-6xl mb-4">📖</span>
+              <h3 className="text-lg font-bold text-zinc-300 mb-2">Grimório Ritualístico</h3>
+              <p className="text-sm text-zinc-500 max-w-md text-center">
+                Seu Grimório Ritualístico está ativo. Vá para a aba <strong className="text-zinc-400">Rituais</strong> para escolher e conjurar os rituais guardados nele. Eles estão separados em seu próprio bloco!
+              </p>
+            </div>
+          )}
+          
+          {categoriaFiltro !== 'Armas' && categoriaFiltro !== 'Geral' && categoriaFiltro !== 'Munições' && categoriaFiltro !== 'Proteções' && categoriaFiltro !== 'Amaldiçoados' && categoriaFiltro !== 'Grimório' && !itensHook?.gruposUnicos.includes(categoriaFiltro) && (
             <p className="text-center text-zinc-600 text-sm py-8">Esta categoria ainda não possui itens implementados.</p>
           )}
         </div>

@@ -1332,28 +1332,60 @@ export const AbasPanel: React.FC = () => {
 
           // 2.8 Calcular slots de Graduado (Trilha 13)
           const slotsGraduadoPendentesList: { chave?: string, index: number, nex: number, maxCirculo: number, isOcultista: boolean, isGraduado?: boolean }[] = [];
+          
+          // Saber Ampliado (10%): 1 ritual de 1º círculo + 1 ritual a cada novo círculo que desbloqueia (2º, 3º, 4º)
           const isGraduado10 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 13 && (regras['nex_experiencia'] ? nivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 13 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
           if (isGraduado10) {
-            const pego10 = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'graduado_10_c');
-            if (!pego10) {
-              slotsGraduadoPendentesList.push({ chave: 'graduado_10_c', index: 950, nex: 10, maxCirculo: 1, isOcultista: true, isGraduado: true });
+            // 1º Círculo (10%)
+            const pego1 = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'graduado_10_1' || r.origem === 'graduado_10_c');
+            if (!pego1) slotsGraduadoPendentesList.push({ chave: 'graduado_10_1', index: 951, nex: 10, maxCirculo: 1, isOcultista: true, isGraduado: true });
+
+            // 2º Círculo (25% / Nível 5)
+            if (regras['nex_experiencia'] ? nivel >= 5 : effectiveNex >= 25) {
+              const pego2 = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'graduado_10_2');
+              if (!pego2) slotsGraduadoPendentesList.push({ chave: 'graduado_10_2', index: 952, nex: 25, maxCirculo: 2, isOcultista: true, isGraduado: true });
+            }
+
+            // 3º Círculo (55% / Nível 11)
+            if (regras['nex_experiencia'] ? nivel >= 11 : effectiveNex >= 55) {
+              const pego3 = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'graduado_10_3');
+              if (!pego3) slotsGraduadoPendentesList.push({ chave: 'graduado_10_3', index: 953, nex: 55, maxCirculo: 3, isOcultista: true, isGraduado: true });
+            }
+
+            // 4º Círculo (85% / Nível 17)
+            if (regras['nex_experiencia'] ? nivel >= 17 : effectiveNex >= 85) {
+              const pego4 = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'graduado_10_4');
+              if (!pego4) slotsGraduadoPendentesList.push({ chave: 'graduado_10_4', index: 954, nex: 85, maxCirculo: 4, isOcultista: true, isGraduado: true });
             }
           }
+
+          // Grimório Ritualístico (40%): INT rituais de 1º ou 2º círculos + 1 ritual a cada novo círculo (3º e 4º)
           const isGraduado40 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 13 && (regras['nex_experiencia'] ? nivel >= 8 : effectiveNex >= 40));
           if (isGraduado40) {
-            let baseMaxCirculo = 1;
-            if (classe === 'Ocultista') {
-              if (nivel >= 17) baseMaxCirculo = 4;
-              else if (nivel >= 11) baseMaxCirculo = 3;
-              else if (nivel >= 5) baseMaxCirculo = 2;
-            }
             const intVal = (atributosFinais?.INT !== undefined ? atributosFinais.INT : (atributos?.INT || 0));
+            // Slots base: INT rituais de 1º ou 2º círculos
             if (intVal > 0) {
               for (let i = 1; i <= intVal; i++) {
-                const pego = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === `graduado_40_${i}`);
+                const pego = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === `graduado_40_${i}` || r.origem === `graduado_40_base_${i}`);
                 if (!pego) {
-                  slotsGraduadoPendentesList.push({ chave: `graduado_40_${i}`, index: 960 + i, nex: effectiveNex, maxCirculo: baseMaxCirculo, isOcultista: true, isGraduado: true });
+                  slotsGraduadoPendentesList.push({ chave: `graduado_40_${i}`, index: 960 + i, nex: 40, maxCirculo: 2, isOcultista: true, isGraduado: true });
                 }
+              }
+            }
+
+            // +1 ritual de 3º círculo (55% / Nível 11)
+            if (regras['nex_experiencia'] ? nivel >= 11 : effectiveNex >= 55) {
+              const pegoC3 = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'graduado_40_c3');
+              if (!pegoC3) {
+                slotsGraduadoPendentesList.push({ chave: 'graduado_40_c3', index: 980, nex: 55, maxCirculo: 3, isOcultista: true, isGraduado: true });
+              }
+            }
+
+            // +1 ritual de 4º círculo (85% / Nível 17)
+            if (regras['nex_experiencia'] ? nivel >= 17 : effectiveNex >= 85) {
+              const pegoC4 = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'graduado_40_c4');
+              if (!pegoC4) {
+                slotsGraduadoPendentesList.push({ chave: 'graduado_40_c4', index: 981, nex: 85, maxCirculo: 4, isOcultista: true, isGraduado: true });
               }
             }
           }
@@ -1454,7 +1486,7 @@ export const AbasPanel: React.FC = () => {
                           onClick={() => {
                             setEscolhendoRitualPlaceholder({
                               origem: (slot as any).chave,
-                              nex: effectiveNex
+                              nex: slot.nex
                             });
                           }}
                           className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-green-800 hover:bg-zinc-900/80"

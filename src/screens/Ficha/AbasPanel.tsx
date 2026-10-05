@@ -1371,7 +1371,9 @@ export const AbasPanel: React.FC = () => {
           const visibleRitualSlots = [];
           const circlesSeen = new Set<number>();
           for (const slot of sortedSlots) {
-             if (!circlesSeen.has(slot.maxCirculo)) {
+             if ((slot as any).isGraduado) {
+                visibleRitualSlots.push(slot);
+             } else if (!circlesSeen.has(slot.maxCirculo)) {
                 visibleRitualSlots.push(slot);
                 circlesSeen.add(slot.maxCirculo);
              }

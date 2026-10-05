@@ -1389,27 +1389,27 @@ export const AbasPanel: React.FC = () => {
                 <span className="text-sm font-bold text-zinc-400">Rituais Aprendidos ({rituaisHook.rituaisAprendidos?.length || 0})</span>
               </div>
 
-              {(isGraduado40 || trilhasHook.trilhaSelecionada?.Codigo_Trilha === 13 || (rituaisHook.rituaisAprendidos || []).some(r => r.origem?.startsWith('graduado_40'))) && (
-                <div className="flex gap-2 mb-4 border-b border-zinc-800 pb-2">
+              {(isGraduado40 || (rituaisHook.rituaisAprendidos || []).some(r => r.origem?.startsWith('graduado_40'))) && (
+                <div className="mb-4 flex flex-nowrap overflow-x-auto gap-x-1 border-b border-zinc-800 custom-scrollbar pb-1">
                   <button
                     onClick={() => setSubAbaRituais('rituais')}
-                    className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded transition ${
+                    className={`shrink-0 px-3 py-2 text-[10px] md:text-[11px] 2xl:text-xs font-bold uppercase tracking-wide transition whitespace-nowrap text-center ${
                       subAbaRituais === 'rituais'
-                        ? 'bg-zinc-800 text-green-400 border border-zinc-700 shadow-sm'
-                        : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900/50'
+                        ? 'border-b-2 border-green-800 text-zinc-100'
+                        : 'border-b-2 border-transparent text-zinc-500 hover:text-zinc-300'
                     }`}
                   >
                     Rituais ({(rituaisHook.rituaisAprendidos || []).filter(r => !r.origem?.startsWith('graduado_40')).length})
                   </button>
                   <button
                     onClick={() => setSubAbaRituais('grimorio')}
-                    className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded transition flex items-center gap-1.5 ${
+                    className={`shrink-0 px-3 py-2 text-[10px] md:text-[11px] 2xl:text-xs font-bold uppercase tracking-wide transition whitespace-nowrap text-center ${
                       subAbaRituais === 'grimorio'
-                        ? 'bg-zinc-800 text-blue-400 border border-zinc-700 shadow-sm'
-                        : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900/50'
+                        ? 'border-b-2 border-green-800 text-zinc-100'
+                        : 'border-b-2 border-transparent text-zinc-500 hover:text-zinc-300'
                     }`}
                   >
-                    <span>📖</span> Grimório ({(rituaisHook.rituaisAprendidos || []).filter(r => r.origem?.startsWith('graduado_40')).length})
+                    Grimório ({(rituaisHook.rituaisAprendidos || []).filter(r => r.origem?.startsWith('graduado_40')).length})
                   </button>
                 </div>
               )}
@@ -1468,7 +1468,8 @@ export const AbasPanel: React.FC = () => {
                 const slotsVaziosNesteCirculo = visibleRitualSlots.filter(s => {
                   if (s.maxCirculo !== circulo) return false;
                   const isGrimorio = (s as any).chave?.startsWith('graduado_40');
-                  return subAbaRituais === 'grimorio' ? isGrimorio : !isGrimorio;
+                  const hasGrimorioActive = isGraduado40 || (rituaisHook.rituaisAprendidos || []).some(ra => ra.origem?.startsWith('graduado_40'));
+                  return (hasGrimorioActive && subAbaRituais === 'grimorio') ? isGrimorio : !isGrimorio;
                 });
 
                 if (rituaisAprendidosNesteCirculoFiltrados.length === 0 && slotsVaziosNesteCirculo.length === 0) return null;

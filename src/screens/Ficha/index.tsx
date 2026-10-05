@@ -101,7 +101,7 @@ export const FichaScreen: React.FC = () => {
       if (baseRitual) {
         rituaisHook.aprenderRitual({
           codigo_ritual: 64,
-          nome: `${baseRitual.Nome_Ritual} (Intuitivo)`,
+          nome: ` (Intuitivo)`,
           origem: 'trilha_intuitivo',
           circulo: baseRitual.Circulo_Ritual,
           elemento: baseRitual.Elemento_Ritual
@@ -109,6 +109,44 @@ export const FichaScreen: React.FC = () => {
       }
     } else if (!temIntuitivo99 && (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_intuitivo')) {
       rituaisHook.esquecerRitual('trilha_intuitivo');
+    }
+
+    // TRILHA 15: LÂMINA PARANORMAL
+    const temLamina10 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
+    const jaTemAmaldicoarArmaTrilha = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_lamina_paranormal');
+    const jaTemAmaldicoarArmaNormal = (rituaisHook.rituaisAprendidos || []).some(r => r.codigo_ritual === 3 && r.origem !== 'trilha_lamina_paranormal');
+
+    if (temLamina10 && !jaTemAmaldicoarArmaTrilha && !jaTemAmaldicoarArmaNormal) {
+      const baseRitual = (rituaisHook.rituais || []).find(r => r.Codigo_Ritual === 3);
+      if (baseRitual) {
+        rituaisHook.aprenderRitual({
+          codigo_ritual: 3,
+          nome: ` (Lâmina Paranormal)`,
+          origem: 'trilha_lamina_paranormal',
+          circulo: baseRitual.Circulo_Ritual,
+          elemento: baseRitual.Elemento_Ritual
+        });
+      }
+    } else if (!temLamina10 && jaTemAmaldicoarArmaTrilha) {
+      rituaisHook.esquecerRitual('trilha_lamina_paranormal');
+    }
+
+    const temLamina99 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 20 : effectiveNex >= 99)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
+    const jaTemLaminaMedo = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_lamina_paranormal_99' || r.codigo_ritual === 49);
+
+    if (temLamina99 && !jaTemLaminaMedo) {
+      const baseRitual = (rituaisHook.rituais || []).find(r => r.Codigo_Ritual === 49);
+      if (baseRitual) {
+        rituaisHook.aprenderRitual({
+          codigo_ritual: 49,
+          nome: ` (Lâmina Paranormal)`,
+          origem: 'trilha_lamina_paranormal_99',
+          circulo: baseRitual.Circulo_Ritual,
+          elemento: baseRitual.Elemento_Ritual
+        });
+      }
+    } else if (!temLamina99 && (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_lamina_paranormal_99')) {
+      rituaisHook.esquecerRitual('trilha_lamina_paranormal_99');
     }
     const isInventarioLoaded = itensHook.itensInventario !== undefined && itensHook.itensInventario !== null;
     if (temGraduado40 && isInventarioLoaded) {

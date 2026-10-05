@@ -1385,17 +1385,13 @@ export const AbasPanel: React.FC = () => {
 
 
                 {/* Agrupamento por Círculo usando Rituais Aprendidos */}
-              {[1, 2, 3, 4, 'Grimório'].map(circulo => {
+              {[1, 2, 3, 4].map(circulo => {
                 const rituaisAprendidosNesteCirculo = (rituaisHook.rituaisAprendidos || [])
                   .map(ra => {
                     const base = rituaisHook.rituais.find(r => r.Codigo_Ritual === ra.codigo_ritual);
                     return base ? { ...base, Origem: ra.origem, ElementoEscolhidoPermanente: ra.elemento_escolhido, customNome: ra.customNome, customDesc: ra.customDesc, customProps: ra.customProps, learnedNome: ra.nome } : null;
                   })
-                  .filter(r => {
-                    if (!r) return false;
-                    if (circulo === 'Grimório') return r.Origem && r.Origem.startsWith('graduado_40');
-                    return r.Circulo_Ritual === circulo && !(r.Origem && r.Origem.startsWith('graduado_40'));
-                  })
+                  .filter(r => r && r.Circulo_Ritual === circulo)
                   .sort((a, b) => {
                     if (!a || !b) return 0;
                     return sortPorElementoENome(
@@ -1415,10 +1411,7 @@ export const AbasPanel: React.FC = () => {
                 });
 
                 // Slots vazios pertencentes a este círculo
-                const slotsVaziosNesteCirculo = visibleRitualSlots.filter(s => {
-                  if (circulo === 'Grimório') return s.chave && s.chave.startsWith('graduado_40');
-                  return s.maxCirculo === circulo && !(s.chave && s.chave.startsWith('graduado_40'));
-                });
+                const slotsVaziosNesteCirculo = visibleRitualSlots.filter(s => s.maxCirculo === circulo);
 
                 if (rituaisAprendidosNesteCirculoFiltrados.length === 0 && slotsVaziosNesteCirculo.length === 0) return null;
 
@@ -1447,7 +1440,7 @@ export const AbasPanel: React.FC = () => {
                                 <div className="flex flex-col items-start gap-0.5 text-left">
                                   <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">Escolher Ritual</span>
                                   <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-500 group-hover:text-zinc-400">
-                                    {(slot as any).chave?.startsWith('graduado_10') ? 'Saber Ampliado (Trilha)' : ((slot as any).chave?.startsWith('graduado_40') ? 'Grimório Ritualístico' : `Ocultista (${regras['nex_experiencia'] ? `Nível ${calcularNivel(slot.nex)}` : `NEX ${slot.nex}%`})`)}
+                                    Ocultista ({regras['nex_experiencia'] ? `Nível ${calcularNivel(slot.nex)}` : `NEX ${slot.nex}%`})
                                   </span>
                                 </div>
                                 <span className="whitespace-nowrap rounded bg-green-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-green-400 transition group-hover:bg-green-900/60 group-hover:text-green-300">+ Adicionar</span>

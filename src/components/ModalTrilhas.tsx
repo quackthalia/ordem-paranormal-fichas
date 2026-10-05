@@ -97,7 +97,25 @@ export function ModalTrilhas({
       return;
     }
 
+    if (trilha.Codigo_Trilha === 15) {
+      const jaTemAmaldicoarNormal = (rituaisHook.rituaisAprendidos || []).find((r: any) => r.codigo_ritual === 3 && r.origem !== 'trilha_lamina_paranormal');
+      if (jaTemAmaldicoarNormal) {
+        const el = jaTemAmaldicoarNormal.customProps?.normal?.Elemento_Ritual || jaTemAmaldicoarNormal.elemento_escolhido || 'Sangue';
+        prosseguirEscolhaLamina(trilha, el);
+        return;
+      }
+      setEscolhendoElementoLamina(trilha.Codigo_Trilha);
+      return;
+    }
+
     prosseguirEscolha(trilha);
+  };
+
+  const prosseguirEscolhaLamina = (trilha: Trilha, elemento: string) => {
+    setPoderesExtras(prev => ({ ...prev, lamina_elemento: elemento }));
+    if (modoVersatilidade) selecionarVersatilidade(trilha);
+    else selecionarTrilha(trilha);
+    onClose();
   };
 
   const prosseguirEscolha = (trilha: Trilha, armaFavId?: string) => {

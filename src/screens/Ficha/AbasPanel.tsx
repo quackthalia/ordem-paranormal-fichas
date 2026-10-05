@@ -1402,10 +1402,12 @@ export const AbasPanel: React.FC = () => {
 
           const visibleRitualSlots = [];
           const circlesSeen = new Set<number>();
-          for (const slot of sortedSlots) {
-             if ((slot as any).isGraduado) {
-                visibleRitualSlots.push(slot);
-             } else if (!circlesSeen.has(slot.maxCirculo)) {
+          const slotsParaSubAba = sortedSlots.filter(s => {
+             const isGrimorio = (s as any).chave?.startsWith('graduado_40');
+             return subAbaRituais === 'grimorio' ? isGrimorio : !isGrimorio;
+          });
+          for (const slot of slotsParaSubAba) {
+             if (!circlesSeen.has(slot.maxCirculo)) {
                 visibleRitualSlots.push(slot);
                 circlesSeen.add(slot.maxCirculo);
              }
@@ -1472,41 +1474,6 @@ export const AbasPanel: React.FC = () => {
 
 
 
-                {/* Espaços Disponíveis no Grimório (quando na aba Grimório) */}
-                {subAbaRituais === 'grimorio' && visibleRitualSlots.filter(s => (s as any).chave?.startsWith('graduado_40')).length > 0 && (
-                  <div className="mb-6">
-                    <div className="mb-2 flex items-center gap-3">
-                      <span className="text-[0.65rem] font-bold uppercase tracking-[0.15em] text-zinc-400">Espaços do Grimório ({visibleRitualSlots.filter(s => (s as any).chave?.startsWith('graduado_40')).length} Disponíveis)</span>
-                      <div className="flex-1 border-t border-zinc-800" />
-                    </div>
-                    <div className="flex flex-col gap-2.5">
-                      {visibleRitualSlots.filter(s => (s as any).chave?.startsWith('graduado_40')).map((slot, idx) => (
-                        <div
-                          key={`vazio_grimorio_${(slot as any).chave}_${idx}`}
-                          onClick={() => {
-                            setEscolhendoRitualPlaceholder({
-                              origem: (slot as any).chave,
-                              nex: slot.nex
-                            });
-                          }}
-                          className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-green-800 hover:bg-zinc-900/80"
-                          style={{ borderLeftStyle: 'solid' }}
-                        >
-                          <div className="flex items-center justify-between gap-3 bg-zinc-800/40 px-4 py-3 transition group-hover:bg-zinc-800/60">
-                            <div className="flex flex-col items-start gap-0.5 text-left">
-                              <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">Escolher Ritual</span>
-                              <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-500 group-hover:text-zinc-400">
-                                Grimório Ritualístico (até {slot.maxCirculo}º Círculo)
-                              </span>
-                            </div>
-                            <span className="whitespace-nowrap rounded bg-green-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-green-400 transition group-hover:bg-green-900/60 group-hover:text-green-300">+ Adicionar</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
                 {/* Agrupamento por Círculo usando Rituais Aprendidos */}
               {[1, 2, 3, 4].map(circulo => {
                 const rituaisAprendidosNesteCirculo = (rituaisHook.rituaisAprendidos || [])
@@ -1539,9 +1506,7 @@ export const AbasPanel: React.FC = () => {
                 });
 
                 // Slots vazios pertencentes a este círculo
-                const slotsVaziosNesteCirculo = subAbaRituais === 'grimorio'
-                  ? []
-                  : visibleRitualSlots.filter(s => s.maxCirculo === circulo && !(s as any).chave?.startsWith('graduado_40'));
+                const slotsVaziosNesteCirculo = visibleRitualSlots.filter(s => s.maxCirculo === circulo);
 
                 if (rituaisAprendidosNesteCirculoFiltrados.length === 0 && slotsVaziosNesteCirculo.length === 0) return null;
 

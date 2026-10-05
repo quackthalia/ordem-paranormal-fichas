@@ -49,7 +49,7 @@ export function ModalTrilhas({
   const [busca, setBusca] = useState('');
   const [trilhasModalExpandidas, setTrilhasModalExpandidas] = useState<number[]>([]);
   const [escolhendoArmaTrilha1, setEscolhendoArmaTrilha1] = useState<Trilha | null>(null);
-    const [escolhendoElementoLamina, setEscolhendoElementoLamina] = useState<Trilha | null>(null);
+    const [escolhendoElementoLamina, setEscolhendoElementoLamina] = useState<number | null>(null);
 
   const trilhasFiltradas = useMemo(() => {
     return trilhas.filter((t) => {
@@ -344,9 +344,30 @@ export function ModalTrilhas({
                     <div className="flex flex-nowrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 shrink-0">
                       {(() => {
                         const erroReq = checarRequisito(trilha);
-                        return (
-                          <button
-                            title={erroReq || undefined}
+                          const isEscolhendo = escolhendoElementoLamina === trilha.Codigo_Trilha;
+                          if (isEscolhendo) {
+                            return (
+                              <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800 ml-auto" onClick={e => e.stopPropagation()}>
+                                <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1">Elemento:</span>
+                                {['Sangue', 'Morte', 'Conhecimento', 'Energia'].map(elem => (
+                                  <button
+                                    key={elem}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setEscolhendoElementoLamina(null);
+                                      prosseguirEscolhaLamina(trilha, elem);
+                                    }}
+                                    className="text-[9px] font-bold px-1.5 py-0.5 rounded border border-zinc-600 hover:border-zinc-400 text-zinc-300 hover:text-white"
+                                  >
+                                    {elem}
+                                  </button>
+                                ))}
+                              </div>
+                            );
+                          }
+                          return (
+                            <button
+                              title={erroReq || undefined}
                             onClick={(e) => { e.stopPropagation(); if (!erroReq) handleEscolher(trilha); }}
                             className={erroReq 
                               ? "ml-auto shrink-0 px-3 py-1 bg-zinc-800 text-zinc-500 rounded font-bold text-[10px] uppercase tracking-wider cursor-not-allowed border border-zinc-700/50"
@@ -444,9 +465,30 @@ export function ModalTrilhas({
                     <div className="flex flex-nowrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 shrink-0">
                       {(() => {
                         const erroReq = checarRequisito(trilha);
-                        return (
-                          <button
-                            title={erroReq || undefined}
+                          const isEscolhendo = escolhendoElementoLamina === trilha.Codigo_Trilha;
+                          if (isEscolhendo) {
+                            return (
+                              <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800 ml-auto" onClick={e => e.stopPropagation()}>
+                                <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1">Elemento:</span>
+                                {['Sangue', 'Morte', 'Conhecimento', 'Energia'].map(elem => (
+                                  <button
+                                    key={elem}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setEscolhendoElementoLamina(null);
+                                      prosseguirEscolhaLamina(trilha, elem);
+                                    }}
+                                    className="text-[9px] font-bold px-1.5 py-0.5 rounded border border-zinc-600 hover:border-zinc-400 text-zinc-300 hover:text-white"
+                                  >
+                                    {elem}
+                                  </button>
+                                ))}
+                              </div>
+                            );
+                          }
+                          return (
+                            <button
+                              title={erroReq || undefined}
                             onClick={(e) => { e.stopPropagation(); if (!erroReq) handleEscolher(trilha); }}
                             className={erroReq 
                               ? "ml-auto shrink-0 px-3 py-1 bg-zinc-800 text-zinc-500 rounded font-bold text-[10px] uppercase tracking-wider cursor-not-allowed border border-zinc-700/50"

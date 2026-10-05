@@ -29,7 +29,8 @@ export const FichaScreen: React.FC = () => {
     nexPoderEditando,
     afinidadeAtiva,
     afinidadeEscolhida,
-    itensHook
+    itensHook,
+    poderesExtras
   } = useRPG();
 
     const effectiveNex = regras["nex_experiencia"] ? nivel * 5 : nex;
@@ -186,7 +187,7 @@ export const FichaScreen: React.FC = () => {
          });
       }
     }
-  }, [trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, effectiveNex, nivel, regras, rituaisHook.rituais, rituaisHook.rituaisAprendidos, itensHook.itensInventario]);
+  }, [trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, effectiveNex, nivel, regras, rituaisHook.rituais, rituaisHook.rituaisAprendidos, itensHook.itensInventario, poderesExtras]);
 
   const handleRefazer = () => {
     status.resetarStatus();

@@ -1526,7 +1526,11 @@ export const AbasPanel: React.FC = () => {
                               <div
                                   key={`vazio_ocultista_${(slot as any).index}_${idx}`}
                                   onClick={() => {
-                                    setEscolhendoRitualPlaceholder({ origem: `ocultista_${(slot as any).index}`, nex: slot.nex });
+                                    const chave = (slot as any).chave;
+                                    setEscolhendoRitualPlaceholder({
+                                      origem: chave || `ocultista_${(slot as any).index}`,
+                                      nex: slot.nex
+                                    });
                                   }}
                                   className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-green-800 hover:bg-zinc-900/80"
                                   style={{ borderLeftStyle: 'solid' }}

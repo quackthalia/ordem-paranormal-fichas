@@ -101,7 +101,7 @@ export const FichaScreen: React.FC = () => {
       if (baseRitual) {
         rituaisHook.aprenderRitual({
           codigo_ritual: 64,
-          nome: ` (Intuitivo)`,
+          nome: `${baseRitual.Nome_Ritual} (Intuitivo)`,
           origem: 'trilha_intuitivo',
           circulo: baseRitual.Circulo_Ritual,
           elemento: baseRitual.Elemento_Ritual

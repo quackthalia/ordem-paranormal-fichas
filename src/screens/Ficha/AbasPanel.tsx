@@ -1654,7 +1654,16 @@ export const AbasPanel: React.FC = () => {
                         const area = ritual.customProps?.[versao]?.Area_Ritual || obterValorVersao(ritual.Area_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
                         const alvo = ritual.customProps?.[versao]?.Alvo_Ritual || obterValorVersao(ritual.Alvo_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
                         const duracao = ritual.customProps?.[versao]?.Duracao_Ritual || obterValorVersao(ritual.Duracao_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
-                        const execucao = ritual.customProps?.[versao]?.Execucao_Ritual || obterValorVersao(ritual.Execucao_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                        let execucao = ritual.customProps?.[versao]?.Execucao_Ritual || obterValorVersao(ritual.Execucao_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                        const effectiveNex = regras['nex_experiencia'] ? nivel * 5 : nex;
+                        const effectiveNivel = regras['nex_experiencia'] ? nivel : Math.floor(nex / 5);
+                        const temLamina10 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 15 && effectiveNivel >= 2) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 15 && effectiveNivel >= 10);
+                        if (temLamina10 && ritual.Codigo_Ritual === 3) {
+                          const jaTemAmaldicoarArmaNormal = (rituaisHook.rituaisAprendidos || []).some((r: any) => r.codigo_ritual === 3 && r.origem !== 'trilha_lamina_paranormal');
+                          if (jaTemAmaldicoarArmaNormal && execucao === "Padrão") {
+                            execucao = "Movimento (+1 PE)";
+                          }
+                        }
 
                         const efeito = ritual.customProps?.[versao]?.Efeito_Ritual || obterValorVersao(ritual.Efeito_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
                         const resistencia = ritual.customProps?.[versao]?.Resistencia_Ritual || obterValorVersao(ritual.Resistencia_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
@@ -2031,7 +2040,7 @@ export const AbasPanel: React.FC = () => {
         <ModalRituaisExtra
           getSimboloUrl={rituaisHook.getSimboloUrl || (() => '')}
           rituais={rituaisHook.rituais || []}
-          rituaisAprendidosIds={(rituaisHook.rituaisAprendidos || []).map((r: any) => r.codigo_ritual)}
+          rituaisAprendidosIds={(rituaisHook.rituaisAprendidos || []).filter((r: any) => !(r.codigo_ritual === 3 && r.origem === 'trilha_lamina_paranormal' && !(rituaisHook.rituaisAprendidos || []).some((x: any) => x.codigo_ritual === 3 && x.origem !== 'trilha_lamina_paranormal'))).map((r: any) => r.codigo_ritual)}
           onClose={() => setModalRituaisExtraAberto(false)}
           onSelect={(ritual, elementoVaria) => {
             const origemExtra = `extra_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
@@ -2060,7 +2069,7 @@ export const AbasPanel: React.FC = () => {
                   : (escolhendoRitualPlaceholder.nex >= 75 ? 3 : escolhendoRitualPlaceholder.nex >= 45 ? 2 : 1))
               : (nex >= 85 ? 4 : nex >= 55 ? 3 : nex >= 25 ? 2 : 1)
           }
-          rituaisAprendidosIds={(rituaisHook.rituaisAprendidos || []).map((r: any) => r.codigo_ritual)}
+          rituaisAprendidosIds={(rituaisHook.rituaisAprendidos || []).filter((r: any) => !(r.codigo_ritual === 3 && r.origem === 'trilha_lamina_paranormal' && !(rituaisHook.rituaisAprendidos || []).some((x: any) => x.codigo_ritual === 3 && x.origem !== 'trilha_lamina_paranormal'))).map((r: any) => r.codigo_ritual)}
           onClose={() => setEscolhendoRitualPlaceholder(null)}
           onSelect={(ritual, elementoVaria) => {
             const origem = escolhendoRitualPlaceholder.origem;

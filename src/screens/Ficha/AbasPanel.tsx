@@ -2037,9 +2037,33 @@ export const AbasPanel: React.FC = () => {
           rituaisAprendidosIds={(rituaisHook.rituaisAprendidos || []).filter((r: any) => !(r.codigo_ritual === 3 && r.origem === 'trilha_lamina_paranormal' && !(rituaisHook.rituaisAprendidos || []).some((x: any) => x.codigo_ritual === 3 && x.origem !== 'trilha_lamina_paranormal'))).map((r: any) => r.codigo_ritual)}
           onClose={() => setModalRituaisExtraAberto(false)}
           onSelect={(ritual, elementoVaria) => {
-            const origemExtra = `extra_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
-            
-            rituaisHook.aprenderRitual({
+              const origemExtra = `extra_\1791221139603_\reatg`;
+
+              if (ritual.Codigo_Ritual === 3) {
+                   const effectiveNivel = regras['nex_experiencia'] ? nivel : Math.floor(nex / 5);
+                   const isLamina = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 15 && effectiveNivel >= 2) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 15 && effectiveNivel >= 10);
+                   const amaldicoarTrilha = (rituaisHook.rituaisAprendidos || []).find((r: any) => r.codigo_ritual === 3 && r.origem === 'trilha_lamina_paranormal');
+                   
+                   if (isLamina && amaldicoarTrilha) {
+                      const elTrilha = amaldicoarTrilha.customProps?.normal?.Elemento_Ritual || amaldicoarTrilha.elemento_escolhido || 'Sangue';
+                      if (elementoVaria && elementoVaria !== elTrilha) {
+                         alert('Você só pode aprender Amaldiçoar Arma de novo com o MESMO ELEMENTO que escolheu para a Trilha Lâmina Paranormal (' + elTrilha + ')!');
+                         return;
+                      }
+
+                      const existingProps = amaldicoarTrilha.customProps || {};
+                      rituaisHook.editarRitual('trilha_lamina_paranormal', amaldicoarTrilha.customNome, amaldicoarTrilha.customDesc, {
+                         ...existingProps,
+                         normal: { ...(existingProps.normal || {}), Execucao_Ritual: 'Movimento (+1 PE)' },
+                         discente: { ...(existingProps.discente || {}), Execucao_Ritual: 'Movimento (+1 PE)' },
+                         verdadeiro: { ...(existingProps.verdadeiro || {}), Execucao_Ritual: 'Movimento (+1 PE)' }
+                      });
+                      setModalRituaisExtraAberto(false);
+                      return;
+                   }
+              }
+              
+              rituaisHook.aprenderRitual({
               codigo_ritual: ritual.Codigo_Ritual,
               origem: origemExtra,
               elemento_escolhido: elementoVaria,
@@ -2066,9 +2090,44 @@ export const AbasPanel: React.FC = () => {
           rituaisAprendidosIds={(rituaisHook.rituaisAprendidos || []).filter((r: any) => !(r.codigo_ritual === 3 && r.origem === 'trilha_lamina_paranormal' && !(rituaisHook.rituaisAprendidos || []).some((x: any) => x.codigo_ritual === 3 && x.origem !== 'trilha_lamina_paranormal'))).map((r: any) => r.codigo_ritual)}
           onClose={() => setEscolhendoRitualPlaceholder(null)}
           onSelect={(ritual, elementoVaria) => {
-            const origem = escolhendoRitualPlaceholder.origem;
-            
-            rituaisHook.aprenderRitual({
+              const origem = escolhendoRitualPlaceholder.origem;
+
+              if (ritual.Codigo_Ritual === 3) {
+                   const effectiveNivel = regras['nex_experiencia'] ? nivel : Math.floor(nex / 5);
+                   const isLamina = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 15 && effectiveNivel >= 2) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 15 && effectiveNivel >= 10);
+                   const amaldicoarTrilha = (rituaisHook.rituaisAprendidos || []).find((r: any) => r.codigo_ritual === 3 && r.origem === 'trilha_lamina_paranormal');
+                   
+                   if (isLamina && amaldicoarTrilha) {
+                      const elTrilha = amaldicoarTrilha.customProps?.normal?.Elemento_Ritual || amaldicoarTrilha.elemento_escolhido || 'Sangue';
+                      if (elementoVaria && elementoVaria !== elTrilha) {
+                         alert('Você só pode aprender Amaldiçoar Arma de novo com o MESMO ELEMENTO que escolheu para a Trilha Lâmina Paranormal (' + elTrilha + ')!');
+                         return;
+                      }
+
+                      const existingProps = amaldicoarTrilha.customProps || {};
+                      rituaisHook.editarRitual('trilha_lamina_paranormal', amaldicoarTrilha.customNome, amaldicoarTrilha.customDesc, {
+                         ...existingProps,
+                         normal: { ...(existingProps.normal || {}), Execucao_Ritual: 'Movimento (+1 PE)' },
+                         discente: { ...(existingProps.discente || {}), Execucao_Ritual: 'Movimento (+1 PE)' },
+                         verdadeiro: { ...(existingProps.verdadeiro || {}), Execucao_Ritual: 'Movimento (+1 PE)' }
+                      });
+                      
+                      // Se for de poder, precisa atualizar o poder também
+                      if (origem.startsWith('poder_')) {
+                        const chave = origem.replace('poder_57_', '').replace('combate_', '');
+                        const chaveNum = parseInt(chave, 10);
+                        const key = isNaN(chaveNum) ? chave : chaveNum;
+                        const poderAtual = poderesEscolhidos[key];
+                        if (poderAtual) {
+                          poderesHook.escolherPoder(key, { ...poderAtual, Elemento: elementoVaria || ritual.Elemento_Ritual } as any);
+                        }
+                      }
+                      setEscolhendoRitualPlaceholder(null);
+                      return;
+                   }
+              }
+              
+              rituaisHook.aprenderRitual({
               codigo_ritual: ritual.Codigo_Ritual,
               origem: origem,
               elemento_escolhido: elementoVaria,
@@ -2165,7 +2224,7 @@ export const AbasPanel: React.FC = () => {
                   <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                   {[
                     { key: 'Elemento_Ritual', label: 'Elemento' },
-                      { key: 'Execucao_Ritual', label: 'Execu��o' },
+                      { key: 'Execucao_Ritual', label: 'Execu��o' },
                     { key: 'PE_Ritual', label: 'Custo' },
                     { key: 'Alcance_Ritual', label: 'Alcance' },
                     { key: 'Area_Ritual', label: 'Área' },
@@ -2181,7 +2240,7 @@ export const AbasPanel: React.FC = () => {
                     let opts = null;
                                           if (prop.key === 'Elemento_Ritual') opts = ['Sangue', 'Morte', 'Energia', 'Conhecimento', 'Medo'];
                       if (prop.key === 'Elemento_Ritual') opts = ['Sangue', 'Morte', 'Energia', 'Conhecimento', 'Medo'];
-                      if (prop.key === 'Execucao_Ritual') opts = ['Padr�o', 'Movimento', 'Movimento (+1 PE)', 'Livre', 'Rea��o', 'Completa'];
+                      if (prop.key === 'Execucao_Ritual') opts = ['Padr�o', 'Movimento', 'Movimento (+1 PE)', 'Livre', 'Rea��o', 'Completa'];
                     if (prop.key === 'Alcance_Ritual') opts = ['Pessoal', 'Toque', 'Curto', 'Médio', 'Longo', 'Extremo', 'Ilimitado'];
                     if (prop.key === 'Resistencia_Ritual') opts = ['Nenhuma', 'Fortitude', 'Reflexos', 'Vontade', 'Fortitude reduz à metade', 'Reflexos reduz à metade', 'Vontade reduz à metade', 'Fortitude anula', 'Reflexos anula', 'Vontade anula'];
                     if (prop.key === 'Duracao_Ritual') opts = ['Instantânea', '1 rodada', 'Cena', 'Sustentada', 'Sustentada (1 rodada)', '1 dia'];

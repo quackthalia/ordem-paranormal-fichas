@@ -191,6 +191,7 @@ export const AbasPanel: React.FC = () => {
   const [categoriaDiletante, setCategoriaDiletante] = React.useState<'combate' | 'utilidade' | 'gerais'>('gerais');
   const [modalTrilhaExtraAberto, setModalTrilhaExtraAberto] = React.useState(false);
   const [filtroRituais, setFiltroRituais] = React.useState('');
+  const [subAbaRituais, setSubAbaRituais] = React.useState<'rituais' | 'grimorio'>('rituais');
   const [editandoTrilha, setEditandoTrilha] = React.useState(false);
   const [editandoVersatilidade, setEditandoVersatilidade] = React.useState(false);
   const ritualEditorRef = React.useRef<HTMLDivElement>(null);
@@ -1411,7 +1412,11 @@ export const AbasPanel: React.FC = () => {
                 });
 
                 // Slots vazios pertencentes a este círculo
-                const slotsVaziosNesteCirculo = visibleRitualSlots.filter(s => s.maxCirculo === circulo);
+                const slotsVaziosNesteCirculo = visibleRitualSlots.filter(s => {
+                  if (s.maxCirculo !== circulo) return false;
+                  const isGrimorio = (s as any).chave?.startsWith('graduado_40');
+                  return subAbaRituais === 'grimorio' ? isGrimorio : !isGrimorio;
+                });
 
                 if (rituaisAprendidosNesteCirculoFiltrados.length === 0 && slotsVaziosNesteCirculo.length === 0) return null;
 
@@ -1425,32 +1430,10 @@ export const AbasPanel: React.FC = () => {
 
                     <div className="flex flex-col gap-2.5">
                       {/* Slots Vazios do Círculo */}
-                      {(() => {
-                        const sortedSlots = [...slotsVaziosNesteCirculo].sort((a, b) => {
-                           const aIsGrimorio = (a as any).chave?.startsWith('graduado_40');
-                           const bIsGrimorio = (b as any).chave?.startsWith('graduado_40');
-                           if (aIsGrimorio && !bIsGrimorio) return 1;
-                           if (!aIsGrimorio && bIsGrimorio) return -1;
-                           return 0;
-                        });
-                        let printedGrimorioHeader = false;
-                        
-                        return sortedSlots.map((slot, idx) => {
-                          const isGrimorio = (slot as any).chave?.startsWith('graduado_40');
-                          const header = isGrimorio && !printedGrimorioHeader ? (
-                             printedGrimorioHeader = true,
-                             <div key={`grimorio_header_${idx}`} className="mt-2 mb-1 flex items-center gap-2">
-                               <div className="flex-1 border-t border-zinc-800/50" />
-                               <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Grimório Ritualístico</span>
-                               <div className="flex-1 border-t border-zinc-800/50" />
-                             </div>
-                          ) : null;
-                          
-                          if (slot.isOcultista) {
+                      {slotsVaziosNesteCirculo.map((slot, idx) => {
+                        if (slot.isOcultista) {
                             return (
-                              <React.Fragment key={`frag_${(slot as any).chave || idx}`}>
-                                {header}
-                                <div
+                              <div
                                   key={`vazio_ocultista_${(slot as any).index}_${idx}`}
                                   onClick={() => {
                                     setEscolhendoRitualPlaceholder({ origem: `ocultista_${(slot as any).index}`, nex: slot.nex });
@@ -1468,9 +1451,8 @@ export const AbasPanel: React.FC = () => {
                                     <span className="whitespace-nowrap rounded bg-green-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-green-400 transition group-hover:bg-green-900/60 group-hover:text-green-300">+ Adicionar</span>
                                   </div>
                                 </div>
-                              </React.Fragment>
-                            );
-                          } else {
+                          );
+                        } else {
                             const chave = (slot as any).chave;
                             const isOrigemSlot = (slot as any).isOrigem;
                             const isRegra61 = (slot as any).isRegra61;
@@ -1480,9 +1462,7 @@ export const AbasPanel: React.FC = () => {
                             const nivelParaLabel = (isRegra61 || isRegra62) ? (slot as any).nex : nivelNum;
                             const labelNex = isOrigemSlot ? 'Origem' : (isRegra61 ? `Recompensa Racional (${regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelParaLabel)}` : `NEX ${nivelParaLabel}%`})` : (isRegra62 ? `Recompensa Racional, Afinidade (${regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelParaLabel)}` : `NEX ${nivelParaLabel}%`})` : (regras['nex_experiencia'] ? `Poder Nível ${calcularNivel(nivelParaLabel)}` : `Poder NEX ${nivelParaLabel}%`)));
                             return (
-                              <React.Fragment key={`frag_poder_${chave || idx}`}>
-                                {header}
-                                <div
+                              <div
                               key={`vazio_poder_${chave}_${idx}`}
                               onClick={() => setEscolhendoRitualPlaceholder({ origem: isOrigemSlot || isRegra61 || isRegra62 ? chave : `poder_57_${chave}`, nex: isOrigemSlot || isRegra61 || isRegra62 ? 0 : (isExtra ? nex : nivelNum) })}
                               className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-green-800 hover:bg-zinc-900/80"
@@ -1509,9 +1489,7 @@ export const AbasPanel: React.FC = () => {
                             const elementoEscolhido = isLista ? (ritual.ElementoEscolhidoPermanente || 'Sangue') : ritual.Elemento_Ritual;
                             
                             let finalElemento = elementoEscolhido;
-                            if (ritual.Origem?.startsWith('graduado_40')) {
-                                finalElemento = 'Grimório Ritualístico';
-                            } else if (elementoEscolhido.toLowerCase().includes(' e ')) {
+                            if (elementoEscolhido.toLowerCase().includes(' e ')) {
                                 finalElemento = elementoEscolhido;
                             }
                             

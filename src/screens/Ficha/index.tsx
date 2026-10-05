@@ -499,7 +499,7 @@ function ProtecoesPanel() {
     sentidos, setSentidos,
     imunidades, setImunidades,
     vulnerabilidades, setVulnerabilidades,
-    regrasAutomaticasAtivas, atributosFinais, poderesHook, rituaisHook, periciasHook, status,
+    regrasAutomaticasAtivas, atributosFinais, poderesHook, rituaisHook, periciasHook, status, poderesExtras,
     protecoesHook, modificacoesHook, bonusVestimentas, bonusMaldicoes, origensHook,
     trilhasHook, regras, nivel, nex
   } = useRPG();

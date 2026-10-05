@@ -27,7 +27,6 @@ export const AtributosScreen: React.FC = () => {
 
   const handleNexChange = (novoNex: string) => {
     setNex(Number(novoNex));
-    setNex(novoNex);
     // ❌ REMOVIDO: setAtributos({ FOR: 1, AGI: 1, INT: 1, PRE: 1, VIG: 1 });
     // ✅ Agora só muda o NEX, os atributos distribuídos permanecem intactos
   };

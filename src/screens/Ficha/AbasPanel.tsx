@@ -1330,8 +1330,36 @@ export const AbasPanel: React.FC = () => {
             }
           }
 
+          // 2.8 Calcular slots de Graduado (Trilha 13)
+          const slotsGraduadoPendentesList: { chave?: string, index: number, nex: number, maxCirculo: number, isOcultista: boolean, isGraduado?: boolean }[] = [];
+          const isGraduado10 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 13 && (regras['nex_experiencia'] ? nivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 13 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
+          if (isGraduado10) {
+            const pego10 = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'graduado_10_c');
+            if (!pego10) {
+              slotsGraduadoPendentesList.push({ chave: 'graduado_10_c', index: 950, nex: 10, maxCirculo: 1, isOcultista: true, isGraduado: true });
+            }
+          }
+          const isGraduado40 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 13 && (regras['nex_experiencia'] ? nivel >= 8 : effectiveNex >= 40));
+          if (isGraduado40) {
+            let baseMaxCirculo = 1;
+            if (classe === 'Ocultista') {
+              if (nivel >= 17) baseMaxCirculo = 4;
+              else if (nivel >= 11) baseMaxCirculo = 3;
+              else if (nivel >= 5) baseMaxCirculo = 2;
+            }
+            const intVal = (atributosFinais?.INT !== undefined ? atributosFinais.INT : (atributos?.INT || 0));
+            if (intVal > 0) {
+              for (let i = 1; i <= intVal; i++) {
+                const pego = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === `graduado_40_${i}`);
+                if (!pego) {
+                  slotsGraduadoPendentesList.push({ chave: `graduado_40_${i}`, index: 960 + i, nex: 40, maxCirculo: baseMaxCirculo, isOcultista: true, isGraduado: true });
+                }
+              }
+            }
+          }
+
           // 3. Desbloqueio Cronológico por Círculo
-          const allRitualSlots = [...slotsPoderPendentesList, ...slotsOcultistaPendentesList, ...slotsOrigemPendentesList, ...slotsRegra61PendentesList, ...slotsRegra62PendentesList];
+          const allRitualSlots = [...slotsPoderPendentesList, ...slotsOcultistaPendentesList, ...slotsOrigemPendentesList, ...slotsRegra61PendentesList, ...slotsRegra62PendentesList, ...slotsGraduadoPendentesList];
           const sortedSlots = allRitualSlots.sort((a, b) => {
              if (a.nex !== b.nex) return a.nex - b.nex;
              if (a.isOcultista && !b.isOcultista) return -1;
@@ -1360,6 +1388,31 @@ export const AbasPanel: React.FC = () => {
               <div className="mb-5 flex items-center justify-between gap-4">
                 <span className="text-sm font-bold text-zinc-400">Rituais Aprendidos ({rituaisHook.rituaisAprendidos?.length || 0})</span>
               </div>
+
+              {(isGraduado40 || trilhasHook.trilhaSelecionada?.Codigo_Trilha === 13 || (rituaisHook.rituaisAprendidos || []).some(r => r.origem?.startsWith('graduado_40'))) && (
+                <div className="flex gap-2 mb-4 border-b border-zinc-800 pb-2">
+                  <button
+                    onClick={() => setSubAbaRituais('rituais')}
+                    className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded transition ${
+                      subAbaRituais === 'rituais'
+                        ? 'bg-zinc-800 text-green-400 border border-zinc-700 shadow-sm'
+                        : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900/50'
+                    }`}
+                  >
+                    Rituais ({(rituaisHook.rituaisAprendidos || []).filter(r => !r.origem?.startsWith('graduado_40')).length})
+                  </button>
+                  <button
+                    onClick={() => setSubAbaRituais('grimorio')}
+                    className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded transition flex items-center gap-1.5 ${
+                      subAbaRituais === 'grimorio'
+                        ? 'bg-zinc-800 text-blue-400 border border-zinc-700 shadow-sm'
+                        : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900/50'
+                    }`}
+                  >
+                    <span>📖</span> Grimório ({(rituaisHook.rituaisAprendidos || []).filter(r => r.origem?.startsWith('graduado_40')).length})
+                  </button>
+                </div>
+              )}
 
               <div className="mb-5 flex items-center gap-4">
                 <InputOtimizado value={filtroRituais} onChange={setFiltroRituais}

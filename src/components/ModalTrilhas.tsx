@@ -50,6 +50,7 @@ export function ModalTrilhas({
   const [trilhasModalExpandidas, setTrilhasModalExpandidas] = useState<number[]>([]);
   const [escolhendoArmaTrilha1, setEscolhendoArmaTrilha1] = useState<Trilha | null>(null);
     const [escolhendoElementoLamina, setEscolhendoElementoLamina] = useState<number | null>(null);
+  const [escolhendoPericiaAgenteSecreto, setEscolhendoPericiaAgenteSecreto] = useState<number | null>(null);
 
   const trilhasFiltradas = useMemo(() => {
     return trilhas.filter((t) => {
@@ -97,6 +98,12 @@ export function ModalTrilhas({
       return;
     }
 
+    
+    if (trilha.Codigo_Trilha === 16) {
+      setEscolhendoPericiaAgenteSecreto(trilha.Codigo_Trilha);
+      return;
+    }
+
     if (trilha.Codigo_Trilha === 15) {
       const jaTemAmaldicoarNormal = (rituaisHook.rituaisAprendidos || []).find((r: any) => r.codigo_ritual === 3 && r.origem !== 'trilha_lamina_paranormal');
       if (jaTemAmaldicoarNormal) {
@@ -109,9 +116,14 @@ export function ModalTrilhas({
     }
 
     prosseguirEscolha(trilha);
-  };
+    };
 
-  const prosseguirEscolhaLamina = (trilha: Trilha, elemento: string) => {
+    const prosseguirEscolhaAgenteSecreto = (trilha: Trilha, pericia: string) => {
+      setPoderesExtras(prev => ({ ...prev, agente_secreto_pericia: pericia }));
+      prosseguirEscolha(trilha);
+    };
+
+    const prosseguirEscolhaLamina = (trilha: Trilha, elemento: string) => {
     setPoderesExtras(prev => ({ ...prev, lamina_elemento: elemento }));
     if (modoVersatilidade) selecionarVersatilidade(trilha);
     else selecionarTrilha(trilha);
@@ -362,8 +374,29 @@ export function ModalTrilhas({
                     <div className="flex flex-nowrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 shrink-0">
                       {(() => {
                         const erroReq = checarRequisito(trilha);
-                          const isEscolhendo = escolhendoElementoLamina === trilha.Codigo_Trilha;
-                          if (isEscolhendo) {
+                          
+                          const isEscolhendoLamina = escolhendoElementoLamina === trilha.Codigo_Trilha;
+                          const isEscolhendoAgente = escolhendoPericiaAgenteSecreto === trilha.Codigo_Trilha;
+                          
+                          if (isEscolhendoAgente) {
+                            return (
+                              <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800 ml-auto" onClick={e => e.stopPropagation()}>
+                                <span className="text-[10px] text-zinc-500 font-bold uppercase">Perícia:</span>
+                                {['Diplomacia', 'Enganação'].map(el => (
+                                  <button
+                                    key={el}
+                                    onClick={() => prosseguirEscolhaAgenteSecreto(trilha, el)}
+                                    className="px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-zinc-700 hover:bg-zinc-800 text-zinc-300"
+                                  >
+                                    {el}
+                                  </button>
+                                ))}
+                              </div>
+                            );
+                          }
+                          
+                          if (isEscolhendoLamina) {
+
                             return (
                               <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800 ml-auto" onClick={e => e.stopPropagation()}>
                                 <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1">Elemento:</span>
@@ -483,8 +516,29 @@ export function ModalTrilhas({
                     <div className="flex flex-nowrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 shrink-0">
                       {(() => {
                         const erroReq = checarRequisito(trilha);
-                          const isEscolhendo = escolhendoElementoLamina === trilha.Codigo_Trilha;
-                          if (isEscolhendo) {
+                          
+                          const isEscolhendoLamina = escolhendoElementoLamina === trilha.Codigo_Trilha;
+                          const isEscolhendoAgente = escolhendoPericiaAgenteSecreto === trilha.Codigo_Trilha;
+                          
+                          if (isEscolhendoAgente) {
+                            return (
+                              <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800 ml-auto" onClick={e => e.stopPropagation()}>
+                                <span className="text-[10px] text-zinc-500 font-bold uppercase">Perícia:</span>
+                                {['Diplomacia', 'Enganação'].map(el => (
+                                  <button
+                                    key={el}
+                                    onClick={() => prosseguirEscolhaAgenteSecreto(trilha, el)}
+                                    className="px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-zinc-700 hover:bg-zinc-800 text-zinc-300"
+                                  >
+                                    {el}
+                                  </button>
+                                ))}
+                              </div>
+                            );
+                          }
+                          
+                          if (isEscolhendoLamina) {
+
                             return (
                               <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800 ml-auto" onClick={e => e.stopPropagation()}>
                                 <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1">Elemento:</span>

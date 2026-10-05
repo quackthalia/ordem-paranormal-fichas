@@ -492,13 +492,20 @@ const atributosFinais = useMemo(() => {
     if (trilhasHook.trilhaSelecionada && trilhasHook.trilhaSelecionada.nome_pericia) {
       list.push(trilhasHook.trilhaSelecionada.nome_pericia);
     }
+    if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 16 && poderesExtras['agente_secreto_pericia']) {
+      list.push(poderesExtras['agente_secreto_pericia']);
+    }
     return list;
   }, [periciasGratisSemTrilha, trilhasHook.trilhaSelecionada]);
 
   const jaTinhaPericiaTrilha = useMemo(() => {
-    if (!trilhasHook.trilhaSelecionada || !trilhasHook.trilhaSelecionada.nome_pericia) return false;
+    if (!trilhasHook.trilhaSelecionada) return false;
+    if (trilhasHook.trilhaSelecionada.Codigo_Trilha === 16 && poderesExtras['agente_secreto_pericia']) {
+      return periciasGratisSemTrilha.includes(poderesExtras['agente_secreto_pericia']);
+    }
+    if (!trilhasHook.trilhaSelecionada.nome_pericia) return false;
     return periciasGratisSemTrilha.includes(trilhasHook.trilhaSelecionada.nome_pericia);
-  }, [periciasGratisSemTrilha, trilhasHook.trilhaSelecionada]);
+  }, [periciasGratisSemTrilha, trilhasHook.trilhaSelecionada, poderesExtras]);
 
   const veteranasGratis = useMemo(() => {
     const vet: string[] = [];
@@ -519,7 +526,30 @@ const atributosFinais = useMemo(() => {
     regrasAutomaticasAtivas, 
     poderesHook.poderesEscolhidos,
     origensHook.origemSelecionada,
-    (() => { const comb = {...bonusVestimentas.pericias}; Object.keys(bonusMaldicoes.pericias || {}).forEach(k => { comb[k] = (comb[k] || 0) + bonusMaldicoes.pericias[k]; }); return comb; })()
+    (() => { 
+      const comb = {...bonusVestimentas.pericias}; 
+      Object.keys(bonusMaldicoes.pericias || {}).forEach(k => { 
+        comb[k] = (comb[k] || 0) + bonusMaldicoes.pericias[k]; 
+      }); 
+      
+      if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 16) {
+         const periciaEscolhida = poderesExtras['agente_secreto_pericia'];
+         if (periciaEscolhida) {
+            const jaTinha = periciasGratisSemTrilha.includes(periciaEscolhida);
+            if (jaTinha) {
+               comb[periciaEscolhida] = (comb[periciaEscolhida] || 0) + 2;
+            }
+         }
+         
+         const temTrilha40 = (regras['nex_experiencia'] ? effectiveNivel >= 8 : effectiveNex >= 40);
+         if (temTrilha40) {
+            comb['Diplomacia'] = (comb['Diplomacia'] || 0) + 2;
+            comb['Enganação'] = (comb['Enganação'] || 0) + 2;
+         }
+      }
+
+      return comb; 
+    })()
   );
 
   const jaTinhaProfissaoTrilha = useMemo(() => {

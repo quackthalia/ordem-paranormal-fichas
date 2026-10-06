@@ -1021,7 +1021,44 @@ export const AbasPanel: React.FC = () => {
                                               </div>
                                             </div>
                                           )}
-                                        </Collapse>
+                                                                                   {t.Codigo_Trilha === 22 && nexLvl === 40 && !isVersatilidade && (
+                                             <div className="px-3 pb-3 pt-1 border-t border-zinc-800/80 flex flex-col gap-1.5" onClick={e => e.stopPropagation()}>
+                                               <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+                                                 Benefício de Poder da Fé (40%):
+                                               </span>
+                                               <div className="flex flex-wrap gap-2 items-center">
+                                                 <button
+                                                   type="button"
+                                                   onClick={(e) => {
+                                                     e.stopPropagation();
+                                                     setPoderesExtras(prev => ({ ...prev, exorcista_opcao_40: 'veterano' }));
+                                                   }}
+                                                   className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${
+                                                     poderesExtras['exorcista_opcao_40'] !== 'dados'
+                                                       ? 'bg-green-950/60 border-green-600 text-green-300' 
+                                                       : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                                                   }`}
+                                                 >
+                                                   Tornar Veterano (Grátis)
+                                                 </button>
+                                                 <button
+                                                   type="button"
+                                                   onClick={(e) => {
+                                                     e.stopPropagation();
+                                                     setPoderesExtras(prev => ({ ...prev, exorcista_opcao_40: 'dados' }));
+                                                   }}
+                                                   className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${
+                                                     poderesExtras['exorcista_opcao_40'] === 'dados'
+                                                       ? 'bg-green-950/60 border-green-600 text-green-300' 
+                                                       : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                                                   }`}
+                                                 >
+                                                   Já era Veterano (+1d20)
+                                                 </button>
+                                               </div>
+                                             </div>
+                                           )}
+                                         </Collapse>
                                       </div>
                                     );
                                   })}
@@ -1047,6 +1084,14 @@ export const AbasPanel: React.FC = () => {
                                             return n;
                                           });
                                         }
+                                         if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 22) {
+                                           setPoderesExtras(prev => {
+                                             const n = { ...prev };
+                                             delete n.exorcista_ja_tinha_religiao;
+                                             delete n.exorcista_opcao_40;
+                                             return n;
+                                           });
+                                         }
                                         if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 21) {
                                           setPoderesExtras(prev => {
                                             const n = { ...prev };
@@ -1054,6 +1099,13 @@ export const AbasPanel: React.FC = () => {
                                             return n;
                                           });
                                         }
+                                         if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 22) {
+                                           setPoderesExtras(prev => {
+                                             const n = { ...prev };
+                                             delete n.exorcista_versatilidade_ja_tinha_religiao;
+                                             return n;
+                                           });
+                                         }
                                         trilhasHook.setVersatilidadeSelecionada(null);
                                       } else {
                                         if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 17) {

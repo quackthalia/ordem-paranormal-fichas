@@ -508,23 +508,39 @@ const atributosFinais = useMemo(() => {
 
   const temCacadorVersatilidade = (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 17 && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
 
+  const jaTinhaReligiaoVersatilidade = useMemo(() => {
+    if (periciasGratisSemTrilha.includes('Religião')) return true;
+    if (poderesExtras['exorcista_versatilidade_ja_tinha_religiao'] !== undefined) {
+      return poderesExtras['exorcista_versatilidade_ja_tinha_religiao'] === 'true';
+    }
+    return false;
+  }, [poderesExtras, periciasGratisSemTrilha]);
+
+  const temExorcistaVersatilidade = (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 22 && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
+  const temExorcista10 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 22 && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10));
+  const temExorcista40 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 22 && (regras['nex_experiencia'] ? effectiveNivel >= 8 : effectiveNex >= 40));
+
   const periciasGratis = useMemo(() => {
     const list = [...periciasGratisSemTrilha];
 
-    // Trilha Selecionada (Trilha principal dá a perícia da trilha por padrão)
-    if (trilhasHook.trilhaSelecionada && trilhasHook.trilhaSelecionada.nome_pericia) {
+    // Trilha Selecionada (Trilha principal dá a perícia da trilha por padrão; Muambeiro não dá a genérica Profissão)
+    if (trilhasHook.trilhaSelecionada && trilhasHook.trilhaSelecionada.nome_pericia && trilhasHook.trilhaSelecionada.Codigo_Trilha !== 21) {
       list.push(trilhasHook.trilhaSelecionada.nome_pericia);
     }
     if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 16 && poderesExtras['agente_secreto_pericia']) {
       list.push(poderesExtras['agente_secreto_pericia']);
     }
 
-    // Versatilidade Selecionada (não dá a perícia da trilha por padrão; para Caçador, dá treino apenas se não tiver Sobrevivência)
+    // Versatilidade Selecionada (não dá a perícia da trilha por padrão; para Caçador e Exorcista, dá treino apenas se não tiver a perícia)
     if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 17) {
       if (temCacadorVersatilidade && !jaTinhaSobrevivenciaVersatilidade) {
         list.push('Sobrevivência');
       }
-    } else if (trilhasHook.versatilidadeSelecionada && trilhasHook.versatilidadeSelecionada.nome_pericia) {
+    } else if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 22) {
+      if (temExorcistaVersatilidade && !jaTinhaReligiaoVersatilidade) {
+        list.push('Religião');
+      }
+    } else if (trilhasHook.versatilidadeSelecionada && trilhasHook.versatilidadeSelecionada.nome_pericia && trilhasHook.versatilidadeSelecionada.Codigo_Trilha !== 21) {
       list.push(trilhasHook.versatilidadeSelecionada.nome_pericia);
     }
     if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 16 && poderesExtras['agente_secreto_pericia_versatilidade']) {
@@ -538,7 +554,9 @@ const atributosFinais = useMemo(() => {
     trilhasHook.versatilidadeSelecionada, 
     poderesExtras,
     temCacadorVersatilidade,
-    jaTinhaSobrevivenciaVersatilidade
+    jaTinhaSobrevivenciaVersatilidade,
+    temExorcistaVersatilidade,
+    jaTinhaReligiaoVersatilidade
   ]);
 
   const jaTinhaPericiaTrilha = useMemo(() => {
@@ -546,9 +564,12 @@ const atributosFinais = useMemo(() => {
     if (trilhasHook.trilhaSelecionada.Codigo_Trilha === 16 && poderesExtras['agente_secreto_pericia']) {
       return periciasGratisSemTrilha.includes(poderesExtras['agente_secreto_pericia']);
     }
+    // Caçador, Muambeiro e Exorcista resolvem suas perícias diretamente em regras específicas
+    if (trilhasHook.trilhaSelecionada.Codigo_Trilha === 17 || trilhasHook.trilhaSelecionada.Codigo_Trilha === 21 || trilhasHook.trilhaSelecionada.Codigo_Trilha === 22) {
+      return false;
+    }
     if (!trilhasHook.trilhaSelecionada.nome_pericia) return false;
-    return periciasGratisSemTrilha.includes(trilhasHook.trilhaSelecionada.nome_pericia) ||
-      (trilhasHook.trilhaSelecionada.Codigo_Trilha === 17 && poderesExtras['cacador_ja_tinha_sobrevivencia'] === 'true');
+    return periciasGratisSemTrilha.includes(trilhasHook.trilhaSelecionada.nome_pericia);
   }, [periciasGratisSemTrilha, trilhasHook.trilhaSelecionada, poderesExtras]);
 
   const jaTinhaPericiaVersatilidade = useMemo(() => {
@@ -556,8 +577,8 @@ const atributosFinais = useMemo(() => {
     if (trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 16 && poderesExtras['agente_secreto_pericia_versatilidade']) {
       return periciasGratisSemTrilha.includes(poderesExtras['agente_secreto_pericia_versatilidade']);
     }
-    // Para Versatilidade em Caçador: não dá a perícia da trilha por padrão, então não gera o +1d20 de duplicata de trilha
-    if (trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 17) {
+    // Caçador, Muambeiro e Exorcista não dão o +1d20 de duplicata de trilha na Versatilidade
+    if (trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 17 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 21 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 22) {
       return false;
     }
     if (!trilhasHook.versatilidadeSelecionada.nome_pericia) return false;
@@ -569,8 +590,11 @@ const atributosFinais = useMemo(() => {
     if (origensHook.origemSelecionada?.Codigo_Per_Regra === 7) {
       vet.push('Pilotagem');
     }
+    if (temExorcista40 && poderesExtras['exorcista_opcao_40'] !== 'dados') {
+      vet.push('Religião');
+    }
     return vet;
-  }, [origensHook.origemSelecionada]);
+  }, [origensHook.origemSelecionada, temExorcista40, poderesExtras]);
 
   const periciasHook = usePericias(
     classe, 
@@ -615,6 +639,16 @@ const atributosFinais = useMemo(() => {
          // Na Versatilidade: Só dá o +2 se já tiver Sobrevivência (se não tiver, ganha treino em periciasGratis)
          if (temCacadorVersatilidade && jaTinhaSobrevivenciaVersatilidade) {
             comb['Sobrevivência'] = (comb['Sobrevivência'] || 0) + 2;
+         }
+
+         // Trilha 22 (Exorcista)
+         // Na Trilha Principal: Como Exorcista já dá Religião por padrão, a habilidade de 10% dá o +2 automaticamente
+         if (temExorcista10) {
+            comb['Religião'] = (comb['Religião'] || 0) + 2;
+         }
+         // Na Versatilidade: Só dá o +2 se já tiver Religião (se não tiver, ganha treino em periciasGratis)
+         if (temExorcistaVersatilidade && jaTinhaReligiaoVersatilidade) {
+            comb['Religião'] = (comb['Religião'] || 0) + 2;
          }
          
 

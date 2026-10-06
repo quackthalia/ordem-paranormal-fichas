@@ -129,6 +129,15 @@ export function ModalTrilhas({
       }
     }
 
+    if (trilha.Codigo_Trilha === 22) {
+      const jaTinha = (periciasHook.pericias['Religião']?.treino || 0) >= 5 || periciasGratisSemTrilha.includes('Religião');
+      if (modoVersatilidade) {
+        setPoderesExtras(prev => ({ ...prev, exorcista_versatilidade_ja_tinha_religiao: String(jaTinha) }));
+      } else {
+        setPoderesExtras(prev => ({ ...prev, exorcista_ja_tinha_religiao: String(jaTinha) }));
+      }
+    }
+
     if (trilha.Codigo_Trilha === 15) {
       const jaTemAmaldicoarNormal = (rituaisHook.rituaisAprendidos || []).find((r: any) => Number(r.codigo_ritual) === 3);
       if (jaTemAmaldicoarNormal) {

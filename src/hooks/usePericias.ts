@@ -363,20 +363,22 @@ export function usePericias(
       if (dados.treino >= 5 && !periciasGratis.includes(nome)) {
         totalTreinadasUsadas += 1;
       }
-      if (dados.treino === 10) totalUpgradesGastos += 1;
-      else if (dados.treino === 15) totalUpgradesGastos += 2;
+      if (dados.treino === 10) {
+        if (!veteranasGratis.includes(nome)) totalUpgradesGastos += 1;
+      } else if (dados.treino === 15) {
+        totalUpgradesGastos += veteranasGratis.includes(nome) ? 1 : 2;
+      }
     });
 
-    if (pericias['Profissão']?.treino >= 5) {
-      profissoes.forEach(prof => {
-      if (prof.treino >= 5) totalTreinadasUsadas += 1;
+    profissoes.forEach(prof => {
+      const isTrilhaProf = (prof as any).origem === 'trilha' || (prof as any).origem === 'trilha65';
+      if (prof.treino >= 5 && !isTrilhaProf) totalTreinadasUsadas += 1;
       if (prof.treino === 10) totalUpgradesGastos += 1;
       else if (prof.treino === 15) totalUpgradesGastos += 2;
-      });
-    }
+    });
 
     return { totalTreinadasUsadas, totalUpgradesGastos };
-  }, [pericias, periciasGratis, profissoes]);
+  }, [pericias, periciasGratis, profissoes, veteranasGratis]);
 
   const handleMudarPericia = useCallback(
     (nome: string, campo: 'treino' | 'outros' | 'atributo', valor: number | AtributoKey) => {
@@ -390,6 +392,11 @@ export function usePericias(
 
           // Não deixa destreinar perícias grátis
           if (novoValor < 5 && periciasGratis.includes(nome)) {
+            return prev;
+          }
+
+          // Não deixa diminuir grau de perícias veteranas grátis
+          if (novoValor < 10 && veteranasGratis.includes(nome)) {
             return prev;
           }
 
@@ -408,9 +415,20 @@ export function usePericias(
 
           Object.entries(simuladas).forEach(([n, d]) => {
             if (d.isLivre) return;
+            if (n === 'Profissão' && profissoes.length > 0) return;
             if (d.treino >= 5 && !periciasGratis.includes(n)) simTreinadas += 1;
-            if (d.treino === 10) simUpgrades += 1;
-            else if (d.treino === 15) simUpgrades += 2;
+            if (d.treino === 10) {
+              if (!veteranasGratis.includes(n)) simUpgrades += 1;
+            } else if (d.treino === 15) {
+              simUpgrades += veteranasGratis.includes(n) ? 1 : 2;
+            }
+          });
+
+          profissoes.forEach(prof => {
+            const isTrilhaProf = (prof as any).origem === 'trilha' || (prof as any).origem === 'trilha65';
+            if (prof.treino >= 5 && !isTrilhaProf) simTreinadas += 1;
+            if (prof.treino === 10) simUpgrades += 1;
+            else if (prof.treino === 15) simUpgrades += 2;
           });
 
           if (simTreinadas > limites.maxTreinadas) return prev;
@@ -435,7 +453,7 @@ export function usePericias(
         };
       });
     },
-    [regrasAtivas, periciasGratis, nivel, limites]
+    [regrasAtivas, periciasGratis, veteranasGratis, nivel, limites, profissoes]
   );
 
   const periciasComBonus = useMemo(() => {

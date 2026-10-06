@@ -48,47 +48,56 @@ const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setPro
       style={{ transitionProperty: 'max-height, opacity' }}
     >
         <div className="flex items-center gap-2 mb-2 pt-1">
-          {editingProfIndex === idx || prof.nome === '' ? (
-            <input
-              autoFocus
-              value={prof.nome}
-              onChange={e => setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, nome: e.target.value } : p))}
-              onKeyDown={e => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  setEditingProfIndex(null);
-                }
-              }}
-              onBlur={() => setEditingProfIndex(null)}
-              placeholder="Nome da profissão..."
-              className="flex-1 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm text-zinc-100 outline-none focus:border-green-500"
-            />
-          ) : (
-            <span 
-              className={`flex-1 px-2 py-1 text-sm font-normal cursor-pointer hover:opacity-75 transition-opacity truncate ${COR_TREINO[prof.treino] ?? 'text-zinc-300'}`}
-              onClick={() => setEditingProfIndex(idx)}
-            >
-              {prof.nome}
-            </span>
-          )}
+          {(() => {
+            const isTrilhaProf = (prof as any).origem === 'trilha' || (prof as any).origem === 'trilha65';
+            return (editingProfIndex === idx || prof.nome === '') && !isTrilhaProf ? (
+              <input
+                autoFocus
+                value={prof.nome}
+                onChange={e => setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, nome: e.target.value } : p))}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    setEditingProfIndex(null);
+                  }
+                }}
+                onBlur={() => setEditingProfIndex(null)}
+                placeholder="Nome da profissão..."
+                className="flex-1 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm text-zinc-100 outline-none focus:border-green-500"
+              />
+            ) : (
+              <span 
+                className={`flex-1 px-2 py-1 text-sm font-normal truncate ${COR_TREINO[prof.treino] ?? 'text-zinc-300'} ${!isTrilhaProf ? 'cursor-pointer hover:opacity-75 transition-opacity' : ''}`}
+                onClick={() => !isTrilhaProf && setEditingProfIndex(idx)}
+              >
+                {prof.nome}
+              </span>
+            );
+          })()}
           
           <CustomSelect
             value={String(prof.treino)}
             onChange={val => {
               const novoValor = Number(val);
+              const isTrilhaProf = (prof as any).origem === 'trilha' || (prof as any).origem === 'trilha65';
+
               if (regrasAtivas) {
+                if (isTrilhaProf && novoValor < 5) return;
                 if (novoValor === 10 && status.nivel < 7) return;
                 if (novoValor === 15 && status.nivel < 14) return;
                 
                 const currentTreino = prof.treino;
                 let simTreinadas = totais.totalTreinadasUsadas;
                 let simUpgrades = totais.totalUpgradesGastos;
+
+                if (!isTrilhaProf) {
+                  if (currentTreino >= 5) simTreinadas -= 1;
+                  if (novoValor >= 5) simTreinadas += 1;
+                }
                 
-                if (currentTreino >= 5) simTreinadas -= 1;
                 if (currentTreino === 10) simUpgrades -= 1;
                 if (currentTreino === 15) simUpgrades -= 2;
                 
-                if (novoValor >= 5) simTreinadas += 1;
                 if (novoValor === 10) simUpgrades += 1;
                 if (novoValor === 15) simUpgrades += 2;
                 
@@ -111,10 +120,12 @@ const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setPro
             className={`w-11 border-b bg-transparent text-center font-bold outline-none ${COR_TREINO[prof.treino] ?? 'text-zinc-400'} ${BORDA_TREINO[prof.treino] ?? 'border-zinc-600'}`}
           />
           
-          <button
-            onClick={handleRemove}
-            className="text-zinc-600 hover:text-red-400 transition text-lg leading-none"
-          >×</button>
+          {!((prof as any).origem === 'trilha' || (prof as any).origem === 'trilha65') && (
+            <button
+              onClick={handleRemove}
+              className="text-zinc-600 hover:text-red-400 transition text-lg leading-none"
+            >×</button>
+          )}
         </div>
     </div>
   );

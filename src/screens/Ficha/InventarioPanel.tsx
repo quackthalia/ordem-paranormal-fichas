@@ -469,7 +469,8 @@ export function InventarioPanel() {
 
   const temInventarioOtimizado = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 10 && effectiveNex >= 10) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 10 && effectiveNex >= 50);
   const temRemendao = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 10 && effectiveNex >= 40) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 10 && effectiveNex >= 50);
-  const cargaMaxima = 5 + (atributosFinais.FOR * 5) + (regrasAutomaticasAtivas.has(23) ? 5 : 0) + (regrasAutomaticasAtivas.has(43) ? atributosFinais.INT : 0) + (temInventarioOtimizado ? (atributosFinais.INT * 5) : 0);
+  const temMuambeiro10 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 21 && (regras['nex_experiencia'] ? nivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 21 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
+  const cargaMaxima = 5 + (atributosFinais.FOR * 5) + (regrasAutomaticasAtivas.has(23) ? 5 : 0) + (regrasAutomaticasAtivas.has(43) ? atributosFinais.INT : 0) + (temInventarioOtimizado ? (atributosFinais.INT * 5) : 0) + (temMuambeiro10 ? 5 : 0);
   
   const cargaAtual = useMemo(() => {
     let total = 0;

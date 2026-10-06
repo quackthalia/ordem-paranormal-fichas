@@ -624,19 +624,25 @@ const atributosFinais = useMemo(() => {
 
   const jaTinhaProfissaoTrilha = useMemo(() => {
     const trilha = trilhasHook.trilhaSelecionada;
-    if (!trilha || !trilha.Profissao_Pericia) return false;
-    const pName = trilha.Profissao_Pericia.trim().toLowerCase();
+    const profName = trilha?.Profissao_Pericia || (trilha?.Codigo_Trilha === 21 ? poderesExtras['muambeiro_profissao_10'] : null);
+    if (!trilha || !profName) return false;
+    const pName = profName.trim().toLowerCase();
     // Verifica se a profissão existe E não foi injetada por nós (ou seja, foi criada manualmente pelo jogador)
-    return periciasHook.profissoes.some(p => (p.nome || '').toLowerCase() === pName && (p as any).origem !== 'trilha');
-  }, [trilhasHook.trilhaSelecionada, periciasHook.profissoes]);
+    return periciasHook.profissoes.some(p => (p.nome || '').toLowerCase() === pName && (p as any).origem !== 'trilha' && (p as any).origem !== 'trilha65');
+  }, [trilhasHook.trilhaSelecionada, poderesExtras, periciasHook.profissoes]);
 
   const profissaoTrilhaRef = React.useRef<string | null>(null);
 
   React.useEffect(() => {
     const trilha = trilhasHook.trilhaSelecionada;
-    if (trilha && trilha.Profissao_Pericia) {
-      const pName = trilha.Profissao_Pericia.trim();
+    const profName = trilha?.Profissao_Pericia || (trilha?.Codigo_Trilha === 21 ? poderesExtras['muambeiro_profissao_10'] : null);
+    if (trilha && profName) {
+      const pName = profName.trim();
       if (profissaoTrilhaRef.current !== pName) {
+        if (profissaoTrilhaRef.current) {
+          const oldName = profissaoTrilhaRef.current;
+          periciasHook.setProfissoes(prev => prev.filter(p => !((p.nome || '').toLowerCase() === oldName.toLowerCase() && (p as any).origem === 'trilha')));
+        }
         periciasHook.setProfissoes(prev => {
           const exists = prev.find(p => (p.nome || '').toLowerCase() === pName.toLowerCase());
           if (exists) {
@@ -654,7 +660,57 @@ const atributosFinais = useMemo(() => {
         profissaoTrilhaRef.current = null;
       }
     }
-  }, [trilhasHook.trilhaSelecionada, periciasHook.setProfissoes]);
+  }, [trilhasHook.trilhaSelecionada, poderesExtras, periciasHook.setProfissoes]);
+
+  // Trilha 21 (Muambeiro - 65% Laboratório de Campo): Escolha de Profissão ou +5 se já treinada
+  const temMuambeiro65 = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 21 && (regras['nex_experiencia'] ? effectiveNivel >= 13 : effectiveNex >= 65);
+  const prof65 = temMuambeiro65 ? poderesExtras['muambeiro_profissao_65'] : null;
+  const profissaoTrilha65Ref = React.useRef<{ nome: string; concedeuTreino: boolean } | null>(null);
+
+  React.useEffect(() => {
+    if (prof65) {
+      const pName = prof65.trim();
+      if (profissaoTrilha65Ref.current?.nome !== pName) {
+        // Desfazer escolha anterior se houver
+        if (profissaoTrilha65Ref.current) {
+          const old = profissaoTrilha65Ref.current;
+          periciasHook.setProfissoes(prev => {
+            if (old.concedeuTreino) {
+              return prev.filter(p => !((p.nome || '').toLowerCase() === old.nome.toLowerCase() && (p as any).origem === 'trilha65'));
+            } else {
+              return prev.map(p => (p.nome || '').toLowerCase() === old.nome.toLowerCase() ? { ...p, outros: Math.max(0, (p.outros || 0) - 5) } : p);
+            }
+          });
+        }
+
+        // Aplicar a nova escolha de 65%
+        periciasHook.setProfissoes(prev => {
+          const exists = prev.find(p => (p.nome || '').toLowerCase() === pName.toLowerCase());
+          if (exists) {
+            // Se já for treinado em uma dessas perícias, recebe +5 nela
+            profissaoTrilha65Ref.current = { nome: pName, concedeuTreino: false };
+            return prev.map(p => (p.nome || '').toLowerCase() === pName.toLowerCase() ? { ...p, outros: (p.outros || 0) + 5 } : p);
+          } else {
+            // Não tem: recebe treinamento
+            profissaoTrilha65Ref.current = { nome: pName, concedeuTreino: true };
+            return [...prev, { nome: pName, treino: 5, outros: 0, origem: 'trilha65' } as any];
+          }
+        });
+      }
+    } else {
+      if (profissaoTrilha65Ref.current) {
+        const old = profissaoTrilha65Ref.current;
+        periciasHook.setProfissoes(prev => {
+          if (old.concedeuTreino) {
+            return prev.filter(p => !((p.nome || '').toLowerCase() === old.nome.toLowerCase() && (p as any).origem === 'trilha65'));
+          } else {
+            return prev.map(p => (p.nome || '').toLowerCase() === old.nome.toLowerCase() ? { ...p, outros: Math.max(0, (p.outros || 0) - 5) } : p);
+          }
+        });
+        profissaoTrilha65Ref.current = null;
+      }
+    }
+  }, [prof65, periciasHook.setProfissoes]);
 
   const grauProfissao = periciasHook.pericias['Profissão']?.treino || 0;
   const inventarioHook = useInventario(origensHook.origemSelecionada?.Codigo_Regra, grauProfissao);

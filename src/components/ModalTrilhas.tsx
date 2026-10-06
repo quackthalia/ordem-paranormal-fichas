@@ -51,6 +51,7 @@ export function ModalTrilhas({
   const [escolhendoArmaTrilha1, setEscolhendoArmaTrilha1] = useState<Trilha | null>(null);
     const [escolhendoElementoLamina, setEscolhendoElementoLamina] = useState<number | null>(null);
   const [escolhendoPericiaAgenteSecreto, setEscolhendoPericiaAgenteSecreto] = useState<number | null>(null);
+  const [escolhendoProfissaoMuambeiro, setEscolhendoProfissaoMuambeiro] = useState<number | null>(null);
 
   const trilhasFiltradas = useMemo(() => {
     return trilhas.filter((t) => {
@@ -99,6 +100,11 @@ export function ModalTrilhas({
     }
 
     
+    if (trilha.Codigo_Trilha === 21) {
+      setEscolhendoProfissaoMuambeiro(trilha.Codigo_Trilha);
+      return;
+    }
+
     if (trilha.Codigo_Trilha === 16) {
       setEscolhendoPericiaAgenteSecreto(trilha.Codigo_Trilha);
       return;
@@ -130,6 +136,21 @@ export function ModalTrilhas({
     const prosseguirEscolhaAgenteSecreto = (trilha: Trilha, pericia: string) => {
       setPoderesExtras(prev => ({ ...prev, agente_secreto_pericia: pericia }));
       prosseguirEscolha(trilha);
+    };
+
+    const prosseguirEscolhaMuambeiro = (trilha: Trilha, prof: string) => {
+      setPoderesExtras(prev => ({
+        ...prev,
+        [modoVersatilidade ? 'muambeiro_versatilidade_profissao' : 'muambeiro_profissao_10']: prof
+      }));
+      const trilhaComProfissao = { ...trilha, Profissao_Pericia: prof };
+      if (modoVersatilidade) {
+        selecionarVersatilidade(trilhaComProfissao);
+      } else {
+        selecionarTrilha(trilhaComProfissao);
+      }
+      setEscolhendoProfissaoMuambeiro(null);
+      onClose();
     };
 
     const prosseguirEscolhaLamina = (trilha: Trilha, elemento: string) => {
@@ -386,7 +407,25 @@ export function ModalTrilhas({
                           
                           const isEscolhendoLamina = escolhendoElementoLamina === trilha.Codigo_Trilha;
                           const isEscolhendoAgente = escolhendoPericiaAgenteSecreto === trilha.Codigo_Trilha;
+                          const isEscolhendoMuambeiro = escolhendoProfissaoMuambeiro === trilha.Codigo_Trilha;
                           
+                          if (isEscolhendoMuambeiro) {
+                            return (
+                              <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800 ml-auto" onClick={e => e.stopPropagation()}>
+                                <span className="text-[10px] text-zinc-500 font-bold uppercase">Profissão:</span>
+                                {['Armeiro', 'Engenheiro', 'Químico'].map(prof => (
+                                  <button
+                                    key={prof}
+                                    onClick={() => prosseguirEscolhaMuambeiro(trilha, prof)}
+                                    className="px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-zinc-700 hover:bg-zinc-800 text-zinc-300"
+                                  >
+                                    {prof}
+                                  </button>
+                                ))}
+                              </div>
+                            );
+                          }
+
                           if (isEscolhendoAgente) {
                             return (
                               <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800 ml-auto" onClick={e => e.stopPropagation()}>
@@ -531,7 +570,25 @@ export function ModalTrilhas({
                           
                           const isEscolhendoLamina = escolhendoElementoLamina === trilha.Codigo_Trilha;
                           const isEscolhendoAgente = escolhendoPericiaAgenteSecreto === trilha.Codigo_Trilha;
+                          const isEscolhendoMuambeiro = escolhendoProfissaoMuambeiro === trilha.Codigo_Trilha;
                           
+                          if (isEscolhendoMuambeiro) {
+                            return (
+                              <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800 ml-auto" onClick={e => e.stopPropagation()}>
+                                <span className="text-[10px] text-zinc-500 font-bold uppercase">Profissão:</span>
+                                {['Armeiro', 'Engenheiro', 'Químico'].map(prof => (
+                                  <button
+                                    key={prof}
+                                    onClick={() => prosseguirEscolhaMuambeiro(trilha, prof)}
+                                    className="px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-zinc-700 hover:bg-zinc-800 text-zinc-300"
+                                  >
+                                    {prof}
+                                  </button>
+                                ))}
+                              </div>
+                            );
+                          }
+
                           if (isEscolhendoAgente) {
                             return (
                               <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800 ml-auto" onClick={e => e.stopPropagation()}>

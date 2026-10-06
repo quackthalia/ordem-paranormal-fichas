@@ -992,6 +992,35 @@ export const AbasPanel: React.FC = () => {
                                             className="px-3 pb-3 pt-1 text-xs text-zinc-400"
                                             dangerouslySetInnerHTML={{ __html: formatarDescricao(descHab) }}
                                           />
+                                          {t.Codigo_Trilha === 21 && nexLvl === 65 && !isVersatilidade && (
+                                            <div className="px-3 pb-3 pt-1 border-t border-zinc-800/80 flex flex-col gap-1.5" onClick={e => e.stopPropagation()}>
+                                              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+                                                Profissão do Laboratório de Campo (65%):
+                                              </span>
+                                              <div className="flex flex-wrap gap-2 items-center">
+                                                {['Armeiro', 'Engenheiro', 'Químico'].map(prof => {
+                                                  const isSelected = poderesExtras['muambeiro_profissao_65'] === prof;
+                                                  return (
+                                                    <button
+                                                      key={prof}
+                                                      type="button"
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setPoderesExtras(prev => ({ ...prev, muambeiro_profissao_65: prof }));
+                                                      }}
+                                                      className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${
+                                                        isSelected 
+                                                          ? 'bg-green-950/60 border-green-600 text-green-300' 
+                                                          : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                                                      }`}
+                                                    >
+                                                      {prof}
+                                                    </button>
+                                                  );
+                                                })}
+                                              </div>
+                                            </div>
+                                          )}
                                         </Collapse>
                                       </div>
                                     );
@@ -1018,12 +1047,27 @@ export const AbasPanel: React.FC = () => {
                                             return n;
                                           });
                                         }
+                                        if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 21) {
+                                          setPoderesExtras(prev => {
+                                            const n = { ...prev };
+                                            delete n.muambeiro_versatilidade_profissao;
+                                            return n;
+                                          });
+                                        }
                                         trilhasHook.setVersatilidadeSelecionada(null);
                                       } else {
                                         if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 17) {
                                           setPoderesExtras(prev => {
                                             const n = { ...prev };
                                             delete n.cacador_ja_tinha_sobrevivencia;
+                                            return n;
+                                          });
+                                        }
+                                        if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 21) {
+                                          setPoderesExtras(prev => {
+                                            const n = { ...prev };
+                                            delete n.muambeiro_profissao_10;
+                                            delete n.muambeiro_profissao_65;
                                             return n;
                                           });
                                         }

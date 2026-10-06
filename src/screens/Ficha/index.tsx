@@ -277,12 +277,16 @@ function AtributosFicha() {
   const [opcoesAbertas, setOpcoesAbertas] = React.useState(false);
   const { 
     atributos, setAtributos, bonusAtributos, setBonusAtributos, bloquearLetras, atributosFinais, 
-    nex, setNex, regras, regrasAtivasAtributos, setRegrasAtivasAtributos, pontosRestantes, alterarAtributo, nivel 
+    nex, setNex, regras, regrasAtivasAtributos, setRegrasAtivasAtributos, pontosRestantes, alterarAtributo, nivel,
+    trilhasHook
   } = useRPG();
   
   const capMaximo = capMaximoAtributo(nivel);
 
   const renderAtributo = (nome, posClasses) => {
+    const bonusTrilhaInt = (nome === 'INT' && trilhasHook.trilhaSelecionada?.Codigo_Trilha === 19 && (regras['nex_experiencia'] ? nivel >= 20 : nex >= 99)) ? 1 : 0;
+    const isGreen = atributosFinais[nome] > (atributos[nome] + bonusAtributos[nome] + bonusTrilhaInt);
+
     return (
       <div key={nome} className={`absolute flex flex-col items-center justify-center ${posClasses}`}>
           <div className="absolute -right-3 -top-3 flex h-5 w-5 items-center justify-center rounded-full border border-amber-500 bg-zinc-950 shadow-md z-10" title="Bônus temporário">
@@ -332,7 +336,7 @@ function AtributosFicha() {
                 }
               }
             }}
-            className={`relative z-0 w-16 bg-transparent text-center text-[2rem] font-black outline-none ${atributosFinais[nome] > (atributos[nome] + bonusAtributos[nome]) ? 'text-green-500' : 'text-zinc-100'}`}
+            className={`relative z-0 w-16 bg-transparent text-center text-[2rem] font-black outline-none ${isGreen ? 'text-green-500' : 'text-zinc-100'}`}
           />
       </div>
     );

@@ -12,8 +12,13 @@ export const BonusCondicionaisPanel: React.FC = () => {
     jaTinhaPericiaVersatilidade,
     jaTinhaProfissaoTrilha,
     trilhaProfissaoConcedida,
-    trilhasHook
+    trilhasHook,
+    regras,
+    nivel,
+    nex
   } = useRPG();
+
+  const temPerseverante40 = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 20 && (regras['nex_experiencia'] ? nivel >= 8 : nex >= 40);
 
   return (
     <div className="flex flex-col rounded-md border border-zinc-700 bg-zinc-900 shadow-xl overflow-hidden ">
@@ -42,6 +47,12 @@ export const BonusCondicionaisPanel: React.FC = () => {
                   <span>-1d20 em testes de Percepção para ouvir</span>
                 </div>
               </>
+            )}
+            {temPerseverante40 && (
+              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                <span>+1d20 em teste para fugir de um inimigo (Perseverante)</span>
+              </div>
             )}
             
             {bonusDadosCondicionais.split('\n').filter(s => s.trim() !== '').map((bonus, idx) => (

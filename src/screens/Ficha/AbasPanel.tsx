@@ -173,7 +173,7 @@ export const AbasPanel: React.FC = () => {
     rituaisExpandidos, setRituaisExpandidos,
     versaoRitual, setVersaoRitual,
     elementoRitual, setElementoRitual,
-    status, trilhasHook, periciasHook, poderesExtras,
+    status, trilhasHook, periciasHook, poderesExtras, setPoderesExtras,
   } = useRPG();
 
   const [escolhendoRitualPlaceholder, setEscolhendoRitualPlaceholder] = React.useState<{ origem: string, nex?: number } | null>(null);
@@ -1008,7 +1008,28 @@ export const AbasPanel: React.FC = () => {
                                         className="text-xs px-3 py-1.5 rounded bg-zinc-900 border border-zinc-700 hover:border-yellow-700 hover:bg-yellow-900/20 text-zinc-300 hover:text-yellow-400 transition-colors"
                                       >Editar</button>
                                     )}
-                                    <button onClick={(e) => { e.stopPropagation(); isVersatilidade ? trilhasHook.setVersatilidadeSelecionada(null) : trilhasHook.setTrilhaSelecionada(null); }}
+                                    <button onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (isVersatilidade) {
+                                        if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 17) {
+                                          setPoderesExtras(prev => {
+                                            const n = { ...prev };
+                                            delete n.cacador_versatilidade_ja_tinha_sobrevivencia;
+                                            return n;
+                                          });
+                                        }
+                                        trilhasHook.setVersatilidadeSelecionada(null);
+                                      } else {
+                                        if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 17) {
+                                          setPoderesExtras(prev => {
+                                            const n = { ...prev };
+                                            delete n.cacador_ja_tinha_sobrevivencia;
+                                            return n;
+                                          });
+                                        }
+                                        trilhasHook.setTrilhaSelecionada(null);
+                                      }
+                                    }}
                                       className="text-xs text-green-500 hover:text-green-400 bg-green-950/30 hover:bg-green-900/50 px-3 py-1.5 rounded border border-green-900/50 transition-colors"
                                     >Remover</button>
                                   </div>

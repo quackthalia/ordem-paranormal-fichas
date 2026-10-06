@@ -85,7 +85,7 @@ export const BonusCondicionaisPanel: React.FC = () => {
                 <span>+1d20 em testes de Profissão (Faz-Tudo)</span>
               </div>
             )}
-            {trilhasHook.trilhaSelecionada && jaTinhaPericiaTrilha && (
+            {trilhasHook.trilhaSelecionada && jaTinhaPericiaTrilha && trilhasHook.trilhaSelecionada.Codigo_Trilha !== 16 && trilhasHook.trilhaSelecionada.Codigo_Trilha !== 17 && (
               <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
                 <span className="text-green-500 font-bold mt-[-1px]">•</span>
                 <span>+1d20 em testes de {trilhasHook.trilhaSelecionada.nome_pericia} ({trilhasHook.trilhaSelecionada.Nome_Trilha})</span>
@@ -96,6 +96,43 @@ export const BonusCondicionaisPanel: React.FC = () => {
                 <span className="text-green-500 font-bold mt-[-1px]">•</span>
                 <span>+1d20 em testes de Profissão ({trilhasHook.trilhaSelecionada.Profissao_Pericia}) ({trilhasHook.trilhaSelecionada.Nome_Trilha})</span>
               </div>
+            )}
+            {/* Trilha 16 - Agente Secreto */}
+            {trilhasHook.trilhaSelecionada?.Codigo_Trilha === 16 && jaTinhaPericiaTrilha && poderesExtras['agente_secreto_pericia'] && (
+              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                <span>+2 em {poderesExtras['agente_secreto_pericia']} (Identidade Secreta)</span>
+              </div>
+            )}
+            {trilhasHook.trilhaSelecionada?.Codigo_Trilha === 16 && (regras['nex_experiencia'] ? nivel >= 8 : nex >= 40) && (
+              <>
+                <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                  <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                  <span>+2 em Diplomacia (Impostor)</span>
+                </div>
+                <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                  <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                  <span>+2 em Enganação (Impostor)</span>
+                </div>
+              </>
+            )}
+
+            {/* Trilha 17 - Caçador */}
+            {((trilhasHook.trilhaSelecionada?.Codigo_Trilha === 17 && (regras['nex_experiencia'] ? nivel >= 2 : nex >= 10)) ||
+              (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 17 && (regras['nex_experiencia'] ? nivel >= 10 : nex >= 50))) && (
+              <>
+                {((trilhasHook.trilhaSelecionada?.Codigo_Trilha === 17 && jaTinhaPericiaTrilha) ||
+                  (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 17 && jaTinhaPericiaVersatilidade)) && (
+                  <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                    <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                    <span>+2 em Sobrevivência (Rastrear o Paranormal)</span>
+                  </div>
+                )}
+                <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                  <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                  <span>Pode usar Sobrevivência no lugar de Ocultismo para identificar criaturas, e no lugar de Investigação e Percepção para rastros, pistas e criaturas paranormais (Rastrear o Paranormal)</span>
+                </div>
+              </>
             )}
             {regrasAutomaticasAtivas.has(9) && (
               <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">

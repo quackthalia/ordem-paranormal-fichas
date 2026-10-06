@@ -31,7 +31,7 @@ export function ModalTrilhas({
     return () => { document.body.style.overflow = 'unset'; };
   }, []);
 
-  const { classe, trilhasHook, regras, armasHook, poderesExtras, setPoderesExtras, rituaisHook } = useRPG();
+  const { classe, trilhasHook, regras, armasHook, poderesExtras, setPoderesExtras, rituaisHook, periciasHook, periciasGratisSemTrilha } = useRPG();
   const {
     trilhas,
     loading,
@@ -102,6 +102,15 @@ export function ModalTrilhas({
     if (trilha.Codigo_Trilha === 16) {
       setEscolhendoPericiaAgenteSecreto(trilha.Codigo_Trilha);
       return;
+    }
+
+    if (trilha.Codigo_Trilha === 17) {
+      const jaTinha = (periciasHook.pericias['Sobrevivência']?.treino || 0) >= 5 || periciasGratisSemTrilha.includes('Sobrevivência');
+      if (modoVersatilidade) {
+        setPoderesExtras(prev => ({ ...prev, cacador_versatilidade_ja_tinha_sobrevivencia: String(jaTinha) }));
+      } else {
+        setPoderesExtras(prev => ({ ...prev, cacador_ja_tinha_sobrevivencia: String(jaTinha) }));
+      }
     }
 
     if (trilha.Codigo_Trilha === 15) {

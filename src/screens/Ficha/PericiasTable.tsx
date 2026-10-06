@@ -75,6 +75,10 @@ const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setPro
             );
           })()}
           
+          <span className={`w-14 text-center font-bold text-sm ${COR_TREINO[prof.treino] ?? 'text-zinc-400'}`}>
+            ( {prof.treino + (prof.outros || 0)} )
+          </span>
+
           <CustomSelect
             value={String(prof.treino)}
             onChange={val => {

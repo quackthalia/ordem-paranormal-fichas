@@ -87,6 +87,16 @@ export function ModalTrilhas({
         return "Requisito: Ter pelo menos uma arma no inventário";
       }
     }
+    if (trilha.Codigo_Trilha === 21) {
+      const opcoesMuambeiro = ['armeiro', 'engenheiro', 'químico'];
+      const profissoesTreinadas = (periciasHook.profissoes || [])
+        .filter(p => p.treino >= 5)
+        .map(p => (p.nome || '').trim().toLowerCase());
+      const temTodas = opcoesMuambeiro.every(opt => profissoesTreinadas.includes(opt));
+      if (temTodas) {
+        return "Requisito: Você já possui treinamento em Armeiro, Engenheiro e Químico";
+      }
+    }
     return null;
   };
 
@@ -410,18 +420,31 @@ export function ModalTrilhas({
                           const isEscolhendoMuambeiro = escolhendoProfissaoMuambeiro === trilha.Codigo_Trilha;
                           
                           if (isEscolhendoMuambeiro) {
+                            const profissoesTreinadas = (periciasHook.profissoes || [])
+                              .filter(p => p.treino >= 5)
+                              .map(p => (p.nome || '').trim().toLowerCase());
+
                             return (
                               <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800 ml-auto" onClick={e => e.stopPropagation()}>
                                 <span className="text-[10px] text-zinc-500 font-bold uppercase">Profissão:</span>
-                                {['Armeiro', 'Engenheiro', 'Químico'].map(prof => (
-                                  <button
-                                    key={prof}
-                                    onClick={() => prosseguirEscolhaMuambeiro(trilha, prof)}
-                                    className="px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-zinc-700 hover:bg-zinc-800 text-zinc-300"
-                                  >
-                                    {prof}
-                                  </button>
-                                ))}
+                                {['Armeiro', 'Engenheiro', 'Químico'].map(prof => {
+                                  const jaTem = profissoesTreinadas.includes(prof.toLowerCase());
+                                  return (
+                                    <button
+                                      key={prof}
+                                      disabled={jaTem}
+                                      onClick={() => prosseguirEscolhaMuambeiro(trilha, prof)}
+                                      className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border transition ${
+                                        jaTem
+                                          ? 'border-zinc-800 bg-zinc-900/50 text-zinc-600 cursor-not-allowed opacity-50'
+                                          : 'border-zinc-700 hover:bg-zinc-800 text-zinc-300'
+                                      }`}
+                                      title={jaTem ? `Você já é treinado em ${prof}` : undefined}
+                                    >
+                                      {prof}
+                                    </button>
+                                  );
+                                })}
                               </div>
                             );
                           }
@@ -573,18 +596,31 @@ export function ModalTrilhas({
                           const isEscolhendoMuambeiro = escolhendoProfissaoMuambeiro === trilha.Codigo_Trilha;
                           
                           if (isEscolhendoMuambeiro) {
+                            const profissoesTreinadas = (periciasHook.profissoes || [])
+                              .filter(p => p.treino >= 5)
+                              .map(p => (p.nome || '').trim().toLowerCase());
+
                             return (
                               <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800 ml-auto" onClick={e => e.stopPropagation()}>
                                 <span className="text-[10px] text-zinc-500 font-bold uppercase">Profissão:</span>
-                                {['Armeiro', 'Engenheiro', 'Químico'].map(prof => (
-                                  <button
-                                    key={prof}
-                                    onClick={() => prosseguirEscolhaMuambeiro(trilha, prof)}
-                                    className="px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-zinc-700 hover:bg-zinc-800 text-zinc-300"
-                                  >
-                                    {prof}
-                                  </button>
-                                ))}
+                                {['Armeiro', 'Engenheiro', 'Químico'].map(prof => {
+                                  const jaTem = profissoesTreinadas.includes(prof.toLowerCase());
+                                  return (
+                                    <button
+                                      key={prof}
+                                      disabled={jaTem}
+                                      onClick={() => prosseguirEscolhaMuambeiro(trilha, prof)}
+                                      className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border transition ${
+                                        jaTem
+                                          ? 'border-zinc-800 bg-zinc-900/50 text-zinc-600 cursor-not-allowed opacity-50'
+                                          : 'border-zinc-700 hover:bg-zinc-800 text-zinc-300'
+                                      }`}
+                                      title={jaTem ? `Você já é treinado em ${prof}` : undefined}
+                                    >
+                                      {prof}
+                                    </button>
+                                  );
+                                })}
                               </div>
                             );
                           }

@@ -210,6 +210,7 @@ export const AbasPanel: React.FC = () => {
 
   const { afinidadeEscolhida, afinidadeAtiva, nivel, regrasAutomaticasAtivas, armasHook } = useRPG();
   const effectiveNex = regras['nex_experiencia'] ? (nivel * 5) : nex;
+  const isLamina = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
 
   React.useEffect(() => {
     setRituaisExpandidos([]);
@@ -1389,8 +1390,6 @@ export const AbasPanel: React.FC = () => {
               }
             }
           }
-
-          const isLamina = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
 
           // 3. Desbloqueio Cronológico por Círculo
           const allRitualSlots = [...slotsPoderPendentesList, ...slotsOcultistaPendentesList, ...slotsOrigemPendentesList, ...slotsRegra61PendentesList, ...slotsRegra62PendentesList, ...slotsGraduadoPendentesList];

@@ -523,8 +523,8 @@ const atributosFinais = useMemo(() => {
   const periciasGratis = useMemo(() => {
     const list = [...periciasGratisSemTrilha];
 
-    // Trilha Selecionada (Trilha principal dá a perícia da trilha por padrão; Muambeiro não dá a genérica Profissão)
-    if (trilhasHook.trilhaSelecionada && trilhasHook.trilhaSelecionada.nome_pericia && trilhasHook.trilhaSelecionada.Codigo_Trilha !== 21) {
+    // Trilha Selecionada (Trilha principal dá a perícia da trilha por padrão)
+    if (trilhasHook.trilhaSelecionada && trilhasHook.trilhaSelecionada.nome_pericia) {
       list.push(trilhasHook.trilhaSelecionada.nome_pericia);
     }
     if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 16 && poderesExtras['agente_secreto_pericia']) {
@@ -540,7 +540,7 @@ const atributosFinais = useMemo(() => {
       if (temExorcistaVersatilidade && !jaTinhaReligiaoVersatilidade) {
         list.push('Religião');
       }
-    } else if (trilhasHook.versatilidadeSelecionada && trilhasHook.versatilidadeSelecionada.nome_pericia && trilhasHook.versatilidadeSelecionada.Codigo_Trilha !== 21) {
+    } else if (trilhasHook.versatilidadeSelecionada && trilhasHook.versatilidadeSelecionada.nome_pericia) {
       list.push(trilhasHook.versatilidadeSelecionada.nome_pericia);
     }
     if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 16 && poderesExtras['agente_secreto_pericia_versatilidade']) {

@@ -139,6 +139,57 @@ export interface LimiteCirculos {
   c4: number;
 }
 
+export interface Ritual {
+  Codigo_Ritual: number;
+  Nome_Ritual: string;
+  Descricao_Ritual: string;
+  Elemento_Ritual: string;
+  Circulo_Ritual: number;
+  PE_Ritual: string;
+  Execucao_Ritual: string;
+  Alcance_Ritual: string;
+  Area_Ritual: string;
+  Alvo_Ritual: string;
+  Duracao_Ritual: string;
+  Efeito_Ritual: string;
+  Resistencia_Ritual: string;
+  Dados_Ritual: string;
+  Tem_Discente: boolean;
+  Tem_Verdadeiro: boolean;
+  Imagem?: string;
+  Requisito_Discente?: string;
+  Requisito_Verdadeiro?: string;
+}
+
+export interface RitualCustomProps {
+  Execucao_Ritual?: string;
+  Alcance_Ritual?: string;
+  Area_Ritual?: string;
+  Alvo_Ritual?: string;
+  Duracao_Ritual?: string;
+  Efeito_Ritual?: string;
+  Resistencia_Ritual?: string;
+  Dados_Ritual?: string;
+  PE_Ritual?: string;
+  Elemento_Ritual?: string;
+}
+
+export interface RitualAprendido {
+  codigo_ritual: number;
+  origem: string;
+  nome?: string;
+  circulo?: number;
+  elemento?: string;
+  elemento_escolhido?: string;
+  customNome?: string;
+  customDesc?: string;
+  customProps?: {
+    normal?: RitualCustomProps;
+    discente?: RitualCustomProps;
+    verdadeiro?: RitualCustomProps;
+  };
+}
+
 export interface Trilha {
   Codigo_Trilha: number;
   Classe_Trilha: string;
@@ -201,7 +252,6 @@ export interface Arma {
   Elemento_Arma?: string | null;
   Especial_Arma?: string | null;
   isAmaldicoada?: boolean;
-  isDuplaObsessivaLinked?: boolean;
 }
 
 export interface ArmaInventario {

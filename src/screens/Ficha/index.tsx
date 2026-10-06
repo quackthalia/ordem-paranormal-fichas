@@ -147,8 +147,22 @@ export const FichaScreen: React.FC = () => {
              verdadeiro: { ...(existingProps.verdadeiro || {}), Execucao_Ritual: 'Movimento (+1 PE)' }
          });
        }
-    } else if (!temLamina10 && jaTemAmaldicoarArmaTrilha) {
-      rituaisHook.esquecerRitual('trilha_lamina_paranormal');
+    } else if (!temLamina10) {
+      if (jaTemAmaldicoarArmaTrilha) {
+        rituaisHook.esquecerRitual('trilha_lamina_paranormal');
+      }
+      if (jaTemAmaldicoarArmaNormal && jaTemAmaldicoarArmaNormal.customProps?.normal?.Execucao_Ritual?.includes('Movimento')) {
+        const existingProps = jaTemAmaldicoarArmaNormal.customProps || {};
+        const { Execucao_Ritual: _e1, ...normalRest } = existingProps.normal || {};
+        const { Execucao_Ritual: _e2, ...discenteRest } = existingProps.discente || {};
+        const { Execucao_Ritual: _e3, ...verdadeiroRest } = existingProps.verdadeiro || {};
+        rituaisHook.editarRitual(jaTemAmaldicoarArmaNormal.origem, jaTemAmaldicoarArmaNormal.customNome, jaTemAmaldicoarArmaNormal.customDesc, {
+          ...existingProps,
+          normal: normalRest,
+          discente: discenteRest,
+          verdadeiro: verdadeiroRest
+        });
+      }
     }
 
     const temLamina99 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 20 : effectiveNex >= 99)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));

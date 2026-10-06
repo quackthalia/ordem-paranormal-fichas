@@ -1390,6 +1390,8 @@ export const AbasPanel: React.FC = () => {
             }
           }
 
+          const isLamina = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
+
           // 3. Desbloqueio Cronológico por Círculo
           const allRitualSlots = [...slotsPoderPendentesList, ...slotsOcultistaPendentesList, ...slotsOrigemPendentesList, ...slotsRegra61PendentesList, ...slotsRegra62PendentesList, ...slotsGraduadoPendentesList];
           const sortedSlots = allRitualSlots.sort((a, b) => {
@@ -1942,34 +1944,54 @@ export const AbasPanel: React.FC = () => {
                                     }}
                                     className="rounded bg-zinc-800 border border-zinc-700 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-zinc-300 transition hover:bg-zinc-700 hover:text-zinc-100"
                                   >Editar</button>
-                                  {ritual.Origem !== 'trilha_conduite' && ritual.Origem !== 'trilha_flagelador' && ritual.Origem !== 'trilha_graduado' && (
-    <button
-      onClick={(e) => {
-        e.stopPropagation();
-        if (ritual.Origem.startsWith('poder_57_')) {
-                                        const nivel = parseInt(ritual.Origem.replace('poder_57_', '').replace('combate_', ''), 10);
-                                        const poderExistente = poderesEscolhidos[nivel];
-                                        if (poderExistente && poderExistente.nome.toLowerCase().startsWith('aprender ritual (')) {
-                                          const ppBase = poderesParanormais.find(p => p.Nome.toLowerCase() === 'aprender ritual');
-                                          if (ppBase) {
-                                            poderesHook.escolherPoder(nivel, {
-                                              codigo_poder: 57,
-                                              Nome: 'Aprender Ritual',
-                                              Descricao: ppBase?.Descricao || '',
-                                              PreRequisitos: ppBase?.PreRequisitos || '',
-                                              Afinidade: ppBase?.Afinidade,
-                                              Elemento: ppBase?.Elemento,
-                                              Fonte: ppBase?.Fonte,
-                                              PreRequisitosAfinidade: ppBase?.PreRequisitosAfinidade
-                                            } as any);
+                                  {!ritual.Origem.startsWith('trilha_') && (
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (ritual.Origem.startsWith('poder_57_')) {
+                                          const nivel = parseInt(ritual.Origem.replace('poder_57_', '').replace('combate_', ''), 10);
+                                          const poderExistente = poderesEscolhidos[nivel];
+                                          if (poderExistente && poderExistente.nome.toLowerCase().startsWith('aprender ritual (')) {
+                                            const ppBase = poderesParanormais.find(p => p.Nome.toLowerCase() === 'aprender ritual');
+                                            if (ppBase) {
+                                              poderesHook.escolherPoder(nivel, {
+                                                codigo_poder: 57,
+                                                Nome: 'Aprender Ritual',
+                                                Descricao: ppBase?.Descricao || '',
+                                                PreRequisitos: ppBase?.PreRequisitos || '',
+                                                Afinidade: ppBase?.Afinidade,
+                                                Elemento: ppBase?.Elemento,
+                                                Fonte: ppBase?.Fonte,
+                                                PreRequisitosAfinidade: ppBase?.PreRequisitosAfinidade
+                                              } as any);
+                                            }
                                           }
                                         }
-                                      }
-                                      rituaisHook.esquecerRitual(ritual.Origem);
-                                    }}
-                                    className="rounded bg-green-900/30 border border-green-800 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-green-500 transition hover:bg-green-900/50 hover:text-green-400"
-    >Remover</button>
-  )}
+
+                                        if (Number(ritual.Codigo_Ritual) === 3 && isLamina) {
+                                          const baseRitual = (rituaisHook.rituais || []).find(r => Number(r.Codigo_Ritual) === 3);
+                                          if (baseRitual) {
+                                            const elementoEscolhido = poderesExtras.lamina_elemento || ritual.ElementoEscolhidoPermanente || ritual.Elemento_Ritual || 'Sangue';
+                                            rituaisHook.atualizarRituaisAprendidos(prev => [
+                                              ...prev.filter(r => r.origem !== ritual.Origem && r.origem !== 'trilha_lamina_paranormal'),
+                                              {
+                                                codigo_ritual: 3,
+                                                nome: `${baseRitual.Nome_Ritual} (Lâmina Paranormal)`,
+                                                origem: 'trilha_lamina_paranormal',
+                                                circulo: baseRitual.Circulo_Ritual,
+                                                elemento: baseRitual.Elemento_Ritual,
+                                                elemento_escolhido: elementoEscolhido
+                                              }
+                                            ]);
+                                            return;
+                                          }
+                                        }
+
+                                        rituaisHook.esquecerRitual(ritual.Origem);
+                                      }}
+                                      className="rounded bg-green-900/30 border border-green-800 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-green-500 transition hover:bg-green-900/50 hover:text-green-400"
+                                    >Remover</button>
+                                  )}
                                 </div>
 
                               </div>
@@ -2031,7 +2053,6 @@ export const AbasPanel: React.FC = () => {
 
       {/* Informações de restrição para Lâmina Paranormal */}
       {(() => {
-        const isLamina = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 15) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 15);
         const amaldicoarExistente = (rituaisHook.rituaisAprendidos || []).find((r: any) => Number(r.codigo_ritual) === 3);
         const elementoLaminaRestrito = poderesExtras.lamina_elemento || amaldicoarExistente?.elemento_escolhido || amaldicoarExistente?.customProps?.normal?.Elemento_Ritual;
         const elementosPermitidosMap: Record<number, string[]> = {};

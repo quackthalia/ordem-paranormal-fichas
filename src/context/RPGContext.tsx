@@ -489,10 +489,20 @@ const atributosFinais = useMemo(() => {
     return gratis;
   }, [classe, skillCombatente1, skillCombatente2, origensHook.origemSelecionada]);
 
+  const jaTinhaSobrevivenciaVersatilidade = useMemo(() => {
+    if (periciasGratisSemTrilha.includes('Sobrevivência')) return true;
+    if (poderesExtras['cacador_versatilidade_ja_tinha_sobrevivencia'] !== undefined) {
+      return poderesExtras['cacador_versatilidade_ja_tinha_sobrevivencia'] === 'true';
+    }
+    return false;
+  }, [poderesExtras, periciasGratisSemTrilha]);
+
+  const temCacadorVersatilidade = (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 17 && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
+
   const periciasGratis = useMemo(() => {
     const list = [...periciasGratisSemTrilha];
 
-    // Trilha Selecionada
+    // Trilha Selecionada (Trilha principal dá a perícia da trilha por padrão)
     if (trilhasHook.trilhaSelecionada && trilhasHook.trilhaSelecionada.nome_pericia) {
       list.push(trilhasHook.trilhaSelecionada.nome_pericia);
     }
@@ -500,8 +510,12 @@ const atributosFinais = useMemo(() => {
       list.push(poderesExtras['agente_secreto_pericia']);
     }
 
-    // Versatilidade Selecionada
-    if (trilhasHook.versatilidadeSelecionada && trilhasHook.versatilidadeSelecionada.nome_pericia) {
+    // Versatilidade Selecionada (não dá a perícia da trilha por padrão; para Caçador, dá treino apenas se não tiver Sobrevivência)
+    if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 17) {
+      if (temCacadorVersatilidade && !jaTinhaSobrevivenciaVersatilidade) {
+        list.push('Sobrevivência');
+      }
+    } else if (trilhasHook.versatilidadeSelecionada && trilhasHook.versatilidadeSelecionada.nome_pericia) {
       list.push(trilhasHook.versatilidadeSelecionada.nome_pericia);
     }
     if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 16 && poderesExtras['agente_secreto_pericia_versatilidade']) {
@@ -513,7 +527,9 @@ const atributosFinais = useMemo(() => {
     periciasGratisSemTrilha, 
     trilhasHook.trilhaSelecionada, 
     trilhasHook.versatilidadeSelecionada, 
-    poderesExtras
+    poderesExtras,
+    temCacadorVersatilidade,
+    jaTinhaSobrevivenciaVersatilidade
   ]);
 
   const jaTinhaPericiaTrilha = useMemo(() => {
@@ -531,9 +547,12 @@ const atributosFinais = useMemo(() => {
     if (trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 16 && poderesExtras['agente_secreto_pericia_versatilidade']) {
       return periciasGratisSemTrilha.includes(poderesExtras['agente_secreto_pericia_versatilidade']);
     }
+    // Para Versatilidade em Caçador: não dá a perícia da trilha por padrão, então não gera o +1d20 de duplicata de trilha
+    if (trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 17) {
+      return false;
+    }
     if (!trilhasHook.versatilidadeSelecionada.nome_pericia) return false;
-    return periciasGratisSemTrilha.includes(trilhasHook.versatilidadeSelecionada.nome_pericia) ||
-      (trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 17 && poderesExtras['cacador_versatilidade_ja_tinha_sobrevivencia'] === 'true');
+    return periciasGratisSemTrilha.includes(trilhasHook.versatilidadeSelecionada.nome_pericia);
   }, [periciasGratisSemTrilha, trilhasHook.versatilidadeSelecionada, poderesExtras]);
 
   const veteranasGratis = useMemo(() => {
@@ -577,11 +596,15 @@ const atributosFinais = useMemo(() => {
          }
          }
 
-                  // Trilha 17 (Caçador) - NEX 10%
+                  // Trilha 17 (Caçador)
          const temCacador10 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 17 && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10));
-         const temCacadorVersatilidade = (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 17 && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
 
-         if (temCacador10 || temCacadorVersatilidade) {
+         // Na Trilha Principal: Como Caçador já dá Sobrevivência por padrão, a habilidade de 10% dá o +2 automaticamente
+         if (temCacador10) {
+            comb['Sobrevivência'] = (comb['Sobrevivência'] || 0) + 2;
+         }
+         // Na Versatilidade: Só dá o +2 se já tiver Sobrevivência (se não tiver, ganha treino em periciasGratis)
+         if (temCacadorVersatilidade && jaTinhaSobrevivenciaVersatilidade) {
             comb['Sobrevivência'] = (comb['Sobrevivência'] || 0) + 2;
          }
          

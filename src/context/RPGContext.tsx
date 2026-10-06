@@ -385,13 +385,19 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     return Math.min(20, finalNivel);
   }, [nivel, regrasAutomaticasAtivas]);
 
-const atributosBaseComBonus = useMemo(() => {
+  const temBibliotecario99 = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 19 && (regras['nex_experiencia'] ? effectiveNivel >= 20 : effectiveNex >= 99);
+
+  const atributosBaseComBonus = useMemo(() => {
     const obj = { ...atributos };
     (Object.keys(obj) as AtributoKey[]).forEach(k => {
       obj[k] += bonusAtributos[k] + (bonusMaldicoes.atributos[k] || 0);
     });
+    // Trilha 19 (Bibliotecário) 99%: O Intelecto aumenta em +1
+    if (temBibliotecario99) {
+      obj.INT += 1;
+    }
     return obj;
-  }, [atributos, bonusAtributos]);
+  }, [atributos, bonusAtributos, bonusMaldicoes, temBibliotecario99]);
 
   const temCascaGrossa = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 5 && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 5 && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
   const bonusPvTrilha5 = temCascaGrossa ? effectiveNivel : 0;
@@ -399,7 +405,10 @@ const atributosBaseComBonus = useMemo(() => {
   const temIntuitivo40 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 14 && (regras['nex_experiencia'] ? effectiveNivel >= 8 : effectiveNex >= 40));
   const bonusPeTurnoTrilha14 = temIntuitivo40 ? atributosBaseComBonus.PRE : 0;
 
-  const status = useStatus(classe, effectiveNex, effectiveNivel, atributosBaseComBonus, paranormalPenalty, regrasAutomaticasAtivas, bonusVestimentas.pv + bonusMaldicoes.pv + bonusPvTrilha5, bonusVestimentas.pe + bonusMaldicoes.pe, bonusPeTurnoTrilha14);
+  // Trilha 19 (Bibliotecário) 99%: soma o valor de Intelecto em seu total de PE
+  const bonusPeTrilha19 = temBibliotecario99 ? atributosBaseComBonus.INT : 0;
+
+  const status = useStatus(classe, effectiveNex, effectiveNivel, atributosBaseComBonus, paranormalPenalty, regrasAutomaticasAtivas, bonusVestimentas.pv + bonusMaldicoes.pv + bonusPvTrilha5, bonusVestimentas.pe + bonusMaldicoes.pe + bonusPeTrilha19, bonusPeTurnoTrilha14);
 
   
     // Controle para evitar que o PE temporário do Agente de Nascença fique voltando infinitamente

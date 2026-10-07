@@ -190,6 +190,7 @@ export const AbasPanel: React.FC = () => {
   const [modalPoderOutraOrigemAberto, setModalPoderOutraOrigemAberto] = React.useState(false);
   const [categoriaDiletante, setCategoriaDiletante] = React.useState<'combate' | 'utilidade' | 'gerais'>('gerais');
   const [modalTrilhaExtraAberto, setModalTrilhaExtraAberto] = React.useState(false);
+  const [modalTrilhaPossuido65Aberto, setModalTrilhaPossuido65Aberto] = React.useState(false);
   const [filtroRituais, setFiltroRituais] = React.useState('');
   const [subAbaRituais, setSubAbaRituais] = React.useState<'rituais' | 'grimorio'>('rituais');
   const [editandoTrilha, setEditandoTrilha] = React.useState(false);
@@ -1088,16 +1089,16 @@ export const AbasPanel: React.FC = () => {
                                                 </div>
                                               </div>
                                             )}
-                                            {t.Codigo_Trilha === 23 && nexLvl === 99 && pp?.Afinidade && (
+                                            {t.Codigo_Trilha === 23 && nexLvl === 99 && afinidadeEscolhida && (
                                               <div className="px-3 pb-3 pt-1 border-t border-zinc-800/80 flex flex-col gap-1.5" onClick={e => e.stopPropagation()}>
                                                 <span className="text-[10px] font-bold uppercase tracking-wider text-green-500">
                                                   Presente da Afinidade:
                                                 </span>
                                                 <p className="text-xs text-zinc-300">
-                                                  {pp.Afinidade === 'Sangue' && 'Poder de código 204: Presente da Obsessão (Sangue) — Uma vez por rodada, você pode gastar 6 PE para recuperar 50 PV. Quando faz isso, até o início do seu próximo turno, os bônus por treinamento em suas perícias baseadas em Força e Vigor, e em Intimidação, mudam para +35. As demais perícias baseadas em Presença mudam para –10. Você pode ativar esse poder mesmo inconsciente.'}
-                                                   {pp.Afinidade === 'Morte' && 'Poder de código 205: Presente do Tempo (Morte) — Uma vez por rodada, você pode gastar 6 PE para receber um turno adicional na última contagem de iniciativa da rodada. Você pode ativar essa habilidade mesmo inconsciente.'}
-                                                   {pp.Afinidade === 'Conhecimento' && 'Poder de código 206: Presente do Saber (Conhecimento) — Uma vez por cena, você pode gastar 6 PE para reescrever uma fração de seu próprio ser. Você recebe um poder qualquer até o fim da cena. Você deve cumprir os pré-requisitos do poder escolhido, e não pode escolher poderes de trilha de NEX 99%. A cada vez que usa este poder, você deve fazer um teste de Vontade (DT 15 + 5 para cada vez que usou este poder na mesma missão). Se falhar, perde 1d6 pontos de Sanidade para cada vez que usou esse poder nesta missão.'}
-                                                   {pp.Afinidade === 'Energia' && 'Poder de código 207: Presente do Espaço (Energia) — Uma vez por rodada, você pode gastar 6 PE para se teletransportar para outro ponto em alcance médio. Você não precisa conhecer o local para onde vai nem precisa vê-lo, mas se teletransportar-se para um espaço ocupado vai ser arremessado para o espaço disponível mais próximo.'}
+                                                  {afinidadeEscolhida.toLowerCase() === 'sangue' && 'Poder de código 204: Presente da Obsessão (Sangue) — Uma vez por rodada, você pode gastar 6 PE para recuperar 50 PV. Quando faz isso, até o início do seu próximo turno, os bônus por treinamento em suas perícias baseadas em Força e Vigor, e em Intimidação, mudam para +35. As demais perícias baseadas em Presença mudam para –10. Você pode ativar esse poder mesmo inconsciente.'}
+                                                   {afinidadeEscolhida.toLowerCase() === 'morte' && 'Poder de código 205: Presente do Tempo (Morte) — Uma vez por rodada, você pode gastar 6 PE para receber um turno adicional na última contagem de iniciativa da rodada. Você pode ativar essa habilidade mesmo inconsciente.'}
+                                                   {afinidadeEscolhida.toLowerCase() === 'conhecimento' && 'Poder de código 206: Presente do Saber (Conhecimento) — Uma vez por cena, você pode gastar 6 PE para reescrever uma fração de seu próprio ser. Você recebe um poder qualquer até o fim da cena. Você deve cumprir os pré-requisitos do poder escolhido, e não pode escolher poderes de trilha de NEX 99%. A cada vez que usa este poder, você deve fazer um teste de Vontade (DT 15 + 5 para cada vez que usou este poder na mesma missão). Se falhar, perde 1d6 pontos de Sanidade para cada vez que usou esse poder nesta missão.'}
+                                                   {afinidadeEscolhida.toLowerCase() === 'energia' && 'Poder de código 207: Presente do Espaço (Energia) — Uma vez por rodada, você pode gastar 6 PE para se teletransportar para outro ponto em alcance médio. Você não precisa conhecer o local para onde vai nem precisa vê-lo, mas se teletransportar-se para um espaço ocupado vai ser arremessado para o espaço disponível mais próximo.'}
                                                  </p>
                                               </div>
                                             )}

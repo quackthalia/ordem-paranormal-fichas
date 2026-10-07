@@ -311,7 +311,7 @@ export const StatusPanel: React.FC = () => {
             setValorAtual={status.setPpAtual as React.Dispatch<React.SetStateAction<number>>}
             valorMax={ppMax}
             setValorMax={() => {}}
-            alterarStatus={(qtd) => alterarStatus('pp', qtd)}
+            alterarStatus={(qtd) => status.setPpAtual(prev => Math.max(0, Math.min(ppMax, (prev ?? 0) + qtd)))}
             bloquearLetras={bloquearLetras}
           />
         )}

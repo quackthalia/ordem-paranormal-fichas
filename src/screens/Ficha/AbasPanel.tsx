@@ -1029,20 +1029,20 @@ export const AbasPanel: React.FC = () => {
                                                                                    {t.Codigo_Trilha === 23 && nexLvl === 65 && !isVersatilidade && (
                                               <div className="px-3 pb-3 pt-1 border-t border-zinc-800/80 flex flex-col gap-1.5" onClick={e => e.stopPropagation()}>
                                                 <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
-                                                  Opção de 65%:
+                                                  Opï¿½ï¿½o de 65%:
                                                 </span>
                                                 <div className="flex flex-wrap gap-2 items-center">
                                                   <button
                                                     type="button"
                                                     onClick={(e) => { e.stopPropagation(); setPoderesExtras(prev => ({ ...prev, possuido_opcao_65: 'transcender' })); }}
-                                                    className={px-3 py-1 rounded text-xs font-bold uppercase border transition }
+                                                    className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${poderesExtras['possuido_opcao_65'] === 'transcender' ? 'bg-green-950/60 border-green-600 text-green-300' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'}`}
                                                   >
                                                     Transcender
                                                   </button>
                                                   <button
                                                     type="button"
                                                     onClick={(e) => { e.stopPropagation(); setPoderesExtras(prev => ({ ...prev, possuido_opcao_65: 'versatilidade' })); }}
-                                                    className={px-3 py-1 rounded text-xs font-bold uppercase border transition }
+                                                    className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${poderesExtras['possuido_opcao_65'] === 'versatilidade' ? 'bg-green-950/60 border-green-600 text-green-300' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'}`}
                                                   >
                                                     Versatilidade (Ocultista)
                                                   </button>
@@ -1055,10 +1055,10 @@ export const AbasPanel: React.FC = () => {
                                                   Presente da Afinidade:
                                                 </span>
                                                 <p className="text-xs text-zinc-300">
-                                                  {pp.Afinidade === 'Sangue' && 'Uma vez por rodada, você pode gastar 6 PE para recuperar 50 PV. Quando faz isso, até o início do seu próximo turno, os bônus por treinamento em suas perícias baseadas em Força e Vigor, e em Intimidação, mudam para +35. As demais perícias baseadas em Presença mudam para –10. Você pode ativar esse poder mesmo inconsciente.'}
-                                                  {pp.Afinidade === 'Morte' && 'Uma vez por rodada, você pode gastar 6 PE para receber um turno adicional na última contagem de iniciativa da rodada. Você pode ativar essa habilidade mesmo inconsciente.'}
-                                                  {pp.Afinidade === 'Conhecimento' && 'Uma vez por cena, você pode gastar 6 PE para reescrever uma fração de seu próprio ser. Você recebe um poder qualquer até o fim da cena. Você deve cumprir os pré-requisitos do poder escolhido, e não pode escolher poderes de trilha de NEX 99%. A cada vez que usa este poder, você deve fazer um teste de Vontade (DT 15 + 5 para cada vez que usou este poder na mesma missão). Se falhar, perde 1d6 pontos de Sanidade para cada vez que usou esse poder nesta missão.'}
-                                                  {pp.Afinidade === 'Energia' && 'Uma vez por rodada, você pode gastar 6 PE para se teletransportar para outro ponto em alcance médio. Você não precisa conhecer o local para onde vai nem precisa vê-lo, mas se teletransportar-se para um espaço ocupado vai ser arremessado para o espaço disponível mais próximo.'}
+                                                  {pp.Afinidade === 'Sangue' && 'Uma vez por rodada, vocï¿½ pode gastar 6 PE para recuperar 50 PV. Quando faz isso, atï¿½ o inï¿½cio do seu prï¿½ximo turno, os bï¿½nus por treinamento em suas perï¿½cias baseadas em Forï¿½a e Vigor, e em Intimidaï¿½ï¿½o, mudam para +35. As demais perï¿½cias baseadas em Presenï¿½a mudam para ï¿½10. Vocï¿½ pode ativar esse poder mesmo inconsciente.'}
+                                                  {pp.Afinidade === 'Morte' && 'Uma vez por rodada, vocï¿½ pode gastar 6 PE para receber um turno adicional na ï¿½ltima contagem de iniciativa da rodada. Vocï¿½ pode ativar essa habilidade mesmo inconsciente.'}
+                                                  {pp.Afinidade === 'Conhecimento' && 'Uma vez por cena, vocï¿½ pode gastar 6 PE para reescrever uma fraï¿½ï¿½o de seu prï¿½prio ser. Vocï¿½ recebe um poder qualquer atï¿½ o fim da cena. Vocï¿½ deve cumprir os prï¿½-requisitos do poder escolhido, e nï¿½o pode escolher poderes de trilha de NEX 99%. A cada vez que usa este poder, vocï¿½ deve fazer um teste de Vontade (DT 15 + 5 para cada vez que usou este poder na mesma missï¿½o). Se falhar, perde 1d6 pontos de Sanidade para cada vez que usou esse poder nesta missï¿½o.'}
+                                                  {pp.Afinidade === 'Energia' && 'Uma vez por rodada, vocï¿½ pode gastar 6 PE para se teletransportar para outro ponto em alcance mï¿½dio. Vocï¿½ nï¿½o precisa conhecer o local para onde vai nem precisa vï¿½-lo, mas se teletransportar-se para um espaï¿½o ocupado vai ser arremessado para o espaï¿½o disponï¿½vel mais prï¿½ximo.'}
                                                 </p>
                                               </div>
                                             )}

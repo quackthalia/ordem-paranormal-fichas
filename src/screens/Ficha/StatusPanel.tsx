@@ -294,7 +294,7 @@ export const StatusPanel: React.FC = () => {
         {/* PD (Pontos de Determinação) — regra Jogando sem Sanidade */}
         {ppMax > 0 && (
           <BarraStatus
-            titulo="Possess�o"
+            titulo="Possess�o"
             corBarra="border-teal-500 bg-teal-950/40"
             valorAtual={status.ppAtual ?? 0}
             valorMax={ppMax}

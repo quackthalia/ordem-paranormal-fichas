@@ -21,7 +21,9 @@ interface UseStatusReturn {
   peTempMax: number;
   pdTempAtual: number;
   pdTempMax: number;
-  alterarStatus: (tipo: 'pv' | 'san' | 'pe' | 'pd', qtd: number) => void;
+  ppAtual: number | null;
+  setPpAtual: React.Dispatch<React.SetStateAction<number | null>>;
+  alterarStatus: (tipo: 'pv' | 'san' | 'pe' | 'pd' | 'pp', qtd: number) => void;
   setPvMax: React.Dispatch<React.SetStateAction<number>>;
   setSanMax: React.Dispatch<React.SetStateAction<number>>;
   setPeMax: React.Dispatch<React.SetStateAction<number>>;
@@ -57,6 +59,7 @@ export function useStatus(
   const [pvAtual, setPvAtual] = useState<number | null>(null);
   const [sanAtual, setSanAtual] = useState<number | null>(null);
   const [peAtual, setPeAtual] = useState<number | null>(null);
+  const [ppAtual, setPpAtual] = useState<number | null>(null);
   const [pvMax, setPvMax] = useState(0);
   const [sanMax, setSanMax] = useState(0);
   const [peMax, setPeMax] = useState(0);
@@ -175,6 +178,8 @@ export function useStatus(
     sanAtual: sanAtual ?? 0,
     peAtual: peAtual ?? 0,
     pdAtual: pdAtual ?? 0,
+    ppAtual: ppAtual ?? 0,
+    setPpAtual,
     pdMax,
     pvMax,
     sanMax,

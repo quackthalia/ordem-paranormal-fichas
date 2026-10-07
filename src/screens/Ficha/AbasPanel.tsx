@@ -448,7 +448,8 @@ export const AbasPanel: React.FC = () => {
     }
 
     // 3. Utilidade
-    const patamares = [10, 20, 30, 40, 50, 60, 70, 80, 90, 99];
+    const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
+    const patamares = temPossuido ? [] : [10, 20, 30, 40, 50, 60, 70, 80, 90, 99];
     patamares.forEach(nivelPatamar => {
       if (effectiveNex >= nivelPatamar) {
         const escolhido = poderesEscolhidos[nivelPatamar];
@@ -509,7 +510,7 @@ export const AbasPanel: React.FC = () => {
     });
 
     // 4. Combate
-    const patamaresCombate = [15, 25, 35, 45, 55, 65, 75, 85, 95];
+    const patamaresCombate = temPossuido ? [] : [15, 25, 35, 45, 55, 65, 75, 85, 95];
     patamaresCombate.forEach(nivelPatamar => {
       if (effectiveNex >= nivelPatamar) {
         const escolhido = poderesEscolhidos[nivelPatamar];
@@ -624,7 +625,11 @@ export const AbasPanel: React.FC = () => {
     });
 
     // 6. Transcender via ProgressÃ£o de NEX (Custom)
-    const patamaresTranscenderProgressao = [25, 35, 50, 60, 75, 90];
+    const patamaresTranscenderProgressao = temPossuido ? [15, 30, 45, 60, 75, 90] : [25, 35, 50, 60, 75, 90];
+    if (temPossuido && poderesExtras['possuido_opcao_65'] === 'transcender') {
+      patamaresTranscenderProgressao.push(65);
+      patamaresTranscenderProgressao.sort((a,b) => a-b);
+    }
     patamaresTranscenderProgressao.forEach(nivelPatamar => {
       const chave = 1000 + nivelPatamar;
       const escolhido = poderesEscolhidos[chave];
@@ -1021,7 +1026,43 @@ export const AbasPanel: React.FC = () => {
                                               </div>
                                             </div>
                                           )}
-                                                                                   {t.Codigo_Trilha === 22 && nexLvl === 40 && !isVersatilidade && (
+                                                                                   {t.Codigo_Trilha === 23 && nexLvl === 65 && !isVersatilidade && (
+                                              <div className="px-3 pb-3 pt-1 border-t border-zinc-800/80 flex flex-col gap-1.5" onClick={e => e.stopPropagation()}>
+                                                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+                                                  Opção de 65%:
+                                                </span>
+                                                <div className="flex flex-wrap gap-2 items-center">
+                                                  <button
+                                                    type="button"
+                                                    onClick={(e) => { e.stopPropagation(); setPoderesExtras(prev => ({ ...prev, possuido_opcao_65: 'transcender' })); }}
+                                                    className={px-3 py-1 rounded text-xs font-bold uppercase border transition }
+                                                  >
+                                                    Transcender
+                                                  </button>
+                                                  <button
+                                                    type="button"
+                                                    onClick={(e) => { e.stopPropagation(); setPoderesExtras(prev => ({ ...prev, possuido_opcao_65: 'versatilidade' })); }}
+                                                    className={px-3 py-1 rounded text-xs font-bold uppercase border transition }
+                                                  >
+                                                    Versatilidade (Ocultista)
+                                                  </button>
+                                                </div>
+                                              </div>
+                                            )}
+                                            {t.Codigo_Trilha === 23 && nexLvl === 99 && pp?.Afinidade && (
+                                              <div className="px-3 pb-3 pt-1 border-t border-zinc-800/80 flex flex-col gap-1.5" onClick={e => e.stopPropagation()}>
+                                                <span className="text-[10px] font-bold uppercase tracking-wider text-green-500">
+                                                  Presente da Afinidade:
+                                                </span>
+                                                <p className="text-xs text-zinc-300">
+                                                  {pp.Afinidade === 'Sangue' && 'Uma vez por rodada, você pode gastar 6 PE para recuperar 50 PV. Quando faz isso, até o início do seu próximo turno, os bônus por treinamento em suas perícias baseadas em Força e Vigor, e em Intimidação, mudam para +35. As demais perícias baseadas em Presença mudam para -10. Você pode ativar esse poder mesmo inconsciente.'}
+                                                  {pp.Afinidade === 'Morte' && 'Uma vez por rodada, você pode gastar 6 PE para receber um turno adicional na última contagem de iniciativa da rodada. Você pode ativar essa habilidade mesmo inconsciente.'}
+                                                  {pp.Afinidade === 'Conhecimento' && 'Uma vez por cena, você pode gastar 6 PE para reescrever uma fração de seu próprio ser. Você recebe um poder qualquer até o fim da cena. Você deve cumprir os pré-requisitos do poder escolhido, e não pode escolher poderes de trilha de NEX 99%. A cada vez que usa este poder, você deve fazer um teste de Vontade (DT 15 + 5 para cada vez que usou este poder na mesma missão). Se falhar, perde 1d6 pontos de Sanidade para cada vez que usou esse poder nesta missão.'}
+                                                  {pp.Afinidade === 'Energia' && 'Uma vez por rodada, você pode gastar 6 PE para se teletransportar para outro ponto em alcance médio. Você não precisa conhecer o local para onde vai nem precisa vê-lo, mas se teletransportar-se para um espaço ocupado vai ser arremessado para o espaço disponível mais próximo.'}
+                                                </p>
+                                              </div>
+                                            )}
+                                            {t.Codigo_Trilha === 22 && nexLvl === 40 && !isVersatilidade && (
                                              <div className="px-3 pb-3 pt-1 border-t border-zinc-800/80 flex flex-col gap-1.5" onClick={e => e.stopPropagation()}>
                                                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
                                                  BenefÃ­cio de Poder da FÃ© (40%):

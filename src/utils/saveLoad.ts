@@ -42,6 +42,7 @@ export function exportarFicha(rpg: any) {
       peAtual: rpg.status.peAtual,
       peMax: rpg.status.peMax,
       pdAtual: rpg.status.pdAtual,
+      ppAtual: rpg.status.ppAtual,
       pdMax: rpg.status.pdMax,
       hasPdTemp: rpg.status.hasPdTemp,
       pdTempAtual: rpg.status.pdTempAtual,
@@ -139,6 +140,7 @@ export function importarFicha(event: React.ChangeEvent<HTMLInputElement>, rpg: a
         if (data.status.peAtual !== undefined) rpg.status.setPeAtual(data.status.peAtual);
         if (data.status.peMax !== undefined) rpg.status.setPeMax(data.status.peMax);
         if (data.status.pdAtual !== undefined) rpg.status.setPdAtual(data.status.pdAtual);
+        if (data.status.ppAtual !== undefined) rpg.status.setPpAtual(data.status.ppAtual);
         if (data.status.pdMax !== undefined) rpg.status.setPdMax(data.status.pdMax);
         if (data.status.hasPdTemp !== undefined) rpg.status.setHasPdTemp(data.status.hasPdTemp);
         if (data.status.pdTempAtual !== undefined) rpg.status.setPdTempAtual(data.status.pdTempAtual);

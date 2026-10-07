@@ -152,6 +152,8 @@ interface RPGContextType {
   escolhaRegra53: 'FOR' | 'AGI' | null;
   setEscolhaRegra53: React.Dispatch<React.SetStateAction<'FOR' | 'AGI' | null>>;
   atributosFinais: Atributos;
+  ppMax: number;
+  ppTurno: number;
 }
 
 const RPGContext = createContext<RPGContextType | null>(null);
@@ -430,7 +432,11 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     }
   }, [regrasAutomaticasAtivas, nex, nivel, regras]); // Removemos 'status' das dependências para não engatilhar ao desativar
 
-const atributosFinais = useMemo(() => {
+const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
+  const ppMax = temPossuido ? 3 + Object.values(poderesHook.poderesEscolhidos).filter(p => p.categoria === 'paranormais').length * 2 : 0;
+  const ppTurno = temPossuido ? atributosBaseComBonus.PRE : 0;
+
+  const atributosFinais = useMemo(() => {
     const obj = { ...atributosBaseComBonus };
     const machucado = status.pvAtual !== null && status.pvMax > 0 && status.pvAtual <= Math.floor(status.pvMax / 2);
     if (machucado && regrasAutomaticasAtivas.has(53) && escolhaRegra53) {

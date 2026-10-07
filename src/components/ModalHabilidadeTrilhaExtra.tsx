@@ -22,6 +22,9 @@ interface ModalHabilidadeTrilhaExtraProps {
   onClose: () => void;
   onSelect: (habilidade: { nome: string; descricao: string; preRequisitos: string; fonte: string; tipo: 'Trilha' }) => void;
   nexAtual: number;
+  apenas10?: boolean;
+  trilhaIdIgnorar?: number;
+  tituloCustom?: string;
 }
 
 export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProps> = ({
@@ -29,6 +32,9 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
   onClose,
   onSelect,
   nexAtual,
+  apenas10,
+  trilhaIdIgnorar,
+  tituloCustom,
 }) => {
   const [trilhas, setTrilhas] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,26 +55,27 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
         .eq('Classe_Trilha', 'Ocultista');
       
       if (data) {
-        setTrilhas(data.sort((a, b) => a.Nome_Trilha.localeCompare(b.Nome_Trilha)));
+        const filtradas = trilhaIdIgnorar ? data.filter(t => t.Codigo_Trilha !== trilhaIdIgnorar) : data;
+        setTrilhas(filtradas.sort((a, b) => a.Nome_Trilha.localeCompare(b.Nome_Trilha)));
       }
       setLoading(false);
     }
     fetchTrilhas();
-  }, [isOpen]);
+  }, [isOpen, trilhaIdIgnorar]);
 
   if (!isOpen) return null;
 
-  const nexLevels = [10, 40, 65, 99];
+  const nexLevels = apenas10 ? [10] : [10, 40, 65, 99];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onClose}>
       <div className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden flex flex-col h-[90vh]" onClick={(e) => e.stopPropagation()}>
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
           <div className="flex items-center justify-between">
-            <h2 className="font-display text-lg uppercase tracking-wide text-zinc-100">Escolher Poder de Trilha <span className="text-green-500">(Ocultista)</span></h2>
+            <h2 className="font-display text-lg uppercase tracking-wide text-zinc-100">{tituloCustom || 'Escolher Poder de Trilha'} <span className="text-green-500">(Ocultista)</span></h2>
             <button onClick={onClose} className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100">&times;</button>
           </div>
-          <p className="mt-1 text-xs text-zinc-400">Selecione uma habilidade ritualística (NEX atual: {nexAtual}%)</p>
+          <p className="mt-1 text-xs text-zinc-400">{apenas10 ? 'Selecione o poder de 10% de uma trilha de Ocultista' : `Selecione uma habilidade ritualística (NEX atual: ${nexAtual}%)`}</p>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">

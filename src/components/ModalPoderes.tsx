@@ -718,6 +718,8 @@ export const ModalPoderes: React.FC = () => {
                     let categoria: 'utilidade' | 'combate' | 'gerais' | 'paranormais' | 'trilha' = 'utilidade';
                     if (abaModalPoderes === 'combate') categoria = 'combate';
                     else if (abaModalPoderes === 'gerais') categoria = 'gerais';
+                    else if (abaModalPoderes === 'paranormais') categoria = 'paranormais';
+                    else if (abaModalPoderes === 'paranormais') categoria = 'paranormais';
                     
                     const nexEscolhido = nexModalAberto!;
                     const nomePericia = periciaId ? contextoPrereq.nomesPericias[periciaId] : undefined;

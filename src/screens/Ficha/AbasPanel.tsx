@@ -688,8 +688,47 @@ export const AbasPanel: React.FC = () => {
             automatico: automaticoVal,
           });
         }
+      } else if (temPossuido && effectiveNex >= nivelPatamar) {
+        const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
+        lista.push({
+          id: `escolha_transcender_${chave}`,
+          nome: 'Escolher Poder Paranormal',
+          descricao: 'Clique no "+" para abrir a lista e selecionar seu poder paranormal.',
+          tipo: `Transcender ${nivelLabel}`,
+          isSlotVazio: true,
+          nexDoSlot: chave,
+          categoria: 'paranormais',
+        });
       }
-      });
+    });
+
+    if (temPossuido && (poderesExtras['possuido_opcao_65'] === 'trilha' || poderesExtras['possuido_opcao_65'] === 'versatilidade') && effectiveNex >= 65) {
+      const extraKey = 'extra_possuido_trilha_65';
+      const usou65 = poderesEscolhidos[extraKey];
+      if (usou65) {
+        lista.push({
+          id: `escolha_${extraKey}`,
+          nome: usou65.nome,
+          descricao: usou65.descricao,
+          tipo: '10% Trilha (Ocultista)',
+          categoria: 'trilha',
+          fonte: usou65.fonte,
+          preRequisitos: usou65.preRequisitos,
+          elemento: usou65.elemento,
+          afinidade: usou65.afinidade,
+        });
+      } else {
+        lista.push({
+          id: 'escolha_possuido_trilha_65',
+          nome: 'Escolher 10% Trilha (Ocultista)',
+          descricao: 'Clique no "+" para escolher o primeiro poder (10%) de uma trilha de Ocultista.',
+          tipo: '10% Trilha (Ocultista)',
+          isSlotVazio: true,
+          nexDoSlot: 0,
+          categoria: 'trilha',
+        });
+      }
+    }
 
       // --- REGRAS 31 e 32 (Poderes Extras) ---
       if (regrasAutomaticasAtivas.has(31)) {
@@ -1037,14 +1076,14 @@ export const AbasPanel: React.FC = () => {
                                                     onClick={(e) => { e.stopPropagation(); setPoderesExtras(prev => ({ ...prev, possuido_opcao_65: 'transcender' })); }}
                                                     className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${poderesExtras['possuido_opcao_65'] === 'transcender' ? 'bg-green-950/60 border-green-600 text-green-300' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'}`}
                                                   >
-                                                    Transcender
+                                                    TRANSCENDER
                                                   </button>
                                                   <button
                                                     type="button"
-                                                    onClick={(e) => { e.stopPropagation(); setPoderesExtras(prev => ({ ...prev, possuido_opcao_65: 'versatilidade' })); }}
-                                                    className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${poderesExtras['possuido_opcao_65'] === 'versatilidade' ? 'bg-green-950/60 border-green-600 text-green-300' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'}`}
+                                                    onClick={(e) => { e.stopPropagation(); setPoderesExtras(prev => ({ ...prev, possuido_opcao_65: 'trilha' })); }}
+                                                    className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${(poderesExtras['possuido_opcao_65'] === 'trilha' || poderesExtras['possuido_opcao_65'] === 'versatilidade') ? 'bg-green-950/60 border-green-600 text-green-300' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'}`}
                                                   >
-                                                    Versatilidade (Ocultista)
+                                                    10% TRILHA (OCULTISTA)
                                                   </button>
                                                 </div>
                                               </div>
@@ -1309,7 +1348,7 @@ export const AbasPanel: React.FC = () => {
                                   </div>
                                 )}
 
-                                {(!hab.isSlotVazio && (hab.id.startsWith('escolha_nex_') || hab.id.startsWith('escolha_extra_'))) && (
+                                {(!hab.isSlotVazio && (hab.id.startsWith('escolha_nex_') || hab.id.startsWith('escolha_extra_') || hab.id === 'escolha_extra_possuido_trilha_65')) && (
                                   <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-zinc-800/50">
                                     <button onClick={(e) => { e.stopPropagation(); const nivel = extrairKeyDoId(hab.id); if (nivel !== null) { setNexPoderEditando(nivel); setNomeEditando(hab.nome); setDescricaoEditando(hab.descricao); setAfinidadeEditando(hab.afinidade || ''); } }}
                                       className="text-xs px-3 py-1.5 rounded bg-zinc-900 border border-zinc-700 hover:border-yellow-700 hover:bg-yellow-900/20 text-zinc-300 hover:text-yellow-400 transition-colors"
@@ -2494,6 +2533,41 @@ export const AbasPanel: React.FC = () => {
       )}
       {editandoVersatilidade && (
         <ModalEditarTrilha onClose={() => setEditandoVersatilidade(false)} isVersatilidade={true} />
+      )}
+      {modalTrilhaPossuido65Aberto && (
+        <ModalHabilidadeTrilhaExtra
+          isOpen={true}
+          onClose={() => setModalTrilhaPossuido65Aberto(false)}
+          nexAtual={effectiveNex}
+          apenas10={true}
+          trilhaIdIgnorar={23}
+          tituloCustom="Escolher 10% Trilha"
+          onSelect={(habilidade) => {
+            poderesHook.escolherPoderExtra(
+              {
+                Codigo_Poder: -1,
+                Nome: habilidade.nome,
+                Descricao: habilidade.descricao,
+                Tipo: habilidade.tipo,
+                PreRequisitos: habilidade.preRequisitos,
+                Fonte: habilidade.fonte,
+                Codigo_Regra: null,
+                Elemento: null,
+                Afinidade: null,
+                Custo: null,
+                Acao: null,
+                Alcance: null,
+                Alvo_Area: null,
+                Duracao: null,
+                Poder_Substituido: null
+              } as any,
+              undefined,
+              undefined,
+              'extra_possuido_trilha_65'
+            );
+            setModalTrilhaPossuido65Aberto(false);
+          }}
+        />
       )}
       {modalTrilhaExtraAberto && (
         <ModalHabilidadeTrilhaExtra

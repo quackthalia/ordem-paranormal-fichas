@@ -921,7 +921,9 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     elementoRegra18, setElementoRegra18,
     regrasAutomaticasAtivas,
     escolhaRegra53, setEscolhaRegra53,
-    atributosFinais
+    atributosFinais,
+    ppMax,
+    ppTurno
   };
 
   return <RPGContext.Provider value={value}>{children}</RPGContext.Provider>;

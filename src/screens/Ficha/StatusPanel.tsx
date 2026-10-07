@@ -24,6 +24,8 @@ export const StatusPanel: React.FC = () => {
     escolhaRegra53, setEscolhaRegra53,
     bonusVestimentas,
     bonusMaldicoes,
+    ppMax,
+    ppTurno,
   } = useRPG();
 
   const regraNexExperiencia = regras['nex_experiencia'];
@@ -112,6 +114,15 @@ export const StatusPanel: React.FC = () => {
           </div>
           <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">PE/Turno</span>
         </div>
+
+        {ppMax > 0 && (
+          <div className="flex flex-col items-center gap-1.5">
+            <div className="flex h-9 min-w-[3.5rem] items-center justify-center rounded border border-teal-600 px-3 text-base font-bold text-teal-400 bg-teal-950/20">
+              {ppTurno}
+            </div>
+            <span className="text-xs font-bold uppercase tracking-wider text-teal-600/80">PP/Turno</span>
+          </div>
+        )}
 
         {/* AFINIDADE */}
         {afinidadeAtiva && afinidadeEscolhida && (
@@ -297,9 +308,11 @@ export const StatusPanel: React.FC = () => {
             titulo="Possess�o"
             corBarra="border-teal-500 bg-teal-950/40"
             valorAtual={status.ppAtual ?? 0}
+            setValorAtual={status.setPpAtual as React.Dispatch<React.SetStateAction<number>>}
             valorMax={ppMax}
-            setAtual={(v) => status.setPpAtual(typeof v === 'function' ? v(status.ppAtual ?? 0) : v)}
-            setMax={() => {}}
+            setValorMax={() => {}}
+            alterarStatus={(qtd) => alterarStatus('pp', qtd)}
+            bloquearLetras={bloquearLetras}
           />
         )}
 

@@ -1029,7 +1029,7 @@ export const AbasPanel: React.FC = () => {
                                                                                    {t.Codigo_Trilha === 23 && nexLvl === 65 && !isVersatilidade && (
                                               <div className="px-3 pb-3 pt-1 border-t border-zinc-800/80 flex flex-col gap-1.5" onClick={e => e.stopPropagation()}>
                                                 <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
-                                                  Op��o de 65%:
+                                                  Opção de 65%:
                                                 </span>
                                                 <div className="flex flex-wrap gap-2 items-center">
                                                   <button
@@ -1432,7 +1432,7 @@ export const AbasPanel: React.FC = () => {
               todosSlots.push({ index: todosSlots.length + 1, nex: nexEquiv, maxCirculo: c });
             }
             
-            // Filtra os que j� foram pegos
+            // Filtra os que já foram pegos
             for (const slot of todosSlots) {
               const pego = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === `ocultista_${slot.index}`);
               if (!pego) {
@@ -2390,7 +2390,7 @@ export const AbasPanel: React.FC = () => {
                   <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                   {[
                     { key: 'Elemento_Ritual', label: 'Elemento' },
-                      { key: 'Execucao_Ritual', label: 'Execu��o' },
+                      { key: 'Execucao_Ritual', label: 'Execução' },
                     { key: 'PE_Ritual', label: 'Custo' },
                     { key: 'Alcance_Ritual', label: 'Alcance' },
                     { key: 'Area_Ritual', label: 'Área' },
@@ -2406,7 +2406,7 @@ export const AbasPanel: React.FC = () => {
                     let opts = null;
                                           if (prop.key === 'Elemento_Ritual') opts = ['Sangue', 'Morte', 'Energia', 'Conhecimento', 'Medo'];
                       if (prop.key === 'Elemento_Ritual') opts = ['Sangue', 'Morte', 'Energia', 'Conhecimento', 'Medo'];
-                      if (prop.key === 'Execucao_Ritual') opts = ['Padr�o', 'Movimento', 'Movimento (+1 PE)', 'Livre', 'Rea��o', 'Completa'];
+                      if (prop.key === 'Execucao_Ritual') opts = ['Padrão', 'Movimento', 'Movimento (+1 PE)', 'Livre', 'Reação', 'Completa'];
                     if (prop.key === 'Alcance_Ritual') opts = ['Pessoal', 'Toque', 'Curto', 'Médio', 'Longo', 'Extremo', 'Ilimitado'];
                     if (prop.key === 'Resistencia_Ritual') opts = ['Nenhuma', 'Fortitude', 'Reflexos', 'Vontade', 'Fortitude reduz à metade', 'Reflexos reduz à metade', 'Vontade reduz à metade', 'Fortitude anula', 'Reflexos anula', 'Vontade anula'];
                     if (prop.key === 'Duracao_Ritual') opts = ['Instantânea', '1 rodada', 'Cena', 'Sustentada', 'Sustentada (1 rodada)', '1 dia'];

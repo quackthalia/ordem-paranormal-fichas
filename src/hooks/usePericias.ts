@@ -311,8 +311,13 @@ export function usePericias(
       // Destreina as veteranas que saíram da lista
       velhasVeteranas.forEach(nome => {
         if (!veteranasGratis.includes(nome) && novo[nome] && novo[nome].treino > 0) {
-          novo[nome] = { ...novo[nome], treino: 0 };
-          mudou = true;
+          if (nome === 'Religião') {
+             // Preserva o valor de Religião (não cai para zero). Se saiu de veteranasGratis, passará a custar 1 ponto de upgrade.
+             // Isso conserta o bug do Exorcista 40% (Já era Veterano) deletando o treino do jogador.
+          } else {
+             novo[nome] = { ...novo[nome], treino: 0 };
+             mudou = true;
+          }
         }
       });
 

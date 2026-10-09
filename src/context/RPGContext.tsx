@@ -149,8 +149,52 @@ interface RPGContextType {
   elementoRegra18: string | null;
   setElementoRegra18: React.Dispatch<React.SetStateAction<string | null>>;
   regrasAutomaticasAtivas: Set<number>;
+  temGranadeiro10: boolean;
+  temGranadeiro40: boolean;
+  temGranadeiro65: boolean;
+  temGranadeiro99: boolean;
+  maxExplosivosAutorais: number;
+  temDobroPerito: boolean;
+  temCriptologista10: boolean;
+  temCriptologista40: boolean;
+  temCriptologista65: boolean;
+  temCriptologista99: boolean;
+  selosPorInterludio: number;
+  temDobroCriarSelo: boolean;
+  temIlusionista10: boolean;
+  temIlusionista40: boolean;
+  temIlusionista65: boolean;
+  temIlusionista99: boolean;
+  temArtistaMarcialTrilha10: boolean;
+  temArtistaMarcialTrilha40: boolean;
+  temArtistaMarcialTrilha65: boolean;
+  temArtistaMarcialTrilha99: boolean;
+  temArtistaMarcialAprimorado: boolean;
+  temAdepto10: boolean;
+  temAdepto40: boolean;
+  temAdepto65: boolean;
+  temAdepto99: boolean;
+  temMataLeao10: boolean;
+  temAcrobata10: boolean;
+  temAcrobata40: boolean;
+  temAcrobata65: boolean;
+  temAcrobata99: boolean;
+  temVigilante10: boolean;
+  temVigilante40: boolean;
+  temVigilante65: boolean;
+  temVigilante99: boolean;
+  temViajanteDasSombras10: boolean;
+  temViajanteDasSombras40: boolean;
+  temViajanteDasSombras65: boolean;
+  temViajanteDasSombras99: boolean;
+  bonusDeslocTrilha34: number;
+  bonusDeslocTotal: number;
+  deslocamentoTotalM: number;
+  danoDeMovimento: number;
+  bonusDefesaTrilha34: number;
   escolhaRegra53: 'FOR' | 'AGI' | null;
   setEscolhaRegra53: React.Dispatch<React.SetStateAction<'FOR' | 'AGI' | null>>;
+  bonusTrilhasAtributos: Atributos;
   atributosFinais: Atributos;
   ppMax: number;
   ppTurno: number;
@@ -245,6 +289,27 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     }
   }, [trilhasHook.trilhaSelecionada?.Codigo_Trilha]);
 
+  const isTrilhaAM = Boolean(
+    trilhasHook.trilhaSelecionada && (
+      Number(trilhasHook.trilhaSelecionada.Codigo_Trilha) === 31 ||
+      Number((trilhasHook.trilhaSelecionada as any)?.codigo_trilha) === 31 ||
+      String(trilhasHook.trilhaSelecionada.Nome_Trilha || '').trim().toLowerCase() === 'artista marcial'
+    )
+  );
+  const isVersatilidadeAM = Boolean(
+    trilhasHook.versatilidadeSelecionada && (
+      Number(trilhasHook.versatilidadeSelecionada.Codigo_Trilha) === 31 ||
+      Number((trilhasHook.versatilidadeSelecionada as any)?.codigo_trilha) === 31 ||
+      String(trilhasHook.versatilidadeSelecionada.Nome_Trilha || '').trim().toLowerCase() === 'artista marcial'
+    )
+  );
+  const temArtistaMarcialTrilha = isTrilhaAM || isVersatilidadeAM;
+  const temArtistaMarcialTrilha10 = isTrilhaAM || (isVersatilidadeAM && (regras['nex_experiencia'] ? (nivel >= 10) : (nex >= 50)));
+  const temArtistaMarcialNosPoderes = Object.values(poderesHook.poderesEscolhidos).some(p => 
+    p.codigoRegra === 84 || p.nome?.toLowerCase() === 'artista marcial'
+  );
+  const temArtistaMarcialAprimorado = temArtistaMarcialTrilha10 && temArtistaMarcialNosPoderes;
+
   // Computa o conjunto de regras automáticas ativas
   const regrasAutomaticasAtivas = useMemo(() => {
     const set = new Set<number>();
@@ -254,10 +319,86 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     Object.values(poderesHook.poderesEscolhidos).forEach(p => {
       if (p.codigoRegra) set.add(Number(p.codigoRegra));
     });
+    if (temArtistaMarcialTrilha10) {
+      set.add(84);
+    }
     return set;
-  }, [origensHook.origemSelecionada, poderesHook.poderesEscolhidos]);
+  }, [origensHook.origemSelecionada, poderesHook.poderesEscolhidos, temArtistaMarcialTrilha10]);
 
-  const armasHook = useArmas(nex, regrasAutomaticasAtivas);
+  const effectiveNex = useMemo(() => {
+    let finalNex = nex;
+    if (regrasAutomaticasAtivas.has(83)) finalNex += 5;
+    return Math.min(99, finalNex);
+  }, [nex, regrasAutomaticasAtivas]);
+
+  const effectiveNivel = useMemo(() => {
+    let finalNivel = nivel;
+    if (regrasAutomaticasAtivas.has(83)) finalNivel += 1;
+    return Math.min(20, finalNivel);
+  }, [nivel, regrasAutomaticasAtivas]);
+
+  const isTrilhaAcrobata = Boolean(
+    trilhasHook.trilhaSelecionada && (
+      Number(trilhasHook.trilhaSelecionada.Codigo_Trilha) === 34 ||
+      Number((trilhasHook.trilhaSelecionada as any)?.codigo_trilha) === 34 ||
+      String(trilhasHook.trilhaSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('acrobata')
+    )
+  );
+  const isVersatilidadeAcrobata = Boolean(
+    trilhasHook.versatilidadeSelecionada && (
+      Number(trilhasHook.versatilidadeSelecionada.Codigo_Trilha) === 34 ||
+      Number((trilhasHook.versatilidadeSelecionada as any)?.codigo_trilha) === 34 ||
+      String(trilhasHook.versatilidadeSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('acrobata')
+    )
+  );
+  const temAcrobata10 = (isTrilhaAcrobata && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10)) || (isVersatilidadeAcrobata && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
+  const temAcrobata40 = isTrilhaAcrobata && (regras['nex_experiencia'] ? effectiveNivel >= 8 : effectiveNex >= 40);
+  const temAcrobata65 = isTrilhaAcrobata && (regras['nex_experiencia'] ? effectiveNivel >= 13 : effectiveNex >= 65);
+  const temAcrobata99 = isTrilhaAcrobata && (regras['nex_experiencia'] ? effectiveNivel >= 20 : effectiveNex >= 99);
+
+  const isTrilhaVigilante = Boolean(
+    trilhasHook.trilhaSelecionada && (
+      Number(trilhasHook.trilhaSelecionada.Codigo_Trilha) === 35 ||
+      Number((trilhasHook.trilhaSelecionada as any)?.codigo_trilha) === 35 ||
+      String(trilhasHook.trilhaSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('vigilante')
+    )
+  );
+  const isVersatilidadeVigilante = Boolean(
+    trilhasHook.versatilidadeSelecionada && (
+      Number(trilhasHook.versatilidadeSelecionada.Codigo_Trilha) === 35 ||
+      Number((trilhasHook.versatilidadeSelecionada as any)?.codigo_trilha) === 35 ||
+      String(trilhasHook.versatilidadeSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('vigilante')
+    )
+  );
+  const temVigilante10 = (isTrilhaVigilante && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10)) || (isVersatilidadeVigilante && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
+  const temVigilante40 = isTrilhaVigilante && (regras['nex_experiencia'] ? effectiveNivel >= 8 : effectiveNex >= 40);
+  const temVigilante65 = isTrilhaVigilante && (regras['nex_experiencia'] ? effectiveNivel >= 13 : effectiveNex >= 65);
+  const temVigilante99 = isTrilhaVigilante && (regras['nex_experiencia'] ? effectiveNivel >= 20 : effectiveNex >= 99);
+
+  const isTrilhaViajanteDasSombras = Boolean(
+    trilhasHook.trilhaSelecionada && (
+      Number(trilhasHook.trilhaSelecionada.Codigo_Trilha) === 44 ||
+      Number((trilhasHook.trilhaSelecionada as any)?.codigo_trilha) === 44 ||
+      String(trilhasHook.trilhaSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('viajante das sombras')
+    )
+  );
+  const isVersatilidadeViajanteDasSombras = Boolean(
+    trilhasHook.versatilidadeSelecionada && (
+      Number(trilhasHook.versatilidadeSelecionada.Codigo_Trilha) === 44 ||
+      Number((trilhasHook.versatilidadeSelecionada as any)?.codigo_trilha) === 44 ||
+      String(trilhasHook.versatilidadeSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('viajante das sombras')
+    )
+  );
+  const temViajanteDasSombras10 = (isTrilhaViajanteDasSombras && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10)) || (isVersatilidadeViajanteDasSombras && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
+  const temViajanteDasSombras40 = isTrilhaViajanteDasSombras && (regras['nex_experiencia'] ? effectiveNivel >= 8 : effectiveNex >= 40);
+  const temViajanteDasSombras65 = isTrilhaViajanteDasSombras && (regras['nex_experiencia'] ? effectiveNivel >= 13 : effectiveNex >= 65);
+  const temViajanteDasSombras99 = isTrilhaViajanteDasSombras && (regras['nex_experiencia'] ? effectiveNivel >= 20 : effectiveNex >= 99);
+
+  const armasHook = useArmas(nex, regrasAutomaticasAtivas, {
+    temArtistaMarcialTrilha: temArtistaMarcialTrilha10,
+    temArtistaMarcialDuplicata: temArtistaMarcialAprimorado,
+    temAcrobata10,
+  });
   const municoesHook = useMunicoes();
   const protecoesHook = useProtecoes();
   const rituaisHook = useRituais();
@@ -374,32 +515,29 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     }
   }, [nex, regras]);
 
-  
-  const effectiveNex = useMemo(() => {
-    let finalNex = nex;
-    if (regrasAutomaticasAtivas.has(83)) finalNex += 5;
-    return Math.min(99, finalNex);
-  }, [nex, regrasAutomaticasAtivas]);
-
-  const effectiveNivel = useMemo(() => {
-    let finalNivel = nivel;
-    if (regrasAutomaticasAtivas.has(83)) finalNivel += 1;
-    return Math.min(20, finalNivel);
-  }, [nivel, regrasAutomaticasAtivas]);
 
   const temBibliotecario99 = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 19 && (regras['nex_experiencia'] ? effectiveNivel >= 20 : effectiveNex >= 99);
+  const temArtistaMarcialTrilha99 = isTrilhaAM && (regras['nex_experiencia'] ? effectiveNivel >= 20 : effectiveNex >= 99);
+  const temArtistaMarcialTrilha40 = isTrilhaAM && (regras['nex_experiencia'] ? effectiveNivel >= 8 : effectiveNex >= 40);
+  const temArtistaMarcialTrilha65 = isTrilhaAM && (regras['nex_experiencia'] ? effectiveNivel >= 13 : effectiveNex >= 65);
+
+  const bonusTrilhasAtributos = useMemo(() => {
+    const obj: Atributos = { FOR: 0, AGI: 0, INT: 0, PRE: 0, VIG: 0 };
+    if (temBibliotecario99) obj.INT += 1;
+    if (temArtistaMarcialTrilha99) {
+      obj.AGI += 1;
+      obj.FOR += 1;
+    }
+    return obj;
+  }, [temBibliotecario99, temArtistaMarcialTrilha99]);
 
   const atributosBaseComBonus = useMemo(() => {
     const obj = { ...atributos };
     (Object.keys(obj) as AtributoKey[]).forEach(k => {
-      obj[k] += bonusAtributos[k] + (bonusMaldicoes.atributos[k] || 0);
+      obj[k] += bonusAtributos[k] + (bonusMaldicoes.atributos[k] || 0) + bonusTrilhasAtributos[k];
     });
-    // Trilha 19 (Bibliotecário) 99%: O Intelecto aumenta em +1
-    if (temBibliotecario99) {
-      obj.INT += 1;
-    }
     return obj;
-  }, [atributos, bonusAtributos, bonusMaldicoes, temBibliotecario99]);
+  }, [atributos, bonusAtributos, bonusMaldicoes, bonusTrilhasAtributos]);
 
   const temCascaGrossa = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 5 && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 5 && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
   const bonusPvTrilha5 = temCascaGrossa ? effectiveNivel : 0;
@@ -410,7 +548,100 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   // Trilha 19 (Bibliotecário) 99%: soma o valor de Intelecto em seu total de PE
   const bonusPeTrilha19 = temBibliotecario99 ? atributosBaseComBonus.INT : 0;
 
-  const status = useStatus(classe, effectiveNex, effectiveNivel, atributosBaseComBonus, paranormalPenalty, regrasAutomaticasAtivas, bonusVestimentas.pv + bonusMaldicoes.pv + bonusPvTrilha5, bonusVestimentas.pe + bonusMaldicoes.pe + bonusPeTrilha19, bonusPeTurnoTrilha14);
+  // Trilha 32: Adepto ao Oculto
+  const isTrilhaAdepto = Boolean(
+    trilhasHook.trilhaSelecionada && (
+      Number(trilhasHook.trilhaSelecionada.Codigo_Trilha) === 32 ||
+      Number((trilhasHook.trilhaSelecionada as any)?.codigo_trilha) === 32 ||
+      String(trilhasHook.trilhaSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('adepto ao oculto')
+    )
+  );
+  const isVersatilidadeAdepto = Boolean(
+    trilhasHook.versatilidadeSelecionada && (
+      Number(trilhasHook.versatilidadeSelecionada.Codigo_Trilha) === 32 ||
+      Number((trilhasHook.versatilidadeSelecionada as any)?.codigo_trilha) === 32 ||
+      String(trilhasHook.versatilidadeSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('adepto ao oculto')
+    )
+  );
+  const temAdepto10 = (isTrilhaAdepto && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10)) || (isVersatilidadeAdepto && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
+  const temAdepto40 = isTrilhaAdepto && (regras['nex_experiencia'] ? effectiveNivel >= 8 : effectiveNex >= 40);
+  const temAdepto65 = isTrilhaAdepto && (regras['nex_experiencia'] ? effectiveNivel >= 13 : effectiveNex >= 65);
+  const temAdepto99 = isTrilhaAdepto && (regras['nex_experiencia'] ? effectiveNivel >= 20 : effectiveNex >= 99);
+
+  const atrAdepto = poderesExtras['adepto_atributo_40'] === 'AGI' ? 'AGI' : 'VIG';
+  const bonusPeAdepto10 = temAdepto10 ? effectiveNivel : 0;
+  const bonusPeAdepto40 = temAdepto40 ? (atributosBaseComBonus[atrAdepto] - atributosBaseComBonus.PRE) * effectiveNivel : 0;
+  const bonusPeTrilha32 = bonusPeAdepto10 + bonusPeAdepto40;
+
+  // Trilha 33: Mata Leão
+  const isTrilhaMataLeao = Boolean(
+    trilhasHook.trilhaSelecionada && (
+      Number(trilhasHook.trilhaSelecionada.Codigo_Trilha) === 33 ||
+      Number((trilhasHook.trilhaSelecionada as any)?.codigo_trilha) === 33 ||
+      String(trilhasHook.trilhaSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('mata leão')
+    )
+  );
+  const isVersatilidadeMataLeao = Boolean(
+    trilhasHook.versatilidadeSelecionada && (
+      Number(trilhasHook.versatilidadeSelecionada.Codigo_Trilha) === 33 ||
+      Number((trilhasHook.versatilidadeSelecionada as any)?.codigo_trilha) === 33 ||
+      String(trilhasHook.versatilidadeSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('mata leão')
+    )
+  );
+  const temMataLeao10 = (isTrilhaMataLeao && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10)) || (isVersatilidadeMataLeao && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
+
+  // Trilha 34: Acrobata
+  const bonusDeslocTrilha34 = (temAcrobata10 ? 3 : 0) + (temAcrobata65 ? 3 : 0) + (temAcrobata99 ? 3 : 0);
+  const bonusDeslocGeral = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0) + (regrasAutomaticasAtivas.has(41) ? 3 : 0) + (bonusVestimentas?.deslocamento || 0) + (bonusMaldicoes?.deslocamento || 0);
+  const bonusDeslocTotal = bonusDeslocGeral + bonusDeslocTrilha34;
+  const deslocamentoTotalM = deslocM + bonusDeslocTotal;
+  const danoDeMovimento = Math.floor(deslocamentoTotalM / 1.5);
+  const bonusDefesaTrilha34 = temAcrobata99 ? danoDeMovimento : (temAcrobata65 ? Math.floor(danoDeMovimento / 2) : 0);
+
+  const perdaSanidadeAdepto = useMemo(() => {
+    if (!temAdepto10) return 0;
+    let perda = 0;
+    (rituaisHook.rituaisAprendidos || []).forEach(r => {
+      if (r.origem?.startsWith('adepto_') && r.origem !== 'adepto_99') {
+        const base = rituaisHook.rituais.find(br => br.Codigo_Ritual === r.codigo_ritual);
+        const circulo = r.circulo || base?.Circulo_Ritual || 1;
+        perda += circulo;
+      }
+    });
+    return perda;
+  }, [temAdepto10, rituaisHook.rituaisAprendidos, rituaisHook.rituais]);
+
+  // Limpeza automática se a trilha ou versatilidade Adepto ao Oculto for removida/trocada
+  React.useEffect(() => {
+    const hasAdepto = isTrilhaAdepto || isVersatilidadeAdepto;
+    if (!hasAdepto) {
+      const temRitualAdepto = (rituaisHook.rituaisAprendidos || []).some(r => r.origem?.startsWith('adepto_'));
+      if (temRitualAdepto) {
+        rituaisHook.atualizarRituaisAprendidos(prev => prev.filter(r => !r.origem?.startsWith('adepto_')));
+      }
+      if (poderesExtras['adepto_atributo_40'] || poderesExtras['adepto_recusados'] || poderesExtras['adepto_excluidos']) {
+        setPoderesExtras(prev => {
+          const n = { ...prev };
+          delete n.adepto_atributo_40;
+          delete n.adepto_recusados;
+          delete n.adepto_excluidos;
+          return n;
+        });
+      }
+    }
+  }, [isTrilhaAdepto, isVersatilidadeAdepto, rituaisHook.rituaisAprendidos, poderesExtras, rituaisHook.atualizarRituaisAprendidos, setPoderesExtras]);
+
+  const status = useStatus(
+    classe, 
+    effectiveNex, 
+    effectiveNivel, 
+    atributosBaseComBonus, 
+    paranormalPenalty + perdaSanidadeAdepto, 
+    regrasAutomaticasAtivas, 
+    bonusVestimentas.pv + bonusMaldicoes.pv + bonusPvTrilha5, 
+    bonusVestimentas.pe + bonusMaldicoes.pe + bonusPeTrilha19 + bonusPeTrilha32, 
+    bonusPeTurnoTrilha14
+  );
 
   
     // Controle para evitar que o PE temporário do Agente de Nascença fique voltando infinitamente
@@ -435,6 +666,19 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
 const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
   const ppMax = temPossuido ? 3 + Object.values(poderesHook.poderesEscolhidos).filter(p => p.categoria === 'paranormais').length * 2 : 0;
   const ppTurno = temPossuido ? atributosBaseComBonus.PRE : 0;
+
+  const previousPpMax = React.useRef(ppMax);
+  useEffect(() => {
+    if (status.ppAtual === null && ppMax > 0) {
+      status.setPpAtual(ppMax);
+    } else if (status.ppAtual !== null && ppMax > previousPpMax.current) {
+      const diff = ppMax - previousPpMax.current;
+      status.setPpAtual(prev => (prev ?? 0) + diff);
+    } else if (status.ppAtual !== null && status.ppAtual > ppMax) {
+      status.setPpAtual(ppMax);
+    }
+    previousPpMax.current = ppMax;
+  }, [ppMax, status.ppAtual, status.setPpAtual]);
 
   const atributosFinais = useMemo(() => {
     const obj = { ...atributosBaseComBonus };
@@ -610,7 +854,7 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     periciasGratis, 
     origensHook.origemSelecionada?.Codigo_Per_Regra, 
     veteranasGratis, 
-    regrasAutomaticasAtivas, 
+    regrasAutomaticasAtivas,
     poderesHook.poderesEscolhidos,
     origensHook.origemSelecionada,
     (() => { 
@@ -656,7 +900,15 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
          if (temExorcistaVersatilidade && jaTinhaReligiaoVersatilidade) {
             comb['Religião'] = (comb['Religião'] || 0) + 2;
          }
-         
+
+         if (temAdepto40) {
+           const atr = poderesExtras['adepto_atributo_40'] === 'AGI' ? 'AGI' : 'VIG';
+           const temBonusParanormal = (bonusMaldicoes.atributos[atr] || 0) > 0;
+           if (temBonusParanormal) {
+             const periciaBonus = atr === 'VIG' ? 'Fortitude' : 'Reflexos';
+             comb[periciaBonus] = (comb[periciaBonus] || 0) + 2;
+           }
+         }
 
          return comb; 
     })()
@@ -701,6 +953,82 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
       }
     }
   }, [trilhasHook.trilhaSelecionada, poderesExtras, periciasHook.setProfissoes]);
+
+  // Granadeiro Blaster (Trilha 25)
+  const temGranadeiro = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 25 || trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 25;
+  const temGranadeiro10 = temGranadeiro && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10);
+  const temGranadeiro40 = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 25 && (regras['nex_experiencia'] ? effectiveNivel >= 8 : effectiveNex >= 40);
+  const temGranadeiro65 = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 25 && (regras['nex_experiencia'] ? effectiveNivel >= 13 : effectiveNex >= 65);
+  const temGranadeiro99 = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 25 && (regras['nex_experiencia'] ? effectiveNivel >= 20 : effectiveNex >= 99);
+
+  const maxExplosivosAutorais = temGranadeiro10 ? (
+    effectiveNex >= 99 ? 4 : (effectiveNex >= 65 ? 3 : (effectiveNex >= 40 ? 2 : 1))
+  ) : 0;
+
+  const temPeritoEmExplosivosNosPoderes = Object.values(poderesHook.poderesEscolhidos).some(p => 
+    p.codigoRegra === 29 || p.nome?.toLowerCase() === 'perito em explosivos'
+  );
+  const temDobroPerito = temGranadeiro40 && temPeritoEmExplosivosNosPoderes;
+
+  // Criptologista do Oculto (Trilha 26)
+  const temCriptologista = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 26 || trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 26;
+  const temCriptologista10 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 26 && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 26 && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
+  const temCriptologista40 = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 26 && (regras['nex_experiencia'] ? effectiveNivel >= 8 : effectiveNex >= 40);
+  const temCriptologista65 = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 26 && (regras['nex_experiencia'] ? effectiveNivel >= 13 : effectiveNex >= 65);
+  const temCriptologista99 = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 26 && (regras['nex_experiencia'] ? effectiveNivel >= 20 : effectiveNex >= 99);
+
+  const selosPorInterludio = temCriptologista10 ? (
+    2 + (temCriptologista40 ? 1 : 0) + (temCriptologista65 ? 1 : 0) + (temCriptologista99 ? 1 : 0)
+  ) : 1;
+
+  const temCriarSeloNosPoderes = Object.values(poderesHook.poderesEscolhidos).some(p => 
+    p.nome?.toLowerCase() === 'criar selo' || p.nome?.toLowerCase().startsWith('criar selo')
+  );
+  const temDobroCriarSelo = temCriptologista10 && temCriarSeloNosPoderes;
+
+  // Ilusionista (Trilha 29)
+  const temIlusionista = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 29 || trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 29;
+  const temIlusionista10 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 29 && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 29 && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
+  const temIlusionista40 = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 29 && (regras['nex_experiencia'] ? effectiveNivel >= 8 : effectiveNex >= 40);
+  const temIlusionista65 = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 29 && (regras['nex_experiencia'] ? effectiveNivel >= 13 : effectiveNex >= 65);
+  const temIlusionista99 = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 29 && (regras['nex_experiencia'] ? effectiveNivel >= 20 : effectiveNex >= 99);
+
+  // Trilha 25 (Granadeiro Blaster - 10% Meus Bebês): Treinamento em Profissão (químico) ou +5 se já treinado
+  const profissaoGranadeiroRef = React.useRef<{ nome: string; concedeuTreino: boolean } | null>(null);
+
+  React.useEffect(() => {
+    const pName = 'Químico';
+    if (temGranadeiro10) {
+      if (!profissaoGranadeiroRef.current) {
+        periciasHook.setProfissoes(prev => {
+          const exists = prev.find(p => (p.nome || '').toLowerCase() === pName.toLowerCase());
+          if (exists) {
+            if ((exists as any).origem === 'granadeiro') {
+              profissaoGranadeiroRef.current = { nome: pName, concedeuTreino: true };
+              return prev;
+            }
+            profissaoGranadeiroRef.current = { nome: pName, concedeuTreino: false };
+            return prev.map(p => (p.nome || '').toLowerCase() === pName.toLowerCase() ? { ...p, outros: (p.outros || 0) + 5 } : p);
+          } else {
+            profissaoGranadeiroRef.current = { nome: pName, concedeuTreino: true };
+            return [...prev, { nome: pName, treino: 5, outros: 0, origem: 'granadeiro' } as any];
+          }
+        });
+      }
+    } else {
+      if (profissaoGranadeiroRef.current) {
+        const old = profissaoGranadeiroRef.current;
+        periciasHook.setProfissoes(prev => {
+          if (old.concedeuTreino) {
+            return prev.filter(p => !((p.nome || '').toLowerCase() === old.nome.toLowerCase() && (p as any).origem === 'granadeiro'));
+          } else {
+            return prev.map(p => (p.nome || '').toLowerCase() === old.nome.toLowerCase() ? { ...p, outros: Math.max(0, (p.outros || 0) - 5) } : p);
+          }
+        });
+        profissaoGranadeiroRef.current = null;
+      }
+    }
+  }, [temGranadeiro10, periciasHook.setProfissoes]);
 
   // Trilha 21 (Muambeiro - 65% Laboratório de Campo): Escolha de Profissão ou +5 se já treinada
   const temMuambeiro65 = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 21 && (regras['nex_experiencia'] ? effectiveNivel >= 13 : effectiveNex >= 65);
@@ -830,7 +1158,7 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     return acc + defVal;
   }, 0);
 
-  const defesaTotal = 10 + atributos.AGI + bonusAtributos.AGI + defEquip + defOutros + defOutrosBonusRegra4 + defOutrosBonusRegra12 + defOutrosBonusRegra21 + defOutrosBonusRegra25 + defOutrosBonusTrilha5 + totalDefesaProtecoes + (bonusVestimentas?.defesa || 0) + (bonusMaldicoes?.defesa || 0);
+  const defesaTotal = 10 + atributos.AGI + bonusAtributos.AGI + defEquip + defOutros + defOutrosBonusRegra4 + defOutrosBonusRegra12 + defOutrosBonusRegra21 + defOutrosBonusRegra25 + defOutrosBonusTrilha5 + bonusDefesaTrilha34 + totalDefesaProtecoes + (bonusVestimentas?.defesa || 0) + (bonusMaldicoes?.defesa || 0);
 
   // ============================================================
   // UTILITÁRIOS
@@ -920,8 +1248,52 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     progressaoNexEditados, setProgressaoNexEditados,
     elementoRegra18, setElementoRegra18,
     regrasAutomaticasAtivas,
+    temGranadeiro10,
+    temGranadeiro40,
+    temGranadeiro65,
+    temGranadeiro99,
+    maxExplosivosAutorais,
+    temDobroPerito,
+    temCriptologista10,
+    temCriptologista40,
+    temCriptologista65,
+    temCriptologista99,
+    selosPorInterludio,
+    temDobroCriarSelo,
+    temIlusionista10,
+    temIlusionista40,
+    temIlusionista65,
+    temIlusionista99,
+    temArtistaMarcialTrilha10,
+    temArtistaMarcialTrilha40,
+    temArtistaMarcialTrilha65,
+    temArtistaMarcialTrilha99,
+    temArtistaMarcialAprimorado,
+    temAdepto10,
+    temAdepto40,
+    temAdepto65,
+    temAdepto99,
+    temMataLeao10,
+    temAcrobata10,
+    temAcrobata40,
+    temAcrobata65,
+    temAcrobata99,
+    temVigilante10,
+    temVigilante40,
+    temVigilante65,
+    temVigilante99,
+    temViajanteDasSombras10,
+    temViajanteDasSombras40,
+    temViajanteDasSombras65,
+    temViajanteDasSombras99,
+    bonusDeslocTrilha34,
+    bonusDeslocTotal,
+    deslocamentoTotalM,
+    danoDeMovimento,
+    bonusDefesaTrilha34,
     escolhaRegra53, setEscolhaRegra53,
     atributosFinais,
+    bonusTrilhasAtributos,
     ppMax,
     ppTurno
   };

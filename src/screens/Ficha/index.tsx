@@ -14,7 +14,7 @@ import { MatrixBackground } from './MatrixBackground';
 
 export const FichaScreen: React.FC = () => {
   const {
-    trilhasHook,
+    trilhasHook, bonusTrilhasAtributos,
     rituaisHook,
     nex,
     nivel,
@@ -182,6 +182,83 @@ export const FichaScreen: React.FC = () => {
     } else if (!temLamina99 && (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_lamina_paranormal_99')) {
       rituaisHook.esquecerRitual('trilha_lamina_paranormal_99');
     }
+
+    // TRILHA 29: ILUSIONISTA
+    const temIlusionista10 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 29 && (regras['nex_experiencia'] ? nivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 29 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
+    const jaTemTecerIlusaoTrilha = (rituaisHook.rituaisAprendidos || []).find((r: any) => Number(r.codigo_ritual) === 70 && r.origem === 'trilha_ilusionista');
+    const jaTemTecerIlusaoNormal = (rituaisHook.rituaisAprendidos || []).find((r: any) => Number(r.codigo_ritual) === 70 && r.origem !== 'trilha_ilusionista');
+
+    if (temIlusionista10 && !jaTemTecerIlusaoTrilha && !jaTemTecerIlusaoNormal) {
+      const baseRitual = (rituaisHook.rituais || []).find(r => Number(r.Codigo_Ritual) === 70);
+      if (baseRitual) {
+        rituaisHook.aprenderRitual({
+          codigo_ritual: 70,
+          nome: `${baseRitual.Nome_Ritual} (Ilusionista)`,
+          origem: 'trilha_ilusionista',
+          circulo: baseRitual.Circulo_Ritual,
+          elemento: baseRitual.Elemento_Ritual
+        });
+      }
+    } else if (temIlusionista10 && jaTemTecerIlusaoNormal) {
+       if (jaTemTecerIlusaoTrilha) {
+         rituaisHook.esquecerRitual('trilha_ilusionista');
+       }
+       const baseRitual = (rituaisHook.rituais || []).find(r => Number(r.Codigo_Ritual) === 70);
+       const nomeBase = baseRitual ? baseRitual.Nome_Ritual : 'Tecer Ilusão';
+       const nomeComIlusionista = `${nomeBase} (Ilusionista)`;
+       const nomeAtual = jaTemTecerIlusaoNormal.customNome || jaTemTecerIlusaoNormal.nome || '';
+       const precisaAjustarNome = !nomeAtual.includes('(Ilusionista)');
+       if (!jaTemTecerIlusaoNormal.customProps?.normal?.Execucao_Ritual?.includes('Movimento') || precisaAjustarNome) {
+         const existingProps = jaTemTecerIlusaoNormal.customProps || {};
+         rituaisHook.editarRitual(jaTemTecerIlusaoNormal.origem, nomeComIlusionista, jaTemTecerIlusaoNormal.customDesc, {
+             ...existingProps,
+             normal: { ...(existingProps.normal || {}), Execucao_Ritual: 'Movimento (+1 PE)' },
+             discente: { ...(existingProps.discente || {}), Execucao_Ritual: 'Movimento (+1 PE)' },
+             verdadeiro: { ...(existingProps.verdadeiro || {}), Execucao_Ritual: 'Movimento (+1 PE)' }
+         });
+       }
+    } else if (!temIlusionista10) {
+      if (jaTemTecerIlusaoTrilha) {
+        rituaisHook.esquecerRitual('trilha_ilusionista');
+      }
+      if (jaTemTecerIlusaoNormal) {
+        const existingProps = jaTemTecerIlusaoNormal.customProps || {};
+        const { Execucao_Ritual: _e1, ...normalRest } = existingProps.normal || {};
+        const { Execucao_Ritual: _e2, ...discenteRest } = existingProps.discente || {};
+        const { Execucao_Ritual: _e3, ...verdadeiroRest } = existingProps.verdadeiro || {};
+        const nomeAtual = jaTemTecerIlusaoNormal.customNome || jaTemTecerIlusaoNormal.nome || '';
+        const precisaRemoverIlusionista = nomeAtual.includes('(Ilusionista)');
+        const nomeLimpo = precisaRemoverIlusionista ? nomeAtual.replace(/\s*\(Ilusionista\)/gi, '').trim() : jaTemTecerIlusaoNormal.customNome;
+        if (existingProps.normal?.Execucao_Ritual?.includes('Movimento') || precisaRemoverIlusionista) {
+          rituaisHook.editarRitual(jaTemTecerIlusaoNormal.origem, nomeLimpo, jaTemTecerIlusaoNormal.customDesc, {
+            ...existingProps,
+            normal: normalRest,
+            discente: discenteRest,
+            verdadeiro: verdadeiroRest
+          });
+        }
+      }
+    }
+
+    // TRILHA 44: VIAJANTE DAS SOMBRAS
+    const temViajanteDasSombras99 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 44 && (regras['nex_experiencia'] ? nivel >= 20 : effectiveNex >= 99));
+    const jaTemControlarSombras = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_viajante_das_sombras' || r.codigo_ritual === 116);
+
+    if (temViajanteDasSombras99 && !jaTemControlarSombras) {
+      const baseRitual = (rituaisHook.rituais || []).find(r => r.Codigo_Ritual === 116);
+      if (baseRitual) {
+        rituaisHook.aprenderRitual({
+          codigo_ritual: 116,
+          nome: `${baseRitual.Nome_Ritual} (Viajante das Sombras)`,
+          origem: 'trilha_viajante_das_sombras',
+          circulo: baseRitual.Circulo_Ritual,
+          elemento: baseRitual.Elemento_Ritual
+        });
+      }
+    } else if (!temViajanteDasSombras99 && (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_viajante_das_sombras')) {
+      rituaisHook.esquecerRitual('trilha_viajante_das_sombras');
+    }
+
     const isInventarioLoaded = itensHook.itensInventario !== undefined && itensHook.itensInventario !== null;
     const temAgenteSecreto10 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 16 && (regras['nex_experiencia'] ? nivel >= 2 : effectiveNex >= 10));
     if (temAgenteSecreto10 && isInventarioLoaded) {
@@ -240,7 +317,7 @@ export const FichaScreen: React.FC = () => {
               <StatusPanel />
               <DefesaPanel />
               <ProtecoesPanel />
-              </div>
+            </div>
 
             {/* COLUNA MEIO: Perícias */}
             <div className="flex flex-1 flex-col pb-10">
@@ -250,7 +327,7 @@ export const FichaScreen: React.FC = () => {
         </div>
 
         {/* COLUNA DIREITA: Abas (Combate, Habilidades, Rituais...) */}
-        <div className="relative min-w-[320px] flex-[1_1_34%]">
+        <div className="relative min-w-[320px] flex-[1_1_34%] self-stretch">
           <div className="absolute inset-0 pb-10 pt-[22px]">
             <AbasPanel />
           </div>
@@ -278,14 +355,14 @@ function AtributosFicha() {
   const { 
     atributos, setAtributos, bonusAtributos, setBonusAtributos, bloquearLetras, atributosFinais, 
     nex, setNex, regras, regrasAtivasAtributos, setRegrasAtivasAtributos, pontosRestantes, alterarAtributo, nivel,
-    trilhasHook
+    trilhasHook, bonusTrilhasAtributos
   } = useRPG();
   
   const capMaximo = capMaximoAtributo(nivel);
 
   const renderAtributo = (nome, posClasses) => {
-    const bonusTrilhaInt = (nome === 'INT' && trilhasHook.trilhaSelecionada?.Codigo_Trilha === 19 && (regras['nex_experiencia'] ? nivel >= 20 : nex >= 99)) ? 1 : 0;
-    const isGreen = atributosFinais[nome] > (atributos[nome] + bonusAtributos[nome] + bonusTrilhaInt);
+    const bonusTrilhaVal = bonusTrilhasAtributos ? (bonusTrilhasAtributos[nome] || 0) : 0;
+    const isGreen = atributosFinais[nome] > (atributos[nome] + bonusAtributos[nome] + bonusTrilhaVal);
 
     return (
       <div key={nome} className={`absolute flex flex-col items-center justify-center ${posClasses}`}>
@@ -420,7 +497,7 @@ function AtributosFicha() {
 // COMPONENTE INTERNO: DEFESA
 // ============================================================
 function DefesaPanel() {
-  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras, periciasHook, atributosFinais, regrasAutomaticasAtivas, protecoes, protecoesHook, totalDefesaProtecoes, bonusVestimentas, bonusMaldicoes, trilhasHook, status, regras, nivel, nex } = useRPG();
+  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras, periciasHook, atributosFinais, regrasAutomaticasAtivas, protecoes, protecoesHook, totalDefesaProtecoes, bonusVestimentas, bonusMaldicoes, trilhasHook, status, regras, nivel, nex, bonusDefesaTrilha34 } = useRPG();
 
   const [bloqueio, setBloqueio] = React.useState(0);
   const [esquiva, setEsquiva] = React.useState(0);
@@ -482,7 +559,8 @@ function DefesaPanel() {
                   const isMachucado = status.pvAtual !== null && status.pvMax > 0 && status.pvAtual <= Math.floor(status.pvMax / 2);
                   const temInquebravel = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 5 && (regras['nex_experiencia'] ? (nivel >= 20) : (nex >= 99));
                   const bonusTrilha5 = (temInquebravel && isMachucado) ? 5 : 0;
-                  return defOutros + defOutrosBonusRegra + bonusRegra21 + bonusRegra25 + bonusTrilha5 + totalDefesaProtecoes + (bonusVestimentas?.defesa || 0) + (bonusMaldicoes?.defesa || 0) || '';
+                  const bonusDefesa34 = bonusDefesaTrilha34 || 0;
+                  return defOutros + defOutrosBonusRegra + bonusRegra21 + bonusRegra25 + bonusTrilha5 + bonusDefesa34 + totalDefesaProtecoes + (bonusVestimentas?.defesa || 0) + (bonusMaldicoes?.defesa || 0) || '';
                 })()}
                 placeholder="0"
                 title="Outros bônus de defesa"
@@ -496,7 +574,8 @@ function DefesaPanel() {
                   const isMachucado = status.pvAtual !== null && status.pvMax > 0 && status.pvAtual <= Math.floor(status.pvMax / 2);
                   const temInquebravel = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 5 && (regras['nex_experiencia'] ? (nivel >= 20) : (nex >= 99));
                   const bonusTrilha5 = (temInquebravel && isMachucado) ? 5 : 0;
-                  setDefOutros(Math.max(0, valDigitado - defOutrosBonusRegra - bonusRegra21 - bonusRegra25 - bonusTrilha5 - totalDefesaProtecoes));
+                  const bonusDefesa34 = bonusDefesaTrilha34 || 0;
+                  setDefOutros(Math.max(0, valDigitado - defOutrosBonusRegra - bonusRegra21 - bonusRegra25 - bonusTrilha5 - bonusDefesa34 - totalDefesaProtecoes));
                 }}
                 className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-green-600"
               />
@@ -751,33 +830,35 @@ function ProtecoesPanel() {
       <BadgeBlock titulo="Resistências" itens={resistencias} setItens={setResistencias} itensExtras={resistenciasExtras} />
       <BadgeBlock titulo="Proficiências" itens={proficiencias} setItens={setProficiencias} itensExtras={proficienciasExtras} />
       
-      <button 
-        onClick={() => setMostrarOutros(!mostrarOutros)}
-        className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-zinc-300 transition w-fit mt-1"
-      >
-        <svg 
-          width="12" 
-          height="12" 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
-          strokeWidth="2.5" 
-          strokeLinecap="round" 
-          strokeLinejoin="round"
-          className={`transition-transform duration-200 ${mostrarOutros ? 'rotate-90' : ''}`}
+      <div className="flex flex-col">
+        <button 
+          onClick={() => setMostrarOutros(!mostrarOutros)}
+          className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-zinc-300 transition w-fit mt-1"
         >
-          <polyline points="9 18 15 12 9 6" />
-        </svg>
-        Outros
-      </button>
+          <svg 
+            width="12" 
+            height="12" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="2.5" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+            className={`transition-transform duration-200 ${mostrarOutros ? 'rotate-90' : ''}`}
+          >
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+          Outros
+        </button>
 
-      {mostrarOutros && (
-        <div className="flex flex-col gap-5">
-          <BadgeBlock titulo="Vulnerabilidades" itens={vulnerabilidades} setItens={setVulnerabilidades} />
-          <BadgeBlock titulo="Imunidades" itens={imunidades} setItens={setImunidades} itensExtras={imunidadesExtras} />
-          <BadgeBlock titulo="Sentidos" itens={sentidos} setItens={setSentidos} itensExtras={sentidosExtras} />
-        </div>
-      )}
+        <Collapse isOpen={mostrarOutros}>
+          <div className="flex flex-col gap-5 pt-4">
+            <BadgeBlock titulo="Vulnerabilidades" itens={vulnerabilidades} setItens={setVulnerabilidades} />
+            <BadgeBlock titulo="Imunidades" itens={imunidades} setItens={setImunidades} itensExtras={imunidadesExtras} />
+            <BadgeBlock titulo="Sentidos" itens={sentidos} setItens={setSentidos} itensExtras={sentidosExtras} />
+          </div>
+        </Collapse>
+      </div>
     </div>
   );
 }

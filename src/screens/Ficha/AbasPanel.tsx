@@ -174,9 +174,10 @@ export const AbasPanel: React.FC = () => {
     versaoRitual, setVersaoRitual,
     elementoRitual, setElementoRitual,
     status, trilhasHook, periciasHook, poderesExtras, setPoderesExtras,
+    temAdepto10, temAdepto40, temAdepto65, temAdepto99,
   } = useRPG();
 
-  const [escolhendoRitualPlaceholder, setEscolhendoRitualPlaceholder] = React.useState<{ origem: string, nex?: number } | null>(null);
+  const [escolhendoRitualPlaceholder, setEscolhendoRitualPlaceholder] = React.useState<{ origem: string, nex?: number, maxCirculo?: number } | null>(null);
   const [ritualEditandoOrigem, setRitualEditandoOrigem] = React.useState<string | null>(null);
   const [ritualNomeEditando, setRitualNomeEditando] = React.useState('');
   const [ritualDescricaoEditando, setRitualDescricaoEditando] = React.useState('');
@@ -1139,6 +1140,43 @@ export const AbasPanel: React.FC = () => {
                                                </div>
                                              </div>
                                            )}
+                                            {t.Codigo_Trilha === 32 && nexLvl === 40 && !isVersatilidade && (
+                                              <div className="px-3 pb-3 pt-1 border-t border-zinc-800/80 flex flex-col gap-1.5" onClick={e => e.stopPropagation()}>
+                                                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+                                                  Atributo para PE e DT dos Rituais (40%):
+                                                </span>
+                                                <div className="flex flex-wrap gap-2 items-center">
+                                                  <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                      e.stopPropagation();
+                                                      setPoderesExtras(prev => ({ ...prev, adepto_atributo_40: 'VIG' }));
+                                                    }}
+                                                    className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${
+                                                      poderesExtras['adepto_atributo_40'] !== 'AGI'
+                                                        ? 'bg-green-950/60 border-green-600 text-green-300' 
+                                                        : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                                                    }}`}
+                                                  >
+                                                    Vigor (Padrão)
+                                                  </button>
+                                                  <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                      e.stopPropagation();
+                                                      setPoderesExtras(prev => ({ ...prev, adepto_atributo_40: 'AGI' }));
+                                                    }}
+                                                    className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${
+                                                      poderesExtras['adepto_atributo_40'] === 'AGI'
+                                                        ? 'bg-green-950/60 border-green-600 text-green-300' 
+                                                        : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                                                    }}`}
+                                                  >
+                                                    Agilidade
+                                                  </button>
+                                                </div>
+                                              </div>
+                                            )}
                                          </Collapse>
                                       </div>
                                     );
@@ -1156,15 +1194,58 @@ export const AbasPanel: React.FC = () => {
                                       >Editar</button>
                                     )}
                                     <button onClick={(e) => {
-                                      e.stopPropagation();
-                                      if (isVersatilidade) {
-                                        if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 17) {
-                                          setPoderesExtras(prev => {
-                                            const n = { ...prev };
-                                            delete n.cacador_versatilidade_ja_tinha_sobrevivencia;
-                                            return n;
-                                          });
-                                        }
+                                       e.stopPropagation();
+                                       if (isVersatilidade) {
+                                         if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 17) {
+                                           setPoderesExtras(prev => {
+                                             const n = { ...prev };
+                                             delete n.cacador_versatilidade_ja_tinha_sobrevivencia;
+                                             return n;
+                                           });
+                                         }
+                                         if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 21) {
+                                           setPoderesExtras(prev => {
+                                             const n = { ...prev };
+                                             delete n.muambeiro_versatilidade_profissao;
+                                             return n;
+                                           });
+                                         }
+                                         if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 22) {
+                                           setPoderesExtras(prev => {
+                                             const n = { ...prev };
+                                             delete n.exorcista_versatilidade_ja_tinha_religiao;
+                                             return n;
+                                           });
+                                         }
+                                         if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 32) {
+                                           if (trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 32) {
+                                             rituaisHook.atualizarRituaisAprendidos(prev => prev.filter(r => !r.origem?.startsWith('adepto_')));
+                                             setPoderesExtras(prev => {
+                                               const n = { ...prev };
+                                               delete n.adepto_atributo_40;
+                                               delete n.adepto_recusados;
+                                               delete n.adepto_excluidos;
+                                               return n;
+                                             });
+                                           }
+                                         }
+                                         trilhasHook.setVersatilidadeSelecionada(null);
+                                       } else {
+                                         if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 17) {
+                                           setPoderesExtras(prev => {
+                                             const n = { ...prev };
+                                             delete n.cacador_ja_tinha_sobrevivencia;
+                                             return n;
+                                           });
+                                         }
+                                         if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 21) {
+                                           setPoderesExtras(prev => {
+                                             const n = { ...prev };
+                                             delete n.muambeiro_profissao_10;
+                                             delete n.muambeiro_profissao_65;
+                                             return n;
+                                           });
+                                         }
                                          if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 22) {
                                            setPoderesExtras(prev => {
                                              const n = { ...prev };
@@ -1173,42 +1254,23 @@ export const AbasPanel: React.FC = () => {
                                              return n;
                                            });
                                          }
-                                        if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 21) {
-                                          setPoderesExtras(prev => {
-                                            const n = { ...prev };
-                                            delete n.muambeiro_versatilidade_profissao;
-                                            return n;
-                                          });
-                                        }
-                                         if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 22) {
-                                           setPoderesExtras(prev => {
-                                             const n = { ...prev };
-                                             delete n.exorcista_versatilidade_ja_tinha_religiao;
-                                             return n;
-                                           });
+                                         if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 32) {
+                                           if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha !== 32) {
+                                             rituaisHook.atualizarRituaisAprendidos(prev => prev.filter(r => !r.origem?.startsWith('adepto_')));
+                                             setPoderesExtras(prev => {
+                                               const n = { ...prev };
+                                               delete n.adepto_atributo_40;
+                                               delete n.adepto_recusados;
+                                               delete n.adepto_excluidos;
+                                               return n;
+                                             });
+                                           }
                                          }
-                                        trilhasHook.setVersatilidadeSelecionada(null);
-                                      } else {
-                                        if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 17) {
-                                          setPoderesExtras(prev => {
-                                            const n = { ...prev };
-                                            delete n.cacador_ja_tinha_sobrevivencia;
-                                            return n;
-                                          });
-                                        }
-                                        if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 21) {
-                                          setPoderesExtras(prev => {
-                                            const n = { ...prev };
-                                            delete n.muambeiro_profissao_10;
-                                            delete n.muambeiro_profissao_65;
-                                            return n;
-                                          });
-                                        }
-                                        trilhasHook.setTrilhaSelecionada(null);
-                                      }
-                                    }}
-                                      className="text-xs text-green-500 hover:text-green-400 bg-green-950/30 hover:bg-green-900/50 px-3 py-1.5 rounded border border-green-900/50 transition-colors"
-                                    >Remover</button>
+                                         trilhasHook.setTrilhaSelecionada(null);
+                                       }
+                                     }}
+                                       className="text-xs text-green-500 hover:text-green-400 bg-green-950/30 hover:bg-green-900/50 px-3 py-1.5 rounded border border-green-900/50 transition-colors"
+                                     >Remover</button>
                                   </div>
                                 </div>
                               </Collapse>
@@ -1589,8 +1651,61 @@ export const AbasPanel: React.FC = () => {
             }
           }
 
+          // 2.9 Calcular slots de Adepto ao Oculto (Trilha 32)
+          const slotsAdeptoPendentesList: { chave?: string, index: number, nex: number, maxCirculo: number, isOcultista: boolean, isAdepto?: boolean, isRecusado?: boolean }[] = [];
+          if (temAdepto10) {
+            const adeptoRecusados = (poderesExtras['adepto_recusados'] || '').split(',').map(s => s.trim()).filter(Boolean);
+            const adeptoExcluidos = (poderesExtras['adepto_excluidos'] || '').split(',').map(s => s.trim()).filter(Boolean);
+            const isVersatilidade32 = trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 32;
+            const patamaresDisponiveis = isVersatilidade32 ? [55, 65, 75, 85, 95] : [15, 25, 35, 45, 55, 65, 75, 85, 95];
+            
+            patamaresDisponiveis.forEach(patamar => {
+              if (effectiveNex >= patamar) {
+                const chave = `adepto_${patamar}`;
+                const jaAprendeu = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === chave);
+                const excluido = adeptoExcluidos.includes(String(patamar));
+                if (!jaAprendeu && !excluido) {
+                  const nivelDoPatamar = calcularNivel(patamar);
+                  let maxC = 1;
+                  for (let c = 3; c >= 1; c--) {
+                    if (verificarAcessoCirculo(c, nivelDoPatamar, classe).atende) {
+                      maxC = c;
+                      break;
+                    }
+                  }
+                  const recusado = adeptoRecusados.includes(String(patamar));
+                  slotsAdeptoPendentesList.push({
+                    chave,
+                    index: 1000 + patamar,
+                    nex: patamar,
+                    maxCirculo: maxC,
+                    isOcultista: false,
+                    isAdepto: true,
+                    isRecusado: recusado
+                  });
+                }
+              }
+            });
+
+            if (temAdepto99) {
+              const chave99 = 'adepto_99';
+              const jaAprendeu99 = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === chave99);
+              if (!jaAprendeu99) {
+                slotsAdeptoPendentesList.push({
+                  chave: chave99,
+                  index: 1099,
+                  nex: 99,
+                  maxCirculo: 4,
+                  isOcultista: false,
+                  isAdepto: true,
+                  isRecusado: false
+                });
+              }
+            }
+          }
+
           // 3. Desbloqueio Cronológico por Círculo
-          const allRitualSlots = [...slotsPoderPendentesList, ...slotsOcultistaPendentesList, ...slotsOrigemPendentesList, ...slotsRegra61PendentesList, ...slotsRegra62PendentesList, ...slotsGraduadoPendentesList];
+          const allRitualSlots = [...slotsPoderPendentesList, ...slotsOcultistaPendentesList, ...slotsOrigemPendentesList, ...slotsRegra61PendentesList, ...slotsRegra62PendentesList, ...slotsGraduadoPendentesList, ...slotsAdeptoPendentesList];
           const sortedSlots = allRitualSlots.sort((a, b) => {
              if (a.nex !== b.nex) return a.nex - b.nex;
              if (a.isOcultista && !b.isOcultista) return -1;
@@ -1606,7 +1721,9 @@ export const AbasPanel: React.FC = () => {
              return subAbaRituais === 'grimorio' ? isGrimorio : !isGrimorio;
           });
           for (const slot of slotsParaSubAba) {
-             if (!circlesSeen.has(slot.maxCirculo)) {
+             if ((slot as any).isAdepto) {
+                visibleRitualSlots.push(slot);
+             } else if (!circlesSeen.has(slot.maxCirculo)) {
                 visibleRitualSlots.push(slot);
                 circlesSeen.add(slot.maxCirculo);
              }
@@ -1745,6 +1862,100 @@ export const AbasPanel: React.FC = () => {
                                   </div>
                                 </div>
                           );
+                        } else if ((slot as any).isAdepto) {
+                            const chave = (slot as any).chave;
+                            const is99 = chave === 'adepto_99';
+                            const nexSlot = (slot as any).nex;
+                            const isRecusado = (slot as any).isRecusado;
+
+                            if (isRecusado) {
+                              return (
+                                <div
+                                  key={`recusado_adepto_${chave}_${idx}`}
+                                  className="flex w-full items-center justify-between rounded border border-zinc-800 bg-zinc-900/30 px-4 py-2.5 transition"
+                                >
+                                  <div className="flex flex-col items-start gap-0.5 text-left">
+                                    <span className="text-xs font-semibold text-zinc-400">Ritual Recusado</span>
+                                    <span className="text-[0.65rem] text-zinc-600">
+                                      Adepto ao Oculto ({regras['nex_experiencia'] ? `Nível ${calcularNivel(nexSlot)}` : `NEX ${nexSlot}%`})
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setPoderesExtras(prev => {
+                                          const current = (prev['adepto_recusados'] || '').split(',').map(s => s.trim()).filter(Boolean);
+                                          const next = current.filter(p => p !== String(nexSlot));
+                                          return { ...prev, adepto_recusados: next.join(',') };
+                                        });
+                                      }}
+                                      className="rounded border border-zinc-800 bg-zinc-900/50 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-zinc-400 hover:border-green-800 hover:text-green-400 transition"
+                                    >
+                                      Desfazer
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setPoderesExtras(prev => {
+                                          const curEx = (prev['adepto_excluidos'] || '').split(',').map(s => s.trim()).filter(Boolean);
+                                          if (!curEx.includes(String(nexSlot))) curEx.push(String(nexSlot));
+                                          return { ...prev, adepto_excluidos: curEx.join(',') };
+                                        });
+                                      }}
+                                      className="rounded border border-red-900/40 bg-red-950/20 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-400/80 hover:border-red-700 hover:text-red-300 transition"
+                                    >
+                                      Excluir
+                                    </button>
+                                  </div>
+                                </div>
+                              );
+                            }
+
+                            const labelSlot = is99 
+                              ? `Adepto ao Oculto (NEX 99% - 4º Círculo)`
+                              : `Adepto ao Oculto (${regras['nex_experiencia'] ? `Nível ${calcularNivel(nexSlot)}` : `NEX ${nexSlot}%`})`;
+
+                            return (
+                              <div
+                                key={`adepto_${chave}_${idx}`}
+                                onClick={() => setEscolhendoRitualPlaceholder({ origem: chave, nex: nexSlot, maxCirculo: slot.maxCirculo })}
+                                className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-green-800 border-l-4 bg-zinc-900/40 transition hover:border-green-800 hover:bg-zinc-900/80"
+                                style={{ borderLeftStyle: 'solid' }}
+                              >
+                                <div className="flex items-center justify-between gap-3 bg-zinc-800/40 px-4 py-3 transition group-hover:bg-zinc-800/60">
+                                  <div className="flex flex-col items-start gap-0.5 text-left">
+                                    <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">Escolher Ritual</span>
+                                    <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-500 group-hover:text-zinc-400">
+                                      {labelSlot}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    {!is99 && (
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setPoderesExtras(prev => {
+                                            const current = (prev['adepto_recusados'] || '').split(',').map(s => s.trim()).filter(Boolean);
+                                            if (!current.includes(String(nexSlot))) {
+                                              current.push(String(nexSlot));
+                                            }
+                                            return { ...prev, adepto_recusados: current.join(',') };
+                                          });
+                                        }}
+                                        className="rounded border border-zinc-700/80 bg-zinc-900/50 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-zinc-400 hover:border-red-900/60 hover:text-red-400 transition"
+                                      >
+                                        Recusar
+                                      </button>
+                                    )}
+                                    <span className="whitespace-nowrap rounded bg-green-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-green-400 transition group-hover:bg-green-900/60 group-hover:text-green-300">+ Adicionar</span>
+                                  </div>
+                                </div>
+                              </div>
+                            );
                         } else {
                             const chave = (slot as any).chave;
                             const isOrigemSlot = (slot as any).isOrigem;
@@ -1807,7 +2018,8 @@ export const AbasPanel: React.FC = () => {
                           }).map(elemento => {
                             const ritualsOfElement = ritualsByElement[elemento];
                             const hasAntena = armasHook?.armasInventario?.some(a => a.arma.Nome_Item?.trim().toLowerCase() === 'a antena');
-                            const baseDT = 10 + (atributosFinais.PRE || 0) + calcularNivel(nex) + (hasAntena ? 3 : 0);
+                            const atrParaDT = temAdepto40 ? (poderesExtras['adepto_atributo_40'] === 'AGI' ? 'AGI' : 'VIG') : 'PRE';
+                            const baseDT = 10 + (atributosFinais[atrParaDT] || 0) + calcularNivel(nex) + (hasAntena ? 3 : 0);
                             
                             return (
                               <div key={elemento} className="mt-2 mb-2 flex flex-col gap-2.5">
@@ -1815,7 +2027,7 @@ export const AbasPanel: React.FC = () => {
                                   <span className="h-2 w-2 rounded-full shrink-0" style={{ background: obterCorBadge(elemento) || '#52525b' }}></span>
                                   <span className="text-[0.6rem] font-bold uppercase tracking-[0.15em] text-zinc-500">{elemento}</span>
                                   <div className="flex-1 border-t border-zinc-800/50"></div>
-                                  <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500" title="10 + PRE + Nível">DT {baseDT}</span>
+                                  <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500" title={`10 + ${atrParaDT} + Nível`}>DT {baseDT}</span>
                                 </div>
                                 <div className="flex flex-col gap-2.5">
                                 {ritualsOfElement.map(ritual => {
@@ -1938,7 +2150,7 @@ export const AbasPanel: React.FC = () => {
                                 )}
                                 <div className="flex flex-col gap-1 justify-center py-1">
                                   <div className="flex items-center gap-2">
-                                    <span className="text-sm font-bold text-zinc-100">{ritual.customNome || (ritual.learnedNome && ritual.learnedNome !== ritual.Nome_Ritual ? ritual.learnedNome : (ritual.Origem === 'trilha_conduite' ? `${ritual.Nome_Ritual} (Conduíte)` : (ritual.Origem === 'trilha_flagelador' ? `${ritual.Nome_Ritual} (Flagelador)` : (ritual.Origem === 'trilha_graduado' ? `${ritual.Nome_Ritual} (Graduado)` : ritual.Nome_Ritual))))}</span>
+                                    <span className="text-sm font-bold text-zinc-100">{ritual.customNome || (ritual.learnedNome && ritual.learnedNome !== ritual.Nome_Ritual ? ritual.learnedNome : (ritual.Origem === 'trilha_conduite' ? `${ritual.Nome_Ritual} (Conduíte)` : (ritual.Origem === 'trilha_flagelador' ? `${ritual.Nome_Ritual} (Flagelador)` : (ritual.Origem === 'trilha_graduado' ? `${ritual.Nome_Ritual} (Graduado)` : (ritual.Origem === 'trilha_viajante_das_sombras' ? `${ritual.Nome_Ritual} (Viajante das Sombras)` : (ritual.Origem?.startsWith('adepto_') ? `${ritual.Nome_Ritual} (Adepto)` : ritual.Nome_Ritual))))))}</span>
                                     <span className="rounded bg-blue-950/30 px-1.5 py-0.5 text-[10px] font-bold text-blue-400 border border-blue-900/50">
                                       {pe} PE
                                     </span>
@@ -2293,6 +2505,7 @@ export const AbasPanel: React.FC = () => {
                     codigo_ritual: ritual.Codigo_Ritual,
                     origem: origemExtra,
                     elemento_escolhido: elementoFinal,
+                    circulo: ritual.Circulo_Ritual,
                     customNome: ritual.Nome_Ritual,
                     customDesc: ritual.Descricao_Ritual,
                     ...(propsLamina ? { customProps: propsLamina } : {}),

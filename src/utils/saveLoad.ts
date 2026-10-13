@@ -75,6 +75,7 @@ export function exportarFicha(rpg: any) {
 
     // Trilhas
     trilhaSelecionada: rpg.trilhasHook.trilhaSelecionada,
+    versatilidadeSelecionada: rpg.trilhasHook.versatilidadeSelecionada,
     habilidadesTrilhaEditadas: rpg.trilhasHook.habilidadesTrilhaEditadas,
   };
 
@@ -168,6 +169,7 @@ export function importarFicha(event: React.ChangeEvent<HTMLInputElement>, rpg: a
       
       if (data.modificacoesAtivas !== undefined) rpg.modificacoesHook.setModificacoesAtivas(data.modificacoesAtivas);
       if (data.trilhaSelecionada !== undefined) rpg.trilhasHook.setTrilhaSelecionada(data.trilhaSelecionada);
+      if (data.versatilidadeSelecionada !== undefined) rpg.trilhasHook.setVersatilidadeSelecionada(data.versatilidadeSelecionada);
       if (data.habilidadesTrilhaEditadas !== undefined) rpg.trilhasHook.setHabilidadesTrilhaEditadas(data.habilidadesTrilhaEditadas);
 
       alert('Ficha carregada com sucesso!');

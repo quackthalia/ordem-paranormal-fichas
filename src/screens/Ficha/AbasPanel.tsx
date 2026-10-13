@@ -175,9 +175,10 @@ export const AbasPanel: React.FC = () => {
     elementoRitual, setElementoRitual,
     status, trilhasHook, periciasHook, poderesExtras, setPoderesExtras,
     temAdepto10, temAdepto40, temAdepto65, temAdepto99,
+    temMonstruoso10, temMonstruoso40, temMonstruoso65, temMonstruoso99, monstruosoElemento,
   } = useRPG();
 
-  const [escolhendoRitualPlaceholder, setEscolhendoRitualPlaceholder] = React.useState<{ origem: string, nex?: number, maxCirculo?: number } | null>(null);
+  const [escolhendoRitualPlaceholder, setEscolhendoRitualPlaceholder] = React.useState<{ origem: string, nex?: number, maxCirculo?: number, circuloFixo?: number, elementoFiltro?: string } | null>(null);
   const [ritualEditandoOrigem, setRitualEditandoOrigem] = React.useState<string | null>(null);
   const [ritualNomeEditando, setRitualNomeEditando] = React.useState('');
   const [ritualDescricaoEditando, setRitualDescricaoEditando] = React.useState('');
@@ -1038,6 +1039,75 @@ export const AbasPanel: React.FC = () => {
                                             className="px-3 pb-3 pt-1 text-xs text-zinc-400"
                                             dangerouslySetInnerHTML={{ __html: formatarDescricao(descHab) }}
                                           />
+                                          {t.Codigo_Trilha === 18 && nexLvl === 10 && (
+                                            <div className="px-3 pb-3 pt-2 border-t border-zinc-800/80 flex flex-col gap-2" onClick={e => e.stopPropagation()}>
+                                              <div className="flex items-center justify-between">
+                                                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                                                  Elemento Escolhido (10%):
+                                                </span>
+                                                {afinidadeEscolhida && (
+                                                  <span className="text-[10px] text-zinc-500 italic">
+                                                    (Vinculado à Afinidade: {afinidadeEscolhida})
+                                                  </span>
+                                                )}
+                                              </div>
+                                              <div className="flex flex-wrap gap-2 items-center">
+                                                {(['Sangue', 'Morte', 'Conhecimento', 'Energia'] as const).map(elem => {
+                                                  const isSelected = monstruosoElemento === elem;
+                                                  const isDisabled = Boolean(afinidadeEscolhida && afinidadeEscolhida !== elem);
+                                                  return (
+                                                    <button
+                                                      key={elem}
+                                                      type="button"
+                                                      disabled={isDisabled}
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (!afinidadeEscolhida) {
+                                                          setPoderesExtras(prev => ({ ...prev, monstruoso_elemento: elem }));
+                                                        }
+                                                      }}
+                                                      className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${
+                                                        isSelected 
+                                                          ? 'bg-green-950/60 border-green-600 text-green-300' 
+                                                          : isDisabled
+                                                            ? 'opacity-40 cursor-not-allowed bg-zinc-900 border-zinc-800 text-zinc-600'
+                                                            : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                                                      }`}
+                                                    >
+                                                      {elem}
+                                                    </button>
+                                                  );
+                                                })}
+                                              </div>
+                                            </div>
+                                          )}
+                                          {t.Codigo_Trilha === 18 && (() => {
+                                            const poderMonstruosoMap: Record<number, Record<string, number>> = {
+                                              10: { Sangue: 188, Morte: 189, Conhecimento: 190, Energia: 191 },
+                                              40: { Sangue: 192, Morte: 193, Conhecimento: 194, Energia: 195 },
+                                              65: { Sangue: 196, Morte: 197, Conhecimento: 198, Energia: 199 },
+                                              99: { Sangue: 200, Morte: 201, Conhecimento: 202, Energia: 203 },
+                                            };
+                                            const codPoder = poderMonstruosoMap[nexLvl]?.[monstruosoElemento];
+                                            if (!codPoder) return null;
+                                            const pData = listaPoderesUtilidade.find(p => p.codigo_poder === codPoder);
+                                            if (!pData) return null;
+                                            const badgeClasses = getBadgeElemento(monstruosoElemento);
+                                            return (
+                                              <div className="mx-3 mb-3 mt-1 rounded-r border-l-2 border-green-500 bg-zinc-900/80 p-3 flex flex-col gap-2" onClick={e => e.stopPropagation()}>
+                                                <div className="flex items-center justify-between gap-2">
+                                                  <span className="text-sm font-bold text-zinc-100">{pData.Nome}</span>
+                                                  <span className={`rounded border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${badgeClasses}`}>
+                                                    {monstruosoElemento}
+                                                  </span>
+                                                </div>
+                                                <div 
+                                                  className="text-xs text-zinc-300 leading-relaxed"
+                                                  dangerouslySetInnerHTML={{ __html: formatarDescricao(pData.Descricao) }}
+                                                />
+                                              </div>
+                                            );
+                                          })()}
                                           {t.Codigo_Trilha === 21 && nexLvl === 65 && !isVersatilidade && (
                                             <div className="px-3 pb-3 pt-1 border-t border-zinc-800/80 flex flex-col gap-1.5" onClick={e => e.stopPropagation()}>
                                               <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
@@ -1705,7 +1775,23 @@ export const AbasPanel: React.FC = () => {
           }
 
           // 3. Desbloqueio Cronológico por Círculo
-          const allRitualSlots = [...slotsPoderPendentesList, ...slotsOcultistaPendentesList, ...slotsOrigemPendentesList, ...slotsRegra61PendentesList, ...slotsRegra62PendentesList, ...slotsGraduadoPendentesList, ...slotsAdeptoPendentesList];
+          const slotsMonstruosoPendentesList: any[] = [];
+          if (temMonstruoso99 && monstruosoElemento === 'Conhecimento') {
+            const chaveMonstruoso = 'monstruoso_99_conhecimento';
+            const jaAprendeuMonstruoso = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === chaveMonstruoso);
+            if (!jaAprendeuMonstruoso) {
+              slotsMonstruosoPendentesList.push({
+                chave: chaveMonstruoso,
+                index: 2099,
+                nex: 99,
+                maxCirculo: 4,
+                isOcultista: false,
+                isMonstruoso: true,
+              });
+            }
+          }
+
+          const allRitualSlots = [...slotsPoderPendentesList, ...slotsOcultistaPendentesList, ...slotsOrigemPendentesList, ...slotsRegra61PendentesList, ...slotsRegra62PendentesList, ...slotsGraduadoPendentesList, ...slotsAdeptoPendentesList, ...slotsMonstruosoPendentesList];
           const sortedSlots = allRitualSlots.sort((a, b) => {
              if (a.nex !== b.nex) return a.nex - b.nex;
              if (a.isOcultista && !b.isOcultista) return -1;
@@ -1721,7 +1807,7 @@ export const AbasPanel: React.FC = () => {
              return subAbaRituais === 'grimorio' ? isGrimorio : !isGrimorio;
           });
           for (const slot of slotsParaSubAba) {
-             if ((slot as any).isAdepto) {
+             if ((slot as any).isAdepto || (slot as any).isMonstruoso) {
                 visibleRitualSlots.push(slot);
              } else if (!circlesSeen.has(slot.maxCirculo)) {
                 visibleRitualSlots.push(slot);
@@ -1956,6 +2042,26 @@ export const AbasPanel: React.FC = () => {
                                 </div>
                               </div>
                             );
+                        } else if ((slot as any).isMonstruoso) {
+                          const chave = (slot as any).chave;
+                          return (
+                            <div
+                              key={`monstruoso_${chave}_${idx}`}
+                              onClick={() => setEscolhendoRitualPlaceholder({ origem: chave, nex: 99, maxCirculo: 4, circuloFixo: 4, elementoFiltro: 'Conhecimento' })}
+                              className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-yellow-600 border-l-4 bg-zinc-900/40 transition hover:border-yellow-600 hover:bg-zinc-900/80"
+                              style={{ borderLeftStyle: 'solid' }}
+                            >
+                              <div className="flex items-center justify-between gap-3 bg-zinc-800/40 px-4 py-3 transition group-hover:bg-zinc-800/60">
+                                <div className="flex flex-col items-start gap-0.5 text-left">
+                                  <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">Escolher Ritual</span>
+                                  <span className="text-[0.65rem] font-bold uppercase tracking-wider text-yellow-500 group-hover:text-yellow-400">
+                                    Monstruoso (Conhecimento 99% - 4º Círculo)
+                                  </span>
+                                </div>
+                                <span className="whitespace-nowrap rounded bg-yellow-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-yellow-400 transition group-hover:bg-yellow-900/60 group-hover:text-yellow-300">+ Adicionar</span>
+                              </div>
+                            </div>
+                          );
                         } else {
                             const chave = (slot as any).chave;
                             const isOrigemSlot = (slot as any).isOrigem;
@@ -2150,7 +2256,7 @@ export const AbasPanel: React.FC = () => {
                                 )}
                                 <div className="flex flex-col gap-1 justify-center py-1">
                                   <div className="flex items-center gap-2">
-                                    <span className="text-sm font-bold text-zinc-100">{ritual.customNome || (ritual.learnedNome && ritual.learnedNome !== ritual.Nome_Ritual ? ritual.learnedNome : (ritual.Origem === 'trilha_conduite' ? `${ritual.Nome_Ritual} (Conduíte)` : (ritual.Origem === 'trilha_flagelador' ? `${ritual.Nome_Ritual} (Flagelador)` : (ritual.Origem === 'trilha_graduado' ? `${ritual.Nome_Ritual} (Graduado)` : (ritual.Origem === 'trilha_viajante_das_sombras' ? `${ritual.Nome_Ritual} (Viajante das Sombras)` : (ritual.Origem?.startsWith('adepto_') ? `${ritual.Nome_Ritual} (Adepto)` : ritual.Nome_Ritual))))))}</span>
+                                    <span className="text-sm font-bold text-zinc-100">{ritual.customNome || (ritual.learnedNome && ritual.learnedNome !== ritual.Nome_Ritual ? ritual.learnedNome : (ritual.Origem === 'trilha_conduite' ? `${ritual.Nome_Ritual} (Conduíte)` : (ritual.Origem === 'trilha_flagelador' ? `${ritual.Nome_Ritual} (Flagelador)` : (ritual.Origem === 'trilha_graduado' ? `${ritual.Nome_Ritual} (Graduado)` : (ritual.Origem === 'trilha_viajante_das_sombras' ? `${ritual.Nome_Ritual} (Viajante das Sombras)` : (ritual.Origem?.startsWith('adepto_') ? `${ritual.Nome_Ritual} (Adepto)` : (ritual.Origem?.startsWith('trilha_monstruoso_99_') || ritual.Origem === 'monstruoso_99_conhecimento' ? `${ritual.Nome_Ritual} (Monstruoso)` : ritual.Nome_Ritual)))))))}</span>
                                     <span className="rounded bg-blue-950/30 px-1.5 py-0.5 text-[10px] font-bold text-blue-400 border border-blue-900/50">
                                       {pe} PE
                                     </span>
@@ -2520,8 +2626,10 @@ export const AbasPanel: React.FC = () => {
             {escolhendoRitualPlaceholder && (
               <ModalRituais
                 rituais={rituaisHook.rituais || []}
+                circuloFixo={escolhendoRitualPlaceholder.circuloFixo}
+                elementoFiltro={escolhendoRitualPlaceholder.elementoFiltro}
                 limiteCirculo={
-                  escolhendoRitualPlaceholder.nex 
+                  (escolhendoRitualPlaceholder.maxCirculo || escolhendoRitualPlaceholder.nex) 
                     ? (classe === 'Ocultista' 
                         ? (escolhendoRitualPlaceholder.nex >= 85 ? 4 : escolhendoRitualPlaceholder.nex >= 55 ? 3 : escolhendoRitualPlaceholder.nex >= 25 ? 2 : 1)
                         : (escolhendoRitualPlaceholder.nex >= 75 ? 3 : escolhendoRitualPlaceholder.nex >= 45 ? 2 : 1))

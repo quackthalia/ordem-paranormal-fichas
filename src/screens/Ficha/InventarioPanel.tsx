@@ -38,7 +38,7 @@ import { ModalEditarArma } from '../../components/ModalEditarArma';
 import { SortableItemAmaldicoado } from '../../components/SortableItemAmaldicoado';
 
 import { formatarTexto } from '../../utils/formatters';
-import { calcularCategoriaFinal } from '../../utils/rpgRules';
+import { calcularCategoriaFinal, extrairDanoExplosivo, dobrarDadosDano } from '../../utils/rpgRules';
 
   
 
@@ -143,9 +143,22 @@ const calcularEspacosFinais = (espacoBase: number | string, modificacoesIds?: nu
 };
 
 function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stringDT, onEditar, toggleEquipado, isOverlay }: SortableItemGeralProps) {
-  const { maldicoesHook, modificacoesHook, regrasAutomaticasAtivas, trilhasHook, regras, nivel, nex } = useRPG();
+  const { maldicoesHook, modificacoesHook, regrasAutomaticasAtivas, trilhasHook, regras, nivel, nex, temGranadeiro10, maxExplosivosAutorais, temGranadeiro99, itensHook, temVigilante10, temMonstruoso99, monstruosoElemento } = useRPG();
   const effectiveNex = regras["nex_experiencia"] ? nivel * 5 : nex;
   const temRemendao = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 10 && effectiveNex >= 40) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 10 && effectiveNex >= 50);
+
+  const isExplosivo = item.item.Grupo_Item?.trim().toLowerCase() === 'explosivos';
+  const grupoLower = (item.item.Grupo_Item || '').trim().toLowerCase();
+  const isParanormal = grupoLower.includes('paranormal');
+  const isEquipGeral = !isExplosivo && !isParanormal;
+  const descontoCategoria = (temRemendao ? 1 : 0) + (temVigilante10 && isEquipGeral ? 1 : 0);
+  const idxExplosivo = isExplosivo 
+    ? (itensHook?.itensInventario?.filter(it => it.item.Grupo_Item?.trim().toLowerCase() === 'explosivos').findIndex(it => it.id === item.id) ?? -1)
+    : -1;
+  const isAutoral = isExplosivo && idxExplosivo >= 0 && idxExplosivo < (maxExplosivosAutorais || 0);
+
+  const danoBase = isExplosivo ? extrairDanoExplosivo(item.item) : null;
+  const danoExplosivo = (isAutoral && temGranadeiro99 && danoBase) ? dobrarDadosDano(danoBase) : danoBase;
   
   const getCorElemento = (elemento: string) => {
     const e = elemento.trim().toLowerCase();
@@ -205,17 +218,32 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
           onClick={() => toggleExpandir(item.id)}
         >
           <div className="flex flex-col gap-1 flex-1 min-w-0 justify-center">
-            <span className="font-bold text-sm text-zinc-100 truncate leading-none mt-0.5">{item.item.Nome_Item}</span>
-            {!(item.item.Grupo_Item?.toLowerCase().includes('explosivo') || stringDT) && (
-              <span className="text-xs text-zinc-400 font-medium truncate">Categoria {calcularCategoriaFinal(item.item.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes, false, item.maldicoes, maldicoesHook?.maldicoes, temRemendao ? 1 : 0)}</span>
-            )}
-            
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-bold text-sm text-zinc-100 truncate leading-none mt-0.5">{item.item.Nome_Item}</span>
+              {isAutoral && (
+                <span className="text-xs font-medium text-emerald-400/90">Autoral</span>
+              )}
+            </div>
 
-            {stringDT && (
-              <div className="flex items-center gap-4 text-xs text-zinc-300 mt-0.5">
+            <div className="flex items-center gap-3 text-xs text-zinc-400 mt-0.5 flex-wrap">
+              {isAutoral ? (
+                <span className="line-through text-zinc-500 font-medium">
+                  Categoria {calcularCategoriaFinal(item.item.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes, false, item.maldicoes, maldicoesHook?.maldicoes, descontoCategoria)}
+                </span>
+              ) : !(item.item.Grupo_Item?.toLowerCase().includes('explosivo') || stringDT) ? (
+                <span className="text-xs text-zinc-400 font-medium truncate">
+                  Categoria {calcularCategoriaFinal(item.item.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes, false, item.maldicoes, maldicoesHook?.maldicoes, descontoCategoria)}
+                </span>
+              ) : null}
+
+              {stringDT && (
                 <span><span className="font-bold text-green-400">DT:</span> {stringDT}</span>
-              </div>
-            )}
+              )}
+
+              {danoExplosivo && (
+                <span><span className="font-bold text-green-400">Dano:</span> {danoExplosivo}</span>
+              )}
+            </div>
             {(modsAtuais.length > 0 || maldicoesAtuais.length > 0) && (
                 <div className="flex items-center mt-1 min-w-0">
                   <span className="text-[11px] text-zinc-400 truncate italic">
@@ -241,17 +269,24 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
             item.item.Nome_Item.toLowerCase().includes('amuleto sagrado') || 
             item.item.Grupo_Item?.toLowerCase() === 'proteções' ||
             item.item.Grupo_Item?.toLowerCase() === 'protecoes') && (
-            <input
-              type="checkbox"
-              checked={!!item.equipado}
-              onPointerDown={(e) => e.stopPropagation()}
-              onChange={(e) => {
-                e.stopPropagation();
-                toggleEquipado(item.id);
-              }}
-              className="w-3.5 h-3.5 cursor-pointer accent-green-600 flex-shrink-0"
-              title={item.equipado ? "Desequipar item" : "Equipar item"}
-            />
+            (() => {
+              const isVest = item.item.Nome_Item.toLowerCase().includes('vestimenta') || item.item.Nome_Item.toLowerCase().includes('amuleto sagrado');
+              const desabilitadoMonstruoso = isVest && temMonstruoso99 && monstruosoElemento === 'Energia';
+              return (
+                <input
+                  type="checkbox"
+                  checked={!!item.equipado}
+                  disabled={desabilitadoMonstruoso}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    if (!desabilitadoMonstruoso) toggleEquipado(item.id);
+                  }}
+                  className={`w-3.5 h-3.5 flex-shrink-0 ${desabilitadoMonstruoso ? 'opacity-40 cursor-not-allowed accent-zinc-600' : 'cursor-pointer accent-green-600'}`}
+                  title={desabilitadoMonstruoso ? "Monstruoso de Energia (99%) não pode equipar vestimentas." : (item.equipado ? "Desequipar item" : "Equipar item")}
+                />
+              );
+            })()
           )}
           <div onClick={() => toggleExpandir(item.id)} className="w-5 text-center text-zinc-500 text-xs flex-shrink-0 cursor-pointer">{isExpanded ? '▲' : '▼'}</div>
         </div>
@@ -260,8 +295,23 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
       <Collapse isOpen={isExpanded} className={isDragging ? 'hidden' : ''}>
         <div className="border-t border-zinc-800 px-3 py-3 text-xs bg-zinc-950/80 flex flex-col gap-2 relative z-10" onClick={e => e.stopPropagation()}>
           <div className="flex flex-col gap-1 mt-1">
-            <span><span className="text-green-400 font-bold">Categoria:</span> {calcularCategoriaFinal(item.item.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes, false, item.maldicoes, maldicoesHook?.maldicoes, temRemendao ? 1 : 0)}</span>
+            {isAutoral ? (
+              <span className="line-through text-zinc-500 font-medium">
+                Categoria: {calcularCategoriaFinal(item.item.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes, false, item.maldicoes, maldicoesHook?.maldicoes, descontoCategoria)}
+              </span>
+            ) : (
+              <span>
+                <span className="text-green-400 font-bold">Categoria:</span>{' '}
+                {calcularCategoriaFinal(item.item.Categoria_Item, item.modificacoes, modificacoesHook.modificacoes, false, item.maldicoes, maldicoesHook?.maldicoes, descontoCategoria)}
+              </span>
+            )}
             <span><span className="text-green-400 font-bold">Espaços:</span> {calcularEspacosFinais(item.item.Espacos_Itens, item.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas?.has(43))}</span>
+            {stringDT && (
+              <span><span className="text-green-400 font-bold">DT:</span> {stringDT}</span>
+            )}
+            {danoExplosivo && (
+              <span><span className="text-green-400 font-bold">Dano:</span> {danoExplosivo}</span>
+            )}
 
               {((Array.isArray(item.maldicoes) ? item.maldicoes : []).length > 0) && (
               <div className="mt-3">
@@ -395,7 +445,7 @@ const getBadgeCloseClasses = (minv: any) => {
 
 
 export function InventarioPanel() {
-  const { maldicoesHook, inventarioHook, atributosFinais, regrasAutomaticasAtivas, armasHook, municoesHook, protecoesHook, itensHook, itensAmaldicoadosHook, toggleVestimentaGeral, status, modificacoesHook, proficienciasTotais, rituaisHook, poderesHook, poderesExtras, regras, nivel, trilhasHook, nex } = useRPG();
+  const { maldicoesHook, inventarioHook, atributosFinais, regrasAutomaticasAtivas, armasHook, municoesHook, protecoesHook, itensHook, itensAmaldicoadosHook, toggleVestimentaGeral, status, modificacoesHook, proficienciasTotais, rituaisHook, poderesHook, poderesExtras, regras, nivel, trilhasHook, nex, maxExplosivosAutorais, temVigilante10 } = useRPG();
   const effectiveNex = regras["nex_experiencia"] ? nivel * 5 : nex;
   const isAniquilador = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 1;
   const armaFavId = isAniquilador ? poderesExtras["aniquilador_arma_favorita"] : null;
@@ -517,8 +567,19 @@ export function InventarioPanel() {
       if (idx !== -1) noInventario[idx]++;
     });
 
+    let contagemExplosivosAutorais = 0;
     itensHook?.itensInventario?.forEach(i => {
-      const cat = calcularCategoriaFinal(i.item.Categoria_Item, i.modificacoes, modsAll, false, i.maldicoes, maldsAll, temRemendao ? 1 : 0);
+      const grupoLower = (i.item.Grupo_Item || '').trim().toLowerCase();
+      const isExplosivo = grupoLower === 'explosivos' || grupoLower.includes('explosiv');
+      if (isExplosivo && contagemExplosivosAutorais < (maxExplosivosAutorais || 0)) {
+        contagemExplosivosAutorais++;
+        return;
+      }
+      const isParanormal = grupoLower.includes('paranormal');
+      const isEquipGeral = !isExplosivo && !isParanormal;
+      const descontoItem = (temRemendao ? 1 : 0) + (temVigilante10 && isEquipGeral ? 1 : 0);
+
+      const cat = calcularCategoriaFinal(i.item.Categoria_Item, i.modificacoes, modsAll, false, i.maldicoes, maldsAll, descontoItem);
       const idx = getCatIndex(cat);
       if (idx !== -1) noInventario[idx]++;
     });
@@ -1538,16 +1599,26 @@ export function InventarioPanel() {
         />
       )}
 
-      {editingItem?.tipo === 'item' && getItemParaEditar() && (
-        <ModalEditarItem
-          itemInventario={getItemParaEditar()!}
-          onSave={(dadosEditados, modificacoes, maldicoes, maldicoesElementos) => {
-            itensHook.editarItem(editingItem.id, dadosEditados, modificacoes, maldicoes, maldicoesElementos);
-            setEditingItem(null);
-          }}
-          onClose={() => setEditingItem(null)}
-        />
-      )}
+      {editingItem?.tipo === 'item' && getItemParaEditar() && (() => {
+        const itemEdit = getItemParaEditar()!;
+        const isExplosivo = itemEdit.item.Grupo_Item?.trim().toLowerCase() === 'explosivos';
+        const idxExplosivo = isExplosivo 
+          ? (itensHook?.itensInventario?.filter(it => it.item.Grupo_Item?.trim().toLowerCase() === 'explosivos').findIndex(it => it.id === itemEdit.id) ?? -1)
+          : -1;
+        const isAutoral = isExplosivo && idxExplosivo >= 0 && idxExplosivo < (maxExplosivosAutorais || 0);
+
+        return (
+          <ModalEditarItem
+            itemInventario={itemEdit}
+            isAutoral={isAutoral}
+            onSave={(dadosEditados, modificacoes, maldicoes, maldicoesElementos) => {
+              itensHook.editarItem(editingItem.id, dadosEditados, modificacoes, maldicoes, maldicoesElementos);
+              setEditingItem(null);
+            }}
+            onClose={() => setEditingItem(null)}
+          />
+        );
+      })()}
 
       {editingItem?.tipo === 'municao' && getMunicaoParaEditar() && (
         <ModalEditarMunicao
@@ -2365,7 +2436,9 @@ function SortableProtecaoItem({
 }) {
   const { id, protecao, equipado } = item;
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id, data: { type: 'protecao' } });
-  const { proficienciasTotais, modificacoesHook, maldicoesHook, regrasAutomaticasAtivas, rituaisHook } = useRPG();
+  const { proficienciasTotais, modificacoesHook, maldicoesHook, regrasAutomaticasAtivas, rituaisHook, temMonstruoso99, monstruosoElemento } = useRPG();
+  const isEscudo = protecao.Proficiencia?.toLowerCase().includes('escudo') || protecao.Nome_Protecao?.toLowerCase().includes('escudo');
+  const desabilitadoMonstruoso = temMonstruoso99 && monstruosoElemento === 'Energia' && !isEscudo;
   const hasProficiencia = protecao.Proficiencia === 'Nenhuma' || proficienciasTotais.includes(protecao.Proficiencia);
   const [expandirMods, setExpandirMods] = useState(false);
     const [expandirMalds, setExpandirMalds] = useState(false);
@@ -2449,17 +2522,20 @@ function SortableProtecaoItem({
         
         <div className="flex items-center gap-3 flex-shrink-0">
           <button
+            disabled={desabilitadoMonstruoso}
             onPointerDown={(e) => e.stopPropagation()}
             onClick={(e) => {
               e.stopPropagation();
-              toggleEquipado(id);
+              if (!desabilitadoMonstruoso) toggleEquipado(id);
             }}
-            className={`w-4 h-4 rounded flex items-center justify-center border transition-colors cursor-pointer ${
-              equipado 
-                ? 'bg-zinc-700 border-zinc-500 text-zinc-100' 
-                : 'bg-zinc-900 border-zinc-700 text-transparent hover:border-zinc-500'
+            className={`w-4 h-4 rounded flex items-center justify-center border transition-colors ${
+              desabilitadoMonstruoso
+                ? 'opacity-40 cursor-not-allowed bg-zinc-900 border-zinc-800 text-transparent'
+                : equipado 
+                  ? 'cursor-pointer bg-zinc-700 border-zinc-500 text-zinc-100' 
+                  : 'cursor-pointer bg-zinc-900 border-zinc-700 text-transparent hover:border-zinc-500'
             }`}
-            title={equipado ? "Desequipar" : "Equipar proteção"}
+            title={desabilitadoMonstruoso ? "Monstruoso de Energia (99%) não pode usar proteções além de escudos." : (equipado ? "Desequipar" : "Equipar proteção")}
           >
             <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="2.5 6 5 8.5 9.5 3.5" />

@@ -22,9 +22,15 @@ function formatarDescricao(texto: string): string {
 export function ModalTrilhas({
   onClose,
   modoVersatilidade,
+  onSelectTrilha,
+  tituloCustom,
+  subtituloCustom,
 }: {
   onClose: () => void;
   modoVersatilidade?: boolean;
+  onSelectTrilha?: (trilha: Trilha) => void;
+  tituloCustom?: string;
+  subtituloCustom?: string;
 }) {
   React.useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -129,6 +135,11 @@ export function ModalTrilhas({
       }
     }
 
+    if (trilha.Codigo_Trilha === 18) {
+      const jaTinha = (periciasHook.pericias['Ocultismo']?.treino || 0) >= 5 || periciasGratisSemTrilha.includes('Ocultismo');
+      setPoderesExtras(prev => ({ ...prev, monstruoso_ja_tinha_ocultismo: String(jaTinha) }));
+    }
+
     if (trilha.Codigo_Trilha === 22) {
       const jaTinha = (periciasHook.pericias['Religião']?.treino || 0) >= 5 || periciasGratisSemTrilha.includes('Religião');
       if (modoVersatilidade) {
@@ -152,18 +163,49 @@ export function ModalTrilhas({
     prosseguirEscolha(trilha);
     };
 
+    const limparTrilhaAnterior = (novaTrilhaId: number) => {
+      const trilhaAtual = modoVersatilidade ? trilhasHook.versatilidadeSelecionada : trilhasHook.trilhaSelecionada;
+      if (trilhaAtual?.Codigo_Trilha === 18 && novaTrilhaId !== 18) {
+        const outraTem18 = modoVersatilidade ? trilhasHook.trilhaSelecionada?.Codigo_Trilha === 18 : trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 18;
+        if (!outraTem18) {
+          setPoderesExtras(prev => {
+            const n = { ...prev };
+            delete n.monstruoso_ja_tinha_ocultismo;
+            delete n.monstruoso_elemento;
+            return n;
+          });
+        }
+      }
+      if (trilhaAtual?.Codigo_Trilha === 32 && novaTrilhaId !== 32) {
+        const outraTem32 = modoVersatilidade ? trilhasHook.trilhaSelecionada?.Codigo_Trilha === 32 : trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 32;
+        if (!outraTem32) {
+          rituaisHook.atualizarRituaisAprendidos(prev => prev.filter(r => !r.origem?.startsWith('adepto_')));
+          setPoderesExtras(prev => {
+            const n = { ...prev };
+            delete n.adepto_atributo_40;
+            delete n.adepto_recusados;
+            delete n.adepto_excluidos;
+            return n;
+          });
+        }
+      }
+    };
+
     const prosseguirEscolhaAgenteSecreto = (trilha: Trilha, pericia: string) => {
       setPoderesExtras(prev => ({ ...prev, agente_secreto_pericia: pericia }));
       prosseguirEscolha(trilha);
     };
 
     const prosseguirEscolhaMuambeiro = (trilha: Trilha, prof: string) => {
+      limparTrilhaAnterior(trilha.Codigo_Trilha);
       setPoderesExtras(prev => ({
         ...prev,
         [modoVersatilidade ? 'muambeiro_versatilidade_profissao' : 'muambeiro_profissao_10']: prof
       }));
       const trilhaComProfissao = { ...trilha, Profissao_Pericia: prof };
-      if (modoVersatilidade) {
+      if (onSelectTrilha) {
+        onSelectTrilha(trilhaComProfissao);
+      } else if (modoVersatilidade) {
         selecionarVersatilidade(trilhaComProfissao);
       } else {
         selecionarTrilha(trilhaComProfissao);
@@ -173,17 +215,22 @@ export function ModalTrilhas({
     };
 
     const prosseguirEscolhaLamina = (trilha: Trilha, elemento: string) => {
+    limparTrilhaAnterior(trilha.Codigo_Trilha);
     setPoderesExtras(prev => ({ ...prev, lamina_elemento: elemento }));
-    if (modoVersatilidade) selecionarVersatilidade(trilha);
+    if (onSelectTrilha) onSelectTrilha(trilha);
+    else if (modoVersatilidade) selecionarVersatilidade(trilha);
     else selecionarTrilha(trilha);
     onClose();
   };
 
   const prosseguirEscolha = (trilha: Trilha, armaFavId?: string) => {
+    limparTrilhaAnterior(trilha.Codigo_Trilha);
     if (armaFavId) {
       setPoderesExtras(prev => ({ ...prev, aniquilador_arma_favorita: armaFavId }));
     }
-    if (modoVersatilidade) {
+    if (onSelectTrilha) {
+      onSelectTrilha(trilha);
+    } else if (modoVersatilidade) {
       selecionarVersatilidade(trilha);
     } else {
       selecionarTrilha(trilha);
@@ -265,8 +312,8 @@ export function ModalTrilhas({
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="font-display text-lg uppercase tracking-wide text-zinc-100">
-                {modoVersatilidade ? 'SELECIONAR VERSATILIDADE' : 'SELECIONAR TRILHA'} 
-                <span className="text-green-500 ml-2">({modoVersatilidade ? 'NEX 50%' : 'NEX 10%'})</span>
+                {tituloCustom || (modoVersatilidade ? 'SELECIONAR VERSATILIDADE' : 'SELECIONAR TRILHA')} 
+                <span className="text-green-500 ml-2">{subtituloCustom || (modoVersatilidade ? '(NEX 50%)' : '(NEX 10%)')}</span>
               </h2>
               <p className="mt-1 text-xs text-zinc-400">Selecione uma opção da lista abaixo.</p>
             </div>

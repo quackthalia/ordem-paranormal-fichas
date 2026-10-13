@@ -2,7 +2,15 @@ import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../services/supabase';
 import type { Arma, ArmaInventario, GrupoArma } from '../types';
 
-export function useArmas(nex: number = 0, regrasAutomaticasAtivas: Set<number> = new Set()) {
+export function useArmas(
+  nex: number = 0,
+  regrasAutomaticasAtivas: Set<number> = new Set(),
+  opcoesTrilhas?: {
+    temArtistaMarcialTrilha?: boolean;
+    temArtistaMarcialDuplicata?: boolean;
+    temAcrobata10?: boolean;
+  }
+) {
   const [armas, setArmas] = useState<Arma[]>([]);
   const [gruposArmas, setGruposArmas] = useState<GrupoArma[]>([]);
   const [armasInventario, setArmasInventario] = useState<ArmaInventario[]>([]);
@@ -62,8 +70,30 @@ export function useArmas(nex: number = 0, regrasAutomaticasAtivas: Set<number> =
       
       const temPunhos = next.some(a => a.arma.Nome_Item?.trim().toLowerCase().includes('enraivecido'));
 
-      if (regrasAutomaticasAtivas.has(84)) { // Artista Marcial
-        danoDesarmado = nex >= 70 ? '1d10' : nex >= 35 ? '1d8' : '1d6';
+      if (regrasAutomaticasAtivas.has(84) || opcoesTrilhas?.temArtistaMarcialTrilha) { // Artista Marcial
+        const temTrilha = !!opcoesTrilhas?.temArtistaMarcialTrilha;
+        const temDuplicata = !!opcoesTrilhas?.temArtistaMarcialDuplicata;
+
+        if (temTrilha) {
+          // Trilha 31 (Arte da Violência)
+          // Tipo de dado base:
+          // Sem duplicata: <35% -> d6, 35-69% -> d8, >=70% -> d10
+          // Com duplicata (+1 passo): <35% -> d8, 35-69% -> d10, >=70% -> d12
+          const faces = temDuplicata
+            ? (nex >= 70 ? 12 : nex >= 35 ? 10 : 8)
+            : (nex >= 70 ? 10 : nex >= 35 ? 8 : 6);
+
+          // Quantidade de dados:
+          // Base 1 dado + 1 dado da trilha (10%) = 2 dados
+          // + 1 dado em 45% = 3 dados
+          // + 1 dado em 75% = 4 dados
+          const qtdDados = nex >= 75 ? 4 : nex >= 45 ? 3 : 2;
+
+          danoDesarmado = `${qtdDados}d${faces}`;
+        } else {
+          // Poder Artista Marcial comum (sem trilha)
+          danoDesarmado = nex >= 70 ? '1d10' : nex >= 35 ? '1d8' : '1d6';
+        }
         tipoDanoDesarmado = 'Impacto';
         agilDesarmado = true;
       }
@@ -131,8 +161,67 @@ export function useArmas(nex: number = 0, regrasAutomaticasAtivas: Set<number> =
         }
       }
 
+      // 1.1 Golpe Desarmado (Acrobata) - Trilha Acrobata (10%)
+      const acrobataIndex = next.findIndex(a => a.id === 'golpe-desarmado-acrobacia-virtual');
+      if (opcoesTrilhas?.temAcrobata10) {
+        const nomeAcrobata = 'Golpe Desarmado (Acrobata)';
+        const tipoDanoAcrobata = elementoDesarmado ? elementoDesarmado : 'Impacto';
+        if (acrobataIndex === -1) {
+          next.push({
+            id: 'golpe-desarmado-acrobacia-virtual',
+            arma: {
+              Codigo_Arma: -3,
+              Nome_Item: nomeAcrobata,
+              Descricao_Item: 'Um golpe desarmado acrobático que utiliza o impulso e a agilidade do corpo.',
+              Proficiencia: 'Armas Simples',
+              Tipo_Arma: 'Corpo a Corpo',
+              Empunhadura_Arma: 'Uma Mão',
+              Dano_Arma: danoDesarmado,
+              Critico_Arma: 20,
+              Multiplicador_Arma: 2,
+              Tipo_Dano_Arma: tipoDanoAcrobata,
+              Alcance_Item: null,
+              Categoria_Item: '0',
+              'Espaços_Item': 0,
+              'Agil?': true,
+              Capacidade_Municao: null,
+              dt_item: null,
+              'Automatica?': false,
+              Fonte_Arma: 'Trilha',
+              Elemento_Arma: elementoDesarmado || undefined
+            } as any,
+            modificacoes: [],
+            municoesAcopladas: []
+          });
+          changed = true;
+        } else {
+          const acrobata = next[acrobataIndex];
+          if (
+            acrobata.arma.Nome_Item !== nomeAcrobata ||
+            acrobata.arma.Dano_Arma !== danoDesarmado ||
+            acrobata.arma.Tipo_Dano_Arma !== tipoDanoAcrobata ||
+            acrobata.arma.Elemento_Arma !== elementoDesarmado
+          ) {
+            next[acrobataIndex] = {
+              ...acrobata,
+              arma: {
+                ...acrobata.arma,
+                Nome_Item: nomeAcrobata,
+                Dano_Arma: danoDesarmado,
+                Tipo_Dano_Arma: tipoDanoAcrobata,
+                Elemento_Arma: elementoDesarmado || undefined
+              } as any
+            };
+            changed = true;
+          }
+        }
+      } else if (acrobataIndex !== -1) {
+        next = next.filter(a => a.id !== 'golpe-desarmado-acrobacia-virtual');
+        changed = true;
+      }
+
       // 2. Coronhada
-      const armasDeFogo = next.filter(a => a.id !== 'coronhada-virtual' && a.id !== 'ataque-desarmado-virtual' && (a.arma.Tipo_Arma?.toLowerCase() || '').includes('fogo'));
+      const armasDeFogo = next.filter(a => a.id !== 'coronhada-virtual' && a.id !== 'ataque-desarmado-virtual' && a.id !== 'golpe-desarmado-acrobacia-virtual' && (a.arma.Tipo_Arma?.toLowerCase() || '').includes('fogo'));
       const coronhadaIndex = next.findIndex(a => a.id === 'coronhada-virtual');
       const hasCoronhada = coronhadaIndex !== -1;
 
@@ -195,7 +284,14 @@ export function useArmas(nex: number = 0, regrasAutomaticasAtivas: Set<number> =
 
       return changed ? next : prev;
     });
-  }, [armasInventario.map(a => `${a.id}-${a.arma.Dano_Arma}-${a.arma.Tipo_Arma}-${a.arma.Empunhadura_Arma}`).join(','), nex, regrasAutomaticasAtivas.has(84)]);
+  }, [
+    armasInventario.map(a => `${a.id}-${a.arma.Dano_Arma}-${a.arma.Tipo_Arma}-${a.arma.Empunhadura_Arma}`).join(','),
+    nex,
+    regrasAutomaticasAtivas.has(84),
+    opcoesTrilhas?.temArtistaMarcialTrilha,
+    opcoesTrilhas?.temArtistaMarcialDuplicata,
+    opcoesTrilhas?.temAcrobata10
+  ]);
 
   const adicionarArma = (arma: Arma) => {
     const newId = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);

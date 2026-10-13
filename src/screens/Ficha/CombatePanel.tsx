@@ -121,7 +121,7 @@ interface ArmaCombateCardProps {
 }
 
 const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandida, toggleExpandir, modificacoesHook, maldicoesHook, onAddMunicao, municoesHook, itensHook, armasHook }) => {
-  const { atributosFinais, proficienciasTotais, regrasAutomaticasAtivas, status, regras, trilhasHook, poderesExtras, nivel, nex } = useRPG();
+  const { atributosFinais, proficienciasTotais, regrasAutomaticasAtivas, status, regras, trilhasHook, poderesExtras, nivel, nex, danoDeMovimento } = useRPG();
   const effectiveNex = regras['nex_experiencia'] ? (nivel * 5) : nex;
   const isAniquilador = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 1;
   const armaFavId = isAniquilador ? poderesExtras["aniquilador_arma_favorita"] : null;
@@ -164,9 +164,10 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
   const modsAtivas = modsSafe.map(id => modificacoesHook.modificacoes.find((m: any) => m.Codigo_Modif === id)).filter(Boolean);
   const maldicoesAtivas = maldsSafe.map(id => maldicoesHook.maldicoes.find((m: any) => m.Codigo_Mald === id)).filter(Boolean);
 
+  const isAcrobacia = armaInv.id === 'golpe-desarmado-acrobacia-virtual' || arma.Nome_Item?.toLowerCase().includes('acrobata') || arma.Nome_Item?.toLowerCase().includes('acrobacia');
   const isPontaria = ['arremesso', 'disparo', 'fogo'].some(t => arma.Tipo_Arma?.toLowerCase().includes(t));
-  const pericia = isPontaria ? 'Pontaria' : 'Luta';
-  const isAgil = arma['Agil?'] || isPontaria;
+  const pericia = isAcrobacia ? 'Acrobacia' : (isPontaria ? 'Pontaria' : 'Luta');
+  const isAgil = arma['Agil?'] || isPontaria || isAcrobacia;
   const effectiveNivel = regras['nex_experiencia'] ? nivel : Math.floor(nex / 5);
   const temMiraElite = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 6 && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 6 && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
   const usaBalaLonga = arma.Nome_Item?.toLowerCase().includes('fuzil') || (arma.Nome_Item?.toLowerCase().includes('metralhadora') && !arma.Nome_Item?.toLowerCase().includes('sub')) || arma.Nome_Item?.toLowerCase().includes('sniper');
@@ -352,6 +353,9 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
             calc = num;
           }
       }
+      if (regrasAutomaticasAtivas.has(29) && typeof calc === 'number') {
+        calc += (temDobroPerito ? atributosFinais.INT * 2 : atributosFinais.INT);
+      }
       dtGranada = calc === '-' ? '-' : (periciaStr ? `${periciaStr} ${calc}` : `${calc}`);
       if (!dtGranada) dtGranada = '-';
     }
@@ -391,6 +395,10 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
   const danoStrFull = danoSelecionadoEditado ? danoSelecionadoEditado + extrasStr : extrasStr;
   const parsedDano = parseDanoString(danoStrFull, tipoBase, tipoSecundario);
 
+  if (isAcrobacia && (danoDeMovimento || 0) > 0) {
+    parsedDano.push({ label: 'Dano de Movimento', valor: `+${danoDeMovimento}`, tipo: tipoBase });
+  }
+
   // ── Dano Secundário: respeita o separador | para armas multi-forma ──
   const rawDanoSec = arma.Dano_Secundario || '';
   let danoSecStr = rawDanoSec;
@@ -410,15 +418,38 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
       return 0;
     });
 
-    const danoHeader = parsedDano
-      .map((p, i) => {
-      let v = p.valor;
-      if (i > 0 && !v.startsWith('+') && !v.startsWith('-')) v = '+' + v;
-      return v;
-    })
-    .join('');
+  // Para o cabeçalho "Dano:", agrupa os dados e consolida os números planos do mesmo tipo (ex: +1 e +8 viram +9)
+  const dadosPorTipo: { valor: string; tipo: string }[] = [];
+  const flatPorTipo: Record<string, number> = {};
 
-  const danoMedioPrincipal = arma.Nome_Item === 'Arcabuz dos Moretti' ? { normal: 'Veja Texto', critico: 'Veja Texto' } as any : calcularDanoMedio(danoStrFull, multCrit);
+  parsedDano.forEach(p => {
+    if (p.valor.toLowerCase().includes('d')) {
+      dadosPorTipo.push({ valor: p.valor, tipo: p.tipo });
+    } else {
+      const num = parseInt(p.valor.replace(/\s/g, ''), 10);
+      if (!isNaN(num)) {
+        flatPorTipo[p.tipo] = (flatPorTipo[p.tipo] || 0) + num;
+      }
+    }
+  });
+
+  const headerParts: string[] = [];
+  dadosPorTipo.forEach((d, i) => {
+    let v = d.valor;
+    if (i > 0 && !v.startsWith('+') && !v.startsWith('-')) v = '+' + v;
+    headerParts.push(v);
+  });
+  Object.entries(flatPorTipo).forEach(([tipo, total]) => {
+    if (total !== 0) {
+      const sign = total > 0 ? '+' : '';
+      headerParts.push(`${sign}${total}`);
+    }
+  });
+
+  const danoHeader = headerParts.join('');
+
+  const danoStrComMovimento = (isAcrobacia && (danoDeMovimento || 0) > 0) ? `${danoStrFull}+${danoDeMovimento}` : danoStrFull;
+  const danoMedioPrincipal = arma.Nome_Item === 'Arcabuz dos Moretti' ? { normal: 'Veja Texto', critico: 'Veja Texto' } as any : calcularDanoMedio(danoStrComMovimento, multCrit);
   const danoMedioSecundario = danoSecFull ? calcularDanoMedio(danoSecFull, multCrit) : null;
 
   let bonusAtaque = 0;
@@ -648,6 +679,11 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
                 hideIcon={true}
               />
             </div>
+            {isAcrobacia && (
+              <span className="text-zinc-300">
+                <span className="font-bold text-green-400">Dano de Movimento:</span> +{danoDeMovimento}
+              </span>
+            )}
           </div>
 
 
@@ -747,10 +783,24 @@ export const CombatePanel: React.FC = () => {
         maldicoes_elementos: soqueira.maldicoes_elementos || {}
       };
     }
+    const acrobataIndex = armas.findIndex(a => a.id === 'golpe-desarmado-acrobacia-virtual');
+    if (acrobataIndex !== -1) {
+      const acrobata = armas[acrobataIndex];
+      armas[acrobataIndex] = {
+        ...acrobata,
+        arma: {
+          ...acrobata.arma,
+          Dano_Arma: (regrasAutomaticasAtivas?.has(86) ? acrobata.arma.Dano_Arma.replace(/(\d+)d(\d+)/gi, (m, p1, p2) => `${Number(p1) + 1}d${p2}`) : acrobata.arma.Dano_Arma) + '+1'
+        },
+        modificacoes: soqueira.modificacoes || [],
+        maldicoes: soqueira.maldicoes || [],
+        maldicoes_elementos: soqueira.maldicoes_elementos || {}
+      };
+    }
   }
 
   // Sort Duplas Obsessivas together, hide Punhos Enraivecidos
-  armas = armas.filter(a => !(a.arma.Nome_Item?.trim().toLowerCase().includes('enraivecido')) || a.id === 'ataque-desarmado-virtual').sort((a, b) => {
+  armas = armas.filter(a => !(a.arma.Nome_Item?.trim().toLowerCase().includes('enraivecido')) || a.id === 'ataque-desarmado-virtual' || a.id === 'golpe-desarmado-acrobacia-virtual').sort((a, b) => {
     if (a.arma.Nome_Item?.includes('Dupla Obsessiva') && b.arma.Nome_Item?.includes('Dupla Obsessiva')) return a.arma.Nome_Item.localeCompare(b.arma.Nome_Item);
     return 0; // maintain original order for others
   });
@@ -806,7 +856,7 @@ export const CombatePanel: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col gap-6 p-2">
+    <div className="flex flex-1 flex-col gap-6 p-2">
       {renderWeaponList(armasCorpoACorpo, 'Ataques Corpo a Corpo')}
       {renderWeaponList(armasFogo, 'Ataques à Distância')}
       {modalMunicoesAberto && (

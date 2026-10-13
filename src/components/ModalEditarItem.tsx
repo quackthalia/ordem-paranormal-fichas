@@ -18,10 +18,12 @@ const InputLabel = ({ label }: { label: string }) => (
 
 export function ModalEditarItem({
   itemInventario,
+  isAutoral = false,
   onSave,
   onClose,
 }: {
   itemInventario: ItemGeralInventario;
+  isAutoral?: boolean;
   onSave: (novosDados: Partial<ItemGeral>, modificacoes?: number[], maldicoes?: number[], maldicoesElementos?: Record<number, string>) => void;
   onClose: () => void;
 }) {
@@ -40,7 +42,7 @@ export function ModalEditarItem({
   const [grupo, setGrupo] = useState(item.Grupo_Item || '');
 
   const { modificacoesHook, periciasHook, maldicoesHook } = useRPG();
-  const [modificacoes, setModificacoes] = useState<number[]>(itemInventario.modificacoes || []);
+  const [modificacoes, setModificacoes] = useState<number[]>(isAutoral ? [] : (itemInventario.modificacoes || []));
   const [maldicoes, setMaldicoes] = useState<number[]>(itemInventario.maldicoes || []);
   const [maldicoesElementos, setMaldicoesElementos] = useState<Record<number, string>>(itemInventario.maldicoes_elementos || {});
   
@@ -264,11 +266,11 @@ export function ModalEditarItem({
     onSave({
       Nome_Item: nome,
       Desc_Item: editorDesc.current?.innerHTML || descricao,
-      Categoria_Item: categoria,
+      Categoria_Item: isAutoral ? '0' : categoria,
       Espacos_Itens: getEspacoNumber(espacos),
       Dt_Item: dt,
       Grupo_Item: grupo,
-    }, modificacoes, maldicoes, maldicoesElementos);
+    }, isAutoral ? [] : modificacoes, isAutoral ? [] : maldicoes, isAutoral ? {} : maldicoesElementos);
     onClose();
   };
 
@@ -322,6 +324,13 @@ export function ModalEditarItem({
 
               <div>
                 <InputLabel label="Categoria" />
+                {isAutoral ? (
+                  <div className="flex h-[38px] items-center rounded bg-zinc-900/40 border border-zinc-800/80 px-3 text-sm">
+                    <span className="line-through text-zinc-500 font-medium">
+                      {categoriaNumParaRoman(catFinal)}
+                    </span>
+                  </div>
+                ) : (
                   <CustomSelect
                     value={categoriaNumParaRoman(catFinal)}
                     onChange={(val) => {
@@ -336,6 +345,7 @@ export function ModalEditarItem({
                       { value: 'IV', label: 'IV' }
                     ]}
                   />
+                )}
               </div>
 
               <div>
@@ -404,24 +414,31 @@ export function ModalEditarItem({
               <div className="h-px flex-1 bg-gradient-to-r from-zinc-800 to-transparent"></div>
             </div>
             
-            <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/20 p-5">
-              <AprimoramentosSelector 
-                modificacoesAplicadas={modificacoes}
-                opcoesModificacoes={getOpcoesModificacoes ? getOpcoesModificacoes() : []}
-                todasModificacoes={modificacoesHook ? modificacoesHook.modificacoes : []}
-                onAddMod={handleAddMod ? handleAddMod : () => {}}
-                onRemoveMod={handleRemoveMod ? handleRemoveMod : () => {}}
-                podeAdicionarMod={typeof podeAdicionarMod !== 'undefined' ? podeAdicionarMod : true}
-                
-                maldicoesAplicadas={maldicoes}
-                opcoesMaldicoes={getOpcoesMaldicoes ? getOpcoesMaldicoes() : []}
-                todasMaldicoes={maldicoesHook ? maldicoesHook.maldicoes : []}
-                maldicoesElementos={typeof maldicoesElementos !== 'undefined' ? maldicoesElementos : {}}
-                onAddMald={handleAddMald ? handleAddMald : () => {}}
-                onRemoveMald={handleRemoveMald ? handleRemoveMald : () => {}}
-                podeAdicionarMald={typeof podeAdicionarMald !== 'undefined' ? podeAdicionarMald : true}
-              />
-            </div>
+            {isAutoral ? (
+              <div className="rounded-xl border border-zinc-800/60 bg-zinc-900/20 px-4 py-3 flex items-center gap-2.5 text-xs text-zinc-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400/80 shadow-[0_0_6px_rgba(52,211,153,0.6)] shrink-0" />
+                <span>Explosivos autorais não comportam modificações.</span>
+              </div>
+            ) : (
+              <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/20 p-5">
+                <AprimoramentosSelector 
+                  modificacoesAplicadas={modificacoes}
+                  opcoesModificacoes={getOpcoesModificacoes ? getOpcoesModificacoes() : []}
+                  todasModificacoes={modificacoesHook ? modificacoesHook.modificacoes : []}
+                  onAddMod={handleAddMod ? handleAddMod : () => {}}
+                  onRemoveMod={handleRemoveMod ? handleRemoveMod : () => {}}
+                  podeAdicionarMod={typeof podeAdicionarMod !== 'undefined' ? podeAdicionarMod : true}
+                  
+                  maldicoesAplicadas={maldicoes}
+                  opcoesMaldicoes={getOpcoesMaldicoes ? getOpcoesMaldicoes() : []}
+                  todasMaldicoes={maldicoesHook ? maldicoesHook.maldicoes : []}
+                  maldicoesElementos={typeof maldicoesElementos !== 'undefined' ? maldicoesElementos : {}}
+                  onAddMald={handleAddMald ? handleAddMald : () => {}}
+                  onRemoveMald={handleRemoveMald ? handleRemoveMald : () => {}}
+                  podeAdicionarMald={typeof podeAdicionarMald !== 'undefined' ? podeAdicionarMald : true}
+                />
+              </div>
+            )}
           </section>
 
         </div>

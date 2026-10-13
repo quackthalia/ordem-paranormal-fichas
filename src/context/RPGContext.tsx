@@ -187,11 +187,18 @@ interface RPGContextType {
   temViajanteDasSombras40: boolean;
   temViajanteDasSombras65: boolean;
   temViajanteDasSombras99: boolean;
+  temMonstruoso10: boolean;
+  temMonstruoso40: boolean;
+  temMonstruoso65: boolean;
+  temMonstruoso99: boolean;
+  monstruosoElemento: string;
+  jaTinhaOcultismoMonstruoso: boolean;
   bonusDeslocTrilha34: number;
   bonusDeslocTotal: number;
   deslocamentoTotalM: number;
   danoDeMovimento: number;
   bonusDefesaTrilha34: number;
+  defOutrosBonusRegra72: number;
   escolhaRegra53: 'FOR' | 'AGI' | null;
   setEscolhaRegra53: React.Dispatch<React.SetStateAction<'FOR' | 'AGI' | null>>;
   bonusTrilhasAtributos: Atributos;
@@ -322,8 +329,45 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     if (temArtistaMarcialTrilha10) {
       set.add(84);
     }
+    const effNex = regras['nex_experiencia'] ? nivel * 5 : nex;
+    const effNivel = regras['nex_experiencia'] ? nivel : Math.floor(nex / 5);
+    const isMonstTrilha = trilhasHook.trilhaSelecionada && (
+      Number(trilhasHook.trilhaSelecionada.Codigo_Trilha) === 18 ||
+      Number((trilhasHook.trilhaSelecionada as any)?.codigo_trilha) === 18 ||
+      (String(trilhasHook.trilhaSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('monstruoso') && (trilhasHook.trilhaSelecionada.Classe_Trilha === 'Combatente' || (trilhasHook.trilhaSelecionada as any)?.classe === 'Combatente'))
+    );
+    const isMonstVers = trilhasHook.versatilidadeSelecionada && (
+      Number(trilhasHook.versatilidadeSelecionada.Codigo_Trilha) === 18 ||
+      Number((trilhasHook.versatilidadeSelecionada as any)?.codigo_trilha) === 18 ||
+      (String(trilhasHook.versatilidadeSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('monstruoso') && (trilhasHook.versatilidadeSelecionada.Classe_Trilha === 'Combatente' || (trilhasHook.versatilidadeSelecionada as any)?.classe === 'Combatente'))
+    );
+    const hasMonst10 = (isMonstTrilha && (regras['nex_experiencia'] ? effNivel >= 2 : effNex >= 10)) || (isMonstVers && (regras['nex_experiencia'] ? effNivel >= 10 : effNex >= 50));
+    const hasMonst40 = isMonstTrilha && (regras['nex_experiencia'] ? effNivel >= 8 : effNex >= 40);
+    const hasMonst65 = isMonstTrilha && (regras['nex_experiencia'] ? effNivel >= 13 : effNex >= 65);
+    const hasMonst99 = isMonstTrilha && (regras['nex_experiencia'] ? effNivel >= 20 : effNex >= 99);
+    const elemMonst = afinidadeEscolhida || poderesExtras['monstruoso_elemento'] || 'Sangue';
+
+    if (hasMonst10) {
+      if (elemMonst === 'Sangue') set.add(70);
+      else if (elemMonst === 'Morte') set.add(71);
+      else if (elemMonst === 'Conhecimento') set.add(72);
+      else if (elemMonst === 'Energia') set.add(73);
+    }
+    if (hasMonst40) {
+      if (elemMonst === 'Morte') set.add(74);
+      else if (elemMonst === 'Conhecimento') set.add(75);
+    }
+    if (hasMonst65) {
+      if (elemMonst === 'Energia') set.add(76);
+    }
+    if (hasMonst99) {
+      if (elemMonst === 'Sangue') set.add(77);
+      else if (elemMonst === 'Morte') set.add(78);
+      else if (elemMonst === 'Conhecimento') set.add(79);
+      else if (elemMonst === 'Energia') set.add(80);
+    }
     return set;
-  }, [origensHook.origemSelecionada, poderesHook.poderesEscolhidos, temArtistaMarcialTrilha10]);
+  }, [origensHook.origemSelecionada, poderesHook.poderesEscolhidos, temArtistaMarcialTrilha10, trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, regras, nivel, nex, afinidadeEscolhida, poderesExtras]);
 
   const effectiveNex = useMemo(() => {
     let finalNex = nex;
@@ -394,19 +438,45 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const temViajanteDasSombras65 = isTrilhaViajanteDasSombras && (regras['nex_experiencia'] ? effectiveNivel >= 13 : effectiveNex >= 65);
   const temViajanteDasSombras99 = isTrilhaViajanteDasSombras && (regras['nex_experiencia'] ? effectiveNivel >= 20 : effectiveNex >= 99);
 
+  const isTrilhaMonstruoso = Boolean(
+    trilhasHook.trilhaSelecionada && (
+      Number(trilhasHook.trilhaSelecionada.Codigo_Trilha) === 18 ||
+      Number((trilhasHook.trilhaSelecionada as any)?.codigo_trilha) === 18 ||
+      (String(trilhasHook.trilhaSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('monstruoso') && (trilhasHook.trilhaSelecionada.Classe_Trilha === 'Combatente' || (trilhasHook.trilhaSelecionada as any)?.classe === 'Combatente'))
+    )
+  );
+  const isVersatilidadeMonstruoso = Boolean(
+    trilhasHook.versatilidadeSelecionada && (
+      Number(trilhasHook.versatilidadeSelecionada.Codigo_Trilha) === 18 ||
+      Number((trilhasHook.versatilidadeSelecionada as any)?.codigo_trilha) === 18 ||
+      (String(trilhasHook.versatilidadeSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('monstruoso') && (trilhasHook.versatilidadeSelecionada.Classe_Trilha === 'Combatente' || (trilhasHook.versatilidadeSelecionada as any)?.classe === 'Combatente'))
+    )
+  );
+  const temMonstruoso10 = (isTrilhaMonstruoso && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10)) || (isVersatilidadeMonstruoso && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
+  const temMonstruoso40 = isTrilhaMonstruoso && (regras['nex_experiencia'] ? effectiveNivel >= 8 : effectiveNex >= 40);
+  const temMonstruoso65 = isTrilhaMonstruoso && (regras['nex_experiencia'] ? effectiveNivel >= 13 : effectiveNex >= 65);
+  const temMonstruoso99 = isTrilhaMonstruoso && (regras['nex_experiencia'] ? effectiveNivel >= 20 : effectiveNex >= 99);
+
+  const monstruosoElemento = useMemo(() => {
+    if (afinidadeEscolhida) return afinidadeEscolhida;
+    return poderesExtras['monstruoso_elemento'] || 'Sangue';
+  }, [afinidadeEscolhida, poderesExtras]);
+
   const armasHook = useArmas(nex, regrasAutomaticasAtivas, {
     temArtistaMarcialTrilha: temArtistaMarcialTrilha10,
     temArtistaMarcialDuplicata: temArtistaMarcialAprimorado,
     temAcrobata10,
   });
   const municoesHook = useMunicoes();
-  const protecoesHook = useProtecoes();
+  const apenasEscudosMonstruoso = temMonstruoso99 && monstruosoElemento === 'Energia';
+  const protecoesHook = useProtecoes({ apenasEscudos: apenasEscudosMonstruoso });
   const rituaisHook = useRituais();
 
   const modificacoesHook = useModificacoes();
   const maldicoesHook = useMaldicoes();
 
-  const itensHook = useItens(regrasAutomaticasAtivas.has(23) ? 3 : 2);
+  const maxVestimentasMonstruoso = apenasEscudosMonstruoso ? 0 : (regrasAutomaticasAtivas.has(23) ? 3 : 2);
+  const itensHook = useItens(maxVestimentasMonstruoso);
   const itensAmaldicoadosHook = useItensAmaldicoados();
 
   const bonusVestimentas = useMemo(() => {
@@ -419,7 +489,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
 
 
   const toggleVestimentaGeral = useCallback((id: string, isAmaldicoado: boolean) => {
-    const maxVestimentas = regrasAutomaticasAtivas.has(23) ? 3 : 2;
+    const maxVestimentas = maxVestimentasMonstruoso;
     
     let isEquipando = false;
     if (isAmaldicoado) {
@@ -431,6 +501,10 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     if (!isEquipando) {
       if (isAmaldicoado) itensAmaldicoadosHook.toggleEquipadoSimples(id, false);
       else itensHook.toggleEquipadoSimples(id, false);
+      return;
+    }
+
+    if (maxVestimentas === 0) {
       return;
     }
 
@@ -450,6 +524,21 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     if (isAmaldicoado) itensAmaldicoadosHook.toggleEquipadoSimples(id, true);
     else itensHook.toggleEquipadoSimples(id, true);
   }, [itensHook, itensAmaldicoadosHook, regrasAutomaticasAtivas]);
+
+  // Monstruoso 99% Energia: desequipa vestimentas e armaduras que não sejam escudo
+  React.useEffect(() => {
+    if (temMonstruoso99 && monstruosoElemento === 'Energia') {
+      itensHook.setItensInventario(prev => prev.map(i => i.equipado ? { ...i, equipado: false } : i));
+      itensAmaldicoadosHook.setItensAmaldicoadosInventario(prev => prev.map(i => i.equipado ? { ...i, equipado: false } : i));
+      protecoesHook.setProtecoesInventario(prev => prev.map(i => {
+        const isEscudo = i.protecao.Proficiencia?.toLowerCase().includes('escudo') || i.protecao.Nome_Protecao?.toLowerCase().includes('escudo');
+        if (i.equipado && !isEscudo) {
+          return { ...i, equipado: false };
+        }
+        return i;
+      }));
+    }
+  }, [temMonstruoso99, monstruosoElemento]);
 
   // Sincroniza ganho/perda de NEX pelos Rituais
   const rituaisAprendidosRef = React.useRef(rituaisHook.rituaisAprendidos);
@@ -528,8 +617,30 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
       obj.AGI += 1;
       obj.FOR += 1;
     }
+    // Monstruoso
+    if (temMonstruoso65) {
+      obj.PRE -= 1;
+    }
+    if (temMonstruoso40 && monstruosoElemento === 'Conhecimento') {
+      obj.INT += 1;
+    }
+    if (temMonstruoso99) {
+      if (monstruosoElemento === 'Sangue') {
+        obj.INT -= 1;
+        obj.FOR += 1;
+      } else if (monstruosoElemento === 'Morte') {
+        obj.PRE -= 1;
+        obj.VIG += 1;
+      } else if (monstruosoElemento === 'Conhecimento') {
+        obj.FOR -= 1;
+        obj.INT += 1;
+      } else if (monstruosoElemento === 'Energia') {
+        obj.FOR -= 1;
+        obj.AGI += 1;
+      }
+    }
     return obj;
-  }, [temBibliotecario99, temArtistaMarcialTrilha99]);
+  }, [temBibliotecario99, temArtistaMarcialTrilha99, temMonstruoso65, temMonstruoso40, temMonstruoso99, monstruosoElemento]);
 
   const atributosBaseComBonus = useMemo(() => {
     const obj = { ...atributos };
@@ -631,6 +742,13 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     }
   }, [isTrilhaAdepto, isVersatilidadeAdepto, rituaisHook.rituaisAprendidos, poderesExtras, rituaisHook.atualizarRituaisAprendidos, setPoderesExtras]);
 
+  // Monstruoso: Morte 10% soma Força na vida máxima (Regra 71)
+  const bonusPvMonstruoso = (temMonstruoso10 && monstruosoElemento === 'Morte') ? atributosBaseComBonus.FOR : 0;
+
+  // Monstruoso: NEX 40% permite usar atributo alternativo para PE em vez de Presença
+  const atrMonstruosoPe: AtributoKey = monstruosoElemento === 'Sangue' ? 'FOR' : monstruosoElemento === 'Morte' ? 'VIG' : monstruosoElemento === 'Conhecimento' ? 'INT' : 'AGI';
+  const bonusPeMonstruoso = temMonstruoso40 ? Math.max(0, atributosBaseComBonus[atrMonstruosoPe] - atributosBaseComBonus.PRE) * effectiveNivel : 0;
+
   const status = useStatus(
     classe, 
     effectiveNex, 
@@ -638,8 +756,8 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     atributosBaseComBonus, 
     paranormalPenalty + perdaSanidadeAdepto, 
     regrasAutomaticasAtivas, 
-    bonusVestimentas.pv + bonusMaldicoes.pv + bonusPvTrilha5, 
-    bonusVestimentas.pe + bonusMaldicoes.pe + bonusPeTrilha19 + bonusPeTrilha32, 
+    bonusVestimentas.pv + bonusMaldicoes.pv + bonusPvTrilha5 + bonusPvMonstruoso, 
+    bonusVestimentas.pe + bonusMaldicoes.pe + bonusPeTrilha19 + bonusPeTrilha32 + bonusPeMonstruoso, 
     bonusPeTurnoTrilha14
   );
 
@@ -809,13 +927,21 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     jaTinhaReligiaoVersatilidade
   ]);
 
+  const jaTinhaOcultismoMonstruoso = useMemo(() => {
+    if (periciasGratisSemTrilha.includes('Ocultismo')) return true;
+    if (poderesExtras['monstruoso_ja_tinha_ocultismo'] !== undefined) {
+      return poderesExtras['monstruoso_ja_tinha_ocultismo'] === 'true';
+    }
+    return false;
+  }, [poderesExtras, periciasGratisSemTrilha]);
+
   const jaTinhaPericiaTrilha = useMemo(() => {
     if (!trilhasHook.trilhaSelecionada) return false;
     if (trilhasHook.trilhaSelecionada.Codigo_Trilha === 16 && poderesExtras['agente_secreto_pericia']) {
       return periciasGratisSemTrilha.includes(poderesExtras['agente_secreto_pericia']);
     }
-    // Caçador, Muambeiro e Exorcista resolvem suas perícias diretamente em regras específicas
-    if (trilhasHook.trilhaSelecionada.Codigo_Trilha === 17 || trilhasHook.trilhaSelecionada.Codigo_Trilha === 21 || trilhasHook.trilhaSelecionada.Codigo_Trilha === 22) {
+    // Caçador, Muambeiro, Exorcista e Monstruoso resolvem suas perícias diretamente em regras específicas
+    if (trilhasHook.trilhaSelecionada.Codigo_Trilha === 17 || trilhasHook.trilhaSelecionada.Codigo_Trilha === 18 || trilhasHook.trilhaSelecionada.Codigo_Trilha === 21 || trilhasHook.trilhaSelecionada.Codigo_Trilha === 22) {
       return false;
     }
     if (!trilhasHook.trilhaSelecionada.nome_pericia) return false;
@@ -827,8 +953,8 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     if (trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 16 && poderesExtras['agente_secreto_pericia_versatilidade']) {
       return periciasGratisSemTrilha.includes(poderesExtras['agente_secreto_pericia_versatilidade']);
     }
-    // Caçador, Muambeiro e Exorcista não dão o +1d20 de duplicata de trilha na Versatilidade
-    if (trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 17 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 21 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 22) {
+    // Caçador, Muambeiro, Exorcista e Monstruoso não dão o +1d20 de duplicata de trilha na Versatilidade
+    if (trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 17 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 18 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 21 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 22) {
       return false;
     }
     if (!trilhasHook.versatilidadeSelecionada.nome_pericia) return false;
@@ -1158,7 +1284,9 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     return acc + defVal;
   }, 0);
 
-  const defesaTotal = 10 + atributos.AGI + bonusAtributos.AGI + defEquip + defOutros + defOutrosBonusRegra4 + defOutrosBonusRegra12 + defOutrosBonusRegra21 + defOutrosBonusRegra25 + defOutrosBonusTrilha5 + bonusDefesaTrilha34 + totalDefesaProtecoes + (bonusVestimentas?.defesa || 0) + (bonusMaldicoes?.defesa || 0);
+  const defOutrosBonusRegra72 = regrasAutomaticasAtivas.has(72) ? atributosFinais.INT : 0;
+
+  const defesaTotal = 10 + atributos.AGI + bonusAtributos.AGI + defEquip + defOutros + defOutrosBonusRegra4 + defOutrosBonusRegra12 + defOutrosBonusRegra21 + defOutrosBonusRegra25 + defOutrosBonusRegra72 + defOutrosBonusTrilha5 + bonusDefesaTrilha34 + totalDefesaProtecoes + (bonusVestimentas?.defesa || 0) + (bonusMaldicoes?.defesa || 0);
 
   // ============================================================
   // UTILITÁRIOS
@@ -1286,6 +1414,13 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     temViajanteDasSombras40,
     temViajanteDasSombras65,
     temViajanteDasSombras99,
+    temMonstruoso10,
+    temMonstruoso40,
+    temMonstruoso65,
+    temMonstruoso99,
+    monstruosoElemento,
+    jaTinhaOcultismoMonstruoso,
+    defOutrosBonusRegra72,
     bonusDeslocTrilha34,
     bonusDeslocTotal,
     deslocamentoTotalM,

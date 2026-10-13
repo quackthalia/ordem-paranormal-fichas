@@ -140,7 +140,8 @@ export const PericiasTable: React.FC = () => {
   const { 
     status, periciasHook, regrasAtivas, setRegrasAtivas, regrasAutomaticasAtivas, protecoesHook,
     trilhasHook, nivel, nex, regras,
-    itensHook
+    itensHook,
+    temMonstruoso10, jaTinhaOcultismoMonstruoso
   } = useRPG();
   const { pericias, handleMudarPericia, limites, totais, profissoes, setProfissoes } = periciasHook;
 
@@ -214,7 +215,7 @@ export const PericiasTable: React.FC = () => {
   }, [itensHook?.itensInventario, pericias]);
 
   return (
-    <div className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-6">
+    <div className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-6 flex flex-col h-full flex-1">
       <div className="flex items-center justify-between mb-2 border-b border-zinc-800 pb-1">
         <h3 className="font-display text-lg uppercase tracking-[0.2em] text-zinc-300 ml-4 flex-1 text-center">
           Perícias
@@ -275,7 +276,7 @@ export const PericiasTable: React.FC = () => {
       </Collapse>
 
       {/* TABELA */}
-      <div className="w-full">
+      <div className="w-full flex-1">
         <table className="w-full border-collapse text-zinc-100">
           <thead>
             <tr className="border-b border-zinc-700 text-xs uppercase tracking-wider text-zinc-500">
@@ -301,7 +302,8 @@ export const PericiasTable: React.FC = () => {
               const bonusAmaldicoados = periciasHook.bonusVestimentas?.[nome] || 0;
               const bonusItemFinal = bonusInventario + bonusAmaldicoados;
 
-              const totalBonus = dadosPericia.treino + dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25 + bonusTrilha4 + bonusTrilha7 + bonusItemFinal;
+              const bonusMonstruoso10 = (nome === 'Ocultismo' && temMonstruoso10 && jaTinhaOcultismoMonstruoso) ? 2 : 0;
+              const totalBonus = dadosPericia.treino + dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10 + bonusItemFinal;
               const corTexto = COR_TREINO[dadosPericia.treino] ?? 'text-zinc-400';
               const corBorda = BORDA_TREINO[dadosPericia.treino] ?? 'border-zinc-600';
 

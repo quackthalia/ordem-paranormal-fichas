@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '../services/supabase';
 import type { Protecao, ProtecaoInventario } from '../types';
 
-export function useProtecoes() {
+export function useProtecoes(options?: { apenasEscudos?: boolean }) {
   const [protecoes, setProtecoes] = useState<Protecao[]>([]);
   const [protecoesInventario, setProtecoesInventario] = useState<ProtecaoInventario[]>([]);
   const [loading, setLoading] = useState(false);
@@ -69,6 +69,9 @@ export function useProtecoes() {
 
       // Equipar: verificar restrições
       const alvoEhEscudo = isEscudo(alvo.protecao);
+      if (options?.apenasEscudos && !alvoEhEscudo) {
+        return prev;
+      }
 
       return prev.map(i => {
         if (i.id === id) {

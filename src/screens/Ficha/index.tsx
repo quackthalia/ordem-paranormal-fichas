@@ -31,7 +31,9 @@ export const FichaScreen: React.FC = () => {
     afinidadeEscolhida,
     itensHook,
     poderesExtras,
-    setPoderesExtras
+    setPoderesExtras,
+    temMonstruoso99,
+    monstruosoElemento
   } = useRPG();
 
     const effectiveNex = regras["nex_experiencia"] ? nivel * 5 : nex;
@@ -257,6 +259,63 @@ export const FichaScreen: React.FC = () => {
       }
     } else if (!temViajanteDasSombras99 && (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_viajante_das_sombras')) {
       rituaisHook.esquecerRitual('trilha_viajante_das_sombras');
+    }
+
+    // TRILHA 18: MONSTRUOSO (99%)
+    const isSangue99 = temMonstruoso99 && monstruosoElemento === 'Sangue';
+    const jaTemFormaMonstruosa = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_monstruoso_99_sangue' || r.codigo_ritual === 44);
+    if (isSangue99 && !jaTemFormaMonstruosa) {
+      const baseRitual = (rituaisHook.rituais || []).find(r => r.Codigo_Ritual === 44);
+      if (baseRitual) {
+        rituaisHook.aprenderRitual({
+          codigo_ritual: 44,
+          nome: `${baseRitual.Nome_Ritual} (Monstruoso)`,
+          origem: 'trilha_monstruoso_99_sangue',
+          circulo: baseRitual.Circulo_Ritual,
+          elemento: baseRitual.Elemento_Ritual
+        });
+      }
+    } else if (!isSangue99 && (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_monstruoso_99_sangue')) {
+      rituaisHook.esquecerRitual('trilha_monstruoso_99_sangue');
+    }
+
+    const isMorte99 = temMonstruoso99 && monstruosoElemento === 'Morte';
+    const jaTemFimInevitavel = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_monstruoso_99_morte' || r.codigo_ritual === 42);
+    if (isMorte99 && !jaTemFimInevitavel) {
+      const baseRitual = (rituaisHook.rituais || []).find(r => r.Codigo_Ritual === 42);
+      if (baseRitual) {
+        rituaisHook.aprenderRitual({
+          codigo_ritual: 42,
+          nome: `${baseRitual.Nome_Ritual} (Monstruoso)`,
+          origem: 'trilha_monstruoso_99_morte',
+          circulo: baseRitual.Circulo_Ritual,
+          elemento: baseRitual.Elemento_Ritual
+        });
+      }
+    } else if (!isMorte99 && (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_monstruoso_99_morte')) {
+      rituaisHook.esquecerRitual('trilha_monstruoso_99_morte');
+    }
+
+    const isEnergia99 = temMonstruoso99 && monstruosoElemento === 'Energia';
+    const jaTemDeflagracao = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_monstruoso_99_energia' || r.codigo_ritual === 27);
+    if (isEnergia99 && !jaTemDeflagracao) {
+      const baseRitual = (rituaisHook.rituais || []).find(r => r.Codigo_Ritual === 27);
+      if (baseRitual) {
+        rituaisHook.aprenderRitual({
+          codigo_ritual: 27,
+          nome: `${baseRitual.Nome_Ritual} (Monstruoso)`,
+          origem: 'trilha_monstruoso_99_energia',
+          circulo: baseRitual.Circulo_Ritual,
+          elemento: baseRitual.Elemento_Ritual
+        });
+      }
+    } else if (!isEnergia99 && (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_monstruoso_99_energia')) {
+      rituaisHook.esquecerRitual('trilha_monstruoso_99_energia');
+    }
+
+    const isConhecimento99 = temMonstruoso99 && monstruosoElemento === 'Conhecimento';
+    if (!isConhecimento99 && (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'monstruoso_99_conhecimento')) {
+      rituaisHook.esquecerRitual('monstruoso_99_conhecimento');
     }
 
     const isInventarioLoaded = itensHook.itensInventario !== undefined && itensHook.itensInventario !== null;
@@ -497,7 +556,7 @@ function AtributosFicha() {
 // COMPONENTE INTERNO: DEFESA
 // ============================================================
 function DefesaPanel() {
-  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras, periciasHook, atributosFinais, regrasAutomaticasAtivas, protecoes, protecoesHook, totalDefesaProtecoes, bonusVestimentas, bonusMaldicoes, trilhasHook, status, regras, nivel, nex, bonusDefesaTrilha34 } = useRPG();
+  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras, periciasHook, atributosFinais, regrasAutomaticasAtivas, protecoes, protecoesHook, totalDefesaProtecoes, bonusVestimentas, bonusMaldicoes, trilhasHook, status, regras, nivel, nex, bonusDefesaTrilha34, defOutrosBonusRegra72 } = useRPG();
 
   const [bloqueio, setBloqueio] = React.useState(0);
   const [esquiva, setEsquiva] = React.useState(0);
@@ -511,7 +570,8 @@ function DefesaPanel() {
     // Fortitude
     const nomeFortitude = nomesPericias[10];
     if (nomeFortitude && pericias[nomeFortitude] && !bloqueioOverride.current) {
-      const total = pericias[nomeFortitude].treino + pericias[nomeFortitude].outros;
+      const bonusBloqueioRegra73 = regrasAutomaticasAtivas.has(73) ? atributosFinais.AGI : 0;
+      const total = pericias[nomeFortitude].treino + pericias[nomeFortitude].outros + bonusBloqueioRegra73;
       setBloqueio(total);
     }
 
@@ -521,7 +581,7 @@ function DefesaPanel() {
       const total = defesaTotal + pericias[nomeReflexos].treino + pericias[nomeReflexos].outros;
       setEsquiva(total);
     }
-  }, [periciasHook, atributosFinais, defesaTotal]);
+  }, [periciasHook, atributosFinais, defesaTotal, regrasAutomaticasAtivas]);
 
   return (
     <div className="mt-8 flex flex-wrap items-center justify-between gap-5 rounded-lg border border-zinc-800 bg-zinc-900/60 p-5">
@@ -551,7 +611,7 @@ function DefesaPanel() {
                 type="number"
                 onKeyDown={bloquearLetras}
                 value={(() => {
-                  const defOutrosBonusRegra = (regrasAutomaticasAtivas.has(4) ? 2 : 0) + (regrasAutomaticasAtivas.has(12) ? 2 : 0);
+                  const defOutrosBonusRegra = (regrasAutomaticasAtivas.has(4) ? 2 : 0) + (regrasAutomaticasAtivas.has(12) ? 2 : 0) + (defOutrosBonusRegra72 || 0);
                   const temProtecaoPesada = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('pesada')) || false;
                   const bonusRegra21 = (regrasAutomaticasAtivas.has(21) && temProtecaoPesada) ? 2 : 0;
                   const temProtecaoLeve = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('leve')) || false;
@@ -566,7 +626,7 @@ function DefesaPanel() {
                 title="Outros bônus de defesa"
                 onChange={e => {
                   const valDigitado = Math.max(0, Number(e.target.value));
-                  const defOutrosBonusRegra = (regrasAutomaticasAtivas.has(4) ? 2 : 0) + (regrasAutomaticasAtivas.has(12) ? 2 : 0);
+                  const defOutrosBonusRegra = (regrasAutomaticasAtivas.has(4) ? 2 : 0) + (regrasAutomaticasAtivas.has(12) ? 2 : 0) + (defOutrosBonusRegra72 || 0);
                   const temProtecaoPesada = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('pesada')) || false;
                   const bonusRegra21 = (regrasAutomaticasAtivas.has(21) && temProtecaoPesada) ? 2 : 0;
                   const temProtecaoLeve = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('leve')) || false;
@@ -624,7 +684,8 @@ function ProtecoesPanel() {
     vulnerabilidades, setVulnerabilidades,
     regrasAutomaticasAtivas, atributosFinais, poderesHook, rituaisHook, periciasHook, status, poderesExtras,
     protecoesHook, modificacoesHook, bonusVestimentas, bonusMaldicoes, origensHook,
-    trilhasHook, regras, nivel, nex
+    trilhasHook, regras, nivel, nex,
+    temMonstruoso10, temMonstruoso40, temMonstruoso65, temMonstruoso99, monstruosoElemento
   } = useRPG();
   const [mostrarOutros, setMostrarOutros] = React.useState(false);
 
@@ -700,6 +761,31 @@ function ProtecoesPanel() {
     const temAfinidade = regrasAutomaticasAtivas.has(19) || poderesRegra18.length >= 2;
     const valorResistencia = temAfinidade ? 20 : 10;
     resistenciasExtras.push(`${elementoRegra18} ${valorResistencia}`);
+  }
+
+  // TRILHA 18: Monstruoso RD
+  const rdMonstruoso = temMonstruoso99 ? 20 : temMonstruoso65 ? 15 : temMonstruoso40 ? 10 : temMonstruoso10 ? 5 : 0;
+  if (rdMonstruoso > 0) {
+    if (monstruosoElemento === 'Sangue') {
+      resistenciasExtras.push(`Balístico ${rdMonstruoso}`);
+      resistenciasExtras.push(`Sangue ${rdMonstruoso}`);
+    } else if (monstruosoElemento === 'Morte') {
+      resistenciasExtras.push(`Perfuração ${rdMonstruoso}`);
+      if (!temMonstruoso99) {
+        resistenciasExtras.push(`Morte ${rdMonstruoso}`);
+      }
+    } else if (monstruosoElemento === 'Conhecimento') {
+      resistenciasExtras.push(`Balístico ${rdMonstruoso}`);
+      resistenciasExtras.push(`Conhecimento ${rdMonstruoso}`);
+    } else if (monstruosoElemento === 'Energia') {
+      resistenciasExtras.push(`Corte ${rdMonstruoso}`);
+      resistenciasExtras.push(`Eletricidade ${rdMonstruoso}`);
+      resistenciasExtras.push(`Fogo ${rdMonstruoso}`);
+      resistenciasExtras.push(`Energia ${rdMonstruoso}`);
+      if (temMonstruoso65) {
+        resistenciasExtras.push(`Químico ${rdMonstruoso}`);
+      }
+    }
   }
 
   // REGRA 17: Adiciona "Armas Pesadas" em Proficiências
@@ -811,6 +897,20 @@ function ProtecoesPanel() {
     if (!imunidadesExtras.includes('Venenos')) imunidadesExtras.push('Venenos');
     if (!imunidadesExtras.includes('Doenças')) imunidadesExtras.push('Doenças');
   }
+  // Monstruoso Imunidades
+  if (temMonstruoso10 && monstruosoElemento === 'Morte') {
+    if (!imunidadesExtras.includes('Fatigado')) imunidadesExtras.push('Fatigado');
+  }
+  if (temMonstruoso40 && monstruosoElemento === 'Morte') {
+    if (!imunidadesExtras.includes('Fome')) imunidadesExtras.push('Fome');
+    if (!imunidadesExtras.includes('Sede')) imunidadesExtras.push('Sede');
+  }
+  if (temMonstruoso99 && monstruosoElemento === 'Morte') {
+    if (!imunidadesExtras.includes('Morte')) imunidadesExtras.push('Morte');
+  }
+  if (temMonstruoso99 && monstruosoElemento === 'Energia') {
+    if (!imunidadesExtras.includes('Paralisia física')) imunidadesExtras.push('Paralisia física');
+  }
 
   const sentidosExtras = [];
   // REGRA 56: Visão no Escuro
@@ -821,6 +921,16 @@ function ProtecoesPanel() {
   if (regrasAutomaticasAtivas.has(59)) {
     if (!sentidosExtras.includes('Visão no Escuro')) sentidosExtras.push('Visão no Escuro');
     sentidosExtras.push('Faro');
+  }
+  // Monstruoso Sentidos
+  if (temMonstruoso10 && monstruosoElemento === 'Sangue') {
+    if (!sentidosExtras.includes('Faro')) sentidosExtras.push('Faro');
+  }
+  if (temMonstruoso10 && monstruosoElemento === 'Conhecimento') {
+    if (!sentidosExtras.includes('Visão no Escuro')) sentidosExtras.push('Visão no Escuro');
+  }
+  if (temMonstruoso99 && monstruosoElemento === 'Conhecimento') {
+    if (!sentidosExtras.includes('Percepção às Cegas')) sentidosExtras.push('Percepção às Cegas');
   }
 
   return (

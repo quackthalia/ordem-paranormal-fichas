@@ -26,6 +26,10 @@ export const StatusPanel: React.FC = () => {
     bonusMaldicoes,
     ppMax,
     ppTurno,
+    bonusDeslocTotal,
+    deslocamentoTotalM,
+    poderesExtras,
+    setPoderesExtras,
   } = useRPG();
 
   const regraNexExperiencia = regras['nex_experiencia'];
@@ -175,14 +179,10 @@ export const StatusPanel: React.FC = () => {
           <div className="flex h-9 items-center justify-center rounded border border-zinc-600 px-2.5 text-base font-bold text-zinc-100">
             <input
               type="number"
-              value={(() => {
-                const bonusDesloc = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0) + (regrasAutomaticasAtivas.has(41) ? 3 : 0) + (bonusVestimentas?.deslocamento || 0) + (bonusMaldicoes?.deslocamento || 0);
-                return deslocM + bonusDesloc;
-              })()}
+              value={deslocamentoTotalM}
               onChange={(e) => {
-                const bonusDesloc = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0) + (regrasAutomaticasAtivas.has(41) ? 3 : 0) + (bonusVestimentas?.deslocamento || 0) + (bonusMaldicoes?.deslocamento || 0);
                 const totalM = Number(e.target.value);
-                const m = totalM - bonusDesloc;
+                const m = totalM - bonusDeslocTotal;
                 setDeslocM(m);
                 setDeslocQ(Math.floor(m / 1.5));
               }}
@@ -191,14 +191,9 @@ export const StatusPanel: React.FC = () => {
             <span className="text-sm text-zinc-400">m /</span>
             <input
               type="number"
-              value={(() => {
-                const bonusDesloc = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0) + (regrasAutomaticasAtivas.has(41) ? 3 : 0) + (bonusVestimentas?.deslocamento || 0) + (bonusMaldicoes?.deslocamento || 0);
-                const bonusDeslocQ = Math.floor(bonusDesloc / 1.5);
-                return deslocQ + bonusDeslocQ;
-              })()}
+              value={deslocQ + Math.floor(bonusDeslocTotal / 1.5)}
               onChange={(e) => {
-                const bonusDesloc = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0) + (regrasAutomaticasAtivas.has(41) ? 3 : 0) + (bonusVestimentas?.deslocamento || 0) + (bonusMaldicoes?.deslocamento || 0);
-                const bonusDeslocQ = Math.floor(bonusDesloc / 1.5);
+                const bonusDeslocQ = Math.floor(bonusDeslocTotal / 1.5);
                 const totalQ = Number(e.target.value);
                 const q = totalQ - bonusDeslocQ;
                 setDeslocQ(q);
@@ -232,6 +227,49 @@ export const StatusPanel: React.FC = () => {
           tempMax={pvTempMax}
           setTempMax={setPvTempMax}
         />
+
+        {/* UI Morrendo (quando PV chega a 0) */}
+        {pvAtual === 0 && (
+          <div className="mt-2 flex flex-col items-center gap-2 rounded-lg border border-red-950 bg-black/60 p-2.5 shadow-lg">
+            <div className="flex items-center justify-between w-full px-1">
+              <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">
+                Condição: Morrendo
+              </span>
+              <span className="text-[9px] text-zinc-500 uppercase">
+                {regrasAutomaticasAtivas.has(74) ? '4 Rodadas (Monstruoso)' : '3 Rodadas'}
+              </span>
+            </div>
+            <div className="flex items-center gap-3 py-1">
+              {Array.from({ length: regrasAutomaticasAtivas.has(74) ? 4 : 3 }).map((_, i) => {
+                const currentCount = Number(poderesExtras['morrendo_count'] || 0);
+                const isMarked = i < currentCount;
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    title={`Rodada ${i + 1} morrendo`}
+                    onClick={() => {
+                      const newCount = isMarked && i === currentCount - 1 ? i : i + 1;
+                      setPoderesExtras(prev => ({ ...prev, morrendo_count: String(newCount) }));
+                    }}
+                    className={`h-5 w-5 rounded-full border-2 transition-all flex items-center justify-center cursor-pointer ${
+                      isMarked 
+                        ? 'bg-red-600 border-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' 
+                        : 'bg-zinc-950 border-zinc-700 hover:border-red-800'
+                    }`}
+                  >
+                    {isMarked && <span className="text-[10px] text-white font-bold leading-none">✕</span>}
+                  </button>
+                );
+              })}
+            </div>
+            <span className="text-[9px] text-zinc-400 text-center">
+              {Number(poderesExtras['morrendo_count'] || 0) >= (regrasAutomaticasAtivas.has(74) ? 4 : 3)
+                ? '⚠️ Personagem morto!'
+                : 'Clique nas marcas para registrar cada rodada morrendo'}
+            </span>
+          </div>
+        )}
 
         {/* UI Regra 53 (Sangue Ruim) */}
         {regrasAutomaticasAtivas.has(53) && pvAtual !== null && pvAtual <= Math.floor(pvMax / 2) && (

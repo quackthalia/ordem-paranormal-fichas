@@ -474,3 +474,43 @@ export function calcularAtributosArmaFinais(
     alcanceFinal
   };
 }
+
+// ============================================================
+// DANO DE EXPLOSIVOS (GRANADEIRO BLASTER / GERAL)
+// ============================================================
+export function extrairDanoExplosivo(item: { Desc_Item?: string; Nome_Item?: string; [key: string]: any }): string | null {
+  const desc = item.Desc_Item || '';
+  if (!desc) return null;
+
+  // Caso explícito se o item tiver propriedade Dano ou Dano_Item
+  if (item.Dano_Item) return String(item.Dano_Item).trim();
+  if (item.Dano) return String(item.Dano).trim();
+
+  // Caso especial Dinamite: "4d6 pontos de dano de impacto e 4d6 pontos de dano de fogo"
+  if (desc.includes('4d6 pontos de dano de impacto e 4d6 pontos de dano de fogo')) {
+    return '4d6 Impacto + 4d6 Fogo';
+  }
+
+  // Padrão geral: "(\d+d\d+) pontos de dano [de] (tipo)" ou "(\d+d\d+) de dano [de] (tipo)"
+  const regex = /(\d+d\d+)(?:\s*[\+\-]\s*\d+)?\s*(?:pontos\s+de\s+dano|de\s+dano)(?:\s+de\s+|\s+)?([a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇÑ]+)?/i;
+  const match = desc.match(regex);
+  if (match) {
+    const dados = match[1];
+    let tipo = match[2] ? match[2].trim().toLowerCase() : '';
+    const stopWords = ['em', 'a', 'no', 'na', 'para', 'por', 'ate', 'até', 'ao', 'aos', 'e'];
+    if (stopWords.includes(tipo)) {
+      tipo = '';
+    }
+    const tipoFormatado = tipo ? tipo.charAt(0).toUpperCase() + tipo.slice(1) : '';
+    return tipoFormatado ? `${dados} ${tipoFormatado}` : dados;
+  }
+
+  return null;
+}
+
+export function dobrarDadosDano(danoStr: string | null): string | null {
+  if (!danoStr) return null;
+  return danoStr.replace(/(\d+)d(\d+)/gi, (_match, count, sides) => {
+    return `${Number(count) * 2}d${sides}`;
+  });
+}

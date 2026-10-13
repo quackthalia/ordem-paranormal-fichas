@@ -41,7 +41,7 @@ function obterValorVersao(
 }
 
 export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, removerItem, stringDT, onEditar, toggleEquipado, isOverlay }: SortableItemAmaldicoadoProps) {
-  const { modificacoesHook, rituaisHook, itensAmaldicoadosHook, versaoRitual, setVersaoRitual } = useRPG();
+  const { modificacoesHook, rituaisHook, itensAmaldicoadosHook, versaoRitual, setVersaoRitual, temMonstruoso99, monstruosoElemento } = useRPG();
   const [ritualExpandido, setRitualExpandido] = useState(false);
 
   const {
@@ -144,21 +144,25 @@ export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, remo
                                  elStr.includes('morte') ? 'bg-black border-zinc-700 text-white' :
                                  elStr.includes('conhecimento') ? 'bg-yellow-600 border-zinc-700 text-white' :
                                  elStr.includes('energia') ? 'bg-purple-600 border-zinc-700 text-white' : 
-                                 'bg-zinc-700 border-zinc-700 text-white';
+                                  'bg-zinc-700 border-zinc-700 text-white';
+            const desabilitadoMonstruoso = temMonstruoso99 && monstruosoElemento === 'Energia';
 
             return (
               <button
+                disabled={desabilitadoMonstruoso}
                 onPointerDown={(e) => e.stopPropagation()}
                 onClick={(e) => {
                   e.stopPropagation();
-                  toggleEquipado(item.id);
+                  if (!desabilitadoMonstruoso) toggleEquipado(item.id);
                 }}
-                className={`w-4 h-4 rounded flex items-center justify-center border transition-colors cursor-pointer ${
-                  item.equipado 
-                    ? checkedColor 
-                    : 'bg-zinc-900 border-zinc-700 text-transparent hover:border-zinc-500'
+                className={`w-4 h-4 rounded flex items-center justify-center border transition-colors ${
+                  desabilitadoMonstruoso
+                    ? 'opacity-40 cursor-not-allowed bg-zinc-900 border-zinc-800 text-transparent'
+                    : item.equipado 
+                      ? `${checkedColor} cursor-pointer` 
+                      : 'bg-zinc-900 border-zinc-700 text-transparent hover:border-zinc-500 cursor-pointer'
                 }`}
-                title={item.equipado ? "Desequipar" : "Equipar item"}
+                title={desabilitadoMonstruoso ? "Monstruoso de Energia (99%) não pode equipar vestimentas." : (item.equipado ? "Desequipar" : "Equipar item")}
               >
                 <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="2.5 6 5 8.5 9.5 3.5" />

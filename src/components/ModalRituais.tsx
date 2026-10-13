@@ -8,6 +8,8 @@ interface ModalRituaisProps {
   onClose: () => void;
   onSelect: (ritual: Ritual, elemento?: string) => void;
   limiteCirculo: number;
+  circuloFixo?: number;
+  elementoFiltro?: string;
   rituaisAprendidosIds?: number[];
   elementosPermitidosPorRitual?: Record<number, string[]>;
 }
@@ -65,6 +67,8 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
   onClose,
   onSelect,
   limiteCirculo,
+  circuloFixo,
+  elementoFiltro,
   rituaisAprendidosIds = [],
   elementosPermitidosPorRitual = {},
 }) => {
@@ -74,8 +78,8 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
     return () => { document.body.style.overflow = 'unset'; };
   }, []);
 
-  const [abaElemento, setAbaElemento] = useState<string | null>(null);
-  const [abaCirculo, setAbaCirculo] = useState<number | null>(null);
+  const [abaElemento, setAbaElemento] = useState<string | null>(elementoFiltro || null);
+  const [abaCirculo, setAbaCirculo] = useState<number | null>(circuloFixo !== undefined ? circuloFixo : null);
   
   const [escolhendoElementoId, setEscolhendoElementoId] = useState<number | null>(null);
   const [expandidos, setExpandidos] = useState<number[]>([]);
@@ -88,22 +92,26 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
       if (BANNED_RITUAIS.includes(r.Codigo_Ritual)) return false;
       if (rituaisAprendidosIds.includes(r.Codigo_Ritual)) return false;
       
-      // Regra 2: Limite de Círculo (ou inferior)
-      if (r.Circulo_Ritual > limiteCirculo) return false;
+      // Regra 2: Limite de Círculo (ou inferior) ou Círculo Fixo
+      if (circuloFixo !== undefined) {
+        if (r.Circulo_Ritual !== circuloFixo) return false;
+      } else {
+        if (r.Circulo_Ritual > limiteCirculo) return false;
+      }
       
-      // Regra 3: Elemento Selecionado
-      if (abaElemento) {
+      // Regra 3: Elemento Selecionado / Filtro
+      const filtroElementoEfetivo = abaElemento || elementoFiltro;
+      if (filtroElementoEfetivo) {
         const isVaria = r.Elemento_Ritual.toLowerCase() === 'lista' || r.Elemento_Ritual.toLowerCase() === 'varia';
-        if (abaElemento === 'Varia') {
+        if (filtroElementoEfetivo === 'Varia') {
           if (!isVaria) return false;
         } else {
-          // Se for filtro ex: Sangue. Um ritual de Lista NÃO aparece em Sangue, ele só aparece em Varia.
-          if (isVaria || !r.Elemento_Ritual.toLowerCase().includes(abaElemento.toLowerCase())) return false;
+          if (isVaria || !r.Elemento_Ritual.toLowerCase().includes(filtroElementoEfetivo.toLowerCase())) return false;
         }
       }
       
       // Regra 4: Círculo Selecionado
-      if (abaCirculo !== null) {
+      if (circuloFixo === undefined && abaCirculo !== null) {
         if (r.Circulo_Ritual !== abaCirculo) return false;
       }
       
@@ -115,7 +123,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
 
       return true;
     }).sort((a, b) => sortPorElementoENome(a, b, r => r?.Elemento_Ritual, r => r?.Nome_Ritual));
-  }, [rituais, abaElemento, abaCirculo, limiteCirculo, rituaisAprendidosIds, busca]);
+  }, [rituais, abaElemento, elementoFiltro, abaCirculo, circuloFixo, limiteCirculo, rituaisAprendidosIds, busca]);
   const scrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
@@ -136,7 +144,11 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
               <h3 className="font-display m-0 text-lg uppercase tracking-wide text-zinc-100">
                 APRENDER RITUAL
               </h3>
-              <span className="text-xs text-zinc-400 mt-1">Selecione um ritual de até {limiteCirculo}º Círculo</span>
+              <span className="text-xs text-zinc-400 mt-1">
+                {circuloFixo !== undefined 
+                  ? `Selecione um ritual de ${circuloFixo}º Círculo${elementoFiltro ? ` (${elementoFiltro})` : ''}`
+                  : `Selecione um ritual de até ${limiteCirculo}º Círculo`}
+              </span>
             </div>
             <button
               onClick={onClose}
@@ -156,67 +168,90 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
 
         {/* FILTROS (Abas Principais - Elementos) */}
         <div className="flex flex-wrap border-b border-zinc-800 bg-zinc-950">
-          <button
-            onClick={() => setAbaElemento(null)}
-            className={`min-w-[70px] flex-1 px-1 py-2.5 text-xs font-bold uppercase tracking-wider transition ${
-              abaElemento === null
-                ? 'border-b-2 border-green-900 bg-zinc-900 text-zinc-100'
-                : 'border-b-2 border-transparent text-zinc-500 hover:bg-zinc-900/50 hover:text-zinc-300'
-            }`}
-          >
-            Todos
-          </button>
-          {ELEMENTOS.map(elem => {
-            const ativo = abaElemento === elem;
-            return (
+          {elementoFiltro ? (
+            <button
+              className="min-w-[70px] flex-1 px-1 py-2.5 text-xs font-bold uppercase tracking-wider transition border-b-2 bg-zinc-900 text-zinc-100"
+              style={{
+                borderBottomColor: CORES_ELEMENTOS[elementoFiltro.toLowerCase()] || '#888',
+              }}
+            >
+              {elementoFiltro}
+            </button>
+          ) : (
+            <>
               <button
-                key={elem}
-                onClick={() => setAbaElemento(elem)}
+                onClick={() => setAbaElemento(null)}
                 className={`min-w-[70px] flex-1 px-1 py-2.5 text-xs font-bold uppercase tracking-wider transition ${
-                  ativo
-                    ? 'border-b-2 bg-zinc-900 text-zinc-100'
+                  abaElemento === null
+                    ? 'border-b-2 border-green-900 bg-zinc-900 text-zinc-100'
                     : 'border-b-2 border-transparent text-zinc-500 hover:bg-zinc-900/50 hover:text-zinc-300'
                 }`}
-                style={{
-                  borderBottomColor: ativo ? (CORES_ELEMENTOS[elem.toLowerCase()] || '#888') : 'transparent',
-                }}
               >
-                {elem}
+                Todos
               </button>
-            );
-          })}
+              {ELEMENTOS.map(elem => {
+                const ativo = abaElemento === elem;
+                return (
+                  <button
+                    key={elem}
+                    onClick={() => setAbaElemento(elem)}
+                    className={`min-w-[70px] flex-1 px-1 py-2.5 text-xs font-bold uppercase tracking-wider transition ${
+                      ativo
+                        ? 'border-b-2 bg-zinc-900 text-zinc-100'
+                        : 'border-b-2 border-transparent text-zinc-500 hover:bg-zinc-900/50 hover:text-zinc-300'
+                    }`}
+                    style={{
+                      borderBottomColor: ativo ? (CORES_ELEMENTOS[elem.toLowerCase()] || '#888') : 'transparent',
+                    }}
+                  >
+                    {elem}
+                  </button>
+                );
+              })}
+            </>
+          )}
         </div>
 
         {/* FILTROS (Abas Secundárias - Círculos) */}
         <div className="flex flex-wrap items-center gap-2 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
           <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Círculos:</span>
-          <button
-            onClick={() => setAbaCirculo(null)}
-            className={`rounded px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider transition border ${
-              abaCirculo === null
-                ? 'bg-green-900/40 text-green-300 border-green-800'
-                : 'bg-zinc-800/60 text-zinc-500 border-zinc-700 hover:text-zinc-300'
-            }`}
-          >
-            Todos
-          </button>
-          {[1, 2, 3, 4].map(c => {
-            if (c > limiteCirculo) return null; // Não mostra filtros de círculos acima do permitido
-            const ativo = abaCirculo === c;
-            return (
+          {circuloFixo !== undefined ? (
+            <button
+              className="rounded px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider transition border bg-green-900/40 text-green-300 border-green-800"
+            >
+              {circuloFixo}º Círculo
+            </button>
+          ) : (
+            <>
               <button
-                key={c}
-                onClick={() => setAbaCirculo(c)}
+                onClick={() => setAbaCirculo(null)}
                 className={`rounded px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider transition border ${
-                  ativo
+                  abaCirculo === null
                     ? 'bg-green-900/40 text-green-300 border-green-800'
                     : 'bg-zinc-800/60 text-zinc-500 border-zinc-700 hover:text-zinc-300'
                 }`}
               >
-                {c}º Círculo
+                Todos
               </button>
-            );
-          })}
+              {[1, 2, 3, 4].map(c => {
+                if (c > limiteCirculo) return null; // Não mostra filtros de círculos acima do permitido
+                const ativo = abaCirculo === c;
+                return (
+                  <button
+                    key={c}
+                    onClick={() => setAbaCirculo(c)}
+                    className={`rounded px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider transition border ${
+                      ativo
+                        ? 'bg-green-900/40 text-green-300 border-green-800'
+                        : 'bg-zinc-800/60 text-zinc-500 border-zinc-700 hover:text-zinc-300'
+                    }`}
+                  >
+                    {c}º Círculo
+                  </button>
+                );
+              })}
+            </>
+          )}
         </div>
 
         {/* LISTA DE RITUAIS */}

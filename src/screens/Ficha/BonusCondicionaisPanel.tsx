@@ -16,7 +16,14 @@ export const BonusCondicionaisPanel: React.FC = () => {
     regras,
     nivel,
     nex,
-    poderesExtras
+    poderesExtras,
+    temMataLeao10,
+    temAcrobata40,
+    danoDeMovimento,
+    temMonstruoso10,
+    temMonstruoso40,
+    monstruosoElemento,
+    atributosFinais,
   } = useRPG();
 
   const temPerseverante40 = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 20 && (regras['nex_experiencia'] ? nivel >= 8 : nex >= 40);
@@ -54,6 +61,42 @@ export const BonusCondicionaisPanel: React.FC = () => {
               <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
                 <span className="text-green-500 font-bold mt-[-1px]">•</span>
                 <span>+1d20 em teste para fugir de um inimigo (Perseverante)</span>
+              </div>
+            )}
+            {temMataLeao10 && (
+              <>
+                <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                  <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                  <span>+2d20 em testes de manobra para Agarrar (Mata Leão)</span>
+                </div>
+                <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                  <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                  <span>+1d20 em testes para manter um ser Agarrado (Mata Leão)</span>
+                </div>
+              </>
+            )}
+            {temAcrobata40 && (
+              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                <span>+{Math.floor(danoDeMovimento / 2)} em testes de manobra com Agilidade (gastando 4 PE) (Tumbling Brutal)</span>
+              </div>
+            )}
+            {temMonstruoso10 && monstruosoElemento === 'Sangue' && (
+              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                <span>+{atributosFinais.VIG} (Vigor) no dano quando faz um contra-ataque bem-sucedido (Ser Amaldiçoado - Sangue)</span>
+              </div>
+            )}
+            {temMonstruoso40 && monstruosoElemento === 'Sangue' && (
+              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                <span>Gastar ação de movimento e 1 a {atributosFinais.FOR} PE para recuperar 1d8 PV por PE gasto (Ser Macabro - Sangue)</span>
+              </div>
+            )}
+            {temMonstruoso40 && monstruosoElemento === 'Energia' && (
+              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                <span>Gastar 1 a {atributosFinais.AGI} PE ao acertar ataque corpo a corpo para causar +1d6 Energia por PE gasto (Ser Macabro - Energia)</span>
               </div>
             )}
             
@@ -127,6 +170,60 @@ export const BonusCondicionaisPanel: React.FC = () => {
               <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
                 <span className="text-green-500 font-bold mt-[-1px]">•</span>
                 <span>-1d20 em testes de Diplomacia (Mutação)</span>
+              </div>
+            )}
+            {temMonstruoso10 && monstruosoElemento === 'Sangue' && (
+              <>
+                <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                  <span className="text-red-400 font-bold mt-[-1px]">•</span>
+                  <span>{temMonstruoso40 ? '-2d20' : '-1d20'} em testes de Ciências (Monstruoso)</span>
+                </div>
+                <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                  <span className="text-red-400 font-bold mt-[-1px]">•</span>
+                  <span>{temMonstruoso40 ? '-2d20' : '-1d20'} em testes de Intuição (Monstruoso)</span>
+                </div>
+              </>
+            )}
+            {temMonstruoso10 && monstruosoElemento === 'Morte' && (
+              <>
+                <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                  <span className="text-red-400 font-bold mt-[-1px]">•</span>
+                  <span>{temMonstruoso40 ? '-2d20' : '-1d20'} em testes de Diplomacia (Monstruoso)</span>
+                </div>
+                <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                  <span className="text-red-400 font-bold mt-[-1px]">•</span>
+                  <span>{temMonstruoso40 ? '-2d20' : '-1d20'} em testes de Enganação (Monstruoso)</span>
+                </div>
+              </>
+            )}
+            {temMonstruoso10 && monstruosoElemento === 'Conhecimento' && (
+              <>
+                <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                  <span className="text-red-400 font-bold mt-[-1px]">•</span>
+                  <span>{temMonstruoso40 ? '-2d20' : '-1d20'} em testes de Atletismo (Monstruoso)</span>
+                </div>
+                <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                  <span className="text-red-400 font-bold mt-[-1px]">•</span>
+                  <span>{temMonstruoso40 ? '-2d20' : '-1d20'} em testes de Acrobacia (Monstruoso)</span>
+                </div>
+              </>
+            )}
+            {temMonstruoso10 && monstruosoElemento === 'Energia' && (
+              <>
+                <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                  <span className="text-red-400 font-bold mt-[-1px]">•</span>
+                  <span>{temMonstruoso40 ? '-2d20' : '-1d20'} em testes de Investigação (Monstruoso)</span>
+                </div>
+                <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                  <span className="text-red-400 font-bold mt-[-1px]">•</span>
+                  <span>{temMonstruoso40 ? '-2d20' : '-1d20'} em testes de Percepção (Monstruoso)</span>
+                </div>
+              </>
+            )}
+            {regrasAutomaticasAtivas.has(74) && (
+              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                <span>+1d20 em testes de Intimidação (Monstruoso 40%)</span>
               </div>
             )}
             {Object.values(poderesHook.poderesEscolhidos).map((poder, idx) => {

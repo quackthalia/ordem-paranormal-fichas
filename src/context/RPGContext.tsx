@@ -190,6 +190,7 @@ interface RPGContextType {
   temMonstruoso10: boolean;
   temMonstruoso40: boolean;
   temMonstruoso65: boolean;
+  temMonstruoso75: boolean;
   temMonstruoso99: boolean;
   monstruosoElemento: string;
   jaTinhaOcultismoMonstruoso: boolean;
@@ -344,6 +345,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     const hasMonst10 = (isMonstTrilha && (regras['nex_experiencia'] ? effNivel >= 2 : effNex >= 10)) || (isMonstVers && (regras['nex_experiencia'] ? effNivel >= 10 : effNex >= 50));
     const hasMonst40 = isMonstTrilha && (regras['nex_experiencia'] ? effNivel >= 8 : effNex >= 40);
     const hasMonst65 = isMonstTrilha && (regras['nex_experiencia'] ? effNivel >= 13 : effNex >= 65);
+    const hasMonst75 = isMonstTrilha && (regras['nex_experiencia'] ? effNivel >= 15 : effNex >= 75);
     const hasMonst99 = isMonstTrilha && (regras['nex_experiencia'] ? effNivel >= 20 : effNex >= 99);
     const elemMonst = afinidadeEscolhida || poderesExtras['monstruoso_elemento'] || 'Sangue';
 
@@ -359,6 +361,9 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     }
     if (hasMonst65) {
       if (elemMonst === 'Energia') set.add(76);
+    }
+    if (hasMonst75) {
+      set.add(69);
     }
     if (hasMonst99) {
       if (elemMonst === 'Sangue') set.add(77);
@@ -455,6 +460,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const temMonstruoso10 = (isTrilhaMonstruoso && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10)) || (isVersatilidadeMonstruoso && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
   const temMonstruoso40 = isTrilhaMonstruoso && (regras['nex_experiencia'] ? effectiveNivel >= 8 : effectiveNex >= 40);
   const temMonstruoso65 = isTrilhaMonstruoso && (regras['nex_experiencia'] ? effectiveNivel >= 13 : effectiveNex >= 65);
+  const temMonstruoso75 = isTrilhaMonstruoso && (regras['nex_experiencia'] ? effectiveNivel >= 15 : effectiveNex >= 75);
   const temMonstruoso99 = isTrilhaMonstruoso && (regras['nex_experiencia'] ? effectiveNivel >= 20 : effectiveNex >= 99);
 
   const monstruosoElemento = useMemo(() => {
@@ -1417,6 +1423,7 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     temMonstruoso10,
     temMonstruoso40,
     temMonstruoso65,
+    temMonstruoso75,
     temMonstruoso99,
     monstruosoElemento,
     jaTinhaOcultismoMonstruoso,

@@ -22,6 +22,7 @@ export const BonusCondicionaisPanel: React.FC = () => {
     danoDeMovimento,
     temMonstruoso10,
     temMonstruoso40,
+    temMonstruoso75,
     monstruosoElemento,
     atributosFinais,
   } = useRPG();
@@ -97,6 +98,12 @@ export const BonusCondicionaisPanel: React.FC = () => {
               <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
                 <span className="text-green-500 font-bold mt-[-1px]">•</span>
                 <span>Gastar 1 a {atributosFinais.AGI} PE ao acertar ataque corpo a corpo para causar +1d6 Energia por PE gasto (Ser Macabro - Energia)</span>
+              </div>
+            )}
+            {temMonstruoso75 && (
+              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                <span className="text-red-500 font-bold mt-[-1px]">•</span>
+                <span>Monstruosa Transformação (75%): Permanentemente perturbado. Começa cada missão com equipamento de patente 1 nível inferior.</span>
               </div>
             )}
             

@@ -175,7 +175,7 @@ export const AbasPanel: React.FC = () => {
     elementoRitual, setElementoRitual,
     status, trilhasHook, periciasHook, poderesExtras, setPoderesExtras,
     temAdepto10, temAdepto40, temAdepto65, temAdepto99,
-    temMonstruoso10, temMonstruoso40, temMonstruoso65, temMonstruoso99, monstruosoElemento,
+    temMonstruoso10, temMonstruoso40, temMonstruoso65, temMonstruoso75, temMonstruoso99, monstruosoElemento,
   } = useRPG();
 
   const [escolhendoRitualPlaceholder, setEscolhendoRitualPlaceholder] = React.useState<{ origem: string, nex?: number, maxCirculo?: number, circuloFixo?: number, elementoFiltro?: string } | null>(null);
@@ -813,7 +813,14 @@ export const AbasPanel: React.FC = () => {
   }, [classe, nex, nivel, origemSelecionada, poderClasse, poderesClasse, poderesEscolhidos, poderesParanormaisMap, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras, trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, regrasAutomaticasAtivas]);
 
   const habilidadesFiltradas = listaHabilidades.filter(hab =>
-    hab.nome.toLowerCase().includes(filtroHabilidades.toLowerCase())
+    hab.nome.toLowerCase().includes(filtroHabilidades.toLowerCase()) ||
+    (hab.id === 'trilha_selecionada' && Boolean(
+      trilhasHook.trilhaSelecionada?.Nome_Habilidade_10?.toLowerCase().includes(filtroHabilidades.toLowerCase()) ||
+      trilhasHook.trilhaSelecionada?.Nome_Habilidade_40?.toLowerCase().includes(filtroHabilidades.toLowerCase()) ||
+      trilhasHook.trilhaSelecionada?.Nome_Habilidade_65?.toLowerCase().includes(filtroHabilidades.toLowerCase()) ||
+      trilhasHook.trilhaSelecionada?.Nome_Habilidade_99?.toLowerCase().includes(filtroHabilidades.toLowerCase()) ||
+      (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 18 && 'monstruosa transformação'.includes(filtroHabilidades.toLowerCase()))
+    ))
   );
 
   const ordemCategorias: (CategoriaHabilidade | 'trilha')[] = ['origem', 'trilha', 'classe', 'utilidade', 'combate', 'paranormais', 'gerais'];
@@ -955,7 +962,7 @@ export const AbasPanel: React.FC = () => {
                           
                           if (!t) return null;
 
-                          const nexLevels = isVersatilidade ? [10] : [10, 40, 65, 99];
+                          const nexLevels = isVersatilidade ? [10] : (t.Codigo_Trilha === 18 ? [10, 40, 65, 75, 99] : [10, 40, 65, 99]);
                           
                           return (
                             <div key={hab.id} className="mb-2 overflow-hidden rounded-r border-l-4 border-green-800 bg-zinc-900/50">
@@ -1014,7 +1021,12 @@ export const AbasPanel: React.FC = () => {
                                       if (effectiveNex >= 65) nomeHab += ' (8 PE, +2d20)';
                                       else if (effectiveNex >= 40) nomeHab += ' (4 PE, +1d10)';
                                     }
-                                    const descHab = t[habDescKey] as string;
+                                    let descHab = t[habDescKey] as string;
+                                    if (t.Codigo_Trilha === 18 && nexLvl === 75) {
+                                      const p187 = listaPoderesUtilidade.find(p => p.codigo_poder === 187);
+                                      nomeHab = p187?.Nome || 'Monstruosa Transformação';
+                                      descHab = p187?.Descricao || '';
+                                    }
               
                                     if (!nomeHab) return null;
               
@@ -1039,6 +1051,20 @@ export const AbasPanel: React.FC = () => {
                                             className="px-3 pb-3 pt-1 text-xs text-zinc-400"
                                             dangerouslySetInnerHTML={{ __html: formatarDescricao(descHab) }}
                                           />
+                                          {t.Codigo_Trilha === 18 && nexLvl === 75 && (
+                                            <div className="mx-3 mb-3 mt-1 flex items-center gap-2 border-t border-zinc-800/80 pt-2" onClick={e => e.stopPropagation()}>
+                                              <span
+                                                title="Totalmente automático"
+                                                className="shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider bg-green-950/60 text-green-400 border border-green-800/50"
+                                              >
+                                                <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z"/></svg>
+                                                Auto
+                                              </span>
+                                              <span className="text-[10px] text-zinc-500 italic">
+                                                Os efeitos desta habilidade são aplicados automaticamente na sua ficha.
+                                              </span>
+                                            </div>
+                                          )}
                                           {t.Codigo_Trilha === 18 && nexLvl === 10 && (
                                             <div className="px-3 pb-3 pt-2 border-t border-zinc-800/80 flex flex-col gap-2" onClick={e => e.stopPropagation()}>
                                               <div className="flex items-center justify-between">

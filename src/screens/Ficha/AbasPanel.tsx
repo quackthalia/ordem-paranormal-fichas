@@ -1066,12 +1066,12 @@ export const AbasPanel: React.FC = () => {
                                                           setPoderesExtras(prev => ({ ...prev, monstruoso_elemento: elem }));
                                                         }
                                                       }}
-                                                      className={`rounded px-2.5 py-1 text-xs font-bold uppercase tracking-wider transition ${getBadgeElemento(elem)} ${
+                                                      className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${
                                                         isSelected 
-                                                          ? 'opacity-100 ring-2 ring-white/60 shadow-md scale-105' 
+                                                          ? 'bg-green-950/60 border-green-600 text-green-300' 
                                                           : isDisabled
-                                                            ? 'opacity-25 cursor-not-allowed'
-                                                            : 'opacity-50 hover:opacity-90 hover:scale-102 cursor-pointer'
+                                                            ? 'opacity-40 cursor-not-allowed bg-zinc-900 border-zinc-800 text-zinc-600'
+                                                            : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
                                                       }`}
                                                     >
                                                       {elem}

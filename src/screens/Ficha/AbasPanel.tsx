@@ -52,20 +52,20 @@ function sanidadePorNivel(classe: string | null): number {
 }
 
 function getBadgeElemento(elemento: string): string {
-  if (!elemento) return 'border-zinc-700 bg-zinc-900 text-zinc-400';
+  if (!elemento) return 'bg-zinc-900 text-zinc-400';
   const el = elemento.toLowerCase();
   
   if (el.includes(' e ')) {
-    return 'border-zinc-500 bg-zinc-800 text-zinc-300';
+    return 'bg-zinc-800 text-zinc-300';
   }
 
   switch (el) {
-    case 'morte': return 'border-zinc-700 bg-black/50 text-white';
-    case 'medo': return 'border-zinc-500 bg-zinc-200/80 text-zinc-950';
-    case 'sangue': return 'border-red-900 bg-red-950/20 text-red-500';
-    case 'energia': return 'border-purple-900 bg-purple-950/20 text-purple-500';
-    case 'conhecimento': return 'border-yellow-900 bg-yellow-950/20 text-yellow-500';
-    default: return 'border-zinc-700 bg-zinc-900 text-zinc-400';
+    case 'morte': return 'bg-black/50 text-white';
+    case 'medo': return 'bg-zinc-200/80 text-zinc-950';
+    case 'sangue': return 'bg-red-950/20 text-red-500';
+    case 'energia': return 'bg-purple-950/20 text-purple-500';
+    case 'conhecimento': return 'bg-yellow-950/20 text-yellow-500';
+    default: return 'bg-zinc-900 text-zinc-400';
   }
 }
 
@@ -1066,12 +1066,12 @@ export const AbasPanel: React.FC = () => {
                                                           setPoderesExtras(prev => ({ ...prev, monstruoso_elemento: elem }));
                                                         }
                                                       }}
-                                                      className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${
+                                                      className={`rounded px-2.5 py-1 text-xs font-bold uppercase tracking-wider transition ${getBadgeElemento(elem)} ${
                                                         isSelected 
-                                                          ? 'bg-green-950/60 border-green-600 text-green-300' 
+                                                          ? 'opacity-100 ring-2 ring-white/60 shadow-md scale-105' 
                                                           : isDisabled
-                                                            ? 'opacity-40 cursor-not-allowed bg-zinc-900 border-zinc-800 text-zinc-600'
-                                                            : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                                                            ? 'opacity-25 cursor-not-allowed'
+                                                            : 'opacity-50 hover:opacity-90 hover:scale-102 cursor-pointer'
                                                       }`}
                                                     >
                                                       {elem}
@@ -1097,7 +1097,7 @@ export const AbasPanel: React.FC = () => {
                                               <div className="mx-3 mb-3 mt-1 rounded-r border-l-2 border-green-500 bg-zinc-900/80 p-3 flex flex-col gap-2" onClick={e => e.stopPropagation()}>
                                                 <div className="flex items-center justify-between gap-2">
                                                   <span className="text-sm font-bold text-zinc-100">{pData.Nome}</span>
-                                                  <span className={`rounded border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${badgeClasses}`}>
+                                                  <span className={`rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${badgeClasses}`}>
                                                     {monstruosoElemento}
                                                   </span>
                                                 </div>

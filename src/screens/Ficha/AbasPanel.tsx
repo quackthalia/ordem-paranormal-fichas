@@ -434,6 +434,22 @@ export const AbasPanel: React.FC = () => {
       }
     }
 
+    // 1.6 Poder de Trilha Automático (Monstruoso 75% -> Poder 187)
+    if (temMonstruoso75) {
+      const p187 = listaPoderesUtilidade.find(p => Number(p.codigo_poder) === 187) || poderesClasse.find(p => Number(p.codigo_poder) === 187);
+      const fallbackDesc = "Quando o personagem atinge NEX 75%, se torna permanentemente perturbado. Suas ações já não são mais aceitas pela Ordem, que vai banir e potencialmente caçar o ex-agente. Considere que ele começa cada missão com equipamento equivalente a uma patente um nível inferior à sua, conseguido por conta própria.\nQuando o personagem atinge NEX 99%, sua Sanidade é reduzida a 1. Por fim, sempre que ficar enlouquecendo, em vez de sofrer um efeito de insanidade (veja OPRPG, p.111), o personagem fica confuso (a condição se encerra normalmente ou quando o personagem não está mais enlouquecendo). Se um personagem Monstruoso enlouquecer com 99% de NEX, se torna permanentemente uma criatura do Outro Lado.\nSe estiver usando a regra opcional Jogando sem Sanidade, em vez disso considere que o personagem está sempre perturbado e fica enlouquecendo (e confuso) sempre que perde 1 ponto de determinação por qualquer efeito (exceto por pagar custos de habilidades e itens).";
+      lista.push({
+        id: 'trilha_monstruoso_poder_187',
+        nome: p187?.Nome || 'Monstruosa Transformação',
+        descricao: p187?.Descricao || fallbackDesc,
+        tipo: regras['nex_experiencia'] ? 'Nível 15' : 'NEX 75%',
+        categoria: 'trilha',
+        fonte: p187?.Fonte || 'SaH',
+        preRequisitos: p187?.PreRequisitos || 'Trilha Monstruoso',
+        automatico: 'Sim',
+      });
+    }
+
     // 2. Classe
     if (classe === 'Combatente' && poderClasse) {
       lista.push({ id: 'classe_poder_179', nome: poderClasse.Nome, descricao: poderClasse.Descricao, tipo: 'Classe', extra: calcularBonusAtaqueEspecial(nex), subPoder: null, fonte: poderClasse.Fonte || undefined, categoria: 'classe' });
@@ -810,7 +826,7 @@ export const AbasPanel: React.FC = () => {
     }
 
     return lista;
-  }, [classe, nex, nivel, origemSelecionada, poderClasse, poderesClasse, poderesEscolhidos, poderesParanormaisMap, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras, trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, regrasAutomaticasAtivas]);
+  }, [classe, nex, nivel, origemSelecionada, poderClasse, poderesClasse, poderesEscolhidos, poderesParanormaisMap, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras, trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, regrasAutomaticasAtivas, temMonstruoso75, listaPoderesUtilidade]);
 
   const habilidadesFiltradas = listaHabilidades.filter(hab =>
     hab.nome.toLowerCase().includes(filtroHabilidades.toLowerCase()) ||
@@ -819,7 +835,7 @@ export const AbasPanel: React.FC = () => {
       trilhasHook.trilhaSelecionada?.Nome_Habilidade_40?.toLowerCase().includes(filtroHabilidades.toLowerCase()) ||
       trilhasHook.trilhaSelecionada?.Nome_Habilidade_65?.toLowerCase().includes(filtroHabilidades.toLowerCase()) ||
       trilhasHook.trilhaSelecionada?.Nome_Habilidade_99?.toLowerCase().includes(filtroHabilidades.toLowerCase()) ||
-      (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 18 && 'monstruosa transformação'.includes(filtroHabilidades.toLowerCase()))
+      ((Number(trilhasHook.trilhaSelecionada?.Codigo_Trilha) === 18 || String(trilhasHook.trilhaSelecionada?.Nome_Trilha || '').toLowerCase().includes('monstruoso')) && 'monstruosa transformação'.includes(filtroHabilidades.toLowerCase()))
     ))
   );
 
@@ -962,7 +978,8 @@ export const AbasPanel: React.FC = () => {
                           
                           if (!t) return null;
 
-                          const nexLevels = isVersatilidade ? [10] : (t.Codigo_Trilha === 18 ? [10, 40, 65, 75, 99] : [10, 40, 65, 99]);
+                          const isMonstruoso = Number(t.Codigo_Trilha) === 18 || String(t.Nome_Trilha || '').trim().toLowerCase().includes('monstruoso');
+                          const nexLevels = isVersatilidade ? [10] : (isMonstruoso ? [10, 40, 65, 75, 99] : [10, 40, 65, 99]);
                           
                           return (
                             <div key={hab.id} className="mb-2 overflow-hidden rounded-r border-l-4 border-green-800 bg-zinc-900/50">
@@ -1002,7 +1019,11 @@ export const AbasPanel: React.FC = () => {
                                   </h4>
               
                                   {nexLevels.map((nexLvl) => {
-                                    if (effectiveNex < nexLvl) return null;
+                                    if (nexLvl === 75) {
+                                      if (!temMonstruoso75) return null;
+                                    } else {
+                                      if (effectiveNex < nexLvl) return null;
+                                    }
 
                                     const habNameKey = `Nome_Habilidade_${nexLvl}` as keyof typeof t;
                                     const habDescKey = `Descricao_Habilidade_${nexLvl}` as keyof typeof t;
@@ -1022,10 +1043,10 @@ export const AbasPanel: React.FC = () => {
                                       else if (effectiveNex >= 40) nomeHab += ' (4 PE, +1d10)';
                                     }
                                     let descHab = t[habDescKey] as string;
-                                    if (t.Codigo_Trilha === 18 && nexLvl === 75) {
-                                      const p187 = listaPoderesUtilidade.find(p => p.codigo_poder === 187);
+                                    if (isMonstruoso && nexLvl === 75) {
+                                      const p187 = listaPoderesUtilidade.find(p => Number(p.codigo_poder) === 187) || poderesClasse.find(p => Number(p.codigo_poder) === 187);
                                       nomeHab = p187?.Nome || 'Monstruosa Transformação';
-                                      descHab = p187?.Descricao || '';
+                                      descHab = p187?.Descricao || "Quando o personagem atinge NEX 75%, se torna permanentemente perturbado. Suas ações já não são mais aceitas pela Ordem, que vai banir e potencialmente caçar o ex-agente. Considere que ele começa cada missão com equipamento equivalente a uma patente um nível inferior à sua, conseguido por conta própria.\nQuando o personagem atinge NEX 99%, sua Sanidade é reduzida a 1. Por fim, sempre que ficar enlouquecendo, em vez de sofrer um efeito de insanidade (veja OPRPG, p.111), o personagem fica confuso (a condição se encerra normalmente ou quando o personagem não está mais enlouquecendo). Se um personagem Monstruoso enlouquecer com 99% de NEX, se torna permanentemente uma criatura do Outro Lado.\nSe estiver usando a regra opcional Jogando sem Sanidade, em vez disso considere que o personagem está sempre perturbado e fica enlouquecendo (e confuso) sempre que perde 1 ponto de determinação por qualquer efeito (exceto por pagar custos de habilidades e itens).";
                                     }
               
                                     if (!nomeHab) return null;
@@ -1051,7 +1072,7 @@ export const AbasPanel: React.FC = () => {
                                             className="px-3 pb-3 pt-1 text-xs text-zinc-400"
                                             dangerouslySetInnerHTML={{ __html: formatarDescricao(descHab) }}
                                           />
-                                          {t.Codigo_Trilha === 18 && nexLvl === 75 && (
+                                          {isMonstruoso && nexLvl === 75 && (
                                             <div className="mx-3 mb-3 mt-1 flex items-center gap-2 border-t border-zinc-800/80 pt-2" onClick={e => e.stopPropagation()}>
                                               <span
                                                 title="Totalmente automático"
@@ -1065,7 +1086,7 @@ export const AbasPanel: React.FC = () => {
                                               </span>
                                             </div>
                                           )}
-                                          {t.Codigo_Trilha === 18 && nexLvl === 10 && (
+                                          {isMonstruoso && nexLvl === 10 && (
                                             <div className="px-3 pb-3 pt-2 border-t border-zinc-800/80 flex flex-col gap-2" onClick={e => e.stopPropagation()}>
                                               <div className="flex items-center justify-between">
                                                 <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
@@ -1107,7 +1128,7 @@ export const AbasPanel: React.FC = () => {
                                               </div>
                                             </div>
                                           )}
-                                          {t.Codigo_Trilha === 18 && (() => {
+                                          {isMonstruoso && (() => {
                                             const poderMonstruosoMap: Record<number, Record<string, number>> = {
                                               10: { Sangue: 188, Morte: 189, Conhecimento: 190, Energia: 191 },
                                               40: { Sangue: 192, Morte: 193, Conhecimento: 194, Energia: 195 },

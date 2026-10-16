@@ -130,6 +130,11 @@ export function calcularStatusBase(
     peMax = Math.floor(peMax * (2 / 3));
   }
 
+  // Regra 69 (Monstruosa Transformação): em NEX 99% (ou nível 20), Sanidade máxima é reduzida a 1
+  if (temRegra(69) && nivel >= 20) {
+    sanMax = 1;
+  }
+
   return { pvMax, peMax, sanMax, peTurno };
 }
 

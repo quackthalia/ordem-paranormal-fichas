@@ -577,14 +577,15 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
                 {modsAtivas.length > 0 && maldicoesAtivas.length > 0 && <span> • </span>}
                 {maldicoesAtivas.map((m: any, i: number) => {
                     let el = m!.Elemento_Mald;
-                    if (el?.toLowerCase().includes('varia') || el?.toLowerCase().includes('lista')) {
+                    const isVaria = el?.toLowerCase().includes('varia') || el?.toLowerCase().includes('lista');
+                    if (isVaria) {
                       el = armaInv.maldicoes_elementos?.[m!.Codigo_Mald] || el;
                     }
                     const cor = getCorElementoTexto(el);
                     return (
                       <span key={m!.Codigo_Mald}>
                         {i > 0 && <span> • </span>}
-                        <span className={cor}>{m!.Nome_Mald}</span>
+                        <span className={cor}>{m!.Nome_Mald}{isVaria && armaInv.maldicoes_elementos?.[m!.Codigo_Mald] ? ` (${armaInv.maldicoes_elementos[m!.Codigo_Mald]})` : ''}</span>
                       </span>
                     )
                 })}

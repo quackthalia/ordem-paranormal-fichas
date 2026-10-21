@@ -250,11 +250,13 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
                     {modsAtuais.length > 0 && modsAtuais.map(m => m.Nome_Modif).join(' • ')}
                     {modsAtuais.length > 0 && maldicoesAtuais.length > 0 && <span> • </span>}
                     {maldicoesAtuais.map((m: any, i: number) => {
-                        const cor = getCorElementoTexto(m.Elemento_Mald);
+                        const elem = (item.maldicoes_elementos?.[m.Codigo_Mald]) || m.Elemento_Mald;
+                        const cor = getCorElementoTexto(elem);
+                        const isVaria = m.Elemento_Mald?.toLowerCase() === 'varia' || m.Elemento_Mald?.toLowerCase() === 'lista';
                         return (
                           <span key={m.Codigo_Mald}>
                             {i > 0 && <span> • </span>}
-                            <span className={cor}>{m.Nome_Mald}</span>
+                            <span className={cor}>{m.Nome_Mald}{isVaria && item.maldicoes_elementos?.[m.Codigo_Mald] ? ` (${item.maldicoes_elementos[m.Codigo_Mald]})` : ''}</span>
                           </span>
                         )
                     })}
@@ -328,12 +330,13 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
                     {(Array.isArray(item.maldicoes) ? item.maldicoes : []).map((id: number) => {
                       const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
                       if (!m) return null;
-                      const corTexto = getCorElementoTexto ? getCorElementoTexto(m.Elemento_Mald) : 'text-zinc-400';
+                      const elem = (item.maldicoes_elementos?.[id]) || m.Elemento_Mald;
+                      const corTexto = getCorElementoTexto ? getCorElementoTexto(elem) : 'text-zinc-400';
                       return (
                         <div key={m.Codigo_Mald} className="flex flex-col gap-0.5">
                           <div className="flex gap-1 items-center">
                             <span className={`text-xs font-bold ${corTexto}`}>{m.Nome_Mald}</span>
-                            <span className={`rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${getBadgeElemento(m.Elemento_Mald)}`}>{m.Elemento_Mald}</span>
+                            <span className={`rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${getBadgeElemento(elem)}`}>{elem}</span>
                           </div>
                           {m.Descricao_Mald && (
                             <p className="text-[11px] text-zinc-400 leading-relaxed whitespace-pre-wrap">{formatarTexto(m.Descricao_Mald)}</p>
@@ -1962,11 +1965,13 @@ function SortableArmaItem({
                     {modsAtuais.length > 0 && modsAtuais.map(m => m.Nome_Modif).join(' • ')}
                     {modsAtuais.length > 0 && maldicoesAtuais.length > 0 && <span> • </span>}
                     {maldicoesAtuais.map((m: any, i: number) => {
-                        const cor = getCorElementoTexto(m.Elemento_Mald);
+                        const elem = (item.maldicoes_elementos?.[m.Codigo_Mald]) || m.Elemento_Mald;
+                        const cor = getCorElementoTexto(elem);
+                        const isVaria = m.Elemento_Mald?.toLowerCase() === 'varia' || m.Elemento_Mald?.toLowerCase() === 'lista';
                         return (
                           <span key={m.Codigo_Mald}>
                             {i > 0 && <span> • </span>}
-                            <span className={cor}>{m.Nome_Mald}</span>
+                            <span className={cor}>{m.Nome_Mald}{isVaria && item.maldicoes_elementos?.[m.Codigo_Mald] ? ` (${item.maldicoes_elementos[m.Codigo_Mald]})` : ''}</span>
                           </span>
                         )
                     })}
@@ -2091,12 +2096,13 @@ function SortableArmaItem({
                     {(Array.isArray(item.maldicoes) ? item.maldicoes : []).map((id: number) => {
                       const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
                       if (!m) return null;
-                      const corTexto = getCorElementoTexto ? getCorElementoTexto(m.Elemento_Mald) : 'text-zinc-400';
+                      const elem = (item.maldicoes_elementos?.[id]) || m.Elemento_Mald;
+                      const corTexto = getCorElementoTexto ? getCorElementoTexto(elem) : 'text-zinc-400';
                       return (
                         <div key={m.Codigo_Mald} className="flex flex-col gap-0.5">
                           <div className="flex gap-1 items-center">
                             <span className={`text-xs font-bold ${corTexto}`}>{m.Nome_Mald}</span>
-                            <span className={`rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${getBadgeElemento(m.Elemento_Mald)}`}>{m.Elemento_Mald}</span>
+                            <span className={`rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${getBadgeElemento(elem)}`}>{elem}</span>
                           </div>
                           {m.Descricao_Mald && (
                             <p className="text-[11px] text-zinc-400 leading-relaxed whitespace-pre-wrap">{formatarTexto(m.Descricao_Mald)}</p>
@@ -2247,7 +2253,14 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
     }
   });
 
-  const modsNames = [...modsAtuais.map(m => m.Nome_Modif), ...maldicoesAtuais.map(m => m.Nome_Mald)];
+  const modsNames = [
+    ...modsAtuais.map(m => m.Nome_Modif),
+    ...maldicoesAtuais.map(m => {
+      const isVaria = m.Elemento_Mald?.toLowerCase() === 'varia' || m.Elemento_Mald?.toLowerCase() === 'lista';
+      const elem = item.maldicoes_elementos?.[m.Codigo_Mald];
+      return isVaria && elem ? `${m.Nome_Mald} (${elem})` : m.Nome_Mald;
+    })
+  ];
   const modifiersText = modsNames.length > 0 ? ` (${modsNames.join(', ')})` : '';
   const displayName = `${municao.Nome_Item}${modifiersText}`;
 
@@ -2304,11 +2317,13 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
                     {modsAtuais.length > 0 && modsAtuais.map(m => m.Nome_Modif).join(' • ')}
                     {modsAtuais.length > 0 && maldicoesAtuais.length > 0 && <span> • </span>}
                     {maldicoesAtuais.map((m: any, i: number) => {
-                        const cor = getCorElementoTexto(m.Elemento_Mald);
+                        const elem = (item.maldicoes_elementos?.[m.Codigo_Mald]) || m.Elemento_Mald;
+                        const cor = getCorElementoTexto(elem);
+                        const isVaria = m.Elemento_Mald?.toLowerCase() === 'varia' || m.Elemento_Mald?.toLowerCase() === 'lista';
                         return (
                           <span key={m.Codigo_Mald}>
                             {i > 0 && <span> • </span>}
-                            <span className={cor}>{m.Nome_Mald}</span>
+                            <span className={cor}>{m.Nome_Mald}{isVaria && item.maldicoes_elementos?.[m.Codigo_Mald] ? ` (${item.maldicoes_elementos[m.Codigo_Mald]})` : ''}</span>
                           </span>
                         )
                     })}
@@ -2347,12 +2362,13 @@ function SortableMunicaoItem({ id, item, isExpanded, toggleExpandir, removerItem
                     {(Array.isArray(item.maldicoes) ? item.maldicoes : []).map((id: number) => {
                       const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
                       if (!m) return null;
-                      const corTexto = getCorElementoTexto ? getCorElementoTexto(m.Elemento_Mald) : 'text-zinc-400';
+                      const elem = (item.maldicoes_elementos?.[id]) || m.Elemento_Mald;
+                      const corTexto = getCorElementoTexto ? getCorElementoTexto(elem) : 'text-zinc-400';
                       return (
                         <div key={m.Codigo_Mald} className="flex flex-col gap-0.5">
                           <div className="flex gap-1 items-center">
                             <span className={`text-xs font-bold ${corTexto}`}>{m.Nome_Mald}</span>
-                            <span className={`rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${getBadgeElemento(m.Elemento_Mald)}`}>{m.Elemento_Mald}</span>
+                            <span className={`rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${getBadgeElemento(elem)}`}>{elem}</span>
                           </div>
                           {m.Descricao_Mald && (
                             <p className="text-[11px] text-zinc-400 leading-relaxed whitespace-pre-wrap">{formatarTexto(m.Descricao_Mald)}</p>
@@ -2512,11 +2528,13 @@ function SortableProtecaoItem({
                     {modsAtuais.length > 0 && modsAtuais.map(m => m.Nome_Modif).join(' • ')}
                     {modsAtuais.length > 0 && maldicoesAtuais.length > 0 && <span> • </span>}
                     {maldicoesAtuais.map((m: any, i: number) => {
-                        const cor = getCorElementoTexto(m.Elemento_Mald);
+                        const elem = (item.maldicoes_elementos?.[m.Codigo_Mald]) || m.Elemento_Mald;
+                        const cor = getCorElementoTexto(elem);
+                        const isVaria = m.Elemento_Mald?.toLowerCase() === 'varia' || m.Elemento_Mald?.toLowerCase() === 'lista';
                         return (
                           <span key={m.Codigo_Mald}>
                             {i > 0 && <span> • </span>}
-                            <span className={cor}>{m.Nome_Mald}</span>
+                            <span className={cor}>{m.Nome_Mald}{isVaria && item.maldicoes_elementos?.[m.Codigo_Mald] ? ` (${item.maldicoes_elementos[m.Codigo_Mald]})` : ''}</span>
                           </span>
                         )
                     })}
@@ -2584,12 +2602,13 @@ function SortableProtecaoItem({
                     {(Array.isArray(item.maldicoes) ? item.maldicoes : []).map((id: number) => {
                       const m = maldicoesHook?.maldicoes.find((x: any) => x.Codigo_Mald === id);
                       if (!m) return null;
-                      const corTexto = getCorElementoTexto ? getCorElementoTexto(m.Elemento_Mald) : 'text-zinc-400';
+                      const elem = (item.maldicoes_elementos?.[id]) || m.Elemento_Mald;
+                      const corTexto = getCorElementoTexto ? getCorElementoTexto(elem) : 'text-zinc-400';
                       return (
                         <div key={m.Codigo_Mald} className="flex flex-col gap-0.5">
                           <div className="flex gap-1 items-center">
                             <span className={`text-xs font-bold ${corTexto}`}>{m.Nome_Mald}</span>
-                            <span className={`rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${getBadgeElemento(m.Elemento_Mald)}`}>{m.Elemento_Mald}</span>
+                            <span className={`rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${getBadgeElemento(elem)}`}>{elem}</span>
                           </div>
                           {m.Descricao_Mald && (
                             <p className="text-[11px] text-zinc-400 leading-relaxed whitespace-pre-wrap">{formatarTexto(m.Descricao_Mald)}</p>

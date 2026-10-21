@@ -240,11 +240,11 @@ export const ModalEscolherRitualAprendido: React.FC<Props> = ({
                 <span key={idx} className="block mb-1" dangerouslySetInnerHTML={{ __html: formatarDescricao(linha) }} />
               ))}
             </div>
-            {ritual.Fonte && (
-              <div className="mt-2 text-[10px] uppercase tracking-wider text-zinc-600">
-                Fonte: {ritual.Fonte}
-              </div>
-            )}
+          </Collapse>
+          <Collapse isOpen={expandido}>
+            <div className="mt-2 pt-2 border-t border-zinc-800/50 text-[0.6rem] uppercase tracking-wider text-zinc-600">
+              Fonte: {ritual.Fonte || 'NÃO DEFINIDA'}
+            </div>
           </Collapse>
         </div>
         

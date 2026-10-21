@@ -438,7 +438,7 @@ function BarraStatus({
       <div className="flex w-full overflow-visible">
         {isMorrendo ? (
           <div
-            className={`relative flex items-center justify-between overflow-hidden rounded border border-red-900/70 bg-red-950/25 px-3.5 py-2.5 transition-all duration-300 ease-out ${hasTemp ? 'w-[71.5%]' : 'w-full'}`}
+            className={`relative flex items-center justify-between overflow-hidden rounded border border-zinc-800 bg-zinc-900/40 px-3.5 py-2.5 transition-all duration-300 ease-out ${hasTemp ? 'w-[71.5%]' : 'w-full'}`}
           >
             {/* Círculos de turnos morrendo */}
             <div className="flex items-center gap-2">
@@ -450,10 +450,10 @@ function BarraStatus({
                     type="button"
                     title={`Turno ${i + 1} morrendo`}
                     onClick={() => onToggleMorrendo?.(i)}
-                    className={`h-5 w-5 rounded-full border transition-all duration-200 flex items-center justify-center cursor-pointer ${
+                    className={`h-5 w-5 rounded-full border-2 transition-colors flex items-center justify-center cursor-pointer ${
                       isMarked
-                        ? 'border-red-500 bg-red-600 shadow-[0_0_8px_rgba(220,38,38,0.5)]'
-                        : 'border-zinc-700 bg-zinc-950/80 hover:border-red-700/80 hover:bg-red-950/40'
+                        ? 'border-zinc-300 bg-zinc-300'
+                        : 'border-zinc-600 bg-transparent hover:border-zinc-400'
                     }`}
                   />
                 );
@@ -464,14 +464,14 @@ function BarraStatus({
             <button
               type="button"
               onClick={onCurarMorrendo}
-              className="absolute left-1/2 -translate-x-1/2 rounded border border-green-800/80 bg-green-950/30 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-widest text-green-400 transition hover:border-green-600 hover:bg-green-900/50 hover:text-green-300 cursor-pointer"
+              className="absolute left-1/2 -translate-x-1/2 rounded border border-green-800/80 bg-zinc-900 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-green-500 transition hover:border-green-700 hover:bg-green-950/40 hover:text-green-400 cursor-pointer"
             >
               Curar
             </button>
 
             {/* Valor Atual / Max (0/94) */}
             <div className="flex items-center gap-1 font-bold text-lg text-zinc-100 select-none">
-              <span className="text-red-400">0</span>
+              <span>0</span>
               <span className="text-lg text-zinc-500 font-normal">/</span>
               <span>{valorMax}</span>
             </div>

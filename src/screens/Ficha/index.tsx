@@ -468,18 +468,6 @@ function AtributosFicha() {
 
     return (
       <div key={nome} className={`absolute flex flex-col items-center justify-center ${posClasses}`}>
-          <div className="absolute -right-3 -top-3 flex h-5 w-5 items-center justify-center rounded-full border border-amber-500 bg-zinc-950 shadow-md z-10" title="Bônus temporário / Maldições">
-            <input
-              type="number"
-              onKeyDown={bloquearLetras}
-              value={bonusAtributos[nome] + bonusMaldVal}
-              onChange={(e) =>
-                setBonusAtributos({ ...bonusAtributos, [nome]: Math.max(0, Number(e.target.value) - bonusMaldVal) })
-              }
-              className="w-full bg-transparent text-center text-[10px] font-bold text-amber-400 outline-none"
-            />
-          </div>
-          
           <input
             type="number"
             onKeyDown={bloquearLetras}

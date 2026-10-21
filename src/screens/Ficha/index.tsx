@@ -464,7 +464,7 @@ function AtributosFicha() {
   const renderAtributo = (nome, posClasses) => {
     const bonusTrilhaVal = bonusTrilhasAtributos ? (bonusTrilhasAtributos[nome] || 0) : 0;
     const bonusMaldVal = bonusMaldicoes?.atributos?.[nome] || 0;
-    const isGreen = atributosFinais[nome] > (atributos[nome] + bonusAtributos[nome] + bonusTrilhaVal);
+    const isGreen = atributosFinais[nome] > (atributos[nome] + bonusAtributos[nome] + bonusTrilhaVal + bonusMaldVal);
 
     return (
       <div key={nome} className={`absolute flex flex-col items-center justify-center ${posClasses}`}>

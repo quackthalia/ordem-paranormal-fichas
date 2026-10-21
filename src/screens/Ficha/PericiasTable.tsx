@@ -141,7 +141,7 @@ export const PericiasTable: React.FC = () => {
     status, periciasHook, regrasAtivas, setRegrasAtivas, regrasAutomaticasAtivas, protecoesHook,
     trilhasHook, nivel, nex, regras,
     itensHook,
-    temMonstruoso10, jaTinhaOcultismoMonstruoso
+    temMonstruoso10, isMonstruosoAtivo10, jaTinhaOcultismoMonstruoso
   } = useRPG();
   const { pericias, handleMudarPericia, limites, totais, profissoes, setProfissoes } = periciasHook;
 
@@ -302,7 +302,7 @@ export const PericiasTable: React.FC = () => {
               const bonusAmaldicoados = periciasHook.bonusVestimentas?.[nome] || 0;
               const bonusItemFinal = bonusInventario + bonusAmaldicoados;
 
-              const bonusMonstruoso10 = (nome === 'Ocultismo' && temMonstruoso10 && jaTinhaOcultismoMonstruoso) ? 2 : 0;
+              const bonusMonstruoso10 = (nome === 'Ocultismo' && temMonstruoso10 && isMonstruosoAtivo10 && jaTinhaOcultismoMonstruoso) ? 2 : 0;
               const totalBonus = dadosPericia.treino + dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10 + bonusItemFinal;
               const corTexto = COR_TREINO[dadosPericia.treino] ?? 'text-zinc-400';
               const corBorda = BORDA_TREINO[dadosPericia.treino] ?? 'border-zinc-600';

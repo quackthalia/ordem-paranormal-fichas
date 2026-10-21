@@ -685,7 +685,8 @@ function ProtecoesPanel() {
     regrasAutomaticasAtivas, atributosFinais, poderesHook, rituaisHook, periciasHook, status, poderesExtras,
     protecoesHook, modificacoesHook, bonusVestimentas, bonusMaldicoes, origensHook,
     trilhasHook, regras, nivel, nex,
-    temMonstruoso10, temMonstruoso40, temMonstruoso65, temMonstruoso99, monstruosoElemento
+    temMonstruoso10, temMonstruoso40, temMonstruoso65, temMonstruoso99, monstruosoElemento,
+    isMonstruosoAtivo10, isMonstruosoAtivo40, isMonstruosoAtivo65
   } = useRPG();
   const [mostrarOutros, setMostrarOutros] = React.useState(false);
 
@@ -764,7 +765,7 @@ function ProtecoesPanel() {
   }
 
   // TRILHA 18: Monstruoso RD
-  const rdMonstruoso = temMonstruoso99 ? 20 : temMonstruoso65 ? 15 : temMonstruoso40 ? 10 : temMonstruoso10 ? 5 : 0;
+  const rdMonstruoso = temMonstruoso99 ? 20 : (temMonstruoso65 && isMonstruosoAtivo65) ? 15 : (temMonstruoso40 && isMonstruosoAtivo40) ? 10 : (temMonstruoso10 && isMonstruosoAtivo10) ? 5 : 0;
   if (rdMonstruoso > 0) {
     if (monstruosoElemento === 'Sangue') {
       resistenciasExtras.push(`Balístico ${rdMonstruoso}`);
@@ -782,7 +783,7 @@ function ProtecoesPanel() {
       resistenciasExtras.push(`Eletricidade ${rdMonstruoso}`);
       resistenciasExtras.push(`Fogo ${rdMonstruoso}`);
       resistenciasExtras.push(`Energia ${rdMonstruoso}`);
-      if (temMonstruoso65) {
+      if (temMonstruoso65 && isMonstruosoAtivo65) {
         resistenciasExtras.push(`Químico ${rdMonstruoso}`);
       }
     }
@@ -898,10 +899,10 @@ function ProtecoesPanel() {
     if (!imunidadesExtras.includes('Doenças')) imunidadesExtras.push('Doenças');
   }
   // Monstruoso Imunidades
-  if (temMonstruoso10 && monstruosoElemento === 'Morte') {
+  if (temMonstruoso10 && isMonstruosoAtivo10 && monstruosoElemento === 'Morte') {
     if (!imunidadesExtras.includes('Fatigado')) imunidadesExtras.push('Fatigado');
   }
-  if (temMonstruoso40 && monstruosoElemento === 'Morte') {
+  if (temMonstruoso40 && isMonstruosoAtivo40 && monstruosoElemento === 'Morte') {
     if (!imunidadesExtras.includes('Fome')) imunidadesExtras.push('Fome');
     if (!imunidadesExtras.includes('Sede')) imunidadesExtras.push('Sede');
   }
@@ -923,10 +924,10 @@ function ProtecoesPanel() {
     sentidosExtras.push('Faro');
   }
   // Monstruoso Sentidos
-  if (temMonstruoso10 && monstruosoElemento === 'Sangue') {
+  if (temMonstruoso10 && isMonstruosoAtivo10 && monstruosoElemento === 'Sangue') {
     if (!sentidosExtras.includes('Faro')) sentidosExtras.push('Faro');
   }
-  if (temMonstruoso10 && monstruosoElemento === 'Conhecimento') {
+  if (temMonstruoso10 && isMonstruosoAtivo10 && monstruosoElemento === 'Conhecimento') {
     if (!sentidosExtras.includes('Visão no Escuro')) sentidosExtras.push('Visão no Escuro');
   }
   if (temMonstruoso99 && monstruosoElemento === 'Conhecimento') {

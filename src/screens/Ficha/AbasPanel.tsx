@@ -176,6 +176,7 @@ export const AbasPanel: React.FC = () => {
     status, trilhasHook, periciasHook, poderesExtras, setPoderesExtras,
     temAdepto10, temAdepto40, temAdepto65, temAdepto99,
     temMonstruoso10, temMonstruoso40, temMonstruoso65, temMonstruoso75, temMonstruoso99, monstruosoElemento,
+    isMonstruosoAtivo10, isMonstruosoAtivo40, isMonstruosoAtivo65, isMonstruosoAtivo75,
   } = useRPG();
 
   const [escolhendoRitualPlaceholder, setEscolhendoRitualPlaceholder] = React.useState<{ origem: string, nex?: number, maxCirculo?: number, circuloFixo?: number, elementoFiltro?: string } | null>(null);
@@ -1053,6 +1054,22 @@ export const AbasPanel: React.FC = () => {
               
                                     const uniqueHabId = `trilha_${isVersatilidade ? 'versatilidade_' : ''}${t.Codigo_Trilha}_hab_${nexLvl}`;
                                     const isHabExpanded = habilidadesExpandidas.includes(uniqueHabId);
+                                    const isAtivoMonst = !isMonstruoso ? true : (
+                                      temMonstruoso99 ? true : (
+                                        nexLvl === 10 ? isMonstruosoAtivo10 :
+                                        nexLvl === 40 ? isMonstruosoAtivo40 :
+                                        nexLvl === 65 ? isMonstruosoAtivo65 :
+                                        nexLvl === 75 ? isMonstruosoAtivo75 : true
+                                      )
+                                    );
+                                    const toggleAtivoMonst = (e?: React.MouseEvent | React.ChangeEvent) => {
+                                      if (e && 'stopPropagation' in e) e.stopPropagation();
+                                      const chave = `monstruoso_ativo_${nexLvl}`;
+                                      setPoderesExtras(prev => ({
+                                        ...prev,
+                                        [chave]: prev[chave] === 'false' ? 'true' : 'false'
+                                      }));
+                                    };
               
                                     return (
                                       <div key={nexLvl} className="mb-2 overflow-hidden rounded border border-zinc-800 bg-zinc-900/50">
@@ -1060,10 +1077,22 @@ export const AbasPanel: React.FC = () => {
                                           onClick={() => setHabilidadesExpandidas(prev => prev.includes(uniqueHabId) ? prev.filter(id => id !== uniqueHabId) : [...prev, uniqueHabId])}
                                           className="flex cursor-pointer items-center justify-between px-3 py-2 transition hover:bg-zinc-800"
                                         >
-                                          <span className="font-bold text-zinc-200 text-xs">
-                                            {regras['nex_experiencia'] ? `Nível ${calcularNivel(nexLvl)}` : `NEX ${nexLvl}%`} - <span className="text-zinc-400">{nomeHab}</span>
-                                          </span>
-                                          <span className="text-xs text-zinc-600">
+                                          <div className="flex items-center gap-2 min-w-0">
+                                            {isMonstruoso && !temMonstruoso99 && (
+                                              <input
+                                                type="checkbox"
+                                                checked={isAtivoMonst}
+                                                onClick={e => e.stopPropagation()}
+                                                onChange={toggleAtivoMonst}
+                                                className="accent-green-500 rounded cursor-pointer h-3.5 w-3.5 shrink-0"
+                                                title={isAtivoMonst ? "Desativar poder" : "Ativar poder"}
+                                              />
+                                            )}
+                                            <span className="font-bold text-zinc-200 text-xs truncate">
+                                              {regras['nex_experiencia'] ? `Nível ${calcularNivel(nexLvl)}` : `NEX ${nexLvl}%`} - <span className={!isAtivoMonst ? "text-zinc-500 line-through" : "text-zinc-400"}>{nomeHab}</span>
+                                            </span>
+                                          </div>
+                                          <span className="text-xs text-zinc-600 shrink-0">
                                             {isHabExpanded ? '▲' : '▼'}
                                           </span>
                                         </div>
@@ -1073,14 +1102,29 @@ export const AbasPanel: React.FC = () => {
                                             dangerouslySetInnerHTML={{ __html: formatarDescricao(descHab) }}
                                           />
                                           {isMonstruoso && nexLvl === 75 && (
-                                            <div className="mx-3 mb-3 mt-1 flex items-center gap-2 border-t border-zinc-800/80 pt-2" onClick={e => e.stopPropagation()}>
-                                              <span
-                                                title="Totalmente automático"
-                                                className="shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider bg-green-950/60 text-green-400 border border-green-800/50"
-                                              >
-                                                <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z"/></svg>
-                                                Auto
-                                              </span>
+                                            <div className="mx-3 mb-3 mt-1 flex flex-wrap items-center justify-between gap-2 border-t border-zinc-800/80 pt-2" onClick={e => e.stopPropagation()}>
+                                              <div className="flex items-center gap-2">
+                                                {!temMonstruoso99 && (
+                                                  <label className="flex items-center gap-1.5 cursor-pointer" onClick={e => e.stopPropagation()}>
+                                                    <input
+                                                      type="checkbox"
+                                                      checked={isMonstruosoAtivo75}
+                                                      onChange={toggleAtivoMonst}
+                                                      className="accent-green-500 rounded cursor-pointer h-3.5 w-3.5"
+                                                    />
+                                                    <span className={`text-[10px] font-bold uppercase tracking-wider ${isMonstruosoAtivo75 ? 'text-green-400' : 'text-zinc-500'}`}>
+                                                      {isMonstruosoAtivo75 ? 'Ativo' : 'Inativo'}
+                                                    </span>
+                                                  </label>
+                                                )}
+                                                <span
+                                                  title="Totalmente automático"
+                                                  className="shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider bg-green-950/60 text-green-400 border border-green-800/50"
+                                                >
+                                                  <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z"/></svg>
+                                                  Auto
+                                                </span>
+                                              </div>
                                               <span className="text-[10px] text-zinc-500 italic">
                                                 Os efeitos desta habilidade são aplicados automaticamente na sua ficha.
                                               </span>
@@ -1141,9 +1185,24 @@ export const AbasPanel: React.FC = () => {
                                             if (!pData) return null;
                                             const badgeClasses = getBadgeElemento(monstruosoElemento);
                                             return (
-                                              <div className="mx-3 mb-3 mt-1 rounded-r border-l-2 border-green-500 bg-zinc-900/80 p-3 flex flex-col gap-2" onClick={e => e.stopPropagation()}>
+                                              <div className={`mx-3 mb-3 mt-1 rounded-r border-l-2 ${isAtivoMonst ? 'border-green-500 bg-zinc-900/80' : 'border-zinc-700 bg-zinc-900/40 opacity-60'} p-3 flex flex-col gap-2`} onClick={e => e.stopPropagation()}>
                                                 <div className="flex items-center justify-between gap-2">
-                                                  <span className="text-sm font-bold text-zinc-100">{pData.Nome}</span>
+                                                  <div className="flex items-center gap-2">
+                                                    {!temMonstruoso99 && (
+                                                      <label className="flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-zinc-300 hover:text-white" onClick={e => e.stopPropagation()}>
+                                                        <input
+                                                          type="checkbox"
+                                                          checked={isAtivoMonst}
+                                                          onChange={toggleAtivoMonst}
+                                                          className="accent-green-500 rounded cursor-pointer h-3.5 w-3.5"
+                                                        />
+                                                        <span className={`text-[10px] font-bold uppercase tracking-wider ${isAtivoMonst ? 'text-green-400' : 'text-zinc-500'}`}>
+                                                          {isAtivoMonst ? 'Ativo' : 'Inativo'}
+                                                        </span>
+                                                      </label>
+                                                    )}
+                                                    <span className={`text-sm font-bold ${isAtivoMonst ? 'text-zinc-100' : 'text-zinc-400'}`}>{pData.Nome}</span>
+                                                  </div>
                                                   <span className={`rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${badgeClasses}`}>
                                                     {monstruosoElemento}
                                                   </span>
@@ -1406,19 +1465,35 @@ export const AbasPanel: React.FC = () => {
                                          (elStr.includes('varia') || elStr.includes('vária')) ? 'border-l-green-600' : 'border-l-zinc-600';
                         }
 
+                        const isPoder187 = hab.id === 'trilha_monstruoso_poder_187';
+                        const isPoder187Inativo = isPoder187 && !temMonstruoso99 && !isMonstruosoAtivo75;
+
                         return (
                           <div key={hab.id}
-                            className={`overflow-hidden rounded-r border-l-4 bg-zinc-900/50 ${corBordaLeft}`}
+                            className={`overflow-hidden rounded-r border-l-4 ${isPoder187Inativo ? 'bg-zinc-900/30 opacity-60' : 'bg-zinc-900/50'} ${corBordaLeft}`}
                           >
                             <div onClick={() => {
                               setHabilidadesExpandidas(prev =>
                                 prev.includes(hab.id) ? prev.filter(id => id !== hab.id) : [...prev, hab.id]
                               );
                             }}
-                              className="flex cursor-pointer justify-between gap-3 relative bg-zinc-800/40 px-4 py-3 transition hover:bg-zinc-700/50 ${simboloImg ? 'items-stretch' : 'items-center'}"
+                              className="flex cursor-pointer justify-between gap-3 relative bg-zinc-800/40 px-4 py-3 transition hover:bg-zinc-700/50"
                             >
                               <div className="flex items-center gap-3 min-w-0 flex-1">
-                                <span className="text-sm font-bold text-zinc-100 truncate">{hab.nome}</span>
+                                {isPoder187 && !temMonstruoso99 && (
+                                  <label className="flex items-center gap-1.5 cursor-pointer shrink-0" onClick={e => e.stopPropagation()}>
+                                    <input
+                                      type="checkbox"
+                                      checked={isMonstruosoAtivo75}
+                                      onChange={() => setPoderesExtras(prev => ({ ...prev, monstruoso_ativo_75: prev['monstruoso_ativo_75'] === 'false' ? 'true' : 'false' }))}
+                                      className="accent-green-500 rounded cursor-pointer h-3.5 w-3.5"
+                                    />
+                                    <span className={`text-[10px] font-bold uppercase tracking-wider ${isMonstruosoAtivo75 ? 'text-green-400' : 'text-zinc-500'}`}>
+                                      {isMonstruosoAtivo75 ? 'Ativo' : 'Inativo'}
+                                    </span>
+                                  </label>
+                                )}
+                                <span className={`text-sm font-bold truncate ${isPoder187Inativo ? 'text-zinc-500 line-through' : 'text-zinc-100'}`}>{hab.nome}</span>
                                 {hab.extra && <span className="rounded border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 text-xs font-bold text-amber-400 shrink-0">{hab.extra}</span>}
                                 
                               </div>
@@ -1436,15 +1511,29 @@ export const AbasPanel: React.FC = () => {
                             <Collapse isOpen={estaExpandida}>
                               <div className="px-4 py-4 text-left text-sm leading-relaxed text-zinc-400">
                                 {hab.automatico && (
-                                  <div className="mb-3 flex items-center gap-2 border-b border-zinc-800/50 pb-2">
-                                    <span
-                                      title={hab.automatico.toLowerCase().trim() === 'sim' ? 'Totalmente automático' : 'Semi-automático'}
-                                      className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider ${
-                                        hab.automatico.toLowerCase().trim() === 'sim'
-                                          ? 'bg-green-950/60 text-green-400 border border-green-800/50'
-                                          : 'bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
-                                      }`}
-                                    >
+                                  <div className="mb-3 flex items-center justify-between gap-2 border-b border-zinc-800/50 pb-2">
+                                    <div className="flex items-center gap-2">
+                                      {isPoder187 && !temMonstruoso99 && (
+                                        <label className="flex items-center gap-1.5 cursor-pointer" onClick={e => e.stopPropagation()}>
+                                          <input
+                                            type="checkbox"
+                                            checked={isMonstruosoAtivo75}
+                                            onChange={() => setPoderesExtras(prev => ({ ...prev, monstruoso_ativo_75: prev['monstruoso_ativo_75'] === 'false' ? 'true' : 'false' }))}
+                                            className="accent-green-500 rounded cursor-pointer h-3.5 w-3.5"
+                                          />
+                                          <span className={`text-[10px] font-bold uppercase tracking-wider ${isMonstruosoAtivo75 ? 'text-green-400' : 'text-zinc-500'}`}>
+                                            {isMonstruosoAtivo75 ? 'Ativo' : 'Inativo'}
+                                          </span>
+                                        </label>
+                                      )}
+                                      <span
+                                        title={hab.automatico.toLowerCase().trim() === 'sim' ? 'Totalmente automático' : 'Semi-automático'}
+                                        className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider ${
+                                          hab.automatico.toLowerCase().trim() === 'sim'
+                                            ? 'bg-green-950/60 text-green-400 border border-green-800/50'
+                                            : 'bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
+                                        }`}
+                                      >
                                       {hab.automatico.toLowerCase().trim() === 'sim' ? (
                                         <>
                                           <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z"/></svg>
@@ -1457,7 +1546,8 @@ export const AbasPanel: React.FC = () => {
                                         </>
                                       )}
                                     </span>
-                                    <span className="text-[10px] text-zinc-500 italic">
+                                  </div>
+                                  <span className="text-[10px] text-zinc-500 italic">
                                       {hab.automatico.toLowerCase().trim() === 'sim' 
                                         ? 'Os bônus deste poder já estão aplicados na sua ficha.' 
                                         : 'Uma parte deste poder é aplicada automaticamente na sua ficha, e a outra não.'}

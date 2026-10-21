@@ -192,6 +192,10 @@ interface RPGContextType {
   temMonstruoso65: boolean;
   temMonstruoso75: boolean;
   temMonstruoso99: boolean;
+  isMonstruosoAtivo10: boolean;
+  isMonstruosoAtivo40: boolean;
+  isMonstruosoAtivo65: boolean;
+  isMonstruosoAtivo75: boolean;
   monstruosoElemento: string;
   jaTinhaOcultismoMonstruoso: boolean;
   bonusDeslocTrilha34: number;
@@ -349,20 +353,25 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     const hasMonst99 = isMonstTrilha && (regras['nex_experiencia'] ? effNivel >= 20 : effNex >= 99);
     const elemMonst = afinidadeEscolhida || poderesExtras['monstruoso_elemento'] || 'Sangue';
 
-    if (hasMonst10) {
+    const isMonstAtivo10 = hasMonst99 || poderesExtras['monstruoso_ativo_10'] !== 'false';
+    const isMonstAtivo40 = hasMonst99 || poderesExtras['monstruoso_ativo_40'] !== 'false';
+    const isMonstAtivo65 = hasMonst99 || poderesExtras['monstruoso_ativo_65'] !== 'false';
+    const isMonstAtivo75 = hasMonst99 || poderesExtras['monstruoso_ativo_75'] !== 'false';
+
+    if (hasMonst10 && isMonstAtivo10) {
       if (elemMonst === 'Sangue') set.add(70);
       else if (elemMonst === 'Morte') set.add(71);
       else if (elemMonst === 'Conhecimento') set.add(72);
       else if (elemMonst === 'Energia') set.add(73);
     }
-    if (hasMonst40) {
+    if (hasMonst40 && isMonstAtivo40) {
       if (elemMonst === 'Morte') set.add(74);
       else if (elemMonst === 'Conhecimento') set.add(75);
     }
-    if (hasMonst65) {
+    if (hasMonst65 && isMonstAtivo65) {
       if (elemMonst === 'Energia') set.add(76);
     }
-    if (hasMonst75) {
+    if (hasMonst75 && isMonstAtivo75) {
       set.add(69);
     }
     if (hasMonst99) {
@@ -462,6 +471,11 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const temMonstruoso65 = isTrilhaMonstruoso && (regras['nex_experiencia'] ? effectiveNivel >= 13 : effectiveNex >= 65);
   const temMonstruoso75 = isTrilhaMonstruoso && (regras['nex_experiencia'] ? effectiveNivel >= 15 : effectiveNex >= 75);
   const temMonstruoso99 = isTrilhaMonstruoso && (regras['nex_experiencia'] ? effectiveNivel >= 20 : effectiveNex >= 99);
+
+  const isMonstruosoAtivo10 = temMonstruoso99 || poderesExtras['monstruoso_ativo_10'] !== 'false';
+  const isMonstruosoAtivo40 = temMonstruoso99 || poderesExtras['monstruoso_ativo_40'] !== 'false';
+  const isMonstruosoAtivo65 = temMonstruoso99 || poderesExtras['monstruoso_ativo_65'] !== 'false';
+  const isMonstruosoAtivo75 = temMonstruoso99 || poderesExtras['monstruoso_ativo_75'] !== 'false';
 
   const monstruosoElemento = useMemo(() => {
     if (afinidadeEscolhida) return afinidadeEscolhida;
@@ -624,10 +638,10 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
       obj.FOR += 1;
     }
     // Monstruoso
-    if (temMonstruoso65) {
+    if (temMonstruoso65 && isMonstruosoAtivo65) {
       obj.PRE -= 1;
     }
-    if (temMonstruoso40 && monstruosoElemento === 'Conhecimento') {
+    if (temMonstruoso40 && isMonstruosoAtivo40 && monstruosoElemento === 'Conhecimento') {
       obj.INT += 1;
     }
     if (temMonstruoso99) {
@@ -646,7 +660,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
       }
     }
     return obj;
-  }, [temBibliotecario99, temArtistaMarcialTrilha99, temMonstruoso65, temMonstruoso40, temMonstruoso99, monstruosoElemento]);
+  }, [temBibliotecario99, temArtistaMarcialTrilha99, temMonstruoso65, isMonstruosoAtivo65, temMonstruoso40, isMonstruosoAtivo40, temMonstruoso99, monstruosoElemento]);
 
   const atributosBaseComBonus = useMemo(() => {
     const obj = { ...atributos };
@@ -749,11 +763,11 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   }, [isTrilhaAdepto, isVersatilidadeAdepto, rituaisHook.rituaisAprendidos, poderesExtras, rituaisHook.atualizarRituaisAprendidos, setPoderesExtras]);
 
   // Monstruoso: Morte 10% soma Força na vida máxima (Regra 71)
-  const bonusPvMonstruoso = (temMonstruoso10 && monstruosoElemento === 'Morte') ? atributosBaseComBonus.FOR : 0;
+  const bonusPvMonstruoso = (temMonstruoso10 && isMonstruosoAtivo10 && monstruosoElemento === 'Morte') ? atributosBaseComBonus.FOR : 0;
 
   // Monstruoso: NEX 40% permite usar atributo alternativo para PE em vez de Presença
   const atrMonstruosoPe: AtributoKey = monstruosoElemento === 'Sangue' ? 'FOR' : monstruosoElemento === 'Morte' ? 'VIG' : monstruosoElemento === 'Conhecimento' ? 'INT' : 'AGI';
-  const bonusPeMonstruoso = temMonstruoso40 ? Math.max(0, atributosBaseComBonus[atrMonstruosoPe] - atributosBaseComBonus.PRE) * effectiveNivel : 0;
+  const bonusPeMonstruoso = (temMonstruoso40 && isMonstruosoAtivo40) ? Math.max(0, atributosBaseComBonus[atrMonstruosoPe] - atributosBaseComBonus.PRE) * effectiveNivel : 0;
 
   const status = useStatus(
     classe, 
@@ -1425,6 +1439,10 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     temMonstruoso65,
     temMonstruoso75,
     temMonstruoso99,
+    isMonstruosoAtivo10,
+    isMonstruosoAtivo40,
+    isMonstruosoAtivo65,
+    isMonstruosoAtivo75,
     monstruosoElemento,
     jaTinhaOcultismoMonstruoso,
     defOutrosBonusRegra72,

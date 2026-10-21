@@ -212,7 +212,7 @@ export const AbasPanel: React.FC = () => {
     return () => { document.body.style.overflow = 'unset'; };
   }, [ritualEditandoOrigem]);
 
-  const { afinidadeEscolhida, afinidadeAtiva, nivel, regrasAutomaticasAtivas, armasHook } = useRPG();
+  const { afinidadeEscolhida, afinidadeAtiva, nivel, regrasAutomaticasAtivas, armasHook, bonusMaldicoes, itensHook } = useRPG();
   const effectiveNex = regras['nex_experiencia'] ? (nivel * 5) : nex;
   const isLamina = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
 
@@ -2262,7 +2262,7 @@ export const AbasPanel: React.FC = () => {
                             const ritualsOfElement = ritualsByElement[elemento];
                             const hasAntena = armasHook?.armasInventario?.some(a => a.arma.Nome_Item?.trim().toLowerCase() === 'a antena');
                             const atrParaDT = temAdepto40 ? (poderesExtras['adepto_atributo_40'] === 'AGI' ? 'AGI' : 'VIG') : 'PRE';
-                            const baseDT = 10 + (atributosFinais[atrParaDT] || 0) + calcularNivel(nex) + (hasAntena ? 3 : 0);
+                            const baseDT = 10 + (atributosFinais[atrParaDT] || 0) + calcularNivel(nex) + (hasAntena ? 3 : 0) + (bonusMaldicoes?.bonusDT || 0);
                             
                             return (
                               <div key={elemento} className="mt-2 mb-2 flex flex-col gap-2.5">
@@ -2292,6 +2292,15 @@ export const AbasPanel: React.FC = () => {
                         const simboloImg = rituaisHook.getSimboloUrl ? rituaisHook.getSimboloUrl(ritual.Codigo_Ritual, elementoEscolhido) : '';
 
                         // Valores dinâmicos baseados na versão
+                        const isOrigemConjuracao = Boolean(ritual.Origem?.startsWith('maldicao_conjuracao_'));
+                        const temConjuracaoNoItem = (itensHook?.itensInventario || []).some(i => {
+                          const nomeItem = (i.item.Nome_Item || '').toLowerCase();
+                          const grupoItem = (i.item.Grupo_Item || '').toLowerCase();
+                          const reqEquip = nomeItem.includes('vestimenta') || nomeItem.includes('amuleto sagrado') || grupoItem === 'proteções' || grupoItem === 'protecoes';
+                          const ativo = reqEquip ? Boolean(i.equipado) : true;
+                          return ativo && Array.isArray(i.maldicoes) && i.maldicoes.includes(24) && (i.maldicoes_elementos?.[24] || '').trim().toLowerCase() === (ritual.Nome_Ritual || '').trim().toLowerCase();
+                        });
+
                         const peOriginal = ritual.customProps?.[versao]?.PE_Ritual || obterValorVersao(ritual.PE_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
                         let peValor = parseInt(String(peOriginal).replace(/\D+/g, ''), 10);
                         if (!isNaN(peValor)) {
@@ -2302,6 +2311,9 @@ export const AbasPanel: React.FC = () => {
                           if (regrasAutomaticasAtivas.has(35)) {
                             const desconto35 = Object.values(poderesEscolhidos).filter(p => p.codigoRegra === 35 && p.elemento === (ritual.customNome || ritual.Nome_Ritual)).length;
                             peValor -= desconto35;
+                          }
+                          if (!isOrigemConjuracao && temConjuracaoNoItem) {
+                            peValor -= 1;
                           }
                           peValor = Math.max(1, peValor);
                         }
@@ -2450,6 +2462,11 @@ export const AbasPanel: React.FC = () => {
                                 </span>
 
                                 <div className={`flex items-center gap-2 ${simboloImg ? 'mt-auto' : 'mt-2'}`}>
+                                  {(isOrigemConjuracao || temConjuracaoNoItem) && (
+                                    <span className="text-[9px] font-bold uppercase tracking-wider text-yellow-500/90 bg-yellow-950/30 border border-yellow-800/40 px-1.5 py-0.5 rounded">
+                                      Conjuração
+                                    </span>
+                                  )}
                                   {/* Seta */}
                                   <span className="text-xs text-zinc-600 ml-1">{expandido ? '▲' : '▼'}</span>
                                 </div>
@@ -2596,7 +2613,7 @@ export const AbasPanel: React.FC = () => {
                                     }}
                                     className="rounded bg-zinc-800 border border-zinc-700 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-zinc-300 transition hover:bg-zinc-700 hover:text-zinc-100"
                                   >Editar</button>
-                                  {!ritual.Origem.startsWith('trilha_') && (
+                                  {!ritual.Origem.startsWith('trilha_') && !ritual.Origem.startsWith('maldicao_conjuracao_') && (
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation();

@@ -31,12 +31,12 @@ function calcularDanoMedio(danoStr: string, multCritico: number): { normal: numb
   let firstDie = true;
   for (const part of parts) {
     if (!part) continue;
-    const match = part.match(/^(-?)(\d+)d(\d+)(\*?)$/);
+    const match = part.match(/^(\*?)(-?)(\*?)(\d+)d(\d+)(\*?)$/);
     if (match) {
-      const sign = match[1] === '-' ? -1 : 1;
-      const count = parseInt(match[2], 10);
-      const faces = parseInt(match[3], 10);
-      const hasStar = match[4] === '*';
+      const sign = match[2] === '-' ? -1 : 1;
+      const count = parseInt(match[4], 10);
+      const faces = parseInt(match[5], 10);
+      const hasStar = match[1] === '*' || match[3] === '*' || match[6] === '*';
       const lowAvg = Math.floor(faces / 2);
       avgNormal += sign * (count * lowAvg);
       
@@ -62,8 +62,8 @@ function calcularDanoMedio(danoStr: string, multCritico: number): { normal: numb
 function parseDanoString(danoStr: string, tipoDanoBase: string, tipoSecundario?: string) {
   if (!danoStr || danoStr.trim() === '-' || danoStr.trim() === '') return [];
   
-  // Separa por + ou - mantendo o sinal. Ex: 1d8+1d6*[Sangue]+2
-  const regex = /([+-]?\s*\d+d\d+\*?(?:\[.*?\])?)|([+-]?\s*\d+(?:\[.*?\])?)/gi;
+  // Separa por + ou - mantendo o sinal. Ex: 1d8+*+1d8[Sangue]+2
+  const regex = /(\*?[+-]?\s*\*?\d+d\d+\*?(?:\[.*?\])?)|([+-]?\s*\d+(?:\[.*?\])?)/gi;
   const matches = danoStr.match(regex);
   if (!matches) return [{ label: 'Dado', valor: danoStr, tipo: tipoDanoBase }];
 
@@ -89,7 +89,11 @@ function parseDanoString(danoStr: string, tipoDanoBase: string, tipoSecundario?:
       val = val.replace(/\[.*?\]/, '');
     }
 
-    const valorFinal = (i > 0 && !val.startsWith('+') && !val.startsWith('-')) ? `+${val}` : val;
+    // Normaliza +*1d8 ou *1d8 para *+1d8
+    if (val.startsWith('+*') || (val.startsWith('*') && !val.startsWith('*+') && !val.startsWith('*-'))) {
+      val = '*+' + val.replace(/^\+?\*/, '');
+    }
+    const valorFinal = (i > 0 && !val.startsWith('+') && !val.startsWith('-') && !val.startsWith('*')) ? `+${val}` : val;
 
     if (valorFinal.toLowerCase().includes('d')) {
       if (i === 0) parsed.push({ label: 'Dado', valor: valorFinal, tipo });
@@ -121,7 +125,7 @@ interface ArmaCombateCardProps {
 }
 
 const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandida, toggleExpandir, modificacoesHook, maldicoesHook, onAddMunicao, municoesHook, itensHook, armasHook }) => {
-  const { atributosFinais, proficienciasTotais, regrasAutomaticasAtivas, status, regras, trilhasHook, poderesExtras, nivel, nex, danoDeMovimento } = useRPG();
+  const { atributosFinais, proficienciasTotais, regrasAutomaticasAtivas, status, regras, trilhasHook, poderesExtras, nivel, nex, danoDeMovimento, bonusMaldicoes } = useRPG();
   const effectiveNex = regras['nex_experiencia'] ? (nivel * 5) : nex;
   const isAniquilador = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 1;
   const armaFavId = isAniquilador ? poderesExtras["aniquilador_arma_favorita"] : null;
@@ -193,6 +197,10 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
   let multCrit = Number(arma.Multiplicador_Arma || 2);
   let alcance = arma.Alcance_Item || 'Corpo a Corpo';
   
+  const ordAlcance = ['Curto', 'Médio', 'Longo', 'Extremo', 'Ilimitado'];
+  const normAlc = (s: string) => s.replace(/[áàãâä]/gi, 'a').replace(/[éèêë]/gi, 'e').replace(/[íìîï]/gi, 'i').replace(/[óòõôö]/gi, 'o').replace(/[úùûü]/gi, 'u').trim().toLowerCase();
+  const ordNorm = ordAlcance.map(normAlc);
+
   modsAtivas.forEach(m => {
     if (!m) return;
     const desc = m.Descricao_Modif || '';
@@ -200,9 +208,8 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
     if (nome === 'mira laser' || nome === 'perigosa') critico -= 2;
     if (nome === 'dum dum') multCrit += 1;
     if (nome === 'mira telescópica' || nome === 'mira telescopica') {
-      const ord = ['Curto', 'Medio', 'Longo', 'Extremo', 'Ilimitado'];
-      const idx = ord.indexOf(alcance);
-      if (idx !== -1 && idx < ord.length - 1) alcance = ord[idx + 1];
+      const idx = ordNorm.indexOf(normAlc(alcance));
+      if (idx !== -1 && idx < ordAlcance.length - 1) alcance = ordAlcance[idx + 1];
     }
     if (desc.toLowerCase().includes('+2 em rolagens de dano') || desc.toLowerCase().includes('+2 rolagens de dano') || desc.toLowerCase().includes('+2 no dano') || nome.includes('cruel')) {
        extrasStr += `+2`;
@@ -215,30 +222,25 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
 
   maldicoesAtivas.forEach(m => {
     if (!m) return;
-    const desc = m.Descricao_Mald || '';
     const nomeM = m.Nome_Mald?.trim().toLowerCase() || '';
     if (nomeM === 'predadora') {
       const margemBase = 21 - Number(arma.Critico_Arma || 20);
       critico -= margemBase;
-      const ord = ['Curto', 'Medio', 'Longo', 'Extremo', 'Ilimitado'];
-      const idx = ord.indexOf(alcance);
-      if (idx !== -1 && idx < ord.length - 1) alcance = ord[idx + 1];
+      const idx = ordNorm.indexOf(normAlc(alcance));
+      if (idx !== -1 && idx < ordAlcance.length - 1) alcance = ordAlcance[idx + 1];
     }
     if (nomeM === 'empuxo') {
-      const ord = ['Curto', 'Medio', 'Longo', 'Extremo', 'Ilimitado'];
-      if (!alcance || alcance.toLowerCase() === 'corpo a corpo') alcance = 'Curto';
+      const nAlc = normAlc(alcance);
+      if (!nAlc || nAlc === '-' || nAlc.includes('corpo')) alcance = 'Curto';
       else {
-        const idx = ord.indexOf(alcance);
-        if (idx !== -1 && idx < ord.length - 1) alcance = ord[idx + 1];
+        const idx = ordNorm.indexOf(nAlc);
+        if (idx !== -1 && idx < ordAlcance.length - 1) alcance = ordAlcance[idx + 1];
       }
     }
-    const match = desc.match(/\+\s*(\d+d\d+\*?)/i);
-    if (match) {
-      let elemento = m.Elemento_Mald || 'Paranormal';
-      if (elemento.toLowerCase() === 'varia' || elemento.toLowerCase() === 'variável') {
-         elemento = armaInv.maldicoes_elementos?.[m.Codigo_Mald] || elemento;
-      }
-      extrasStr += `+${match[1]}[${elemento}]`;
+    if (nomeM === 'erosiva') {
+      extrasStr += `+1d8[Morte]`;
+    } else if (nomeM === 'lancinante') {
+      extrasStr += `*+1d8[Sangue]`;
     }
   });
 
@@ -356,6 +358,9 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
       if (regrasAutomaticasAtivas.has(29) && typeof calc === 'number') {
         calc += (temDobroPerito ? atributosFinais.INT * 2 : atributosFinais.INT);
       }
+      if (typeof calc === 'number' && bonusMaldicoes?.bonusDT) {
+        calc += bonusMaldicoes.bonusDT;
+      }
       dtGranada = calc === '-' ? '-' : (periciaStr ? `${periciaStr} ${calc}` : `${calc}`);
       if (!dtGranada) dtGranada = '-';
     }
@@ -436,7 +441,7 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
   const headerParts: string[] = [];
   dadosPorTipo.forEach((d, i) => {
     let v = d.valor;
-    if (i > 0 && !v.startsWith('+') && !v.startsWith('-')) v = '+' + v;
+    if (i > 0 && !v.startsWith('+') && !v.startsWith('-') && !v.startsWith('*')) v = '+' + v;
     headerParts.push(v);
   });
   Object.entries(flatPorTipo).forEach(([tipo, total]) => {

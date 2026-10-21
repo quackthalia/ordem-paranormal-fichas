@@ -81,7 +81,10 @@ export function ModalEditarArma({
     Number(multiplicador) || 2,
     alcance,
     modsAtivas,
-    maldsAtivas
+    maldsAtivas,
+    0,
+    0,
+    danoSecundario
   );
 
   const renderLabel = (baseLabel: string, baseValue: any, finalValue: any, isMultiplier = false) => {
@@ -164,7 +167,16 @@ export function ModalEditarArma({
   };
 
   const getOpcoesMaldicoes = () => {
-    return maldicoesHook.maldicoes.filter(m => m.Categoria_Mald.trim().toLowerCase().includes('armas'));
+    const isCorpo = tipoArma.toLowerCase().includes('corpo');
+    return maldicoesHook.maldicoes.filter(m => {
+      const cat = m.Categoria_Mald.trim().toLowerCase();
+      if (!cat.includes('arma')) return false;
+      const nomeM = m.Nome_Mald.trim().toLowerCase();
+      if ((cat.includes('corpo a corpo') || nomeM === 'empuxo' || nomeM === 'fantasmagórica' || nomeM === 'fantasmagorica') && !isCorpo) {
+        return false;
+      }
+      return true;
+    });
   };
 
   
@@ -391,7 +403,7 @@ export function ModalEditarArma({
                 )}
                 {danoSecundario.trim() === '' && (
                   <div>
-                    <InputLabel label="Dano Secundário" />
+                    {renderLabel('Dano Secundário', danoSecundario, statsFinais.danoSecundario || danoSecundario)}
                     <InputOtimizado value={danoSecundario} onChange={(val) => {
                       setDanoSecundario(val);
                       if (val.trim() !== '' && tipoDanoSec === 'Nenhum') {

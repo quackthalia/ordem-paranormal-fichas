@@ -445,7 +445,7 @@ const getBadgeCloseClasses = (minv: any) => {
 
 
 export function InventarioPanel() {
-  const { maldicoesHook, inventarioHook, atributosFinais, regrasAutomaticasAtivas, armasHook, municoesHook, protecoesHook, itensHook, itensAmaldicoadosHook, toggleVestimentaGeral, status, modificacoesHook, proficienciasTotais, rituaisHook, poderesHook, poderesExtras, regras, nivel, trilhasHook, nex, maxExplosivosAutorais, temVigilante10 } = useRPG();
+  const { maldicoesHook, bonusMaldicoes, inventarioHook, atributosFinais, regrasAutomaticasAtivas, armasHook, municoesHook, protecoesHook, itensHook, itensAmaldicoadosHook, toggleVestimentaGeral, status, modificacoesHook, proficienciasTotais, rituaisHook, poderesHook, poderesExtras, regras, nivel, trilhasHook, nex, maxExplosivosAutorais, temVigilante10 } = useRPG();
   const effectiveNex = regras["nex_experiencia"] ? nivel * 5 : nex;
   const isAniquilador = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 1;
   const armaFavId = isAniquilador ? poderesExtras["aniquilador_arma_favorita"] : null;
@@ -641,6 +641,9 @@ export function InventarioPanel() {
     
     if (isExplosivo && regrasAutomaticasAtivas.has(29) && typeof calculado === 'number') {
       calculado += atributosFinais.INT;
+    }
+    if (typeof calculado === 'number' && bonusMaldicoes?.bonusDT) {
+      calculado += bonusMaldicoes.bonusDT;
     }
     
     if (calculado === '-') return '-';
@@ -1715,7 +1718,7 @@ function SortableArmaItem({
     isDragging,
   } = useSortable({ id, data: { type: 'arma' } });
 
-  const { municoesHook, armasHook, proficienciasTotais, modificacoesHook, maldicoesHook, atributosFinais, status, regrasAutomaticasAtivas, regras, itensHook, trilhasHook, poderesExtras, nivel, nex } = useRPG();
+  const { municoesHook, armasHook, proficienciasTotais, modificacoesHook, maldicoesHook, bonusMaldicoes, atributosFinais, status, regrasAutomaticasAtivas, regras, itensHook, trilhasHook, poderesExtras, nivel, nex } = useRPG();
   const effectiveNex = regras["nex_experiencia"] ? nivel * 5 : nex;
   const isAniquilador = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 1;
   const armaFavId = isAniquilador ? poderesExtras["aniquilador_arma_favorita"] : null;
@@ -1789,10 +1792,13 @@ function SortableArmaItem({
         }
         let calc: string | number = 0;
         if (['FOR','AGI','INT','PRE','VIG'].includes(val.toUpperCase())) {
-          calc = 10 + (atributosFinais[val.toUpperCase() as keyof typeof atributosFinais] || 0);
+          calc = 10 + (status?.peTurno || 0) + (atributosFinais[val.toUpperCase() as keyof typeof atributosFinais] || 0);
         } else {
           calc = Number(val);
           if (isNaN(calc)) calc = '-';
+        }
+        if (typeof calc === 'number' && bonusMaldicoes?.bonusDT) {
+          calc += bonusMaldicoes.bonusDT;
         }
         dtGranada = calc === '-' ? '-' : `${calc}${periciaStr ? ` (${periciaStr})` : ''}`;
       } else {
@@ -1803,6 +1809,10 @@ function SortableArmaItem({
     if (regrasAutomaticasAtivas?.has(86) && (arma.Tipo_Arma?.toLowerCase() === 'corpo a corpo' || arma.Tipo_Arma?.toLowerCase() === 'corpo-a-corpo') && arma.Nome_Item !== 'Ataque Desarmado') {
       dano = dano.replace(/(\d+)d(\d+)/gi, (match, p1, p2) => `${Number(p1) + 1}d${p2}`);
     }
+
+    const ordAlcance = ['Curto', 'Médio', 'Longo', 'Extremo', 'Ilimitado'];
+    const normAlc = (s: string) => s.replace(/[áàãâä]/gi, 'a').replace(/[éèêë]/gi, 'e').replace(/[íìîï]/gi, 'i').replace(/[óòõôö]/gi, 'o').replace(/[úùûü]/gi, 'u').trim().toLowerCase();
+    const ordNorm = ordAlcance.map(normAlc);
 
     // Mods da arma
     for (const mod of modsAtuais) {
@@ -1818,10 +1828,9 @@ function SortableArmaItem({
         critico -= 2;
       }
       if (nome === 'mira telescopica' || nome === 'mira telescópica') {
-        const ord = ['Curto', 'Medio', 'Longo', 'Extremo', 'Ilimitado'];
-        const idx = ord.indexOf(alcance);
-        if (idx !== -1 && idx < ord.length - 1) {
-          alcance = ord[idx + 1];
+        const idx = ordNorm.indexOf(normAlc(alcance));
+        if (idx !== -1 && idx < ordAlcance.length - 1) {
+          alcance = ordAlcance[idx + 1];
         }
       }
     }
@@ -1834,25 +1843,24 @@ function SortableArmaItem({
           danoSecundario = danoSecundario ? `${danoSecundario} + 1d8` : '+1d8';
         }
         if (nomeM === 'lancinante') {
-          danoSecundario = danoSecundario ? `${danoSecundario} + 1d8*` : '+1d8*';
+          danoSecundario = danoSecundario ? `${danoSecundario} *+1d8` : '*+1d8';
         }
         if (nomeM === 'predadora') {
           const margemBase = 21 - Number(arma.Critico_Arma || 20);
           critico -= margemBase;
-          const ord = ['Curto', 'Medio', 'Longo', 'Extremo', 'Ilimitado'];
-          const idx = ord.indexOf(alcance);
-          if (idx !== -1 && idx < ord.length - 1) {
-            alcance = ord[idx + 1];
+          const idx = ordNorm.indexOf(normAlc(alcance));
+          if (idx !== -1 && idx < ordAlcance.length - 1) {
+            alcance = ordAlcance[idx + 1];
           }
         }
         if (nomeM === 'empuxo') {
-          const ord = ['Curto', 'Medio', 'Longo', 'Extremo', 'Ilimitado'];
-          if (!alcance) {
+          const nAlc = normAlc(alcance);
+          if (!nAlc || nAlc === '-' || nAlc.includes('corpo')) {
             alcance = 'Curto';
           } else {
-            const idx = ord.indexOf(alcance);
-            if (idx !== -1 && idx < ord.length - 1) {
-              alcance = ord[idx + 1];
+            const idx = ordNorm.indexOf(nAlc);
+            if (idx !== -1 && idx < ordAlcance.length - 1) {
+              alcance = ordAlcance[idx + 1];
             }
           }
         }
@@ -1939,7 +1947,7 @@ function SortableArmaItem({
 
 
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-300 mt-0.5">
-              <span><span className="font-bold text-green-400">Dano:</span> {stats.dano}{stats.danoSecundario ? (stats.danoSecundario.trim().startsWith('+') ? stats.danoSecundario.trim() : '+' + stats.danoSecundario.trim()) : ''}</span>
+              <span><span className="font-bold text-green-400">Dano:</span> {stats.dano}{stats.danoSecundario ? ((stats.danoSecundario.trim().startsWith('+') || stats.danoSecundario.trim().startsWith('*')) ? stats.danoSecundario.trim() : '+' + stats.danoSecundario.trim()) : ''}</span>
               {isLancadorGranadas ? (
                   <span><span className="font-bold text-green-400">DT:</span> {stats.dtGranada || '-'}</span>
                 ) : (

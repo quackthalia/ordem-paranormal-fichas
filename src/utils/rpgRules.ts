@@ -428,13 +428,19 @@ export function calcularAtributosArmaFinais(
   modsAtivas: any[],
   maldicoesAtivas: any[],
   aumentarPassosDano: number = 0,
-  bonusMargemAmeaca: number = 0
+  bonusMargemAmeaca: number = 0,
+  danoSecundarioBase: string = ''
 ) {
   let danoFinal = danoBase || '';
   let criticoFinal = (Number(criticoBase) || 20) - bonusMargemAmeaca;
   let multCritFinal = Number(multCritBase) || 2;
   let alcanceFinal = alcanceBase || 'Corpo a Corpo';
   let extrasDanoStr = '';
+  let danoSecundario = danoSecundarioBase || '';
+
+  const ordAlcance = ['Curto', 'Médio', 'Longo', 'Extremo', 'Ilimitado'];
+  const normalizeAlcance = (s: string) => s.replace(/[áàãâä]/gi, 'a').replace(/[éèêë]/gi, 'e').replace(/[íìîï]/gi, 'i').replace(/[óòõôö]/gi, 'o').replace(/[úùûü]/gi, 'u').trim().toLowerCase();
+  const ordNorm = ordAlcance.map(normalizeAlcance);
 
   modsAtivas.forEach(m => {
     if (!m) return;
@@ -444,12 +450,8 @@ export function calcularAtributosArmaFinais(
     if (nome === 'mira laser' || nome === 'perigosa') criticoFinal -= 2;
     if (nome === 'dum dum') multCritFinal += 1;
     if (nome === 'mira telescópica' || nome === 'mira telescopica') {
-      const ord = ['Curto', 'Médio', 'Longo', 'Extremo', 'Ilimitado'];
-      const normalize = (s: string) => s.replace(/[áàãâä]/gi, 'a').replace(/[éèêë]/gi, 'e').replace(/[íìîï]/gi, 'i').replace(/[óòõôö]/gi, 'o').replace(/[úùûü]/gi, 'u').toLowerCase();
-      
-      const ordNorm = ord.map(normalize);
-      const idx = ordNorm.indexOf(normalize(alcanceFinal));
-      if (idx !== -1 && idx < ord.length - 1) alcanceFinal = ord[idx + 1];
+      const idx = ordNorm.indexOf(normalizeAlcance(alcanceFinal));
+      if (idx !== -1 && idx < ordAlcance.length - 1) alcanceFinal = ordAlcance[idx + 1];
     }
     
     if (desc.toLowerCase().includes('+2 em rolagens de dano') || desc.toLowerCase().includes('+2 rolagens de dano') || desc.toLowerCase().includes('+2 no dano') || nome.includes('cruel')) {
@@ -466,6 +468,29 @@ export function calcularAtributosArmaFinais(
     }
   });
 
+  (maldicoesAtivas || []).forEach(mald => {
+    if (!mald) return;
+    const nomeM = mald.Nome_Mald?.trim().toLowerCase() || '';
+    if (nomeM === 'erosiva') {
+      danoSecundario = danoSecundario ? `${danoSecundario} +1d8` : '+1d8';
+    } else if (nomeM === 'lancinante') {
+      danoSecundario = danoSecundario ? `${danoSecundario} *+1d8` : '*+1d8';
+    } else if (nomeM === 'predadora') {
+      const margemBase = 21 - (Number(criticoBase) || 20);
+      criticoFinal -= margemBase;
+      const idx = ordNorm.indexOf(normalizeAlcance(alcanceFinal));
+      if (idx !== -1 && idx < ordAlcance.length - 1) alcanceFinal = ordAlcance[idx + 1];
+    } else if (nomeM === 'empuxo') {
+      const norm = normalizeAlcance(alcanceFinal);
+      if (!norm || norm === '-' || norm.includes('corpo')) {
+        alcanceFinal = 'Curto';
+      } else {
+        const idx = ordNorm.indexOf(norm);
+        if (idx !== -1 && idx < ordAlcance.length - 1) alcanceFinal = ordAlcance[idx + 1];
+      }
+    }
+  });
+
   if (aumentarPassosDano > 0) {
     for (let i = 0; i < aumentarPassosDano; i++) {
       danoFinal = danoFinal.replace(/(\d+)d(\d+)/gi, (m, p1, p2) => `${Number(p1) + 1}d${p2}`);
@@ -474,6 +499,7 @@ export function calcularAtributosArmaFinais(
 
   return {
     danoFinal: (danoFinal + extrasDanoStr).trim(),
+    danoSecundario: danoSecundario.trim(),
     criticoFinal,
     multCritFinal,
     alcanceFinal

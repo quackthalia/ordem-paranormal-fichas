@@ -577,6 +577,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
       
       // Calculate what was added
       current.forEach(ritual => {
+        if (ritual.origem?.startsWith('maldicao_conjuracao_')) return;
         if (!previous.some(p => p.id === ritual.id)) {
           const def = rituaisHook.rituais?.find(r => r.Nome_Ritual === ritual.nome);
           if (def) nexDiff += parseInt(def.Circulo, 10) || 0;
@@ -585,6 +586,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
       
       // Calculate what was removed
       previous.forEach(ritual => {
+        if (ritual.origem?.startsWith('maldicao_conjuracao_')) return;
         if (!current.some(p => p.id === ritual.id)) {
           const def = rituaisHook.rituais?.find(r => r.Nome_Ritual === ritual.nome);
           if (def) nexDiff -= parseInt(def.Circulo, 10) || 0;
@@ -769,11 +771,17 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const atrMonstruosoPe: AtributoKey = monstruosoElemento === 'Sangue' ? 'FOR' : monstruosoElemento === 'Morte' ? 'VIG' : monstruosoElemento === 'Conhecimento' ? 'INT' : 'AGI';
   const bonusPeMonstruoso = (temMonstruoso40 && isMonstruosoAtivo40) ? Math.max(0, atributosBaseComBonus[atrMonstruosoPe] - atributosBaseComBonus.PRE) * effectiveNivel : 0;
 
+  // Carisma (+1 PRE de maldição) não fornece PE adicionais
+  const atributosParaStatus = useMemo(() => ({
+    ...atributosBaseComBonus,
+    PRE: atributosBaseComBonus.PRE - (bonusMaldicoes.atributos.PRE || 0)
+  }), [atributosBaseComBonus, bonusMaldicoes.atributos.PRE]);
+
   const status = useStatus(
     classe, 
     effectiveNex, 
     effectiveNivel, 
-    atributosBaseComBonus, 
+    atributosParaStatus, 
     paranormalPenalty + perdaSanidadeAdepto, 
     regrasAutomaticasAtivas, 
     bonusVestimentas.pv + bonusMaldicoes.pv + bonusPvTrilha5 + bonusPvMonstruoso, 
@@ -992,10 +1000,16 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     return vet;
   }, [origensHook.origemSelecionada, temExorcista40, poderesExtras]);
 
+  // Sagacidade (+1 INT de maldição) não fornece perícias treinadas adicionais
+  const atributosParaPericias = useMemo(() => ({
+    ...atributosFinais,
+    INT: atributosFinais.INT - (bonusMaldicoes.atributos.INT || 0)
+  }), [atributosFinais, bonusMaldicoes.atributos.INT]);
+
   const periciasHook = usePericias(
     classe, 
     nivel, 
-    atributosFinais, 
+    atributosParaPericias, 
     regrasAtivas, 
     periciasGratis, 
     origensHook.origemSelecionada?.Codigo_Per_Regra, 
@@ -1306,7 +1320,7 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
 
   const defOutrosBonusRegra72 = regrasAutomaticasAtivas.has(72) ? atributosFinais.INT : 0;
 
-  const defesaTotal = 10 + atributos.AGI + bonusAtributos.AGI + defEquip + defOutros + defOutrosBonusRegra4 + defOutrosBonusRegra12 + defOutrosBonusRegra21 + defOutrosBonusRegra25 + defOutrosBonusRegra72 + defOutrosBonusTrilha5 + bonusDefesaTrilha34 + totalDefesaProtecoes + (bonusVestimentas?.defesa || 0) + (bonusMaldicoes?.defesa || 0);
+  const defesaTotal = 10 + atributosFinais.AGI + defEquip + defOutros + defOutrosBonusRegra4 + defOutrosBonusRegra12 + defOutrosBonusRegra21 + defOutrosBonusRegra25 + defOutrosBonusRegra72 + defOutrosBonusTrilha5 + bonusDefesaTrilha34 + totalDefesaProtecoes + (bonusVestimentas?.defesa || 0) + (bonusMaldicoes?.defesa || 0);
 
   // ============================================================
   // UTILITÁRIOS
@@ -1336,8 +1350,8 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
   // Calcula status reais
   const { pvMax, peMax, sanMax, peTurno } = useMemo(() => {
     if (!classe) return { pvMax: 0, peMax: 0, sanMax: 0, peTurno: 0 };
-    return calcularStatusBase(classe, atributosFinais, nivel, regrasAutomaticasAtivas);
-  }, [classe, atributosFinais, nivel, regrasAutomaticasAtivas]);
+    return calcularStatusBase(classe, atributosParaStatus, nivel, regrasAutomaticasAtivas);
+  }, [classe, atributosParaStatus, nivel, regrasAutomaticasAtivas]);
 
   const value: RPGContextType = {
     telaAtual, setTelaAtual,

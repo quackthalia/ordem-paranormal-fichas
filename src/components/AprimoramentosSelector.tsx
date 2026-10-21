@@ -129,7 +129,9 @@ export function AprimoramentosSelector({
               >
                 <div className="flex flex-col gap-1.5 pr-4 relative z-10">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-zinc-200 text-sm">{mod.Nome_Mald}</span>
+                    <span className="font-bold text-zinc-200 text-sm">
+                      {mod.Nome_Mald}{!isVaria && maldicoesElementos[mod.Codigo_Mald] ? ` (${maldicoesElementos[mod.Codigo_Mald]})` : ''}
+                    </span>
                     <span className={`text-[10px] font-bold rounded-sm truncate uppercase tracking-wider w-fit mt-0.5 ${cores}`}>
                       {elementoReal}
                     </span>
@@ -287,7 +289,7 @@ export function AprimoramentosSelector({
                   {maldsDisponiveis.length === 0 ? (
                     <p className="text-xs text-zinc-500 font-semibold tracking-wide p-8 text-center uppercase">Nenhuma maldição disponível para este filtro.</p>
                   ) : (
-                    <div className="flex flex-col gap-4 w-full pb-4">
+                    <div className="flex flex-col gap-4 w-full pb-36">
                         {maldsDisponiveis.map(opcao => {
                           const isVaria = opcao.Elemento_Mald?.toLowerCase() === 'varia' || opcao.Elemento_Mald?.toLowerCase() === 'lista';
                           const cores = getCorElemento(opcao.Elemento_Mald);
@@ -311,10 +313,10 @@ export function AprimoramentosSelector({
                                 onAddMald(opcao.Codigo_Mald, isVaria ? (elementosVaria[opcao.Codigo_Mald] || 'Sangue') : undefined);
                                 setModalAberto(false);
                               }}
-                              className={`flex flex-col p-5 rounded-lg bg-zinc-900/30 border border-zinc-800/60 transition-all group ${podeAdicionarMald ? 'hover:border-zinc-700/80 hover:bg-zinc-900/80 cursor-pointer shadow hover:shadow-lg hover:-translate-y-0.5 relative overflow-hidden' : 'opacity-40 cursor-not-allowed'}`}
+                              className={`flex flex-col p-5 rounded-lg bg-zinc-900/30 border border-zinc-800/60 transition-all group ${podeAdicionarMald ? 'hover:border-zinc-700/80 hover:bg-zinc-900/80 cursor-pointer shadow hover:shadow-lg hover:-translate-y-0.5 relative focus-within:z-30' : 'opacity-40 cursor-not-allowed'}`}
                             >
                               {podeAdicionarMald && (
-                                <div className={`absolute left-0 top-0 bottom-0 w-[3px] opacity-0 group-hover:opacity-100 transition-opacity ${borderL}`}></div>
+                                <div className={`absolute left-0 top-0 bottom-0 w-[3px] rounded-l-lg opacity-0 group-hover:opacity-100 transition-opacity ${borderL}`}></div>
                               )}
                               <div className="flex justify-between items-start gap-4">
                                 <span className="font-bold text-zinc-200 text-sm group-hover:text-zinc-100 transition-colors pt-0.5">{opcao.Nome_Mald}</span>
@@ -331,7 +333,8 @@ export function AprimoramentosSelector({
                                         { value: 'Conhecimento', label: 'Conhecimento' },
                                         { value: 'Energia', label: 'Energia' }
                                       ]}
-                                      className="w-32 py-1 !text-[10px] !bg-zinc-900 uppercase font-bold tracking-widest border-zinc-700 hover:border-zinc-500"
+                                      wrapperClassName="w-auto"
+                                      className="w-36 py-1 !text-[10px] !bg-zinc-900 uppercase font-bold tracking-widest border-zinc-700 hover:border-zinc-500"
                                       hideIcon={true}
                                     />
                                   </div>

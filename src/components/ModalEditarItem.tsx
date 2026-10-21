@@ -41,14 +41,16 @@ export function ModalEditarItem({
   const [dt, setDt] = useState(item.Dt_Item || '');
   const [grupo, setGrupo] = useState(item.Grupo_Item || '');
 
-  const { modificacoesHook, periciasHook, maldicoesHook } = useRPG();
+  const { modificacoesHook, periciasHook, maldicoesHook, rituaisHook } = useRPG();
   const [modificacoes, setModificacoes] = useState<number[]>(isAutoral ? [] : (itemInventario.modificacoes || []));
   const [maldicoes, setMaldicoes] = useState<number[]>(itemInventario.maldicoes || []);
   const [maldicoesElementos, setMaldicoesElementos] = useState<Record<number, string>>(itemInventario.maldicoes_elementos || {});
   
   const [escolhendoFuncaoAdicional, setEscolhendoFuncaoAdicional] = useState<number | null>(null);
   const [escolhendoAprimorado, setEscolhendoAprimorado] = useState<number | null>(null);
+  const [escolhendoConjuracao, setEscolhendoConjuracao] = useState<number | null>(null);
   const [periciaTemp, setPericiaTemp] = useState<string>('');
+  const [ritualTemp, setRitualTemp] = useState<string>('');
   
   const TODAS_PERICIAS = Object.keys(periciasHook?.pericias || {}).sort();
 
@@ -123,6 +125,13 @@ export function ModalEditarItem({
 
     const handleAddMald = (id: number, elementoVaria?: string) => {
     if (podeAdicionarMald) {
+      const mald = maldicoesHook.maldicoes.find(m => m.Codigo_Mald === id);
+      const nomeMald = mald?.Nome_Mald?.trim().toLowerCase() || '';
+      if (id === 24 || nomeMald === 'conjuração' || nomeMald === 'conjuracao') {
+        setEscolhendoConjuracao(id);
+        setRitualTemp('');
+        return;
+      }
       setMaldicoes(prev => [...(prev || []), id]);
       if (elementoVaria) {
         setMaldicoesElementos(prev => ({ ...(prev || {}), [id]: elementoVaria }));
@@ -134,6 +143,12 @@ export function ModalEditarItem({
     setMaldicoes(prev => { if (!prev) return [];
       const removedId = prev[index];
       if (removedId !== undefined) {
+        if (removedId === 24) {
+          const currentHtml = editorDesc.current ? editorDesc.current.innerHTML : descricao;
+          const cleaned = currentHtml.replace(/(?:<br\s*\/?>\s*)*<strong>Conjuração:<\/strong>\s*[^<]*/gi, '');
+          setDescricao(cleaned);
+          if (editorDesc.current) editorDesc.current.innerHTML = cleaned;
+        }
         setMaldicoesElementos(elemPrev => {
           const copy = { ...elemPrev };
           delete copy[removedId];
@@ -151,7 +166,26 @@ export function ModalEditarItem({
         return cat.includes('arma') || cat.includes('corpo a corpo');
       });
     }
-    return maldicoesHook.maldicoes.filter(m => m.Categoria_Mald.trim().toLowerCase().includes('vestiment') || m.Categoria_Mald.trim().toLowerCase().includes('utens') || m.Categoria_Mald.trim().toLowerCase().includes('acess'));
+    const grupoLower = (grupo || '').toLowerCase().trim();
+    return maldicoesHook.maldicoes.filter(m => {
+      const cat = m.Categoria_Mald.trim().toLowerCase();
+      if (grupoLower.includes('acessório') || grupoLower.includes('acessorio') || grupoLower.includes('vestiment') || grupoLower.includes('utens')) {
+        return cat.includes('vestiment') || cat.includes('utens') || cat.includes('acess');
+      }
+      if (grupoLower.includes('medicamento')) {
+        return cat.includes('medicamento');
+      }
+      if (grupoLower.includes('explosivo')) {
+        return cat.includes('explosivo') || cat.includes('granada');
+      }
+      if (grupoLower.includes('operacional') || grupoLower.includes('recurso')) {
+        return cat.includes('operacional') || cat.includes('recurso');
+      }
+      if (grupoLower.includes('paranormal')) {
+        return cat.includes('paranormal');
+      }
+      return false;
+    });
   };
 
   const handleAddMod = (id: number) => {
@@ -583,6 +617,74 @@ export function ModalEditarItem({
                   }
                 }}
                 disabled={!periciaTemp}
+                className="rounded bg-green-600 px-6 py-2 text-xs font-bold uppercase tracking-widest text-white shadow-[0_0_15px_rgba(22,163,74,0.4)] hover:bg-green-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {escolhendoConjuracao !== null && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 backdrop-blur-sm bg-black/60 transition-opacity" onClick={() => setEscolhendoConjuracao(null)} />
+          <div className="relative w-full max-w-sm rounded-2xl border border-zinc-800 bg-[#0a0a0a] shadow-[0_0_40px_rgba(0,0,0,0.8)] ring-1 ring-white/5 flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-green-500/50 to-transparent" />
+            
+            <div className="flex flex-shrink-0 items-center justify-between border-b border-white/5 bg-zinc-900/40 px-6 py-4 rounded-t-2xl">
+              <h3 className="font-display text-base uppercase tracking-wider text-zinc-100 drop-shadow-md">
+                Conjuração (1º Círculo)
+              </h3>
+              <button
+                onClick={() => setEscolhendoConjuracao(null)}
+                className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-500 hover:bg-zinc-800 hover:text-zinc-100 transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-6 flex flex-col gap-4">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-zinc-500">Escolha o Ritual de 1º Círculo</p>
+              <div className="w-full">
+                <CustomSelect
+                  value={ritualTemp}
+                  onChange={val => setRitualTemp(val)}
+                  options={[
+                    { value: "", label: "Selecione o ritual..." },
+                    ...(rituaisHook?.rituais || [])
+                      .filter(r => Number(r.Circulo_Ritual) === 1)
+                      .sort((a, b) => a.Nome_Ritual.localeCompare(b.Nome_Ritual, 'pt-BR'))
+                      .map(r => ({ value: r.Nome_Ritual, label: `${r.Nome_Ritual} (${r.Elemento_Ritual})` }))
+                  ]}
+                  wrapperClassName="w-full"
+                  className="w-full rounded bg-zinc-900/50 border border-zinc-800 px-3 py-2 text-sm text-zinc-100 outline-none transition-all focus:border-green-500 focus:bg-zinc-900 focus:ring-1 focus:ring-green-500/50 hover:border-zinc-700"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 border-t border-white/5 bg-zinc-900/40 px-6 py-4 rounded-b-2xl">
+              <button
+                onClick={() => setEscolhendoConjuracao(null)}
+                className="rounded px-4 py-2 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  if (ritualTemp) {
+                    const idMald = escolhendoConjuracao!;
+                    setMaldicoes(prev => [...(prev || []), idMald]);
+                    setMaldicoesElementos(prev => ({ ...(prev || {}), [idMald]: ritualTemp }));
+                    const currentHtml = editorDesc.current ? editorDesc.current.innerHTML : descricao;
+                    const cleaned = currentHtml.replace(/(?:<br\s*\/?>\s*)*<strong>Conjuração:<\/strong>\s*[^<]*/gi, '');
+                    const sep = cleaned.trim() ? '<br/><br/>' : '';
+                    const updatedDesc = `${cleaned}${sep}<strong>Conjuração:</strong> ${ritualTemp}`;
+                    setDescricao(updatedDesc);
+                    if (editorDesc.current) editorDesc.current.innerHTML = updatedDesc;
+                    setEscolhendoConjuracao(null);
+                  }
+                }}
+                disabled={!ritualTemp}
                 className="rounded bg-green-600 px-6 py-2 text-xs font-bold uppercase tracking-widest text-white shadow-[0_0_15px_rgba(22,163,74,0.4)] hover:bg-green-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Confirmar

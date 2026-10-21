@@ -349,7 +349,6 @@ export function usePericias(
     if (regrasAutomaticasAtivas?.has(9)) extra += 1;
     
     return {
-    bonusVestimentas: bonusVestimentas || {},
       ...lim,
       maxTreinadas: lim.maxTreinadas + extra
     };
@@ -504,6 +503,7 @@ export function usePericias(
     jaTinhaProfissao33,
     debugRegra33: { avaliou: avaliouRegra33, evalJaTinha: jaTinhaProfissao33 },
     bonusRegra40,
+    bonusVestimentas: bonusVestimentas || {},
     profissoes,
     setProfissoes
   };

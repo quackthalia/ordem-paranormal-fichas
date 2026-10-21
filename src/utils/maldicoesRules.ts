@@ -33,38 +33,45 @@ export function calcularBonusMaldicoes(
   const pericias: Record<string, number> = {};
   const resistenciasExtras: string[] = [];
   const atributos: Partial<Atributos> = {
-    forca: 0,
-    agilidade: 0,
-    intelecto: 0,
-    vigor: 0,
-    presenca: 0
+    FOR: 0,
+    AGI: 0,
+    INT: 0,
+    VIG: 0,
+    PRE: 0
   };
 
   if (!todasMaldicoes || todasMaldicoes.length === 0) {
     return { pv, pe, defesa, deslocamento, pericias, resistenciasExtras, atributos, bonusDT };
   }
 
-  const allMaldicoes: { id: number, elem?: string }[] = [];
+  const allMaldicoes: { id: number, elem?: string, isPesada?: boolean }[] = [];
 
   armas.forEach(a => {
+    if (a.arma.isDuplaObsessivaCompanion) return;
     if (Array.isArray(a.maldicoes)) a.maldicoes.forEach(m => allMaldicoes.push({ id: m, elem: a.maldicoes_elementos?.[m] }));
   });
   protecoes.forEach(p => {
-    if (p.equipado && Array.isArray(p.maldicoes)) p.maldicoes.forEach(m => allMaldicoes.push({ id: m, elem: p.maldicoes_elementos?.[m] }));
+    const isPesada = Boolean(p.protecao.Proficiencia?.toLowerCase().includes('pesada'));
+    if (p.equipado && Array.isArray(p.maldicoes)) p.maldicoes.forEach(m => allMaldicoes.push({ id: m, elem: p.maldicoes_elementos?.[m], isPesada }));
   });
   itens.forEach(i => {
-    if (i.equipado && Array.isArray(i.maldicoes)) i.maldicoes.forEach(m => allMaldicoes.push({ id: m, elem: i.maldicoes_elementos?.[m] }));
+    const nomeItem = (i.item.Nome_Item || '').toLowerCase();
+    const grupoItem = (i.item.Grupo_Item || '').toLowerCase();
+    const requerEquipar = nomeItem.includes('vestimenta') || nomeItem.includes('amuleto sagrado') || grupoItem === 'proteções' || grupoItem === 'protecoes';
+    const estaAtivo = requerEquipar ? Boolean(i.equipado) : true;
+    if (estaAtivo && Array.isArray(i.maldicoes)) i.maldicoes.forEach(m => allMaldicoes.push({ id: m, elem: i.maldicoes_elementos?.[m] }));
   });
   municoes.forEach(m => {
-    if (Array.isArray(m.maldicoes)) m.maldicoes.forEach(m => allMaldicoes.push({ id: m, elem: m.maldicoes_elementos?.[m] }));
+    if (Array.isArray(m.maldicoes)) m.maldicoes.forEach(mId => allMaldicoes.push({ id: mId, elem: m.maldicoes_elementos?.[mId] }));
   });
 
-  for (let { id, elem } of allMaldicoes) {
+  for (let { id, elem, isPesada } of allMaldicoes) {
     id = Number(id);
     const mald = todasMaldicoes.find(m => m.Codigo_Mald === id);
     if (!mald) continue;
 
     const nome = mald.Nome_Mald.trim().toLowerCase();
+    const cat = (mald.Categoria_Mald || '').trim().toLowerCase();
 
     // Proteção Elemental
     if (nome.includes('proteção elemental') && elem) {
@@ -82,23 +89,23 @@ export function calcularBonusMaldicoes(
     }
     // Carisma
     else if (nome === 'carisma') {
-      atributos.presenca = (atributos.presenca || 0) + 1;
+      atributos.PRE = (atributos.PRE || 0) + 1;
     }
     // Sagacidade
     else if (nome === 'sagacidade') {
-      atributos.intelecto = (atributos.intelecto || 0) + 1;
+      atributos.INT = (atributos.INT || 0) + 1;
     }
     // Destreza
     else if (nome === 'destreza') {
-      atributos.agilidade = (atributos.agilidade || 0) + 1;
+      atributos.AGI = (atributos.AGI || 0) + 1;
     }
     // Disposição
     else if (nome === 'disposição' || nome === 'disposicao') {
-      atributos.vigor = (atributos.vigor || 0) + 1;
+      atributos.VIG = (atributos.VIG || 0) + 1;
     }
     // Pujança
     else if (nome === 'pujança' || nome === 'pujanca') {
-      atributos.forca = (atributos.forca || 0) + 1;
+      atributos.FOR = (atributos.FOR || 0) + 1;
     }
     // Esforço Adicional
     else if (nome === 'esforço adicional' || nome === 'esforco adicional') {
@@ -112,13 +119,17 @@ export function calcularBonusMaldicoes(
     else if (nome === 'potência' || nome === 'potencia') {
       bonusDT += 1;
     }
-    // Cinética
-    else if (nome === 'cinética' || nome === 'cinetica') {
+    // Cinética (Proteções - Código 16; ignorar Cinética de Armas Código 40)
+    else if ((nome === 'cinética' || nome === 'cinetica') && (mald.Codigo_Mald === 16 || cat.includes('prote'))) {
       defesa += 2;
-      resistenciasExtras.push('Dano 2 (ou 5 se pesada)');
+      resistenciasExtras.push(isPesada ? 'Dano 5' : 'Dano 2');
     }
     // Letárgica
     else if (nome === 'letárgica' || nome === 'letargica') {
+      defesa += 2;
+    }
+    // Repulsora (Armas - Código 9)
+    else if (nome === 'repulsora') {
       defesa += 2;
     }
     // Defesa

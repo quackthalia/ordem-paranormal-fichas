@@ -318,6 +318,48 @@ export const FichaScreen: React.FC = () => {
       rituaisHook.esquecerRitual('monstruoso_99_conhecimento');
     }
 
+    // MALDIÇÃO CONJURAÇÃO (Código 24 - Acessórios)
+    if (rituaisHook.rituais && rituaisHook.rituais.length > 0 && itensHook.itensInventario) {
+      const activeConjuracaoOrigins = new Set<string>();
+      itensHook.itensInventario.forEach(i => {
+        const nomeItem = (i.item.Nome_Item || '').toLowerCase();
+        const grupoItem = (i.item.Grupo_Item || '').toLowerCase();
+        const requerEquipar = nomeItem.includes('vestimenta') || nomeItem.includes('amuleto sagrado') || grupoItem === 'proteções' || grupoItem === 'protecoes';
+        const estaAtivo = requerEquipar ? Boolean(i.equipado) : true;
+        const ritualNomeMald = i.maldicoes_elementos?.[24];
+        if (estaAtivo && Array.isArray(i.maldicoes) && i.maldicoes.includes(24) && ritualNomeMald) {
+          const baseRitual = rituaisHook.rituais.find(r => r.Nome_Ritual.trim().toLowerCase() === ritualNomeMald.trim().toLowerCase());
+          if (baseRitual) {
+            const originKey = `maldicao_conjuracao_${i.id}`;
+            const jaConhecePorOutraOrigem = (rituaisHook.rituaisAprendidos || []).some(
+              r => r.codigo_ritual === baseRitual.Codigo_Ritual && !r.origem?.startsWith('maldicao_conjuracao_')
+            );
+            if (!jaConhecePorOutraOrigem) {
+              activeConjuracaoOrigins.add(originKey);
+              const jaInjetado = (rituaisHook.rituaisAprendidos || []).find(r => r.origem === originKey);
+              if (!jaInjetado) {
+                rituaisHook.aprenderRitual({
+                  codigo_ritual: baseRitual.Codigo_Ritual,
+                  nome: baseRitual.Nome_Ritual,
+                  origem: originKey,
+                  circulo: baseRitual.Circulo_Ritual,
+                  elemento: baseRitual.Elemento_Ritual
+                });
+              } else if (jaInjetado.codigo_ritual !== baseRitual.Codigo_Ritual) {
+                rituaisHook.esquecerRitual(originKey);
+              }
+            }
+          }
+        }
+      });
+
+      (rituaisHook.rituaisAprendidos || []).forEach(r => {
+        if (r.origem?.startsWith('maldicao_conjuracao_') && !activeConjuracaoOrigins.has(r.origem)) {
+          rituaisHook.esquecerRitual(r.origem);
+        }
+      });
+    }
+
     const isInventarioLoaded = itensHook.itensInventario !== undefined && itensHook.itensInventario !== null;
     const temAgenteSecreto10 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 16 && (regras['nex_experiencia'] ? nivel >= 2 : effectiveNex >= 10));
     if (temAgenteSecreto10 && isInventarioLoaded) {
@@ -414,24 +456,25 @@ function AtributosFicha() {
   const { 
     atributos, setAtributos, bonusAtributos, setBonusAtributos, bloquearLetras, atributosFinais, 
     nex, setNex, regras, regrasAtivasAtributos, setRegrasAtivasAtributos, pontosRestantes, alterarAtributo, nivel,
-    trilhasHook, bonusTrilhasAtributos
+    trilhasHook, bonusTrilhasAtributos, bonusMaldicoes
   } = useRPG();
   
   const capMaximo = capMaximoAtributo(nivel);
 
   const renderAtributo = (nome, posClasses) => {
     const bonusTrilhaVal = bonusTrilhasAtributos ? (bonusTrilhasAtributos[nome] || 0) : 0;
+    const bonusMaldVal = bonusMaldicoes?.atributos?.[nome] || 0;
     const isGreen = atributosFinais[nome] > (atributos[nome] + bonusAtributos[nome] + bonusTrilhaVal);
 
     return (
       <div key={nome} className={`absolute flex flex-col items-center justify-center ${posClasses}`}>
-          <div className="absolute -right-3 -top-3 flex h-5 w-5 items-center justify-center rounded-full border border-amber-500 bg-zinc-950 shadow-md z-10" title="Bônus temporário">
+          <div className="absolute -right-3 -top-3 flex h-5 w-5 items-center justify-center rounded-full border border-amber-500 bg-zinc-950 shadow-md z-10" title="Bônus temporário / Maldições">
             <input
               type="number"
               onKeyDown={bloquearLetras}
-              value={bonusAtributos[nome]}
+              value={bonusAtributos[nome] + bonusMaldVal}
               onChange={(e) =>
-                setBonusAtributos({ ...bonusAtributos, [nome]: Math.max(0, Number(e.target.value)) })
+                setBonusAtributos({ ...bonusAtributos, [nome]: Math.max(0, Number(e.target.value) - bonusMaldVal) })
               }
               className="w-full bg-transparent text-center text-[10px] font-bold text-amber-400 outline-none"
             />

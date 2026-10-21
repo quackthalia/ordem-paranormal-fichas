@@ -2007,7 +2007,6 @@ export const AbasPanel: React.FC = () => {
                 {!rituaisHook.loading && !hasAnyRitual && (
                   <div className="mt-10 text-center text-zinc-500">
                     <p className="text-sm">Você ainda não aprendeu nenhum ritual.</p>
-                    <p className="text-xs italic mt-2">Transceda e adquira o poder Aprender Ritual para adicionar rituais à sua lista.</p>
                   </div>
                 )}
 

@@ -159,6 +159,7 @@ export interface Ritual {
   Imagem?: string;
   Requisito_Discente?: string;
   Requisito_Verdadeiro?: string;
+  Fonte?: string;
 }
 
 export interface RitualCustomProps {
@@ -188,6 +189,7 @@ export interface RitualAprendido {
     discente?: RitualCustomProps;
     verdadeiro?: RitualCustomProps;
   };
+  fonte?: string;
 }
 
 export interface Trilha {

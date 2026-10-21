@@ -2017,7 +2017,7 @@ export const AbasPanel: React.FC = () => {
                 const rituaisAprendidosNesteCirculo = (rituaisHook.rituaisAprendidos || [])
                   .map(ra => {
                     const base = rituaisHook.rituais.find(r => r.Codigo_Ritual === ra.codigo_ritual);
-                    return base ? { ...base, Origem: ra.origem, ElementoEscolhidoPermanente: ra.elemento_escolhido, customNome: ra.customNome, customDesc: ra.customDesc, customProps: ra.customProps, learnedNome: ra.nome } : null;
+                    return base ? { ...base, Origem: ra.origem, ElementoEscolhidoPermanente: ra.elemento_escolhido, customNome: ra.customNome, customDesc: ra.customDesc, customProps: ra.customProps, learnedNome: ra.nome, Fonte: ra.fonte || base.Fonte } : null;
                   })
                   .filter(r => {
                     if (!r || r.Circulo_Ritual !== circulo) return false;
@@ -2599,6 +2599,8 @@ export const AbasPanel: React.FC = () => {
                                     });
                                   })()}
                                 </div>
+
+                                <div className="mt-3 text-[0.6rem] uppercase tracking-wider text-zinc-600">Fonte: {ritual.Fonte || 'NÃO DEFINIDA'}</div>
 
                                 <div className="mt-4 flex justify-end gap-2 border-t border-zinc-800/50 pt-3">
                                   <button

@@ -32,6 +32,7 @@ function normalizarRitual(item: Record<string, unknown>): Ritual {
     Imagem: str(item['Imagem']),
     Requisito_Discente: str(item['Requisito_Discente']),
     Requisito_Verdadeiro: str(item['Requisito_Verdadeiro']),
+    Fonte: str(item['Fonte'] ?? item['Fonte_Ritual'] ?? item['fonte']),
   };
 }
 

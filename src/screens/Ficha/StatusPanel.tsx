@@ -226,50 +226,20 @@ export const StatusPanel: React.FC = () => {
           setTempAtual={setPvTempAtual}
           tempMax={pvTempMax}
           setTempMax={setPvTempMax}
+          isMorrendo={pvAtual === 0}
+          maxMorrendo={regrasAutomaticasAtivas.has(74) ? 4 : 3}
+          morrendoCount={Number(poderesExtras['morrendo_count'] || 0)}
+          onToggleMorrendo={(i) => {
+            const currentCount = Number(poderesExtras['morrendo_count'] || 0);
+            const isMarked = i < currentCount;
+            const newCount = isMarked ? i : i + 1;
+            setPoderesExtras(prev => ({ ...prev, morrendo_count: String(newCount) }));
+          }}
+          onCurarMorrendo={() => {
+            setPvAtual(1);
+            setPoderesExtras(prev => ({ ...prev, morrendo_count: '0' }));
+          }}
         />
-
-        {/* UI Morrendo (quando PV chega a 0) */}
-        {pvAtual === 0 && (
-          <div className="mt-2 flex flex-col items-center gap-2 rounded-lg border border-red-950 bg-black/60 p-2.5 shadow-lg">
-            <div className="flex items-center justify-between w-full px-1">
-              <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">
-                Condição: Morrendo
-              </span>
-              <span className="text-[9px] text-zinc-500 uppercase">
-                {regrasAutomaticasAtivas.has(74) ? '4 Rodadas (Monstruoso)' : '3 Rodadas'}
-              </span>
-            </div>
-            <div className="flex items-center gap-3 py-1">
-              {Array.from({ length: regrasAutomaticasAtivas.has(74) ? 4 : 3 }).map((_, i) => {
-                const currentCount = Number(poderesExtras['morrendo_count'] || 0);
-                const isMarked = i < currentCount;
-                return (
-                  <button
-                    key={i}
-                    type="button"
-                    title={`Rodada ${i + 1} morrendo`}
-                    onClick={() => {
-                      const newCount = isMarked && i === currentCount - 1 ? i : i + 1;
-                      setPoderesExtras(prev => ({ ...prev, morrendo_count: String(newCount) }));
-                    }}
-                    className={`h-5 w-5 rounded-full border-2 transition-all flex items-center justify-center cursor-pointer ${
-                      isMarked 
-                        ? 'bg-red-600 border-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' 
-                        : 'bg-zinc-950 border-zinc-700 hover:border-red-800'
-                    }`}
-                  >
-                    {isMarked && <span className="text-[10px] text-white font-bold leading-none">✕</span>}
-                  </button>
-                );
-              })}
-            </div>
-            <span className="text-[9px] text-zinc-400 text-center">
-              {Number(poderesExtras['morrendo_count'] || 0) >= (regrasAutomaticasAtivas.has(74) ? 4 : 3)
-                ? '⚠️ Personagem morto!'
-                : 'Clique nas marcas para registrar cada rodada morrendo'}
-            </span>
-          </div>
-        )}
 
         {/* UI Regra 53 (Sangue Ruim) */}
         {regrasAutomaticasAtivas.has(53) && pvAtual !== null && pvAtual <= Math.floor(pvMax / 2) && (
@@ -425,7 +395,18 @@ function BarraStatus({
   setTempAtual,
   tempMax,
   setTempMax,
-}: BarraStatusProps) {
+  isMorrendo,
+  morrendoCount = 0,
+  onToggleMorrendo,
+  onCurarMorrendo,
+  maxMorrendo = 3,
+}: BarraStatusProps & {
+  isMorrendo?: boolean;
+  morrendoCount?: number;
+  onToggleMorrendo?: (index: number) => void;
+  onCurarMorrendo?: () => void;
+  maxMorrendo?: number;
+}) {
   const percentual = valorMax > 0 ? Math.min(100, (valorAtual / valorMax) * 100) : 0;
   const percentualTemp = tempMax && tempMax > 0 && tempAtual !== undefined ? Math.min(100, (tempAtual / tempMax) * 100) : 0;
 
@@ -455,42 +436,84 @@ function BarraStatus({
 
       {/* CORPO */}
       <div className="flex w-full overflow-visible">
-        <div
-          className={`relative flex items-center justify-between overflow-hidden rounded border p-2.5 transition-all duration-300 ease-out ${corBarra} ${hasTemp ? 'w-[71.5%]' : 'w-full'}`}
-        >
-          {/* Preenchimento proporcional */}
+        {isMorrendo ? (
           <div
-            className="absolute inset-y-0 left-0 bg-white/5 transition-all"
-            style={{ width: `${percentual}%` }}
-          />
-          <div className="relative shrink-0">
-            <button onClick={() => alterarStatus(-5)} className={btnSeta} title="-5">«</button>
-            <button onClick={() => alterarStatus(-1)} className={btnSeta} title="-1">‹</button>
+            className={`relative flex items-center justify-between overflow-hidden rounded border border-zinc-700 bg-zinc-950/90 px-3.5 py-2.5 transition-all duration-300 ease-out ${hasTemp ? 'w-[71.5%]' : 'w-full'}`}
+          >
+            {/* Círculos de turnos morrendo */}
+            <div className="flex items-center gap-2">
+              {Array.from({ length: maxMorrendo }).map((_, i) => {
+                const isMarked = i < morrendoCount;
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    title={`Turno ${i + 1} morrendo`}
+                    onClick={() => onToggleMorrendo?.(i)}
+                    className={`h-7 w-7 rounded-full border-[2.5px] transition-all flex items-center justify-center cursor-pointer ${
+                      isMarked
+                        ? 'border-red-500 bg-red-600/85 shadow-[0_0_8px_rgba(239,68,68,0.5)]'
+                        : 'border-zinc-400/70 bg-transparent hover:border-zinc-200'
+                    }`}
+                  />
+                );
+              })}
+            </div>
+
+            {/* Botão CURAR */}
+            <button
+              type="button"
+              onClick={onCurarMorrendo}
+              className="absolute left-1/2 -translate-x-1/2 rounded-md border border-green-700/80 bg-zinc-900/90 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-green-500 transition hover:bg-green-950/50 hover:text-green-400 hover:border-green-500 cursor-pointer"
+            >
+              CURAR
+            </button>
+
+            {/* Valor Atual / Max (0/94) */}
+            <div className="flex items-center gap-1 font-bold text-lg text-zinc-100 select-none">
+              <span>0</span>
+              <span className="text-zinc-400 font-normal">/</span>
+              <span>{valorMax}</span>
+            </div>
           </div>
-          <div className="relative flex items-center gap-1 shrink-0">
-            <input
-              type="number"
-              onKeyDown={bloquearLetras}
-              value={valorAtual}
-              onChange={(e) => setValorAtual(Math.max(0, Math.min(valorMax, Number(e.target.value))))}
-              className="w-9 bg-transparent text-center text-lg font-bold text-zinc-100 outline-none"
-              title={`Editar ${titulo} Atual`}
+        ) : (
+          <div
+            className={`relative flex items-center justify-between overflow-hidden rounded border p-2.5 transition-all duration-300 ease-out ${corBarra} ${hasTemp ? 'w-[71.5%]' : 'w-full'}`}
+          >
+            {/* Preenchimento proporcional */}
+            <div
+              className="absolute inset-y-0 left-0 bg-white/5 transition-all"
+              style={{ width: `${percentual}%` }}
             />
-            <span className="text-lg text-zinc-500">/</span>
-            <input
-              type="number"
-              onKeyDown={bloquearLetras}
-              value={valorMax}
-              onChange={(e) => setValorMax(Math.max(1, Number(e.target.value)))}
-              className="w-11 bg-transparent text-center text-lg font-bold text-zinc-100 outline-none"
-              title={`Editar ${titulo} Máxima`}
-            />
+            <div className="relative shrink-0">
+              <button onClick={() => alterarStatus(-5)} className={btnSeta} title="-5">«</button>
+              <button onClick={() => alterarStatus(-1)} className={btnSeta} title="-1">‹</button>
+            </div>
+            <div className="relative flex items-center gap-1 shrink-0">
+              <input
+                type="number"
+                onKeyDown={bloquearLetras}
+                value={valorAtual}
+                onChange={(e) => setValorAtual(Math.max(0, Math.min(valorMax, Number(e.target.value))))}
+                className="w-9 bg-transparent text-center text-lg font-bold text-zinc-100 outline-none"
+                title={`Editar ${titulo} Atual`}
+              />
+              <span className="text-lg text-zinc-500">/</span>
+              <input
+                type="number"
+                onKeyDown={bloquearLetras}
+                value={valorMax}
+                onChange={(e) => setValorMax(Math.max(1, Number(e.target.value)))}
+                className="w-11 bg-transparent text-center text-lg font-bold text-zinc-100 outline-none"
+                title={`Editar ${titulo} Máxima`}
+              />
+            </div>
+            <div className="relative shrink-0">
+              <button onClick={() => alterarStatus(1)} className={btnSeta} title="+1">›</button>
+              <button onClick={() => alterarStatus(5)} className={btnSeta} title="+5">»</button>
+            </div>
           </div>
-          <div className="relative shrink-0">
-            <button onClick={() => alterarStatus(1)} className={btnSeta} title="+1">›</button>
-            <button onClick={() => alterarStatus(5)} className={btnSeta} title="+5">»</button>
-          </div>
-        </div>
+        )}
 
         {/* TEMPORÁRIO */}
         {setTempAtual && setTempMax && (

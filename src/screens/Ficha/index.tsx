@@ -753,7 +753,7 @@ function AtributosFicha() {
                 </div>
               </div>
               <div className="text-[10px] text-zinc-400 leading-snug">
-                +{2 + queimarVigCount * 2} Defesa • +1d6{queimarVigCount > 0 ? `+${queimarVigCount}d4` : ''} Ataque {queimarVigCount > 0 && <span className="text-purple-400 font-semibold">(–{queimarVigCount} VIG)</span>}
+                +{2 + queimarVigCount * 2} Defesa{queimarVigCount > 0 ? ` • +${queimarVigCount}d4 Ataque` : ''} {queimarVigCount > 0 && <span className="text-purple-400 font-semibold">(–{queimarVigCount} VIG)</span>}
               </div>
             </div>
           </div>

@@ -613,14 +613,9 @@ function AtributosFicha() {
       {(regrasAutomaticasAtivas.has(104) || regrasAutomaticasAtivas.has(105) || regrasAutomaticasAtivas.has(106) || regrasAutomaticasAtivas.has(107)) && (
         <div className="mt-4 flex w-full flex-col gap-2 px-2">
           {regrasAutomaticasAtivas.has(104) && (
-            <div className="flex flex-col gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/80 p-2.5 shadow-sm transition hover:border-zinc-700 border-l-2 border-l-red-600/70 hover:border-l-red-500">
+            <div className="flex flex-col gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/80 p-2.5 shadow-sm transition hover:border-zinc-700">
               <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-xs font-bold uppercase tracking-wider text-zinc-100 truncate">Devorar Intelecto</span>
-                  <span className="rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider shrink-0 bg-red-950/40 text-red-400 border border-red-800/40">
-                    Sangue
-                  </span>
-                </div>
+                <span className="text-xs font-bold uppercase tracking-wider text-zinc-100 truncate">Devorar Intelecto</span>
                 <div className="flex items-center gap-1.5 shrink-0">
                   <button
                     type="button"
@@ -653,14 +648,9 @@ function AtributosFicha() {
           )}
 
           {regrasAutomaticasAtivas.has(105) && (
-            <div className="flex flex-col gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/80 p-2.5 shadow-sm transition hover:border-zinc-700 border-l-2 border-l-zinc-500/70 hover:border-l-zinc-400">
+            <div className="flex flex-col gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/80 p-2.5 shadow-sm transition hover:border-zinc-700">
               <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-xs font-bold uppercase tracking-wider text-zinc-100 truncate">Necrosar Força</span>
-                  <span className="rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider shrink-0 bg-black/60 text-zinc-200 border border-zinc-700/60">
-                    Morte
-                  </span>
-                </div>
+                <span className="text-xs font-bold uppercase tracking-wider text-zinc-100 truncate">Necrosar Força</span>
                 <div className="flex items-center gap-1.5 shrink-0">
                   <button
                     type="button"
@@ -693,14 +683,9 @@ function AtributosFicha() {
           )}
 
           {regrasAutomaticasAtivas.has(106) && (
-            <div className="flex flex-col gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/80 p-2.5 shadow-sm transition hover:border-zinc-700 border-l-2 border-l-yellow-600/70 hover:border-l-yellow-500">
+            <div className="flex flex-col gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/80 p-2.5 shadow-sm transition hover:border-zinc-700">
               <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-xs font-bold uppercase tracking-wider text-zinc-100 truncate">Inexistir Agilidade</span>
-                  <span className="rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider shrink-0 bg-yellow-950/40 text-yellow-500 border border-yellow-800/40">
-                    Conhecimento
-                  </span>
-                </div>
+                <span className="text-xs font-bold uppercase tracking-wider text-zinc-100 truncate">Inexistir Agilidade</span>
                 <div className="flex items-center gap-1.5 shrink-0">
                   <button
                     type="button"
@@ -733,14 +718,9 @@ function AtributosFicha() {
           )}
 
           {regrasAutomaticasAtivas.has(107) && (
-            <div className="flex flex-col gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/80 p-2.5 shadow-sm transition hover:border-zinc-700 border-l-2 border-l-purple-600/70 hover:border-l-purple-500">
+            <div className="flex flex-col gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/80 p-2.5 shadow-sm transition hover:border-zinc-700">
               <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-xs font-bold uppercase tracking-wider text-zinc-100 truncate">Queimar Vigor</span>
-                  <span className="rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider shrink-0 bg-purple-950/40 text-purple-400 border border-purple-800/40">
-                    Energia
-                  </span>
-                </div>
+                <span className="text-xs font-bold uppercase tracking-wider text-zinc-100 truncate">Queimar Vigor</span>
                 <div className="flex items-center gap-1.5 shrink-0">
                   <button
                     type="button"

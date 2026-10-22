@@ -18,24 +18,6 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
   const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState<{ top: number; left: number; width: number; openUp: boolean } | null>(null);
-  // Controla a animação de entrada/saída do modo portal (ativada um frame depois de montar)
-  const [animIn, setAnimIn] = useState(false);
-
-  useEffect(() => {
-    if (!portal) return;
-    if (!isOpen) {
-      setAnimIn(false);
-      return;
-    }
-    let id2 = 0;
-    const id1 = requestAnimationFrame(() => {
-      id2 = requestAnimationFrame(() => setAnimIn(true));
-    });
-    return () => {
-      cancelAnimationFrame(id1);
-      cancelAnimationFrame(id2);
-    };
-  }, [portal, isOpen]);
 
   // Fecha o dropdown se clicar fora
   useEffect(() => {
@@ -145,29 +127,30 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
       </button>
 
       {portal ? (
-        /* Dropdown em portal (fixo na tela), sempre montado para manter a animação de abrir/fechar */
+        /* Dropdown em portal (fixo na tela), usando classes CSS diretas com transição */
         pos && createPortal(
           <div
             ref={dropdownRef}
-            style={{ position: 'fixed', left: pos.left, top: pos.top, width: pos.width }}
-            className="z-[1000] pointer-events-none"
+            style={{
+              position: 'fixed',
+              left: pos.left,
+              top: pos.top,
+              width: pos.width,
+              transform: pos.openUp ? 'translateY(-100%)' : undefined,
+              transformOrigin: pos.openUp ? 'bottom' : 'top',
+            }}
+            className={`z-[1000] overflow-hidden rounded-md border border-zinc-700 bg-zinc-900 shadow-xl shadow-black transition-all duration-200 ${
+              isOpen
+                ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto'
+                : `opacity-0 scale-95 ${pos.openUp ? 'translate-y-2' : '-translate-y-2'} pointer-events-none`
+            }`}
           >
-            <div
-              style={{
-                opacity: animIn ? 1 : 0,
-                transform: `translateY(${pos.openUp ? `calc(-100% + ${animIn ? 0 : 8}px)` : `${animIn ? 0 : -8}px`}) scale(${animIn ? 1 : 0.95})`,
-                transformOrigin: pos.openUp ? 'bottom' : 'top',
-                transition: 'opacity 200ms, transform 200ms',
-              }}
-              className={`overflow-hidden rounded-md border border-zinc-700 bg-zinc-900 shadow-xl shadow-black ${animIn ? 'pointer-events-auto' : ''}`}
-            >
-              {lista}
-            </div>
+            {lista}
           </div>,
           document.body
         )
       ) : (
-        /* Dropdown com animação */
+        /* Dropdown com animação normal */
         <div 
           className={`absolute z-[100] mt-1 ${hideIcon ? 'w-full min-w-max left-1/2 -translate-x-1/2' : 'w-full'} overflow-hidden rounded-md border border-zinc-700 bg-zinc-900 shadow-xl shadow-black transition-all duration-200 origin-top ${
             isOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'

@@ -127,8 +127,8 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
       </button>
 
       {portal ? (
-        /* Dropdown em portal (fixo na tela), usando classes CSS diretas com transição */
-        pos && createPortal(
+        /* Dropdown em portal (fixo na tela), renderizado somente quando aberto com animação keyframe imediata */
+        isOpen && pos && createPortal(
           <div
             ref={dropdownRef}
             style={{
@@ -136,13 +136,10 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
               left: pos.left,
               top: pos.top,
               width: pos.width,
-              transform: pos.openUp ? 'translateY(-100%)' : undefined,
               transformOrigin: pos.openUp ? 'bottom' : 'top',
             }}
-            className={`z-[1000] overflow-hidden rounded-md border border-zinc-700 bg-zinc-900 shadow-xl shadow-black transition-all duration-200 ${
-              isOpen
-                ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto'
-                : `opacity-0 scale-95 ${pos.openUp ? 'translate-y-2' : '-translate-y-2'} pointer-events-none`
+            className={`z-[1000] overflow-hidden rounded-md border border-zinc-700 bg-zinc-900 shadow-xl shadow-black ${
+              pos.openUp ? 'animate-dropdown-up' : 'animate-dropdown-down'
             }`}
           >
             {lista}

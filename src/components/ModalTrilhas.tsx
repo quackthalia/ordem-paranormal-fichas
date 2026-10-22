@@ -137,7 +137,11 @@ export function ModalTrilhas({
 
     if (trilha.Codigo_Trilha === 18 || trilha.Codigo_Trilha === 45) {
       const jaTinha = (periciasHook.pericias['Ocultismo']?.treino || 0) >= 5 || periciasGratisSemTrilha.includes('Ocultismo');
-      setPoderesExtras(prev => ({ ...prev, monstruoso_ja_tinha_ocultismo: String(jaTinha) }));
+      setPoderesExtras(prev => ({
+        ...prev,
+        monstruoso_ja_tinha_ocultismo: String(jaTinha),
+        monstruoso_ocultismo_jatinha: String(jaTinha),
+      }));
     }
 
     if (trilha.Codigo_Trilha === 22) {
@@ -173,6 +177,7 @@ export function ModalTrilhas({
           setPoderesExtras(prev => {
             const n = { ...prev };
             delete n.monstruoso_ja_tinha_ocultismo;
+            delete n.monstruoso_ocultismo_jatinha;
             delete n.monstruoso_elemento;
             delete n.monstruoso_ativo;
             return n;

@@ -300,7 +300,7 @@ export const PericiasTable: React.FC = () => {
               // Usa o memo otimizado para não recalcular a cada render
               const bonusInventario = bonusInventarioGlobal[nome] || 0;
               // Nota: dadosPericia.outros já inclui periciasHook.bonusVestimentas (maldições, itens amaldiçoados e trilhas) e bonusRegra40
-              const bonusMonstruoso10 = (nome === 'Ocultismo' && ((temMonstruoso10 && isMonstruosoAtivo10) || temMonstruosoEsp10) && jaTinhaOcultismoMonstruoso) ? 2 : 0;
+              const bonusMonstruoso10 = 0;
               const totalBonus = dadosPericia.treino + dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10 + bonusInventario;
               const corTexto = COR_TREINO[dadosPericia.treino] ?? 'text-zinc-400';
               const corBorda = BORDA_TREINO[dadosPericia.treino] ?? 'border-zinc-600';

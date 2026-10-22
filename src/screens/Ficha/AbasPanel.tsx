@@ -1464,6 +1464,7 @@ export const AbasPanel: React.FC = () => {
                                              setPoderesExtras(prev => {
                                                const n = { ...prev };
                                                delete n.monstruoso_ja_tinha_ocultismo;
+                                               delete n.monstruoso_ocultismo_jatinha;
                                                delete n.monstruoso_elemento;
                                                delete n.monstruoso_ativo;
                                                return n;
@@ -1477,6 +1478,7 @@ export const AbasPanel: React.FC = () => {
                                              setPoderesExtras(prev => {
                                                const n = { ...prev };
                                                delete n.monstruoso_ja_tinha_ocultismo;
+                                               delete n.monstruoso_ocultismo_jatinha;
                                                delete n.monstruoso_elemento;
                                                delete n.monstruoso_ativo;
                                                return n;

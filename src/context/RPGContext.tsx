@@ -1036,11 +1036,27 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
   const temExorcista10 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 22 && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10));
   const temExorcista40 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 22 && (regras['nex_experiencia'] ? effectiveNivel >= 8 : effectiveNex >= 40));
 
+  const jaTinhaOcultismoMonstruoso = useMemo(() => {
+    if (periciasGratisSemTrilha.includes('Ocultismo')) return true;
+    if (poderesExtras['monstruoso_ocultismo_jatinha'] !== undefined) {
+      return poderesExtras['monstruoso_ocultismo_jatinha'] === 'true';
+    }
+    if (poderesExtras['monstruoso_ja_tinha_ocultismo'] !== undefined) {
+      return poderesExtras['monstruoso_ja_tinha_ocultismo'] === 'true';
+    }
+    return false;
+  }, [poderesExtras, periciasGratisSemTrilha]);
+
   const periciasGratis = useMemo(() => {
     const list = [...periciasGratisSemTrilha];
 
-    // Trilha Selecionada (Trilha principal dá a perícia da trilha por padrão)
-    if (trilhasHook.trilhaSelecionada && trilhasHook.trilhaSelecionada.nome_pericia) {
+    // Trilha Selecionada (Trilha principal dá a perícia da trilha por padrão, exceto Monstruoso 18 e 45 que têm regra própria abaixo)
+    if (
+      trilhasHook.trilhaSelecionada &&
+      trilhasHook.trilhaSelecionada.nome_pericia &&
+      trilhasHook.trilhaSelecionada.Codigo_Trilha !== 18 &&
+      trilhasHook.trilhaSelecionada.Codigo_Trilha !== 45
+    ) {
       list.push(trilhasHook.trilhaSelecionada.nome_pericia);
     }
     if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 16 && poderesExtras['agente_secreto_pericia']) {
@@ -1056,11 +1072,21 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
       if (temExorcistaVersatilidade && !jaTinhaReligiaoVersatilidade) {
         list.push('Religião');
       }
-    } else if (trilhasHook.versatilidadeSelecionada && trilhasHook.versatilidadeSelecionada.nome_pericia) {
+    } else if (
+      trilhasHook.versatilidadeSelecionada &&
+      trilhasHook.versatilidadeSelecionada.nome_pericia &&
+      trilhasHook.versatilidadeSelecionada.Codigo_Trilha !== 18 &&
+      trilhasHook.versatilidadeSelecionada.Codigo_Trilha !== 45
+    ) {
       list.push(trilhasHook.versatilidadeSelecionada.nome_pericia);
     }
     if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 16 && poderesExtras['agente_secreto_pericia_versatilidade']) {
       list.push(poderesExtras['agente_secreto_pericia_versatilidade']);
+    }
+
+    // Monstruoso (Trilha 18 e Trilha 45): em 10%, torna-se treinado em Ocultismo se ainda não era treinado
+    if (((temMonstruoso10 && isMonstruosoAtivo10) || temMonstruosoEsp10) && !jaTinhaOcultismoMonstruoso && !list.includes('Ocultismo')) {
+      list.push('Ocultismo');
     }
 
     // Regra 102: escolha 2 perícias para treinar (se não tiver a Regra 114 que substitui por 3 experts)
@@ -1084,16 +1110,12 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     jaTinhaSobrevivenciaVersatilidade,
     temExorcistaVersatilidade,
     jaTinhaReligiaoVersatilidade,
+    temMonstruoso10,
+    isMonstruosoAtivo10,
+    temMonstruosoEsp10,
+    jaTinhaOcultismoMonstruoso,
     regrasAutomaticasAtivas
   ]);
-
-  const jaTinhaOcultismoMonstruoso = useMemo(() => {
-    if (periciasGratisSemTrilha.includes('Ocultismo')) return true;
-    if (poderesExtras['monstruoso_ja_tinha_ocultismo'] !== undefined) {
-      return poderesExtras['monstruoso_ja_tinha_ocultismo'] === 'true';
-    }
-    return false;
-  }, [poderesExtras, periciasGratisSemTrilha]);
 
   const jaTinhaPericiaTrilha = useMemo(() => {
     if (!trilhasHook.trilhaSelecionada) return false;
@@ -1221,6 +1243,11 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
            }
          }
 
+         // Monstruoso (Trilha 18 e Trilha 45): +2 em Ocultismo caso já fosse treinado antes da trilha
+         if (((temMonstruoso10 && isMonstruosoAtivo10) || temMonstruosoEsp10) && jaTinhaOcultismoMonstruoso) {
+           comb['Ocultismo'] = (comb['Ocultismo'] || 0) + 2;
+         }
+
          // Trilha 45 (Monstruoso Especialista): Penalidade permanente em Diplomacia, Enganação e Intuição (-2 em 10%, -5 em 40%, -10 em 99%)
          if (temMonstruosoEsp99) {
            comb['Diplomacia'] = (comb['Diplomacia'] || 0) - 10;
@@ -1271,6 +1298,20 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     atributosFinaisParaPericiasBonus,
     inexistirAgiCount
   );
+
+  // Sincroniza flag de Ocultismo prévio para fichas que já estavam com Trilha 18 ou 45 selecionada antes da atualização
+  useEffect(() => {
+    const codT = trilhasHook.trilhaSelecionada?.Codigo_Trilha;
+    const codV = trilhasHook.versatilidadeSelecionada?.Codigo_Trilha;
+    if ((codT === 18 || codT === 45 || codV === 18 || codV === 45) && poderesExtras['monstruoso_ocultismo_jatinha'] === undefined && Object.keys(periciasHook.pericias).length > 0) {
+      const jaTinha = (periciasHook.pericias['Ocultismo']?.treino || 0) >= 5 || periciasGratisSemTrilha.includes('Ocultismo');
+      setPoderesExtras(prev => ({
+        ...prev,
+        monstruoso_ocultismo_jatinha: String(jaTinha),
+        monstruoso_ja_tinha_ocultismo: String(jaTinha),
+      }));
+    }
+  }, [trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, poderesExtras, periciasHook.pericias, periciasGratisSemTrilha]);
 
   const jaTinhaProfissaoTrilha = useMemo(() => {
     const trilha = trilhasHook.trilhaSelecionada;

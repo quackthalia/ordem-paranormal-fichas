@@ -125,7 +125,7 @@ interface ArmaCombateCardProps {
 }
 
 const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandida, toggleExpandir, modificacoesHook, maldicoesHook, onAddMunicao, municoesHook, itensHook, armasHook }) => {
-  const { atributosFinais, proficienciasTotais, regrasAutomaticasAtivas, status, regras, trilhasHook, poderesExtras, nivel, nex, danoDeMovimento, bonusMaldicoes } = useRPG();
+  const { atributosFinais, proficienciasTotais, regrasAutomaticasAtivas, status, regras, trilhasHook, poderesExtras, nivel, nex, danoDeMovimento, bonusMaldicoes, devorarIntCount } = useRPG();
   const effectiveNex = regras['nex_experiencia'] ? (nivel * 5) : nex;
   const isAniquilador = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 1;
   const armaFavId = isAniquilador ? poderesExtras["aniquilador_arma_favorita"] : null;
@@ -243,6 +243,13 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
       extrasStr += `*+1d8[Sangue]`;
     }
   });
+
+  // Regra 104 (e 108): +1d6 (ou +1d8) de Sangue adicional em todos os ataques (+1 dado por ponto de INT devorado)
+  if (regrasAutomaticasAtivas.has(104)) {
+    const qtdDados104 = 1 + (devorarIntCount || 0);
+    const faceDado104 = regrasAutomaticasAtivas.has(108) ? 8 : 6;
+    extrasStr += `+${qtdDados104}d${faceDado104}[Sangue]`;
+  }
 
   // Calcula bônus de atributo para o DANO
   let bonusDanoAtributo = 0;

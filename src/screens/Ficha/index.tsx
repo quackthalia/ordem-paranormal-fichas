@@ -33,7 +33,8 @@ export const FichaScreen: React.FC = () => {
     poderesExtras,
     setPoderesExtras,
     temMonstruoso99,
-    monstruosoElemento
+    monstruosoElemento,
+    regrasAutomaticasAtivas
   } = useRPG();
 
     const effectiveNex = regras["nex_experiencia"] ? nivel * 5 : nex;
@@ -318,6 +319,32 @@ export const FichaScreen: React.FC = () => {
       rituaisHook.esquecerRitual('monstruoso_99_conhecimento');
     }
 
+    // REGRAS 112, 113, 114, 115: Rituais automáticos dos poderes de 99% (Monstruoso Especialista)
+    const rituaisRegras112_115 = [
+      { regra: 112, codigo: 80, origem: 'regra_112_vinculo_sangue' },
+      { regra: 113, codigo: 33, origem: 'regra_113_distorcao_temporal' },
+      { regra: 114, codigo: 21, origem: 'regra_114_controle_mental' },
+      { regra: 115, codigo: 72, origem: 'regra_115_teletransporte' },
+    ];
+    rituaisRegras112_115.forEach(({ regra, codigo, origem }) => {
+      const temRegra = regrasAutomaticasAtivas.has(regra);
+      const jaTem = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === origem || r.codigo_ritual === codigo);
+      if (temRegra && !jaTem) {
+        const baseRitual = (rituaisHook.rituais || []).find(r => r.Codigo_Ritual === codigo);
+        if (baseRitual) {
+          rituaisHook.aprenderRitual({
+            codigo_ritual: codigo,
+            nome: `${baseRitual.Nome_Ritual} (Monstruoso)`,
+            origem,
+            circulo: baseRitual.Circulo_Ritual,
+            elemento: baseRitual.Elemento_Ritual
+          });
+        }
+      } else if (!temRegra && (rituaisHook.rituaisAprendidos || []).some(r => r.origem === origem)) {
+        rituaisHook.esquecerRitual(origem);
+      }
+    });
+
     // MALDIÇÃO CONJURAÇÃO (Código 24 - Acessórios)
     if (rituaisHook.rituais && rituaisHook.rituais.length > 0 && itensHook.itensInventario) {
       const activeConjuracaoOrigins = new Set<string>();
@@ -389,7 +416,7 @@ export const FichaScreen: React.FC = () => {
          });
       }
     }
-  }, [trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, effectiveNex, nivel, regras, rituaisHook.rituais, rituaisHook.rituaisAprendidos, itensHook.itensInventario, poderesExtras]);
+  }, [trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, effectiveNex, nivel, regras, rituaisHook.rituais, rituaisHook.rituaisAprendidos, itensHook.itensInventario, poderesExtras, regrasAutomaticasAtivas]);
 
   const handleRefazer = () => {
     status.resetarStatus();
@@ -456,7 +483,10 @@ function AtributosFicha() {
   const { 
     atributos, setAtributos, bonusAtributos, setBonusAtributos, bloquearLetras, atributosFinais, 
     nex, setNex, regras, regrasAtivasAtributos, setRegrasAtivasAtributos, pontosRestantes, alterarAtributo, nivel,
-    trilhasHook, bonusTrilhasAtributos, bonusMaldicoes
+    trilhasHook, bonusTrilhasAtributos, bonusMaldicoes,
+    regrasAutomaticasAtivas, poderesExtras, setPoderesExtras,
+    devorarIntCount, necrosarForCount, inexistirAgiCount, queimarVigCount,
+    maxDevorarInt, maxNecrosarFor, maxInexistirAgi, maxQueimarVig
   } = useRPG();
   
   const capMaximo = capMaximoAtributo(nivel);
@@ -579,6 +609,150 @@ function AtributosFicha() {
         {renderAtributo('PRE', 'top-[74%] left-[27%] -translate-x-1/2 -translate-y-1/2')}
         {renderAtributo('FOR', 'top-[36%] left-[19%] -translate-x-1/2 -translate-y-1/2')}
       </div>
+
+      {(regrasAutomaticasAtivas.has(104) || regrasAutomaticasAtivas.has(105) || regrasAutomaticasAtivas.has(106) || regrasAutomaticasAtivas.has(107)) && (
+        <div className="mt-4 flex w-full flex-col gap-2 px-2">
+          {regrasAutomaticasAtivas.has(104) && (
+            <div className="flex items-center justify-between gap-2 rounded-lg border border-red-900/50 bg-zinc-900/80 px-3 py-2 shadow-sm">
+              <div className="flex flex-col">
+                <span className="text-xs font-bold uppercase tracking-wider text-red-400">Devorar Intelecto</span>
+                <span className="text-[10px] text-zinc-400">
+                  Devorado: <strong className="text-zinc-200">{devorarIntCount}/{maxDevorarInt}</strong> • +{1 + devorarIntCount}d{regrasAutomaticasAtivas.has(108) ? 8 : 6} Sangue | RD Dano {2 + devorarIntCount * 2}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                {devorarIntCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setPoderesExtras(prev => ({ ...prev, devorar_int: String(Math.max(0, devorarIntCount - 1)) }))}
+                    className="rounded border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs font-bold text-zinc-400 transition hover:border-zinc-500 hover:text-zinc-200 cursor-pointer"
+                    title="Restaurar 1 ponto de Intelecto"
+                  >
+                    -1
+                  </button>
+                )}
+                <button
+                  type="button"
+                  disabled={devorarIntCount >= maxDevorarInt}
+                  onClick={() => setPoderesExtras(prev => ({ ...prev, devorar_int: String(Math.min(maxDevorarInt, devorarIntCount + 1)) }))}
+                  className={`rounded border px-2.5 py-1 text-xs font-bold uppercase tracking-wider transition ${
+                    devorarIntCount >= maxDevorarInt
+                      ? 'border-zinc-800 bg-zinc-900 text-zinc-600 cursor-not-allowed'
+                      : 'border-red-800/80 bg-red-950/30 text-red-400 hover:border-red-600 hover:bg-red-950/60 hover:text-red-300 cursor-pointer'
+                  }`}
+                >
+                  Devorar
+                </button>
+              </div>
+            </div>
+          )}
+
+          {regrasAutomaticasAtivas.has(105) && (
+            <div className="flex items-center justify-between gap-2 rounded-lg border border-zinc-700/80 bg-zinc-900/80 px-3 py-2 shadow-sm">
+              <div className="flex flex-col">
+                <span className="text-xs font-bold uppercase tracking-wider text-zinc-200">Necrosar Força</span>
+                <span className="text-[10px] text-zinc-400">
+                  Necrosado: <strong className="text-zinc-200">{necrosarForCount}/{maxNecrosarFor}</strong> • +{1 + necrosarForCount} turno(s) morrendo
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                {necrosarForCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setPoderesExtras(prev => ({ ...prev, necrosar_for: String(Math.max(0, necrosarForCount - 1)) }))}
+                    className="rounded border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs font-bold text-zinc-400 transition hover:border-zinc-500 hover:text-zinc-200 cursor-pointer"
+                    title="Restaurar 1 ponto de Força"
+                  >
+                    -1
+                  </button>
+                )}
+                <button
+                  type="button"
+                  disabled={necrosarForCount >= maxNecrosarFor}
+                  onClick={() => setPoderesExtras(prev => ({ ...prev, necrosar_for: String(Math.min(maxNecrosarFor, necrosarForCount + 1)) }))}
+                  className={`rounded border px-2.5 py-1 text-xs font-bold uppercase tracking-wider transition ${
+                    necrosarForCount >= maxNecrosarFor
+                      ? 'border-zinc-800 bg-zinc-900 text-zinc-600 cursor-not-allowed'
+                      : 'border-zinc-600 bg-zinc-950 text-zinc-200 hover:border-zinc-400 hover:bg-zinc-800 cursor-pointer'
+                  }`}
+                >
+                  Necrosar
+                </button>
+              </div>
+            </div>
+          )}
+
+          {regrasAutomaticasAtivas.has(106) && (
+            <div className="flex items-center justify-between gap-2 rounded-lg border border-yellow-900/50 bg-zinc-900/80 px-3 py-2 shadow-sm">
+              <div className="flex flex-col">
+                <span className="text-xs font-bold uppercase tracking-wider text-yellow-500">Inexistir Agilidade</span>
+                <span className="text-[10px] text-zinc-400">
+                  Inexistido: <strong className="text-zinc-200">{inexistirAgiCount}/{maxInexistirAgi}</strong> • +{inexistirAgiCount * 2} em testes de INT
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                {inexistirAgiCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setPoderesExtras(prev => ({ ...prev, inexistir_agi: String(Math.max(0, inexistirAgiCount - 1)) }))}
+                    className="rounded border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs font-bold text-zinc-400 transition hover:border-zinc-500 hover:text-zinc-200 cursor-pointer"
+                    title="Restaurar 1 ponto de Agilidade"
+                  >
+                    -1
+                  </button>
+                )}
+                <button
+                  type="button"
+                  disabled={inexistirAgiCount >= maxInexistirAgi}
+                  onClick={() => setPoderesExtras(prev => ({ ...prev, inexistir_agi: String(Math.min(maxInexistirAgi, inexistirAgiCount + 1)) }))}
+                  className={`rounded border px-2.5 py-1 text-xs font-bold uppercase tracking-wider transition ${
+                    inexistirAgiCount >= maxInexistirAgi
+                      ? 'border-zinc-800 bg-zinc-900 text-zinc-600 cursor-not-allowed'
+                      : 'border-yellow-800/80 bg-yellow-950/30 text-yellow-400 hover:border-yellow-600 hover:bg-yellow-950/60 hover:text-yellow-300 cursor-pointer'
+                  }`}
+                >
+                  Inexistir
+                </button>
+              </div>
+            </div>
+          )}
+
+          {regrasAutomaticasAtivas.has(107) && (
+            <div className="flex items-center justify-between gap-2 rounded-lg border border-purple-900/50 bg-zinc-900/80 px-3 py-2 shadow-sm">
+              <div className="flex flex-col">
+                <span className="text-xs font-bold uppercase tracking-wider text-purple-400">Queimar Vigor</span>
+                <span className="text-[10px] text-zinc-400">
+                  Queimado: <strong className="text-zinc-200">{queimarVigCount}/{maxQueimarVig}</strong> • +1d6{queimarVigCount > 0 ? `+${queimarVigCount}d4` : ''} Ataque | +{2 + queimarVigCount * 2} Defesa
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                {queimarVigCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setPoderesExtras(prev => ({ ...prev, queimar_vig: String(Math.max(0, queimarVigCount - 1)) }))}
+                    className="rounded border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs font-bold text-zinc-400 transition hover:border-zinc-500 hover:text-zinc-200 cursor-pointer"
+                    title="Restaurar 1 ponto de Vigor"
+                  >
+                    -1
+                  </button>
+                )}
+                <button
+                  type="button"
+                  disabled={queimarVigCount >= maxQueimarVig}
+                  onClick={() => setPoderesExtras(prev => ({ ...prev, queimar_vig: String(Math.min(maxQueimarVig, queimarVigCount + 1)) }))}
+                  className={`rounded border px-2.5 py-1 text-xs font-bold uppercase tracking-wider transition ${
+                    queimarVigCount >= maxQueimarVig
+                      ? 'border-zinc-800 bg-zinc-900 text-zinc-600 cursor-not-allowed'
+                      : 'border-purple-800/80 bg-purple-950/30 text-purple-400 hover:border-purple-600 hover:bg-purple-950/60 hover:text-purple-300 cursor-pointer'
+                  }`}
+                >
+                  Queimar
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -587,7 +761,7 @@ function AtributosFicha() {
 // COMPONENTE INTERNO: DEFESA
 // ============================================================
 function DefesaPanel() {
-  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras, periciasHook, atributosFinais, regrasAutomaticasAtivas, protecoes, protecoesHook, totalDefesaProtecoes, bonusVestimentas, bonusMaldicoes, trilhasHook, status, regras, nivel, nex, bonusDefesaTrilha34, defOutrosBonusRegra72 } = useRPG();
+  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras, periciasHook, atributosFinais, regrasAutomaticasAtivas, protecoes, protecoesHook, totalDefesaProtecoes, bonusVestimentas, bonusMaldicoes, trilhasHook, status, regras, nivel, nex, bonusDefesaTrilha34, defOutrosBonusRegra72, defOutrosBonusRegra107 } = useRPG();
 
   const [bloqueio, setBloqueio] = React.useState(0);
   const [esquiva, setEsquiva] = React.useState(0);
@@ -642,7 +816,7 @@ function DefesaPanel() {
                 type="number"
                 onKeyDown={bloquearLetras}
                 value={(() => {
-                  const defOutrosBonusRegra = (regrasAutomaticasAtivas.has(4) ? 2 : 0) + (regrasAutomaticasAtivas.has(12) ? 2 : 0) + (defOutrosBonusRegra72 || 0);
+                  const defOutrosBonusRegra = (regrasAutomaticasAtivas.has(4) ? 2 : 0) + (regrasAutomaticasAtivas.has(12) ? 2 : 0) + (defOutrosBonusRegra72 || 0) + (defOutrosBonusRegra107 || 0);
                   const temProtecaoPesada = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('pesada')) || false;
                   const bonusRegra21 = (regrasAutomaticasAtivas.has(21) && temProtecaoPesada) ? 2 : 0;
                   const temProtecaoLeve = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('leve')) || false;
@@ -657,7 +831,7 @@ function DefesaPanel() {
                 title="Outros bônus de defesa"
                 onChange={e => {
                   const valDigitado = Math.max(0, Number(e.target.value));
-                  const defOutrosBonusRegra = (regrasAutomaticasAtivas.has(4) ? 2 : 0) + (regrasAutomaticasAtivas.has(12) ? 2 : 0) + (defOutrosBonusRegra72 || 0);
+                  const defOutrosBonusRegra = (regrasAutomaticasAtivas.has(4) ? 2 : 0) + (regrasAutomaticasAtivas.has(12) ? 2 : 0) + (defOutrosBonusRegra72 || 0) + (defOutrosBonusRegra107 || 0);
                   const temProtecaoPesada = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('pesada')) || false;
                   const bonusRegra21 = (regrasAutomaticasAtivas.has(21) && temProtecaoPesada) ? 2 : 0;
                   const temProtecaoLeve = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('leve')) || false;
@@ -717,7 +891,8 @@ function ProtecoesPanel() {
     protecoesHook, modificacoesHook, bonusVestimentas, bonusMaldicoes, origensHook,
     trilhasHook, regras, nivel, nex,
     temMonstruoso10, temMonstruoso40, temMonstruoso65, temMonstruoso99, monstruosoElemento,
-    isMonstruosoAtivo10, isMonstruosoAtivo40, isMonstruosoAtivo65
+    isMonstruosoAtivo10, isMonstruosoAtivo40, isMonstruosoAtivo65,
+    devorarIntCount
   } = useRPG();
   const [mostrarOutros, setMostrarOutros] = React.useState(false);
 
@@ -728,10 +903,13 @@ function ProtecoesPanel() {
   if (regrasAutomaticasAtivas.has(5) && atributosFinais.INT > 0) {
     resistenciasExtras.push(`Mental ${atributosFinais.INT}`);
   }
-  // REGRA 9 e 60: Resistência a Dano
+  // REGRA 9, 60 e 104: Resistência a Dano
   let danoResist = 0;
   if (regrasAutomaticasAtivas.has(9)) {
     danoResist += 2;
+  }
+  if (regrasAutomaticasAtivas.has(104)) {
+    danoResist += 2 + (devorarIntCount * 2);
   }
   if (regrasAutomaticasAtivas.has(60)) {
     const machucado = status.pvAtual !== null && status.pvMax > 0 && status.pvAtual <= Math.floor(status.pvMax / 2);

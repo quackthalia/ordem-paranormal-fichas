@@ -408,7 +408,7 @@ export const PericiasTable: React.FC = () => {
                       value={(dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10 + bonusInventario) === 0 ? '' : (dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10 + bonusInventario)}
                       placeholder="0"
                       onChange={(e) => {
-                        const bonusInternosHook = (periciasHook.bonusRegra40?.[nome] || 0) + (periciasHook.bonusVestimentas?.[nome] || 0);
+                        const bonusInternosHook = (periciasHook.bonusRegra40?.[nome] || 0) + (periciasHook.bonusVestimentas?.[nome] || 0) + (periciasHook.bonusAtributoDinamico?.[nome] || 0);
                         handleMudarPericia(nome, 'outros', Math.max(0, Number(e.target.value) - bonusRegra8 - bonusRegra13 - bonusRegra25 - bonusTrilha4 - bonusTrilha7 - bonusMonstruoso10 - bonusInventario - bonusInternosHook));
                       }}
                       className={`w-11 border-b bg-transparent text-center font-bold outline-none ${corTexto} ${corBorda}`}

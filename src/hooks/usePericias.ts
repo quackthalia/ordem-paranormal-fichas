@@ -17,6 +17,7 @@ interface UsePericiasReturn {
   debugRegra33: { avaliou: boolean, evalJaTinha: boolean };
   bonusRegra40: Record<string, number>;
   bonusVestimentas: Record<string, number>;
+  bonusAtributoDinamico: Record<string, number>;
   profissoes: { nome: string; treino: number; outros: number }[];
   setProfissoes: React.Dispatch<React.SetStateAction<{ nome: string; treino: number; outros: number }[]>>;
 }
@@ -32,7 +33,10 @@ export function usePericias(
   regrasAutomaticasAtivas?: Set<number>,
   poderesEscolhidos?: PoderesEscolhidos,
   origemSelecionada?: Origem | null,
-  bonusVestimentas?: Record<string, number>
+  bonusVestimentas?: Record<string, number>,
+  expertsGratis: string[] = [],
+  atributosFinais?: Atributos,
+  inexistirAgiCount: number = 0
 ): UsePericiasReturn {
   const [pericias, setPericias] = useState<PericiasMap>({});
   const [nomesPericias, setNomesPericias] = useState<Record<number, string>>({});
@@ -280,21 +284,25 @@ export function usePericias(
 
   const gratisRef = useRef<string[]>([]);
   const veteranasRef = useRef<string[]>([]);
+  const expertsRef = useRef<string[]>([]);
 
   useEffect(() => {
     if (Object.keys(pericias).length === 0) return; // Aguarda carregar
 
     const velhasGratis = gratisRef.current;
     const velhasVeteranas = veteranasRef.current;
+    const velhasExperts = expertsRef.current;
 
     // Checa se houve mudança real nas listas (comparação de conteúdo)
     const mudouGratis = velhasGratis.length !== periciasGratis.length || !velhasGratis.every((v, i) => v === periciasGratis[i]);
     const mudouVeteranas = velhasVeteranas.length !== veteranasGratis.length || !velhasVeteranas.every((v, i) => v === veteranasGratis[i]);
+    const mudouExperts = velhasExperts.length !== expertsGratis.length || !velhasExperts.every((v, i) => v === expertsGratis[i]);
 
-    if (!mudouGratis && !mudouVeteranas) return;
+    if (!mudouGratis && !mudouVeteranas && !mudouExperts) return;
 
     gratisRef.current = periciasGratis;
     veteranasRef.current = veteranasGratis;
+    expertsRef.current = expertsGratis;
 
     setPericias(prev => {
       let mudou = false;
@@ -302,7 +310,7 @@ export function usePericias(
       
       // Destreina as que saíram da lista de grátis
       velhasGratis.forEach(nome => {
-        if (!periciasGratis.includes(nome) && novo[nome] && novo[nome].treino > 0) {
+        if (!periciasGratis.includes(nome) && !veteranasGratis.includes(nome) && !expertsGratis.includes(nome) && novo[nome] && novo[nome].treino > 0) {
           novo[nome] = { ...novo[nome], treino: 0 };
           mudou = true;
         }
@@ -310,14 +318,23 @@ export function usePericias(
 
       // Destreina as veteranas que saíram da lista
       velhasVeteranas.forEach(nome => {
-        if (!veteranasGratis.includes(nome) && novo[nome] && novo[nome].treino > 0) {
+        if (!veteranasGratis.includes(nome) && !expertsGratis.includes(nome) && novo[nome] && novo[nome].treino > 0) {
           if (nome === 'Religião') {
              // Preserva o valor de Religião (não cai para zero). Se saiu de veteranasGratis, passará a custar 1 ponto de upgrade.
              // Isso conserta o bug do Exorcista 40% (Já era Veterano) deletando o treino do jogador.
           } else {
-             novo[nome] = { ...novo[nome], treino: 0 };
+             novo[nome] = { ...novo[nome], treino: periciasGratis.includes(nome) ? 5 : 0 };
              mudou = true;
           }
+        }
+      });
+
+      // Destreina as experts que saíram da lista
+      velhasExperts.forEach(nome => {
+        if (!expertsGratis.includes(nome) && novo[nome] && novo[nome].treino > 0) {
+          const fallback = veteranasGratis.includes(nome) ? 10 : (periciasGratis.includes(nome) ? 5 : 0);
+          novo[nome] = { ...novo[nome], treino: fallback };
+          mudou = true;
         }
       });
 
@@ -335,9 +352,16 @@ export function usePericias(
         }
       });
 
+      expertsGratis.forEach(nome => {
+        if (novo[nome] && novo[nome].treino < 15) {
+          novo[nome] = { ...novo[nome], treino: 15 };
+          mudou = true;
+        }
+      });
+
       return mudou ? novo : prev;
     });
-  }, [periciasGratis, veteranasGratis, pericias]);
+  }, [periciasGratis, veteranasGratis, expertsGratis, pericias]);
 
   const limites = useMemo(() => {
     const lim = calcularLimitesPericias(classe, nivel, atributos);
@@ -364,13 +388,15 @@ export function usePericias(
 
       if (nome === 'Profissão' && profissoes.length > 0) return;
 
-      if (dados.treino >= 5 && !periciasGratis.includes(nome)) {
+      if (dados.treino >= 5 && !periciasGratis.includes(nome) && !veteranasGratis.includes(nome) && !expertsGratis.includes(nome)) {
         totalTreinadasUsadas += 1;
       }
       if (dados.treino === 10) {
-        if (!veteranasGratis.includes(nome)) totalUpgradesGastos += 1;
+        if (!veteranasGratis.includes(nome) && !expertsGratis.includes(nome)) totalUpgradesGastos += 1;
       } else if (dados.treino === 15) {
-        totalUpgradesGastos += veteranasGratis.includes(nome) ? 1 : 2;
+        if (!expertsGratis.includes(nome)) {
+          totalUpgradesGastos += veteranasGratis.includes(nome) ? 1 : 2;
+        }
       }
     });
 
@@ -382,7 +408,7 @@ export function usePericias(
     });
 
     return { totalTreinadasUsadas, totalUpgradesGastos };
-  }, [pericias, periciasGratis, profissoes, veteranasGratis]);
+  }, [pericias, periciasGratis, profissoes, veteranasGratis, expertsGratis]);
 
   const handleMudarPericia = useCallback(
     (nome: string, campo: 'treino' | 'outros' | 'atributo', valor: number | AtributoKey) => {
@@ -404,9 +430,14 @@ export function usePericias(
             return prev;
           }
 
+          // Não deixa diminuir grau de perícias experts grátis
+          if (novoValor < 15 && expertsGratis.includes(nome)) {
+            return prev;
+          }
+
           // Nível mínimo para aumentar grau
           if (novoValor === 10 && nivel < 7) return prev;
-          if (novoValor === 15 && nivel < 14) return prev;
+          if (novoValor === 15 && nivel < 14 && !expertsGratis.includes(nome)) return prev;
 
           // Simula para verificar limites
           const simuladas = {
@@ -420,11 +451,13 @@ export function usePericias(
           Object.entries(simuladas).forEach(([n, d]) => {
             if (d.isLivre) return;
             if (n === 'Profissão' && profissoes.length > 0) return;
-            if (d.treino >= 5 && !periciasGratis.includes(n)) simTreinadas += 1;
+            if (d.treino >= 5 && !periciasGratis.includes(n) && !veteranasGratis.includes(n) && !expertsGratis.includes(n)) simTreinadas += 1;
             if (d.treino === 10) {
-              if (!veteranasGratis.includes(n)) simUpgrades += 1;
+              if (!veteranasGratis.includes(n) && !expertsGratis.includes(n)) simUpgrades += 1;
             } else if (d.treino === 15) {
-              simUpgrades += veteranasGratis.includes(n) ? 1 : 2;
+              if (!expertsGratis.includes(n)) {
+                simUpgrades += veteranasGratis.includes(n) ? 1 : 2;
+              }
             }
           });
 
@@ -457,8 +490,47 @@ export function usePericias(
         };
       });
     },
-    [regrasAtivas, periciasGratis, veteranasGratis, nivel, limites, profissoes]
+    [regrasAtivas, periciasGratis, veteranasGratis, expertsGratis, nivel, limites, profissoes]
   );
+
+  // Bônus dinâmico por atributo da perícia (Regras 106, 112, 113, 114, 115)
+  const bonusAtributoDinamico = useMemo(() => {
+    const mapa: Record<string, number> = {};
+    if (!regrasAutomaticasAtivas) return mapa;
+    const tem106 = regrasAutomaticasAtivas.has(106);
+    const tem112 = regrasAutomaticasAtivas.has(112);
+    const tem113 = regrasAutomaticasAtivas.has(113);
+    const tem114 = regrasAutomaticasAtivas.has(114);
+    const tem115 = regrasAutomaticasAtivas.has(115);
+
+    if (!tem106 && !tem112 && !tem113 && !tem114 && !tem115) return mapa;
+
+    const atrRef = atributosFinais || atributos;
+
+    Object.entries(pericias).forEach(([nome, dados]) => {
+      let b = 0;
+      if (tem106 && dados.atributo === 'INT' && inexistirAgiCount > 0) {
+        b += inexistirAgiCount * 2;
+      }
+      if (tem112 && dados.atributo === 'FOR') {
+        b += atrRef.FOR;
+      }
+      if (tem113 && dados.atributo === 'VIG') {
+        b += atrRef.VIG;
+      }
+      if (tem114 && dados.atributo === 'INT') {
+        b += atrRef.INT;
+      }
+      if (tem115 && dados.atributo === 'AGI') {
+        b += atrRef.AGI;
+      }
+      if (b !== 0) {
+        mapa[nome] = b;
+      }
+    });
+
+    return mapa;
+  }, [pericias, regrasAutomaticasAtivas, atributosFinais, atributos, inexistirAgiCount]);
 
   const periciasComBonus = useMemo(() => {
     let novas = { ...pericias };
@@ -487,8 +559,20 @@ export function usePericias(
       });
     }
 
+    // Bônus dinâmico por atributo (Regras 106, 112, 113, 114, 115)
+    if (Object.keys(bonusAtributoDinamico).length > 0) {
+      Object.entries(bonusAtributoDinamico).forEach(([nome, bonus]) => {
+        if (novas[nome]) {
+          novas[nome] = {
+            ...novas[nome],
+            outros: (novas[nome].outros || 0) + bonus
+          };
+        }
+      });
+    }
+
     return novas;
-  }, [pericias, bonusRegra40, bonusVestimentas]);
+  }, [pericias, bonusRegra40, bonusVestimentas, bonusAtributoDinamico]);
 
   return { 
     pericias: periciasComBonus, 
@@ -504,6 +588,7 @@ export function usePericias(
     debugRegra33: { avaliou: avaliouRegra33, evalJaTinha: jaTinhaProfissao33 },
     bonusRegra40,
     bonusVestimentas: bonusVestimentas || {},
+    bonusAtributoDinamico,
     profissoes,
     setProfissoes
   };

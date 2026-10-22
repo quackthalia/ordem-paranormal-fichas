@@ -204,6 +204,15 @@ interface RPGContextType {
   danoDeMovimento: number;
   bonusDefesaTrilha34: number;
   defOutrosBonusRegra72: number;
+  defOutrosBonusRegra107: number;
+  devorarIntCount: number;
+  necrosarForCount: number;
+  inexistirAgiCount: number;
+  queimarVigCount: number;
+  maxDevorarInt: number;
+  maxNecrosarFor: number;
+  maxInexistirAgi: number;
+  maxQueimarVig: number;
   escolhaRegra53: 'FOR' | 'AGI' | null;
   setEscolhaRegra53: React.Dispatch<React.SetStateAction<'FOR' | 'AGI' | null>>;
   bonusTrilhasAtributos: Atributos;
@@ -663,8 +672,35 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
         obj.AGI += 1;
       }
     }
+    // Regras 108 a 115 (Poderes de Monstruoso Especialista)
+    if (regrasAutomaticasAtivas.has(108)) obj.FOR += 1;
+    if (regrasAutomaticasAtivas.has(109)) obj.VIG += 1;
+    if (regrasAutomaticasAtivas.has(110)) obj.INT += 1;
+    if (regrasAutomaticasAtivas.has(111)) obj.AGI += 1;
+    if (regrasAutomaticasAtivas.has(112)) obj.FOR += 1;
+    if (regrasAutomaticasAtivas.has(113)) obj.VIG += 1;
+    if (regrasAutomaticasAtivas.has(114)) obj.INT += 1;
+    if (regrasAutomaticasAtivas.has(115)) obj.AGI += 1;
     return obj;
-  }, [temBibliotecario99, temArtistaMarcialTrilha99, temMonstruoso65, isMonstruosoAtivo65, temMonstruoso40, isMonstruosoAtivo40, temMonstruoso99, monstruosoElemento]);
+  }, [temBibliotecario99, temArtistaMarcialTrilha99, temMonstruoso65, isMonstruosoAtivo65, temMonstruoso40, isMonstruosoAtivo40, temMonstruoso99, monstruosoElemento, regrasAutomaticasAtivas]);
+
+  const maxDevorarInt = Math.max(0, atributos.INT + bonusTrilhasAtributos.INT);
+  const maxNecrosarFor = Math.max(0, atributos.FOR + bonusTrilhasAtributos.FOR);
+  const maxInexistirAgi = Math.max(0, atributos.AGI + bonusTrilhasAtributos.AGI);
+  const maxQueimarVig = Math.max(0, atributos.VIG + bonusTrilhasAtributos.VIG);
+
+  const devorarIntCount = regrasAutomaticasAtivas.has(104)
+    ? Math.min(maxDevorarInt, Math.max(0, Number(poderesExtras['devorar_int'] || 0)))
+    : 0;
+  const necrosarForCount = regrasAutomaticasAtivas.has(105)
+    ? Math.min(maxNecrosarFor, Math.max(0, Number(poderesExtras['necrosar_for'] || 0)))
+    : 0;
+  const inexistirAgiCount = regrasAutomaticasAtivas.has(106)
+    ? Math.min(maxInexistirAgi, Math.max(0, Number(poderesExtras['inexistir_agi'] || 0)))
+    : 0;
+  const queimarVigCount = regrasAutomaticasAtivas.has(107)
+    ? Math.min(maxQueimarVig, Math.max(0, Number(poderesExtras['queimar_vig'] || 0)))
+    : 0;
 
   const atributosBaseComBonus = useMemo(() => {
     const obj = { ...atributos };
@@ -727,7 +763,8 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
 
   // Trilha 34: Acrobata
   const bonusDeslocTrilha34 = (temAcrobata10 ? 3 : 0) + (temAcrobata65 ? 3 : 0) + (temAcrobata99 ? 3 : 0);
-  const bonusDeslocGeral = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0) + (regrasAutomaticasAtivas.has(41) ? 3 : 0) + (bonusVestimentas?.deslocamento || 0) + (bonusMaldicoes?.deslocamento || 0);
+  const bonusDeslocRegra103_115 = regrasAutomaticasAtivas.has(115) ? 12 : (regrasAutomaticasAtivas.has(103) ? 6 : 0);
+  const bonusDeslocGeral = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0) + (regrasAutomaticasAtivas.has(41) ? 3 : 0) + bonusDeslocRegra103_115 + (bonusVestimentas?.deslocamento || 0) + (bonusMaldicoes?.deslocamento || 0);
   const bonusDeslocTotal = bonusDeslocGeral + bonusDeslocTrilha34;
   const deslocamentoTotalM = deslocM + bonusDeslocTotal;
   const danoDeMovimento = Math.floor(deslocamentoTotalM / 1.5);
@@ -839,9 +876,15 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     if (!machucado && escolhaRegra53) {
        setEscolhaRegra53(null);
     }
+
+    // Reduções temporárias das regras 104, 105, 106, 107 (não afetam PV, PE, SAN, PD ou quantidade de perícias)
+    obj.INT = Math.max(0, obj.INT - devorarIntCount);
+    obj.FOR = Math.max(0, obj.FOR - necrosarForCount);
+    obj.AGI = Math.max(0, obj.AGI - inexistirAgiCount);
+    obj.VIG = Math.max(0, obj.VIG - queimarVigCount);
     
     return obj;
-  }, [atributosBaseComBonus, status.pvAtual, status.pvMax, regrasAutomaticasAtivas, escolhaRegra53]);
+  }, [atributosBaseComBonus, status.pvAtual, status.pvMax, regrasAutomaticasAtivas, escolhaRegra53, devorarIntCount, necrosarForCount, inexistirAgiCount, queimarVigCount]);
 
   const afinidadeAtiva = useMemo(() => {
     if (!afinidadeEscolhida) return false;
@@ -945,6 +988,17 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
       list.push(poderesExtras['agente_secreto_pericia_versatilidade']);
     }
 
+    // Regra 102: escolha 2 perícias para treinar (se não tiver a Regra 114 que substitui por 3 experts)
+    if (regrasAutomaticasAtivas.has(102) && !regrasAutomaticasAtivas.has(114)) {
+      [1, 2].forEach(slot => {
+        const p = poderesExtras[`regra102_pericia_${slot}`];
+        const jaTinha = poderesExtras[`regra102_jatinha_${slot}`] === 'true';
+        if (p && !jaTinha && !list.includes(p)) {
+          list.push(p);
+        }
+      });
+    }
+
     return list;
   }, [
     periciasGratisSemTrilha, 
@@ -954,7 +1008,8 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     temCacadorVersatilidade,
     jaTinhaSobrevivenciaVersatilidade,
     temExorcistaVersatilidade,
-    jaTinhaReligiaoVersatilidade
+    jaTinhaReligiaoVersatilidade,
+    regrasAutomaticasAtivas
   ]);
 
   const jaTinhaOcultismoMonstruoso = useMemo(() => {
@@ -1002,11 +1057,30 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     return vet;
   }, [origensHook.origemSelecionada, temExorcista40, poderesExtras]);
 
-  // Sagacidade (+1 INT de maldição) não fornece perícias treinadas adicionais
+  const expertsGratis = useMemo(() => {
+    const exp: string[] = [];
+    if (regrasAutomaticasAtivas.has(114)) {
+      [1, 2, 3].forEach(slot => {
+        const p = poderesExtras[`regra114_pericia_${slot}`];
+        const jaExpert = poderesExtras[`regra114_jaexpert_${slot}`] === 'true';
+        if (p && !jaExpert && !exp.includes(p)) {
+          exp.push(p);
+        }
+      });
+    }
+    return exp;
+  }, [regrasAutomaticasAtivas, poderesExtras]);
+
+  // Sagacidade (+1 INT de maldição) e reduções temporárias (Devorar INT) não alteram a quantidade de perícias aprendidas
   const atributosParaPericias = useMemo(() => ({
+    ...atributosBaseComBonus,
+    INT: atributosBaseComBonus.INT - (bonusMaldicoes.atributos.INT || 0)
+  }), [atributosBaseComBonus, bonusMaldicoes.atributos.INT]);
+
+  const atributosFinaisParaPericiasBonus = useMemo(() => ({
     ...atributosFinais,
-    INT: atributosFinais.INT - (bonusMaldicoes.atributos.INT || 0)
-  }), [atributosFinais, bonusMaldicoes.atributos.INT]);
+    INT: atributosBaseComBonus.INT
+  }), [atributosFinais, atributosBaseComBonus.INT]);
 
   const periciasHook = usePericias(
     classe, 
@@ -1072,8 +1146,40 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
            }
          }
 
+         // Regra 100 e 112: Penalidade em Furtividade (-5 se Regra 112 ativa, senão -2 se Regra 100 ativa)
+         if (regrasAutomaticasAtivas.has(112)) {
+           comb['Furtividade'] = (comb['Furtividade'] || 0) - 5;
+         } else if (regrasAutomaticasAtivas.has(100)) {
+           comb['Furtividade'] = (comb['Furtividade'] || 0) - 2;
+         }
+
+         // Regra 102: +2 nas perícias escolhidas se já era treinado (quando Regra 114 não está ativa)
+         if (regrasAutomaticasAtivas.has(102) && !regrasAutomaticasAtivas.has(114)) {
+           [1, 2].forEach(slot => {
+             const p = poderesExtras[`regra102_pericia_${slot}`];
+             const jaTinha = poderesExtras[`regra102_jatinha_${slot}`] === 'true';
+             if (p && jaTinha) {
+               comb[p] = (comb[p] || 0) + 2;
+             }
+           });
+         }
+
+         // Regra 114: +10 nas perícias escolhidas se já era Expert
+         if (regrasAutomaticasAtivas.has(114)) {
+           [1, 2, 3].forEach(slot => {
+             const p = poderesExtras[`regra114_pericia_${slot}`];
+             const jaExpert = poderesExtras[`regra114_jaexpert_${slot}`] === 'true';
+             if (p && jaExpert) {
+               comb[p] = (comb[p] || 0) + 10;
+             }
+           });
+         }
+
          return comb; 
-    })()
+    })(),
+    expertsGratis,
+    atributosFinaisParaPericiasBonus,
+    inexistirAgiCount
   );
 
   const jaTinhaProfissaoTrilha = useMemo(() => {
@@ -1321,8 +1427,9 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
   }, 0);
 
   const defOutrosBonusRegra72 = regrasAutomaticasAtivas.has(72) ? atributosFinais.INT : 0;
+  const defOutrosBonusRegra107 = regrasAutomaticasAtivas.has(107) ? (2 + queimarVigCount * 2) : 0;
 
-  const defesaTotal = 10 + atributosFinais.AGI + defEquip + defOutros + defOutrosBonusRegra4 + defOutrosBonusRegra12 + defOutrosBonusRegra21 + defOutrosBonusRegra25 + defOutrosBonusRegra72 + defOutrosBonusTrilha5 + bonusDefesaTrilha34 + totalDefesaProtecoes + (bonusVestimentas?.defesa || 0) + (bonusMaldicoes?.defesa || 0);
+  const defesaTotal = 10 + atributosFinais.AGI + defEquip + defOutros + defOutrosBonusRegra4 + defOutrosBonusRegra12 + defOutrosBonusRegra21 + defOutrosBonusRegra25 + defOutrosBonusRegra72 + defOutrosBonusRegra107 + defOutrosBonusTrilha5 + bonusDefesaTrilha34 + totalDefesaProtecoes + (bonusVestimentas?.defesa || 0) + (bonusMaldicoes?.defesa || 0);
 
   // ============================================================
   // UTILITÁRIOS
@@ -1462,6 +1569,15 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     monstruosoElemento,
     jaTinhaOcultismoMonstruoso,
     defOutrosBonusRegra72,
+    defOutrosBonusRegra107,
+    devorarIntCount,
+    necrosarForCount,
+    inexistirAgiCount,
+    queimarVigCount,
+    maxDevorarInt,
+    maxNecrosarFor,
+    maxInexistirAgi,
+    maxQueimarVig,
     bonusDeslocTrilha34,
     bonusDeslocTotal,
     deslocamentoTotalM,

@@ -520,7 +520,7 @@ export const AbasPanel: React.FC = () => {
           } else {
             if (pp) poderesRenderizados.add(nomeBaseCheck);
             const automaticoVal = pp ? (afinidadeAtiva ? (pp['Automatico?_Afinidade'] ?? pp['Automatico?']) : pp['Automatico?']) : (poderesGeraisMap.get(nomeBaseCheck) || undefined);
-            lista.push({ id: `escolha_nex_${nivelPatamar}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal });
+            lista.push({ id: `escolha_nex_${nivelPatamar}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal, codigoRegra: escolhido.codigoRegra });
           }
         } else {
           const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
@@ -581,7 +581,7 @@ export const AbasPanel: React.FC = () => {
           } else {
             if (pp) poderesRenderizados.add(nomeBaseCheck);
             const automaticoVal = pp ? (afinidadeAtiva ? (pp['Automatico?_Afinidade'] ?? pp['Automatico?']) : pp['Automatico?']) : (poderesGeraisMap.get(nomeBaseCheck) || undefined);
-            lista.push({ id: `escolha_nex_combate_${nivelPatamar}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal });
+            lista.push({ id: `escolha_nex_combate_${nivelPatamar}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal, codigoRegra: escolhido.codigoRegra });
           }
         } else {
           const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
@@ -639,7 +639,7 @@ export const AbasPanel: React.FC = () => {
         } else {
           if (pp) poderesRenderizados.add(nomeBaseCheck);
           const automaticoVal = pp ? (afinidadeAtiva ? (pp['Automatico?_Afinidade'] ?? pp['Automatico?']) : pp['Automatico?']) : (poderesGeraisMap.get(nomeBaseCheck) || undefined);
-          lista.push({ id: `escolha_${key}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal });
+          lista.push({ id: `escolha_${key}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal, codigoRegra: escolhido.codigoRegra });
         }
       }
     });
@@ -1470,6 +1470,104 @@ export const AbasPanel: React.FC = () => {
                                   </div>
                                 )}
                                 <div dangerouslySetInnerHTML={{ __html: formatarDescricao(hab.descricao) }} />
+
+                                {/* Regra 102: escolha 2 perícias para treinar (ou +2 se já treinado) */}
+                                {hab.codigoRegra === 102 && !regrasAutomaticasAtivas.has(114) && (
+                                  <div className="mt-3 pt-3 border-t border-zinc-800/80 flex flex-col gap-2" onClick={e => e.stopPropagation()}>
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                                      Perícias Escolhidas (Treinar ou +2):
+                                    </span>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                      {[1, 2].map(slot => {
+                                        const atual = poderesExtras[`regra102_pericia_${slot}`] || '';
+                                        const outra = poderesExtras[`regra102_pericia_${slot === 1 ? 2 : 1}`] || '';
+                                        const listaNomes = Object.keys(periciasHook.pericias || {}).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+                                        return (
+                                          <CustomSelect
+                                            key={slot}
+                                            value={atual}
+                                            onChange={(val) => {
+                                              if (!val) {
+                                                setPoderesExtras(prev => {
+                                                  const n = { ...prev };
+                                                  delete n[`regra102_pericia_${slot}`];
+                                                  delete n[`regra102_jatinha_${slot}`];
+                                                  return n;
+                                                });
+                                                return;
+                                              }
+                                              const jaEraTreinado = (periciasHook.pericias[val]?.treino || 0) >= 5;
+                                              setPoderesExtras(prev => ({
+                                                ...prev,
+                                                [`regra102_pericia_${slot}`]: val,
+                                                [`regra102_jatinha_${slot}`]: jaEraTreinado ? 'true' : 'false',
+                                              }));
+                                            }}
+                                            options={[
+                                              { value: '', label: `Perícia ${slot}...` },
+                                              ...listaNomes.map(nomeP => ({
+                                                value: nomeP,
+                                                label: nomeP,
+                                                disabled: nomeP === outra
+                                              }))
+                                            ]}
+                                            wrapperClassName="w-full"
+                                            className="w-full rounded border border-zinc-700 bg-zinc-900 px-2.5 py-1.5 text-xs text-zinc-200"
+                                          />
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Regra 114: escolha 3 perícias para se tornar Expert (ou +10 se já Expert) */}
+                                {hab.codigoRegra === 114 && (
+                                  <div className="mt-3 pt-3 border-t border-zinc-800/80 flex flex-col gap-2" onClick={e => e.stopPropagation()}>
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                                      Perícias Escolhidas (Expert ou +10):
+                                    </span>
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                      {[1, 2, 3].map(slot => {
+                                        const atual = poderesExtras[`regra114_pericia_${slot}`] || '';
+                                        const outras = [1, 2, 3].filter(s => s !== slot).map(s => poderesExtras[`regra114_pericia_${s}`]).filter(Boolean);
+                                        const listaNomes = Object.keys(periciasHook.pericias || {}).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+                                        return (
+                                          <CustomSelect
+                                            key={slot}
+                                            value={atual}
+                                            onChange={(val) => {
+                                              if (!val) {
+                                                setPoderesExtras(prev => {
+                                                  const n = { ...prev };
+                                                  delete n[`regra114_pericia_${slot}`];
+                                                  delete n[`regra114_jaexpert_${slot}`];
+                                                  return n;
+                                                });
+                                                return;
+                                              }
+                                              const jaEraExpert = (periciasHook.pericias[val]?.treino || 0) >= 15;
+                                              setPoderesExtras(prev => ({
+                                                ...prev,
+                                                [`regra114_pericia_${slot}`]: val,
+                                                [`regra114_jaexpert_${slot}`]: jaEraExpert ? 'true' : 'false',
+                                              }));
+                                            }}
+                                            options={[
+                                              { value: '', label: `Perícia ${slot}...` },
+                                              ...listaNomes.map(nomeP => ({
+                                                value: nomeP,
+                                                label: nomeP,
+                                                disabled: outras.includes(nomeP)
+                                              }))
+                                            ]}
+                                            wrapperClassName="w-full"
+                                            className="w-full rounded border border-zinc-700 bg-zinc-900 px-2.5 py-1.5 text-xs text-zinc-200"
+                                          />
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+                                )}
 
                                 {/* 🔥 Afinidade: texto puro */}
                                 {hab.afinidade && (

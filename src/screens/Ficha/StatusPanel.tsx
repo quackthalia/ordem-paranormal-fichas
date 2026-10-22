@@ -30,6 +30,7 @@ export const StatusPanel: React.FC = () => {
     deslocamentoTotalM,
     poderesExtras,
     setPoderesExtras,
+    necrosarForCount,
   } = useRPG();
 
   const regraNexExperiencia = regras['nex_experiencia'];
@@ -227,7 +228,7 @@ export const StatusPanel: React.FC = () => {
           tempMax={pvTempMax}
           setTempMax={setPvTempMax}
           isMorrendo={pvAtual === 0}
-          maxMorrendo={regrasAutomaticasAtivas.has(74) ? 4 : 3}
+          maxMorrendo={3 + (regrasAutomaticasAtivas.has(74) ? 1 : 0) + (regrasAutomaticasAtivas.has(105) ? (1 + necrosarForCount) : 0)}
           morrendoCount={Number(poderesExtras['morrendo_count'] || 0)}
           onToggleMorrendo={(i) => {
             const currentCount = Number(poderesExtras['morrendo_count'] || 0);

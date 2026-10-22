@@ -23,6 +23,7 @@ export const BonusCondicionaisPanel: React.FC = () => {
     isMonstruosoAtivo40,
     monstruosoElemento,
     atributosFinais,
+    queimarVigCount,
   } = useRPG();
 
   const temPerseverante40 = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 20 && (regras['nex_experiencia'] ? nivel >= 8 : nex >= 40);
@@ -211,6 +212,24 @@ export const BonusCondicionaisPanel: React.FC = () => {
               <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
                 <span className="text-green-500 font-bold mt-[-1px]">•</span>
                 <span>+1d20 em testes de Intimidação (Monstruoso 40%)</span>
+              </div>
+            )}
+            {regrasAutomaticasAtivas.has(106) && (
+              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                <span>+1d6 em testes baseados em Intelecto (Ser Testado - Conhecimento)</span>
+              </div>
+            )}
+            {regrasAutomaticasAtivas.has(107) && (
+              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                <span>+1d6{queimarVigCount > 0 ? ` + ${queimarVigCount}d4` : ''} em testes de ataque (Ser Testado - Energia)</span>
+              </div>
+            )}
+            {regrasAutomaticasAtivas.has(108) && (
+              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                <span>+1d8 em testes de ataques corpo a corpo (Ser Expurgado - Sangue)</span>
               </div>
             )}
             {Object.values(poderesHook.poderesEscolhidos).map((poder, idx) => {

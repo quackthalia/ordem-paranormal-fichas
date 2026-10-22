@@ -54,30 +54,41 @@ export function calcularStatusBase(
   // Se a origem/poder possui a Regra 1, a sanidade inicial é reduzida pela metade.
   const redSanidade = temRegra(1) ? 0.5 : 1;
 
+  // Regras 100, 101, 102, 103: atributo alternativo para calcular PE (em vez de PRE)
+  const atrPe = temRegra(100)
+    ? atributos.FOR
+    : temRegra(101)
+    ? atributos.VIG
+    : temRegra(102)
+    ? atributos.INT
+    : temRegra(103)
+    ? atributos.AGI
+    : atributos.PRE;
+
   if (temRegra(26)) {
     pvMax = (24 + atributos.VIG) + ((nivel - 1) * (6 + atributos.VIG));
     if (classe === 'Combatente') {
-      peMax = (2 + atributos.PRE) + ((nivel - 1) * (2 + atributos.PRE));
+      peMax = (2 + atrPe) + ((nivel - 1) * (2 + atrPe));
       sanMax = Math.floor(12 * redSanidade) + ((nivel - 1) * 3);
     } else if (classe === 'Especialista') {
-      peMax = (3 + atributos.PRE) + ((nivel - 1) * (3 + atributos.PRE));
+      peMax = (3 + atrPe) + ((nivel - 1) * (3 + atrPe));
       sanMax = Math.floor(16 * redSanidade) + ((nivel - 1) * 4);
     } else if (classe === 'Ocultista') {
-      peMax = (4 + atributos.PRE) + ((nivel - 1) * (4 + atributos.PRE));
+      peMax = (4 + atrPe) + ((nivel - 1) * (4 + atrPe));
       sanMax = Math.floor(20 * redSanidade) + ((nivel - 1) * 5);
     }
   } else {
     if (classe === 'Combatente') {
       pvMax = (20 + atributos.VIG) + ((nivel - 1) * (4 + atributos.VIG));
-      peMax = (2 + atributos.PRE) + ((nivel - 1) * (2 + atributos.PRE));
+      peMax = (2 + atrPe) + ((nivel - 1) * (2 + atrPe));
       sanMax = Math.floor(12 * redSanidade) + ((nivel - 1) * 3);
     } else if (classe === 'Especialista') {
       pvMax = (16 + atributos.VIG) + ((nivel - 1) * (3 + atributos.VIG));
-      peMax = (3 + atributos.PRE) + ((nivel - 1) * (3 + atributos.PRE));
+      peMax = (3 + atrPe) + ((nivel - 1) * (3 + atrPe));
       sanMax = Math.floor(16 * redSanidade) + ((nivel - 1) * 4);
     } else if (classe === 'Ocultista') {
       pvMax = (12 + atributos.VIG) + ((nivel - 1) * (2 + atributos.VIG));
-      peMax = (4 + atributos.PRE) + ((nivel - 1) * (4 + atributos.PRE));
+      peMax = (4 + atrPe) + ((nivel - 1) * (4 + atrPe));
       sanMax = Math.floor(20 * redSanidade) + ((nivel - 1) * 5);
     }
   }
@@ -195,7 +206,16 @@ export function calcularPD(
   nivel: number,
   regrasAtivas?: Set<number>
 ): number {
-  const pre = atributos.PRE;
+  const temRegra = (r: number) => regrasAtivas?.has(r) ?? false;
+  const pre = temRegra(100)
+    ? atributos.FOR
+    : temRegra(101)
+    ? atributos.VIG
+    : temRegra(102)
+    ? atributos.INT
+    : temRegra(103)
+    ? atributos.AGI
+    : atributos.PRE;
   let pd = 0;
 
   if (classe === 'Combatente') {

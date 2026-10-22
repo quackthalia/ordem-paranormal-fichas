@@ -1104,19 +1104,6 @@ export const AbasPanel: React.FC = () => {
                                           {isMonstruoso && nexLvl === 75 && (
                                             <div className="mx-3 mb-3 mt-1 flex flex-wrap items-center justify-between gap-2 border-t border-zinc-800/80 pt-2" onClick={e => e.stopPropagation()}>
                                               <div className="flex items-center gap-2">
-                                                {!temMonstruoso99 && (
-                                                  <label className="flex items-center gap-1.5 cursor-pointer" onClick={e => e.stopPropagation()}>
-                                                    <input
-                                                      type="checkbox"
-                                                      checked={isMonstruosoAtivo75}
-                                                      onChange={toggleAtivoMonst}
-                                                      className="accent-green-500 rounded cursor-pointer h-3.5 w-3.5"
-                                                    />
-                                                    <span className={`text-[10px] font-bold uppercase tracking-wider ${isMonstruosoAtivo75 ? 'text-green-400' : 'text-zinc-500'}`}>
-                                                      {isMonstruosoAtivo75 ? 'Ativo' : 'Inativo'}
-                                                    </span>
-                                                  </label>
-                                                )}
                                                 <span
                                                   title="Totalmente automático"
                                                   className="shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider bg-green-950/60 text-green-400 border border-green-800/50"
@@ -1187,22 +1174,7 @@ export const AbasPanel: React.FC = () => {
                                             return (
                                               <div className={`mx-3 mb-3 mt-1 rounded-r border-l-2 ${isAtivoMonst ? 'border-green-500 bg-zinc-900/80' : 'border-zinc-700 bg-zinc-900/40 opacity-60'} p-3 flex flex-col gap-2`} onClick={e => e.stopPropagation()}>
                                                 <div className="flex items-center justify-between gap-2">
-                                                  <div className="flex items-center gap-2">
-                                                    {!temMonstruoso99 && (
-                                                      <label className="flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-zinc-300 hover:text-white" onClick={e => e.stopPropagation()}>
-                                                        <input
-                                                          type="checkbox"
-                                                          checked={isAtivoMonst}
-                                                          onChange={toggleAtivoMonst}
-                                                          className="accent-green-500 rounded cursor-pointer h-3.5 w-3.5"
-                                                        />
-                                                        <span className={`text-[10px] font-bold uppercase tracking-wider ${isAtivoMonst ? 'text-green-400' : 'text-zinc-500'}`}>
-                                                          {isAtivoMonst ? 'Ativo' : 'Inativo'}
-                                                        </span>
-                                                      </label>
-                                                    )}
-                                                    <span className={`text-sm font-bold ${isAtivoMonst ? 'text-zinc-100' : 'text-zinc-400'}`}>{pData.Nome}</span>
-                                                  </div>
+                                                  <span className={`text-sm font-bold ${isAtivoMonst ? 'text-zinc-100' : 'text-zinc-400'}`}>{pData.Nome}</span>
                                                   <span className={`rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${badgeClasses}`}>
                                                     {monstruosoElemento}
                                                   </span>

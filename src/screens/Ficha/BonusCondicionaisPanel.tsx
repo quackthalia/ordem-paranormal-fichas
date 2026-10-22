@@ -11,23 +11,17 @@ export const BonusCondicionaisPanel: React.FC = () => {
     jaTinhaPericiaTrilha,
     jaTinhaPericiaVersatilidade,
     jaTinhaProfissaoTrilha,
-    trilhaProfissaoConcedida,
     trilhasHook,
     regras,
     nivel,
     nex,
     poderesExtras,
     temMataLeao10,
-    temAcrobata40,
-    danoDeMovimento,
     temMonstruoso10,
     temMonstruoso40,
-    temMonstruoso75,
     isMonstruosoAtivo10,
     isMonstruosoAtivo40,
-    isMonstruosoAtivo75,
     monstruosoElemento,
-    atributosFinais,
   } = useRPG();
 
   const temPerseverante40 = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 20 && (regras['nex_experiencia'] ? nivel >= 8 : nex >= 40);
@@ -78,36 +72,6 @@ export const BonusCondicionaisPanel: React.FC = () => {
                   <span>+1d20 em testes para manter um ser Agarrado (Mata Leão)</span>
                 </div>
               </>
-            )}
-            {temAcrobata40 && (
-              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
-                <span className="text-green-500 font-bold mt-[-1px]">•</span>
-                <span>+{Math.floor(danoDeMovimento / 2)} em testes de manobra com Agilidade (gastando 4 PE) (Tumbling Brutal)</span>
-              </div>
-            )}
-            {temMonstruoso10 && isMonstruosoAtivo10 && monstruosoElemento === 'Sangue' && (
-              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
-                <span className="text-green-500 font-bold mt-[-1px]">•</span>
-                <span>+{atributosFinais.VIG} (Vigor) no dano quando faz um contra-ataque bem-sucedido (Ser Amaldiçoado - Sangue)</span>
-              </div>
-            )}
-            {temMonstruoso40 && isMonstruosoAtivo40 && monstruosoElemento === 'Sangue' && (
-              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
-                <span className="text-green-500 font-bold mt-[-1px]">•</span>
-                <span>Gastar ação de movimento e 1 a {atributosFinais.FOR} PE para recuperar 1d8 PV por PE gasto (Ser Macabro - Sangue)</span>
-              </div>
-            )}
-            {temMonstruoso40 && isMonstruosoAtivo40 && monstruosoElemento === 'Energia' && (
-              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
-                <span className="text-green-500 font-bold mt-[-1px]">•</span>
-                <span>Gastar 1 a {atributosFinais.AGI} PE ao acertar ataque corpo a corpo para causar +1d6 Energia por PE gasto (Ser Macabro - Energia)</span>
-              </div>
-            )}
-            {temMonstruoso75 && isMonstruosoAtivo75 && (
-              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
-                <span className="text-red-500 font-bold mt-[-1px]">•</span>
-                <span>Monstruosa Transformação (75%): Permanentemente perturbado. Começa cada missão com equipamento de patente 1 nível inferior.</span>
-              </div>
             )}
             
             {bonusDadosCondicionais.split('\n').filter(s => s.trim() !== '').map((bonus, idx) => (

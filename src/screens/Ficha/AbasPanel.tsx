@@ -1058,8 +1058,7 @@ export const AbasPanel: React.FC = () => {
                                       temMonstruoso99 ? true : (
                                         nexLvl === 10 ? isMonstruosoAtivo10 :
                                         nexLvl === 40 ? isMonstruosoAtivo40 :
-                                        nexLvl === 65 ? isMonstruosoAtivo65 :
-                                        nexLvl === 75 ? isMonstruosoAtivo75 : true
+                                        nexLvl === 65 ? isMonstruosoAtivo65 : true
                                       )
                                     );
                                     const toggleAtivoMonst = (e?: React.MouseEvent | React.ChangeEvent) => {
@@ -1077,7 +1076,7 @@ export const AbasPanel: React.FC = () => {
                                           className="flex cursor-pointer items-center justify-between px-3 py-2 transition hover:bg-zinc-800"
                                         >
                                           <div className="flex items-center gap-2 min-w-0">
-                                            {isMonstruoso && !temMonstruoso99 && (
+                                            {isMonstruoso && nexLvl !== 75 && !temMonstruoso99 && (
                                               <input
                                                 type="checkbox"
                                                 checked={isAtivoMonst}
@@ -1436,12 +1435,9 @@ export const AbasPanel: React.FC = () => {
                                          (elStr.includes('varia') || elStr.includes('vária')) ? 'border-l-green-600' : 'border-l-zinc-600';
                         }
 
-                        const isPoder187 = hab.id === 'trilha_monstruoso_poder_187';
-                        const isPoder187Inativo = isPoder187 && !temMonstruoso99 && !isMonstruosoAtivo75;
-
                         return (
                           <div key={hab.id}
-                            className={`overflow-hidden rounded-r border-l-4 ${isPoder187Inativo ? 'bg-zinc-900/30 opacity-60' : 'bg-zinc-900/50'} ${corBordaLeft}`}
+                            className={`overflow-hidden rounded-r border-l-4 bg-zinc-900/50 ${corBordaLeft}`}
                           >
                             <div onClick={() => {
                               setHabilidadesExpandidas(prev =>
@@ -1451,20 +1447,7 @@ export const AbasPanel: React.FC = () => {
                               className="flex cursor-pointer justify-between gap-3 relative bg-zinc-800/40 px-4 py-3 transition hover:bg-zinc-700/50"
                             >
                               <div className="flex items-center gap-3 min-w-0 flex-1">
-                                {isPoder187 && !temMonstruoso99 && (
-                                  <label className="flex items-center gap-1.5 cursor-pointer shrink-0" onClick={e => e.stopPropagation()}>
-                                    <input
-                                      type="checkbox"
-                                      checked={isMonstruosoAtivo75}
-                                      onChange={() => setPoderesExtras(prev => ({ ...prev, monstruoso_ativo: prev['monstruoso_ativo'] === 'false' ? 'true' : 'false' }))}
-                                      className="accent-green-500 rounded cursor-pointer h-3.5 w-3.5"
-                                    />
-                                    <span className={`text-[10px] font-bold uppercase tracking-wider ${isMonstruosoAtivo75 ? 'text-green-400' : 'text-zinc-500'}`}>
-                                      {isMonstruosoAtivo75 ? 'Ativo' : 'Inativo'}
-                                    </span>
-                                  </label>
-                                )}
-                                <span className={`text-sm font-bold truncate ${isPoder187Inativo ? 'text-zinc-500 line-through' : 'text-zinc-100'}`}>{hab.nome}</span>
+                                <span className="text-sm font-bold truncate text-zinc-100">{hab.nome}</span>
                                 {hab.extra && <span className="rounded border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 text-xs font-bold text-amber-400 shrink-0">{hab.extra}</span>}
                                 
                               </div>

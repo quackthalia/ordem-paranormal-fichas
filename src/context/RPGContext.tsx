@@ -357,7 +357,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     const isMonstAtivo10 = isMonstruosoAtivo;
     const isMonstAtivo40 = isMonstruosoAtivo;
     const isMonstAtivo65 = isMonstruosoAtivo;
-    const isMonstAtivo75 = isMonstruosoAtivo;
+    const isMonstAtivo75 = true;
 
     if (hasMonst10 && isMonstAtivo10) {
       if (elemMonst === 'Sangue') set.add(70);
@@ -477,7 +477,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const isMonstruosoAtivo10 = isMonstruosoAtivo;
   const isMonstruosoAtivo40 = isMonstruosoAtivo;
   const isMonstruosoAtivo65 = isMonstruosoAtivo;
-  const isMonstruosoAtivo75 = isMonstruosoAtivo;
+  const isMonstruosoAtivo75 = true;
 
   const monstruosoElemento = useMemo(() => {
     if (afinidadeEscolhida) return afinidadeEscolhida;

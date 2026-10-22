@@ -835,8 +835,7 @@ export const AbasPanel: React.FC = () => {
       trilhasHook.trilhaSelecionada?.Nome_Habilidade_10?.toLowerCase().includes(filtroHabilidades.toLowerCase()) ||
       trilhasHook.trilhaSelecionada?.Nome_Habilidade_40?.toLowerCase().includes(filtroHabilidades.toLowerCase()) ||
       trilhasHook.trilhaSelecionada?.Nome_Habilidade_65?.toLowerCase().includes(filtroHabilidades.toLowerCase()) ||
-      trilhasHook.trilhaSelecionada?.Nome_Habilidade_99?.toLowerCase().includes(filtroHabilidades.toLowerCase()) ||
-      ((Number(trilhasHook.trilhaSelecionada?.Codigo_Trilha) === 18 || String(trilhasHook.trilhaSelecionada?.Nome_Trilha || '').toLowerCase().includes('monstruoso')) && 'monstruosa transformação'.includes(filtroHabilidades.toLowerCase()))
+      trilhasHook.trilhaSelecionada?.Nome_Habilidade_99?.toLowerCase().includes(filtroHabilidades.toLowerCase())
     ))
   );
 
@@ -980,7 +979,7 @@ export const AbasPanel: React.FC = () => {
                           if (!t) return null;
 
                           const isMonstruoso = Number(t.Codigo_Trilha) === 18 || String(t.Nome_Trilha || '').trim().toLowerCase().includes('monstruoso');
-                          const nexLevels = isVersatilidade ? [10] : (isMonstruoso ? [10, 40, 65, 75, 99] : [10, 40, 65, 99]);
+                          const nexLevels = isVersatilidade ? [10] : [10, 40, 65, 99];
                           
                           return (
                             <div key={hab.id} className="mb-2 overflow-hidden rounded-r border-l-4 border-green-800 bg-zinc-900/50">
@@ -1020,11 +1019,7 @@ export const AbasPanel: React.FC = () => {
                                   </h4>
               
                                   {nexLevels.map((nexLvl) => {
-                                    if (nexLvl === 75) {
-                                      if (!temMonstruoso75) return null;
-                                    } else {
-                                      if (effectiveNex < nexLvl) return null;
-                                    }
+                                    if (effectiveNex < nexLvl) return null;
 
                                     const habNameKey = `Nome_Habilidade_${nexLvl}` as keyof typeof t;
                                     const habDescKey = `Descricao_Habilidade_${nexLvl}` as keyof typeof t;
@@ -1043,12 +1038,7 @@ export const AbasPanel: React.FC = () => {
                                       if (effectiveNex >= 65) nomeHab += ' (8 PE, +2d20)';
                                       else if (effectiveNex >= 40) nomeHab += ' (4 PE, +1d10)';
                                     }
-                                    let descHab = t[habDescKey] as string;
-                                    if (isMonstruoso && nexLvl === 75) {
-                                      const p187 = listaPoderesUtilidade.find(p => Number(p.codigo_poder) === 187) || poderesClasse.find(p => Number(p.codigo_poder) === 187);
-                                      nomeHab = p187?.Nome || 'Monstruosa Transformação';
-                                      descHab = p187?.Descricao || "Quando o personagem atinge NEX 75%, se torna permanentemente perturbado. Suas ações já não são mais aceitas pela Ordem, que vai banir e potencialmente caçar o ex-agente. Considere que ele começa cada missão com equipamento equivalente a uma patente um nível inferior à sua, conseguido por conta própria.\nQuando o personagem atinge NEX 99%, sua Sanidade é reduzida a 1. Por fim, sempre que ficar enlouquecendo, em vez de sofrer um efeito de insanidade (veja OPRPG, p.111), o personagem fica confuso (a condição se encerra normalmente ou quando o personagem não está mais enlouquecendo). Se um personagem Monstruoso enlouquecer com 99% de NEX, se torna permanentemente uma criatura do Outro Lado.\nSe estiver usando a regra opcional Jogando sem Sanidade, em vez disso considere que o personagem está sempre perturbado e fica enlouquecendo (e confuso) sempre que perde 1 ponto de determinação por qualquer efeito (exceto por pagar custos de habilidades e itens).";
-                                    }
+                                    const descHab = t[habDescKey] as string;
               
                                     if (!nomeHab) return null;
               
@@ -1076,7 +1066,7 @@ export const AbasPanel: React.FC = () => {
                                           className="flex cursor-pointer items-center justify-between px-3 py-2 transition hover:bg-zinc-800"
                                         >
                                           <div className="flex items-center gap-2 min-w-0">
-                                            {isMonstruoso && nexLvl !== 75 && !temMonstruoso99 && (
+                                            {isMonstruoso && !temMonstruoso99 && (
                                               <input
                                                 type="checkbox"
                                                 checked={isAtivoMonst}
@@ -1099,22 +1089,6 @@ export const AbasPanel: React.FC = () => {
                                             className="px-3 pb-3 pt-1 text-xs text-zinc-400"
                                             dangerouslySetInnerHTML={{ __html: formatarDescricao(descHab) }}
                                           />
-                                          {isMonstruoso && nexLvl === 75 && (
-                                            <div className="mx-3 mb-3 mt-1 flex flex-wrap items-center justify-between gap-2 border-t border-zinc-800/80 pt-2" onClick={e => e.stopPropagation()}>
-                                              <div className="flex items-center gap-2">
-                                                <span
-                                                  title="Totalmente automático"
-                                                  className="shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider bg-green-950/60 text-green-400 border border-green-800/50"
-                                                >
-                                                  <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z"/></svg>
-                                                  Auto
-                                                </span>
-                                              </div>
-                                              <span className="text-[10px] text-zinc-500 italic">
-                                                Os efeitos desta habilidade são aplicados automaticamente na sua ficha.
-                                              </span>
-                                            </div>
-                                          )}
                                           {isMonstruoso && nexLvl === 10 && (
                                             <div className="px-3 pb-3 pt-2 border-t border-zinc-800/80 flex flex-col gap-2" onClick={e => e.stopPropagation()}>
                                               <div className="flex items-center justify-between">

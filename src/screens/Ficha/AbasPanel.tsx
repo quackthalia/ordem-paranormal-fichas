@@ -1155,10 +1155,35 @@ export const AbasPanel: React.FC = () => {
                                             const pData = listaPoderesUtilidade.find(p => p.codigo_poder === codPoder);
                                             if (!pData) return null;
                                             const badgeClasses = getBadgeElemento(monstruosoElemento);
+                                            const pAuto = (pData as any)['Automatico?'] || pData.Automatico;
                                             return (
                                               <div className={`mx-3 mb-3 mt-1 rounded-r border-l-2 transition-all duration-300 ${isAtivoMonst ? 'border-green-500 bg-zinc-900/80' : 'border-zinc-700 bg-zinc-900/40 opacity-60'} p-3 flex flex-col`} onClick={e => e.stopPropagation()}>
                                                 <div className="flex items-center justify-between gap-2 mb-2">
-                                                  <span className={`text-sm font-bold transition-colors duration-200 ${isAtivoMonst ? 'text-zinc-100' : 'text-zinc-400'}`}>{pData.Nome}</span>
+                                                  <div className="flex items-center gap-2 min-w-0">
+                                                    <span className={`text-sm font-bold transition-colors duration-200 ${isAtivoMonst ? 'text-zinc-100' : 'text-zinc-400'}`}>{pData.Nome}</span>
+                                                    {pAuto && pAuto.toLowerCase().trim() !== 'não' && (
+                                                      <span
+                                                        title={pAuto.toLowerCase().trim() === 'sim' ? 'Totalmente automático — acontece sozinho' : 'Semi-automático — parte funciona automaticamente'}
+                                                        className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider ${
+                                                          pAuto.toLowerCase().trim() === 'sim'
+                                                            ? 'bg-green-950/60 text-green-400 border border-green-800/50'
+                                                            : 'bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
+                                                        }`}
+                                                      >
+                                                        {pAuto.toLowerCase().trim() === 'sim' ? (
+                                                          <>
+                                                            <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z"/></svg>
+                                                            Auto
+                                                          </>
+                                                        ) : (
+                                                          <>
+                                                            <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z" opacity="0.5"/><path d="M19 3v4m0 4v10" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
+                                                            Semi
+                                                          </>
+                                                        )}
+                                                      </span>
+                                                    )}
+                                                  </div>
                                                   <span className={`rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider transition-all duration-200 ${badgeClasses}`}>
                                                     {monstruosoElemento}
                                                   </span>

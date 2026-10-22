@@ -349,8 +349,11 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     if (temArtistaMarcialTrilha10) {
       set.add(84);
     }
-    const effNex = regras['nex_experiencia'] ? nivel * 5 : nex;
-    const effNivel = regras['nex_experiencia'] ? nivel : Math.floor(nex / 5);
+    // Precisa bater com effectiveNex/effectiveNivel (inclui +5% NEX / +1 nível da Regra 83 - Agente de Nascença)
+    const bonusNex83 = set.has(83) ? 5 : 0;
+    const bonusNivel83 = set.has(83) ? 1 : 0;
+    const effNex = Math.min(99, (regras['nex_experiencia'] ? nivel * 5 : nex) + bonusNex83);
+    const effNivel = Math.min(20, (regras['nex_experiencia'] ? nivel : Math.ceil(nex / 5)) + bonusNivel83);
     const isMonstTrilha = trilhasHook.trilhaSelecionada && (
       Number(trilhasHook.trilhaSelecionada.Codigo_Trilha) === 18 ||
       Number((trilhasHook.trilhaSelecionada as any)?.codigo_trilha) === 18 ||
@@ -1050,14 +1053,14 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
   const periciasGratis = useMemo(() => {
     const list = [...periciasGratisSemTrilha];
 
-    // Trilha Selecionada (Trilha principal dá a perícia da trilha por padrão, exceto Monstruoso 18 e 45 que têm regra própria abaixo)
-    if (
-      trilhasHook.trilhaSelecionada &&
-      trilhasHook.trilhaSelecionada.nome_pericia &&
-      trilhasHook.trilhaSelecionada.Codigo_Trilha !== 18 &&
-      trilhasHook.trilhaSelecionada.Codigo_Trilha !== 45
-    ) {
-      list.push(trilhasHook.trilhaSelecionada.nome_pericia);
+    // Trilha Selecionada (Trilha principal dá a perícia da trilha por padrão — no Monstruoso é Fortitude; o Ocultismo vem da regra de 10% abaixo)
+    if (trilhasHook.trilhaSelecionada && trilhasHook.trilhaSelecionada.nome_pericia) {
+      const codT = Number(trilhasHook.trilhaSelecionada.Codigo_Trilha);
+      // Fichas salvas antes da correção podem ter 'Ocultismo' como perícia do Monstruoso; a perícia da trilha é Fortitude
+      const nomeT = (codT === 18 || codT === 45) && trilhasHook.trilhaSelecionada.nome_pericia === 'Ocultismo'
+        ? 'Fortitude'
+        : trilhasHook.trilhaSelecionada.nome_pericia;
+      list.push(nomeT);
     }
     if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 16 && poderesExtras['agente_secreto_pericia']) {
       list.push(poderesExtras['agente_secreto_pericia']);
@@ -1072,13 +1075,12 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
       if (temExorcistaVersatilidade && !jaTinhaReligiaoVersatilidade) {
         list.push('Religião');
       }
-    } else if (
-      trilhasHook.versatilidadeSelecionada &&
-      trilhasHook.versatilidadeSelecionada.nome_pericia &&
-      trilhasHook.versatilidadeSelecionada.Codigo_Trilha !== 18 &&
-      trilhasHook.versatilidadeSelecionada.Codigo_Trilha !== 45
-    ) {
-      list.push(trilhasHook.versatilidadeSelecionada.nome_pericia);
+    } else if (trilhasHook.versatilidadeSelecionada && trilhasHook.versatilidadeSelecionada.nome_pericia) {
+      const codV = Number(trilhasHook.versatilidadeSelecionada.Codigo_Trilha);
+      const nomeV = (codV === 18 || codV === 45) && trilhasHook.versatilidadeSelecionada.nome_pericia === 'Ocultismo'
+        ? 'Fortitude'
+        : trilhasHook.versatilidadeSelecionada.nome_pericia;
+      list.push(nomeV);
     }
     if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 16 && poderesExtras['agente_secreto_pericia_versatilidade']) {
       list.push(poderesExtras['agente_secreto_pericia_versatilidade']);

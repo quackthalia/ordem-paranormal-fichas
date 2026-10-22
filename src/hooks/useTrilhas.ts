@@ -58,7 +58,8 @@ export function useTrilhas(): UseTrilhasReturn {
 
       if (dataTrilhas) {
         const trilhasComRegras = dataTrilhas.map(t => {
-          const periciaTrilha = (t.Codigo_Trilha === 18 || t.Codigo_Trilha === 45) ? 18 : t.Perícia_Trilha;
+          // Perícia da trilha vem do banco (Monstruoso = Fortitude). O treino em Ocultismo do Monstruoso é uma regra separada (10%).
+          const periciaTrilha = t.Perícia_Trilha;
           const regra = dataRegras?.find((r: any) => r.Codigo_Trilha === t.Codigo_Trilha);
           if (regra) {
             return {
@@ -120,9 +121,7 @@ export function useTrilhas(): UseTrilhasReturn {
 
   const selecionarTrilha = useCallback(
     (trilha: Trilha) => {
-      const nomeP = (trilha.Codigo_Trilha === 18 || trilha.Codigo_Trilha === 45)
-        ? 'Ocultismo'
-        : (nomesPericias[trilha.Perícia_Trilha] || String(trilha.Perícia_Trilha));
+      const nomeP = nomesPericias[trilha.Perícia_Trilha] || String(trilha.Perícia_Trilha);
 
       setTrilhaSelecionada({
         ...trilha,
@@ -135,9 +134,7 @@ export function useTrilhas(): UseTrilhasReturn {
 
   const selecionarVersatilidade = useCallback(
     (trilha: Trilha) => {
-      const nomeP = (trilha.Codigo_Trilha === 18 || trilha.Codigo_Trilha === 45)
-        ? 'Ocultismo'
-        : (nomesPericias[trilha.Perícia_Trilha] || String(trilha.Perícia_Trilha));
+      const nomeP = nomesPericias[trilha.Perícia_Trilha] || String(trilha.Perícia_Trilha);
 
       setVersatilidadeSelecionada({
         ...trilha,

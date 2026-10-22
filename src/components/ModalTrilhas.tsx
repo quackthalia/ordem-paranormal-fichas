@@ -135,7 +135,7 @@ export function ModalTrilhas({
       }
     }
 
-    if (trilha.Codigo_Trilha === 18) {
+    if (trilha.Codigo_Trilha === 18 || trilha.Codigo_Trilha === 45) {
       const jaTinha = (periciasHook.pericias['Ocultismo']?.treino || 0) >= 5 || periciasGratisSemTrilha.includes('Ocultismo');
       setPoderesExtras(prev => ({ ...prev, monstruoso_ja_tinha_ocultismo: String(jaTinha) }));
     }
@@ -165,13 +165,16 @@ export function ModalTrilhas({
 
     const limparTrilhaAnterior = (novaTrilhaId: number) => {
       const trilhaAtual = modoVersatilidade ? trilhasHook.versatilidadeSelecionada : trilhasHook.trilhaSelecionada;
-      if (trilhaAtual?.Codigo_Trilha === 18 && novaTrilhaId !== 18) {
-        const outraTem18 = modoVersatilidade ? trilhasHook.trilhaSelecionada?.Codigo_Trilha === 18 : trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 18;
-        if (!outraTem18) {
+      if ((trilhaAtual?.Codigo_Trilha === 18 || trilhaAtual?.Codigo_Trilha === 45) && novaTrilhaId !== 18 && novaTrilhaId !== 45) {
+        const outraTemMonstruoso = modoVersatilidade
+          ? (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 18 || trilhasHook.trilhaSelecionada?.Codigo_Trilha === 45)
+          : (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 18 || trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 45);
+        if (!outraTemMonstruoso) {
           setPoderesExtras(prev => {
             const n = { ...prev };
             delete n.monstruoso_ja_tinha_ocultismo;
             delete n.monstruoso_elemento;
+            delete n.monstruoso_ativo;
             return n;
           });
         }

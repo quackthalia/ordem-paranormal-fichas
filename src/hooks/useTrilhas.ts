@@ -59,16 +59,21 @@ export function useTrilhas(): UseTrilhasReturn {
       if (dataTrilhas) {
         const trilhasComRegras = dataTrilhas.map(t => {
           const regra = dataRegras?.find((r: any) => r.Codigo_Trilha === t.Codigo_Trilha);
+          const periciaNormalizada = Number(t.Codigo_Trilha) === 45 ? 19 : t.Perícia_Trilha;
           if (regra) {
             return {
               ...t,
+              Perícia_Trilha: periciaNormalizada,
               Auto_10: regra['Auto_10%'],
               Auto_40: regra['Auto_40%'],
               Auto_65: regra['Auto_65%'],
               Auto_99: regra['Auto_99%'],
             };
           }
-          return t;
+          return {
+            ...t,
+            Perícia_Trilha: periciaNormalizada,
+          };
         });
         // Ordena A-Z
         setTrilhas(trilhasComRegras.sort((a: any, b: any) => a.Nome_Trilha.localeCompare(b.Nome_Trilha)));
@@ -115,10 +120,12 @@ export function useTrilhas(): UseTrilhasReturn {
 
   const selecionarTrilha = useCallback(
     (trilha: Trilha) => {
-      const nomeP = nomesPericias[trilha.Perícia_Trilha] || String(trilha.Perícia_Trilha);
+      const codPericia = Number(trilha.Codigo_Trilha) === 45 ? 19 : trilha.Perícia_Trilha;
+      const nomeP = nomesPericias[codPericia] || (codPericia === 19 ? 'Ocultismo' : String(codPericia));
 
       setTrilhaSelecionada({
         ...trilha,
+        Perícia_Trilha: codPericia,
         nome_pericia: nomeP,
       });
       setTrilhasExpandidas(prev => prev.filter(i => i !== trilha.Codigo_Trilha));
@@ -128,10 +135,12 @@ export function useTrilhas(): UseTrilhasReturn {
 
   const selecionarVersatilidade = useCallback(
     (trilha: Trilha) => {
-      const nomeP = nomesPericias[trilha.Perícia_Trilha] || String(trilha.Perícia_Trilha);
+      const codPericia = Number(trilha.Codigo_Trilha) === 45 ? 19 : trilha.Perícia_Trilha;
+      const nomeP = nomesPericias[codPericia] || (codPericia === 19 ? 'Ocultismo' : String(codPericia));
 
       setVersatilidadeSelecionada({
         ...trilha,
+        Perícia_Trilha: codPericia,
         nome_pericia: nomeP,
       });
       setTrilhasExpandidas(prev => prev.filter(i => i !== trilha.Codigo_Trilha + 10000));

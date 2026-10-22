@@ -177,6 +177,7 @@ export const AbasPanel: React.FC = () => {
     temAdepto10, temAdepto40, temAdepto65, temAdepto99,
     temMonstruoso10, temMonstruoso40, temMonstruoso65, temMonstruoso75, temMonstruoso99, monstruosoElemento,
     isMonstruosoAtivo10, isMonstruosoAtivo40, isMonstruosoAtivo65, isMonstruosoAtivo75,
+    temMonstruosoEsp10, temMonstruosoEsp40, temMonstruosoEsp65, temMonstruosoEsp75, temMonstruosoEsp99, isMonstruosoEspAtivo,
   } = useRPG();
 
   const [escolhendoRitualPlaceholder, setEscolhendoRitualPlaceholder] = React.useState<{ origem: string, nex?: number, maxCirculo?: number, circuloFixo?: number, elementoFiltro?: string } | null>(null);
@@ -436,7 +437,7 @@ export const AbasPanel: React.FC = () => {
     }
 
     // 1.6 Poder de Trilha Automático (Monstruoso 75% -> Poder 187)
-    if (temMonstruoso75) {
+    if (temMonstruoso75 || temMonstruosoEsp75) {
       const p187 = listaPoderesUtilidade.find(p => Number(p.codigo_poder) === 187) || poderesClasse.find(p => Number(p.codigo_poder) === 187);
       const fallbackDesc = "Quando o personagem atinge NEX 75%, se torna permanentemente perturbado. Suas ações já não são mais aceitas pela Ordem, que vai banir e potencialmente caçar o ex-agente. Considere que ele começa cada missão com equipamento equivalente a uma patente um nível inferior à sua, conseguido por conta própria.\nQuando o personagem atinge NEX 99%, sua Sanidade é reduzida a 1. Por fim, sempre que ficar enlouquecendo, em vez de sofrer um efeito de insanidade (veja OPRPG, p.111), o personagem fica confuso (a condição se encerra normalmente ou quando o personagem não está mais enlouquecendo). Se um personagem Monstruoso enlouquecer com 99% de NEX, se torna permanentemente uma criatura do Outro Lado.\nSe estiver usando a regra opcional Jogando sem Sanidade, em vez disso considere que o personagem está sempre perturbado e fica enlouquecendo (e confuso) sempre que perde 1 ponto de determinação por qualquer efeito (exceto por pagar custos de habilidades e itens).";
       lista.push({
@@ -827,7 +828,7 @@ export const AbasPanel: React.FC = () => {
     }
 
     return lista;
-  }, [classe, nex, nivel, origemSelecionada, poderClasse, poderesClasse, poderesEscolhidos, poderesParanormaisMap, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras, trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, regrasAutomaticasAtivas, temMonstruoso75, listaPoderesUtilidade]);
+  }, [classe, nex, nivel, origemSelecionada, poderClasse, poderesClasse, poderesEscolhidos, poderesParanormaisMap, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras, trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, regrasAutomaticasAtivas, temMonstruoso75, temMonstruosoEsp75, listaPoderesUtilidade]);
 
   const habilidadesFiltradas = listaHabilidades.filter(hab =>
     hab.nome.toLowerCase().includes(filtroHabilidades.toLowerCase()) ||
@@ -978,7 +979,9 @@ export const AbasPanel: React.FC = () => {
                           
                           if (!t) return null;
 
-                          const isMonstruoso = Number(t.Codigo_Trilha) === 18 || String(t.Nome_Trilha || '').trim().toLowerCase().includes('monstruoso');
+                          const isMonstruosoComb = Number(t.Codigo_Trilha) === 18 || (String(t.Nome_Trilha || '').trim().toLowerCase().includes('monstruoso') && t.Classe_Trilha === 'Combatente');
+                          const isMonstruosoEsp = Number(t.Codigo_Trilha) === 45 || (String(t.Nome_Trilha || '').trim().toLowerCase().includes('monstruoso') && t.Classe_Trilha === 'Especialista');
+                          const isMonstruoso = isMonstruosoComb || isMonstruosoEsp || String(t.Nome_Trilha || '').trim().toLowerCase().includes('monstruoso');
                           const nexLevels = isVersatilidade ? [10] : [10, 40, 65, 99];
                           
                           return (
@@ -1045,10 +1048,12 @@ export const AbasPanel: React.FC = () => {
                                     const uniqueHabId = `trilha_${isVersatilidade ? 'versatilidade_' : ''}${t.Codigo_Trilha}_hab_${nexLvl}`;
                                     const isHabExpanded = habilidadesExpandidas.includes(uniqueHabId);
                                     const isAtivoMonst = !isMonstruoso ? true : (
-                                      temMonstruoso99 ? true : (
-                                        nexLvl === 10 ? isMonstruosoAtivo10 :
-                                        nexLvl === 40 ? isMonstruosoAtivo40 :
-                                        nexLvl === 65 ? isMonstruosoAtivo65 : true
+                                      isMonstruosoEsp ? isMonstruosoEspAtivo : (
+                                        temMonstruoso99 ? true : (
+                                          nexLvl === 10 ? isMonstruosoAtivo10 :
+                                          nexLvl === 40 ? isMonstruosoAtivo40 :
+                                          nexLvl === 65 ? isMonstruosoAtivo65 : true
+                                        )
                                       )
                                     );
                                     const toggleAtivoMonst = (e?: React.MouseEvent | React.ChangeEvent) => {
@@ -1066,7 +1071,7 @@ export const AbasPanel: React.FC = () => {
                                           className="flex cursor-pointer items-center justify-between px-3 py-2 transition hover:bg-zinc-800"
                                         >
                                           <div className="flex items-center gap-2 min-w-0">
-                                            {isMonstruoso && !temMonstruoso99 && (
+                                            {isMonstruoso && (isMonstruosoEsp || !temMonstruoso99) && (
                                               <input
                                                 type="checkbox"
                                                 checked={isAtivoMonst}
@@ -1132,12 +1137,19 @@ export const AbasPanel: React.FC = () => {
                                             </div>
                                           )}
                                           {isMonstruoso && (() => {
-                                            const poderMonstruosoMap: Record<number, Record<string, number>> = {
-                                              10: { Sangue: 188, Morte: 189, Conhecimento: 190, Energia: 191 },
-                                              40: { Sangue: 192, Morte: 193, Conhecimento: 194, Energia: 195 },
-                                              65: { Sangue: 196, Morte: 197, Conhecimento: 198, Energia: 199 },
-                                              99: { Sangue: 200, Morte: 201, Conhecimento: 202, Energia: 203 },
-                                            };
+                                            const poderMonstruosoMap: Record<number, Record<string, number>> = isMonstruosoEsp
+                                              ? {
+                                                  10: { Sangue: 215, Morte: 216, Conhecimento: 217, Energia: 218 },
+                                                  40: { Sangue: 219, Morte: 220, Conhecimento: 221, Energia: 222 },
+                                                  65: { Sangue: 223, Morte: 224, Conhecimento: 225, Energia: 226 },
+                                                  99: { Sangue: 227, Morte: 228, Conhecimento: 229, Energia: 230 },
+                                                }
+                                              : {
+                                                  10: { Sangue: 188, Morte: 189, Conhecimento: 190, Energia: 191 },
+                                                  40: { Sangue: 192, Morte: 193, Conhecimento: 194, Energia: 195 },
+                                                  65: { Sangue: 196, Morte: 197, Conhecimento: 198, Energia: 199 },
+                                                  99: { Sangue: 200, Morte: 201, Conhecimento: 202, Energia: 203 },
+                                                };
                                             const codPoder = poderMonstruosoMap[nexLvl]?.[monstruosoElemento];
                                             if (!codPoder) return null;
                                             const pData = listaPoderesUtilidade.find(p => p.codigo_poder === codPoder);
@@ -1155,6 +1167,100 @@ export const AbasPanel: React.FC = () => {
                                                   className="text-xs text-zinc-300 leading-relaxed"
                                                   dangerouslySetInnerHTML={{ __html: formatarDescricao(pData.Descricao) }}
                                                 />
+                                                {codPoder === 217 && isAtivoMonst && !regrasAutomaticasAtivas.has(114) && (
+                                                  <div className="mt-2 pt-2 border-t border-zinc-800/80 flex flex-col gap-2">
+                                                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                                                      Perícias Escolhidas (Treinar ou +2):
+                                                    </span>
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                      {[1, 2].map(slot => {
+                                                        const atual = poderesExtras[`regra102_pericia_${slot}`] || '';
+                                                        const outra = poderesExtras[`regra102_pericia_${slot === 1 ? 2 : 1}`] || '';
+                                                        const listaNomes = Object.keys(periciasHook.pericias || {}).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+                                                        return (
+                                                          <CustomSelect
+                                                            key={slot}
+                                                            value={atual}
+                                                            onChange={(val) => {
+                                                              if (!val) {
+                                                                setPoderesExtras(prev => {
+                                                                  const n = { ...prev };
+                                                                  delete n[`regra102_pericia_${slot}`];
+                                                                  delete n[`regra102_jatinha_${slot}`];
+                                                                  return n;
+                                                                });
+                                                                return;
+                                                              }
+                                                              const jaEraTreinado = (periciasHook.pericias[val]?.treino || 0) >= 5;
+                                                              setPoderesExtras(prev => ({
+                                                                ...prev,
+                                                                [`regra102_pericia_${slot}`]: val,
+                                                                [`regra102_jatinha_${slot}`]: jaEraTreinado ? 'true' : 'false',
+                                                              }));
+                                                            }}
+                                                            options={[
+                                                              { value: '', label: `Perícia ${slot}...` },
+                                                              ...listaNomes.map(nomeP => ({
+                                                                value: nomeP,
+                                                                label: nomeP,
+                                                                disabled: nomeP === outra
+                                                              }))
+                                                            ]}
+                                                            wrapperClassName="w-full"
+                                                            className="w-full rounded border border-zinc-700 bg-zinc-900 px-2.5 py-1.5 text-xs text-zinc-200"
+                                                          />
+                                                        );
+                                                      })}
+                                                    </div>
+                                                  </div>
+                                                )}
+                                                {codPoder === 229 && isAtivoMonst && (
+                                                  <div className="mt-2 pt-2 border-t border-zinc-800/80 flex flex-col gap-2">
+                                                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                                                      Perícias Escolhidas (Expert ou +10):
+                                                    </span>
+                                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                                      {[1, 2, 3].map(slot => {
+                                                        const atual = poderesExtras[`regra114_pericia_${slot}`] || '';
+                                                        const outras = [1, 2, 3].filter(s => s !== slot).map(s => poderesExtras[`regra114_pericia_${s}`]).filter(Boolean);
+                                                        const listaNomes = Object.keys(periciasHook.pericias || {}).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+                                                        return (
+                                                          <CustomSelect
+                                                            key={slot}
+                                                            value={atual}
+                                                            onChange={(val) => {
+                                                              if (!val) {
+                                                                setPoderesExtras(prev => {
+                                                                  const n = { ...prev };
+                                                                  delete n[`regra114_pericia_${slot}`];
+                                                                  delete n[`regra114_jaexpert_${slot}`];
+                                                                  return n;
+                                                                });
+                                                                return;
+                                                              }
+                                                              const jaEraExpert = (periciasHook.pericias[val]?.treino || 0) >= 15;
+                                                              setPoderesExtras(prev => ({
+                                                                ...prev,
+                                                                [`regra114_pericia_${slot}`]: val,
+                                                                [`regra114_jaexpert_${slot}`]: jaEraExpert ? 'true' : 'false',
+                                                              }));
+                                                            }}
+                                                            options={[
+                                                              { value: '', label: `Perícia ${slot}...` },
+                                                              ...listaNomes.map(nomeP => ({
+                                                                value: nomeP,
+                                                                label: nomeP,
+                                                                disabled: outras.includes(nomeP)
+                                                              }))
+                                                            ]}
+                                                            wrapperClassName="w-full"
+                                                            className="w-full rounded border border-zinc-700 bg-zinc-900 px-2.5 py-1.5 text-xs text-zinc-200"
+                                                          />
+                                                        );
+                                                      })}
+                                                    </div>
+                                                  </div>
+                                                )}
                                               </div>
                                             );
                                           })()}
@@ -1349,8 +1455,30 @@ export const AbasPanel: React.FC = () => {
                                              });
                                            }
                                          }
+                                         if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 18 || trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 45) {
+                                           if (trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 18 && trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 45) {
+                                             setPoderesExtras(prev => {
+                                               const n = { ...prev };
+                                               delete n.monstruoso_ja_tinha_ocultismo;
+                                               delete n.monstruoso_elemento;
+                                               delete n.monstruoso_ativo;
+                                               return n;
+                                             });
+                                           }
+                                         }
                                          trilhasHook.setVersatilidadeSelecionada(null);
                                        } else {
+                                         if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 18 || trilhasHook.trilhaSelecionada?.Codigo_Trilha === 45) {
+                                           if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha !== 18 && trilhasHook.versatilidadeSelecionada?.Codigo_Trilha !== 45) {
+                                             setPoderesExtras(prev => {
+                                               const n = { ...prev };
+                                               delete n.monstruoso_ja_tinha_ocultismo;
+                                               delete n.monstruoso_elemento;
+                                               delete n.monstruoso_ativo;
+                                               return n;
+                                             });
+                                           }
+                                         }
                                          if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 17) {
                                            setPoderesExtras(prev => {
                                              const n = { ...prev };

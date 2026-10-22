@@ -613,140 +613,140 @@ function AtributosFicha() {
       {(regrasAutomaticasAtivas.has(104) || regrasAutomaticasAtivas.has(105) || regrasAutomaticasAtivas.has(106) || regrasAutomaticasAtivas.has(107)) && (
         <div className="mt-4 flex w-full flex-col gap-2 px-2">
           {regrasAutomaticasAtivas.has(104) && (
-            <div className="flex items-center justify-between gap-2 rounded-lg border border-red-900/50 bg-zinc-900/80 px-3 py-2 shadow-sm">
-              <div className="flex flex-col">
-                <span className="text-xs font-bold uppercase tracking-wider text-red-400">Devorar Intelecto</span>
+            <div className="flex items-center justify-between gap-3 rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 shadow-sm transition hover:border-zinc-700">
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs font-bold uppercase tracking-wider text-zinc-200">Devorar Intelecto</span>
                 <span className="text-[10px] text-zinc-400">
-                  Devorado: <strong className="text-zinc-200">{devorarIntCount}/{maxDevorarInt}</strong> • +{1 + devorarIntCount}d{regrasAutomaticasAtivas.has(108) ? 8 : 6} Sangue | RD Dano {2 + devorarIntCount * 2}
+                  +{1 + devorarIntCount}d{regrasAutomaticasAtivas.has(108) ? 8 : 6} Sangue • RD Dano {2 + devorarIntCount * 2} {devorarIntCount > 0 && <span className="text-zinc-300 font-semibold">(–{devorarIntCount} INT)</span>}
                 </span>
               </div>
-              <div className="flex items-center gap-1.5">
-                {devorarIntCount > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setPoderesExtras(prev => ({ ...prev, devorar_int: String(Math.max(0, devorarIntCount - 1)) }))}
-                    className="rounded border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs font-bold text-zinc-400 transition hover:border-zinc-500 hover:text-zinc-200 cursor-pointer"
-                    title="Restaurar 1 ponto de Intelecto"
-                  >
-                    -1
-                  </button>
-                )}
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  type="button"
+                  disabled={devorarIntCount <= 0}
+                  onClick={() => setPoderesExtras(prev => ({ ...prev, devorar_int: String(Math.max(0, devorarIntCount - 1)) }))}
+                  className="h-7 w-7 rounded border border-zinc-700 bg-zinc-800/80 text-xs font-bold text-zinc-300 transition hover:border-zinc-500 hover:bg-zinc-700 hover:text-zinc-100 disabled:opacity-25 disabled:border-zinc-800 disabled:bg-zinc-900/40 disabled:text-zinc-600 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center"
+                  title="Restaurar 1 ponto de Intelecto"
+                >
+                  −
+                </button>
                 <button
                   type="button"
                   disabled={devorarIntCount >= maxDevorarInt}
                   onClick={() => setPoderesExtras(prev => ({ ...prev, devorar_int: String(Math.min(maxDevorarInt, devorarIntCount + 1)) }))}
-                  className={`rounded border px-2.5 py-1 text-xs font-bold uppercase tracking-wider transition ${
+                  className={`h-7 rounded border px-3 text-xs font-bold uppercase tracking-wider transition flex items-center justify-center ${
                     devorarIntCount >= maxDevorarInt
-                      ? 'border-zinc-800 bg-zinc-900 text-zinc-600 cursor-not-allowed'
-                      : 'border-red-800/80 bg-red-950/30 text-red-400 hover:border-red-600 hover:bg-red-950/60 hover:text-red-300 cursor-pointer'
+                      ? 'border-zinc-800 bg-zinc-900/40 text-zinc-600 cursor-not-allowed'
+                      : 'border-zinc-700 bg-zinc-800/80 text-zinc-200 hover:border-zinc-500 hover:bg-zinc-700 hover:text-white cursor-pointer shadow-sm'
                   }`}
+                  title="Devorar 1 ponto de Intelecto"
                 >
-                  Devorar
+                  Devorar ({devorarIntCount}/{maxDevorarInt})
                 </button>
               </div>
             </div>
           )}
 
           {regrasAutomaticasAtivas.has(105) && (
-            <div className="flex items-center justify-between gap-2 rounded-lg border border-zinc-700/80 bg-zinc-900/80 px-3 py-2 shadow-sm">
-              <div className="flex flex-col">
+            <div className="flex items-center justify-between gap-3 rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 shadow-sm transition hover:border-zinc-700">
+              <div className="flex flex-col min-w-0">
                 <span className="text-xs font-bold uppercase tracking-wider text-zinc-200">Necrosar Força</span>
                 <span className="text-[10px] text-zinc-400">
-                  Necrosado: <strong className="text-zinc-200">{necrosarForCount}/{maxNecrosarFor}</strong> • +{1 + necrosarForCount} turno(s) morrendo
+                  +{1 + necrosarForCount} turno(s) morrendo {necrosarForCount > 0 && <span className="text-zinc-300 font-semibold">(–{necrosarForCount} FOR)</span>}
                 </span>
               </div>
-              <div className="flex items-center gap-1.5">
-                {necrosarForCount > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setPoderesExtras(prev => ({ ...prev, necrosar_for: String(Math.max(0, necrosarForCount - 1)) }))}
-                    className="rounded border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs font-bold text-zinc-400 transition hover:border-zinc-500 hover:text-zinc-200 cursor-pointer"
-                    title="Restaurar 1 ponto de Força"
-                  >
-                    -1
-                  </button>
-                )}
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  type="button"
+                  disabled={necrosarForCount <= 0}
+                  onClick={() => setPoderesExtras(prev => ({ ...prev, necrosar_for: String(Math.max(0, necrosarForCount - 1)) }))}
+                  className="h-7 w-7 rounded border border-zinc-700 bg-zinc-800/80 text-xs font-bold text-zinc-300 transition hover:border-zinc-500 hover:bg-zinc-700 hover:text-zinc-100 disabled:opacity-25 disabled:border-zinc-800 disabled:bg-zinc-900/40 disabled:text-zinc-600 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center"
+                  title="Restaurar 1 ponto de Força"
+                >
+                  −
+                </button>
                 <button
                   type="button"
                   disabled={necrosarForCount >= maxNecrosarFor}
                   onClick={() => setPoderesExtras(prev => ({ ...prev, necrosar_for: String(Math.min(maxNecrosarFor, necrosarForCount + 1)) }))}
-                  className={`rounded border px-2.5 py-1 text-xs font-bold uppercase tracking-wider transition ${
+                  className={`h-7 rounded border px-3 text-xs font-bold uppercase tracking-wider transition flex items-center justify-center ${
                     necrosarForCount >= maxNecrosarFor
-                      ? 'border-zinc-800 bg-zinc-900 text-zinc-600 cursor-not-allowed'
-                      : 'border-zinc-600 bg-zinc-950 text-zinc-200 hover:border-zinc-400 hover:bg-zinc-800 cursor-pointer'
+                      ? 'border-zinc-800 bg-zinc-900/40 text-zinc-600 cursor-not-allowed'
+                      : 'border-zinc-700 bg-zinc-800/80 text-zinc-200 hover:border-zinc-500 hover:bg-zinc-700 hover:text-white cursor-pointer shadow-sm'
                   }`}
+                  title="Necrosar 1 ponto de Força"
                 >
-                  Necrosar
+                  Necrosar ({necrosarForCount}/{maxNecrosarFor})
                 </button>
               </div>
             </div>
           )}
 
           {regrasAutomaticasAtivas.has(106) && (
-            <div className="flex items-center justify-between gap-2 rounded-lg border border-yellow-900/50 bg-zinc-900/80 px-3 py-2 shadow-sm">
-              <div className="flex flex-col">
-                <span className="text-xs font-bold uppercase tracking-wider text-yellow-500">Inexistir Agilidade</span>
+            <div className="flex items-center justify-between gap-3 rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 shadow-sm transition hover:border-zinc-700">
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs font-bold uppercase tracking-wider text-zinc-200">Inexistir Agilidade</span>
                 <span className="text-[10px] text-zinc-400">
-                  Inexistido: <strong className="text-zinc-200">{inexistirAgiCount}/{maxInexistirAgi}</strong> • +{inexistirAgiCount * 2} em testes de INT
+                  +{inexistirAgiCount * 2} em testes de INT {inexistirAgiCount > 0 && <span className="text-zinc-300 font-semibold">(–{inexistirAgiCount} AGI)</span>}
                 </span>
               </div>
-              <div className="flex items-center gap-1.5">
-                {inexistirAgiCount > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setPoderesExtras(prev => ({ ...prev, inexistir_agi: String(Math.max(0, inexistirAgiCount - 1)) }))}
-                    className="rounded border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs font-bold text-zinc-400 transition hover:border-zinc-500 hover:text-zinc-200 cursor-pointer"
-                    title="Restaurar 1 ponto de Agilidade"
-                  >
-                    -1
-                  </button>
-                )}
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  type="button"
+                  disabled={inexistirAgiCount <= 0}
+                  onClick={() => setPoderesExtras(prev => ({ ...prev, inexistir_agi: String(Math.max(0, inexistirAgiCount - 1)) }))}
+                  className="h-7 w-7 rounded border border-zinc-700 bg-zinc-800/80 text-xs font-bold text-zinc-300 transition hover:border-zinc-500 hover:bg-zinc-700 hover:text-zinc-100 disabled:opacity-25 disabled:border-zinc-800 disabled:bg-zinc-900/40 disabled:text-zinc-600 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center"
+                  title="Restaurar 1 ponto de Agilidade"
+                >
+                  −
+                </button>
                 <button
                   type="button"
                   disabled={inexistirAgiCount >= maxInexistirAgi}
                   onClick={() => setPoderesExtras(prev => ({ ...prev, inexistir_agi: String(Math.min(maxInexistirAgi, inexistirAgiCount + 1)) }))}
-                  className={`rounded border px-2.5 py-1 text-xs font-bold uppercase tracking-wider transition ${
+                  className={`h-7 rounded border px-3 text-xs font-bold uppercase tracking-wider transition flex items-center justify-center ${
                     inexistirAgiCount >= maxInexistirAgi
-                      ? 'border-zinc-800 bg-zinc-900 text-zinc-600 cursor-not-allowed'
-                      : 'border-yellow-800/80 bg-yellow-950/30 text-yellow-400 hover:border-yellow-600 hover:bg-yellow-950/60 hover:text-yellow-300 cursor-pointer'
+                      ? 'border-zinc-800 bg-zinc-900/40 text-zinc-600 cursor-not-allowed'
+                      : 'border-zinc-700 bg-zinc-800/80 text-zinc-200 hover:border-zinc-500 hover:bg-zinc-700 hover:text-white cursor-pointer shadow-sm'
                   }`}
+                  title="Inexistir 1 ponto de Agilidade"
                 >
-                  Inexistir
+                  Inexistir ({inexistirAgiCount}/{maxInexistirAgi})
                 </button>
               </div>
             </div>
           )}
 
           {regrasAutomaticasAtivas.has(107) && (
-            <div className="flex items-center justify-between gap-2 rounded-lg border border-purple-900/50 bg-zinc-900/80 px-3 py-2 shadow-sm">
-              <div className="flex flex-col">
-                <span className="text-xs font-bold uppercase tracking-wider text-purple-400">Queimar Vigor</span>
+            <div className="flex items-center justify-between gap-3 rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2.5 shadow-sm transition hover:border-zinc-700">
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs font-bold uppercase tracking-wider text-zinc-200">Queimar Vigor</span>
                 <span className="text-[10px] text-zinc-400">
-                  Queimado: <strong className="text-zinc-200">{queimarVigCount}/{maxQueimarVig}</strong> • +1d6{queimarVigCount > 0 ? `+${queimarVigCount}d4` : ''} Ataque | +{2 + queimarVigCount * 2} Defesa
+                  +{2 + queimarVigCount * 2} Defesa • +1d6{queimarVigCount > 0 ? `+${queimarVigCount}d4` : ''} Ataque {queimarVigCount > 0 && <span className="text-zinc-300 font-semibold">(–{queimarVigCount} VIG)</span>}
                 </span>
               </div>
-              <div className="flex items-center gap-1.5">
-                {queimarVigCount > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setPoderesExtras(prev => ({ ...prev, queimar_vig: String(Math.max(0, queimarVigCount - 1)) }))}
-                    className="rounded border border-zinc-700 bg-zinc-950 px-2 py-1 text-xs font-bold text-zinc-400 transition hover:border-zinc-500 hover:text-zinc-200 cursor-pointer"
-                    title="Restaurar 1 ponto de Vigor"
-                  >
-                    -1
-                  </button>
-                )}
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  type="button"
+                  disabled={queimarVigCount <= 0}
+                  onClick={() => setPoderesExtras(prev => ({ ...prev, queimar_vig: String(Math.max(0, queimarVigCount - 1)) }))}
+                  className="h-7 w-7 rounded border border-zinc-700 bg-zinc-800/80 text-xs font-bold text-zinc-300 transition hover:border-zinc-500 hover:bg-zinc-700 hover:text-zinc-100 disabled:opacity-25 disabled:border-zinc-800 disabled:bg-zinc-900/40 disabled:text-zinc-600 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center"
+                  title="Restaurar 1 ponto de Vigor"
+                >
+                  −
+                </button>
                 <button
                   type="button"
                   disabled={queimarVigCount >= maxQueimarVig}
                   onClick={() => setPoderesExtras(prev => ({ ...prev, queimar_vig: String(Math.min(maxQueimarVig, queimarVigCount + 1)) }))}
-                  className={`rounded border px-2.5 py-1 text-xs font-bold uppercase tracking-wider transition ${
+                  className={`h-7 rounded border px-3 text-xs font-bold uppercase tracking-wider transition flex items-center justify-center ${
                     queimarVigCount >= maxQueimarVig
-                      ? 'border-zinc-800 bg-zinc-900 text-zinc-600 cursor-not-allowed'
-                      : 'border-purple-800/80 bg-purple-950/30 text-purple-400 hover:border-purple-600 hover:bg-purple-950/60 hover:text-purple-300 cursor-pointer'
+                      ? 'border-zinc-800 bg-zinc-900/40 text-zinc-600 cursor-not-allowed'
+                      : 'border-zinc-700 bg-zinc-800/80 text-zinc-200 hover:border-zinc-500 hover:bg-zinc-700 hover:text-white cursor-pointer shadow-sm'
                   }`}
+                  title="Queimar 1 ponto de Vigor"
                 >
-                  Queimar
+                  Queimar ({queimarVigCount}/{maxQueimarVig})
                 </button>
               </div>
             </div>

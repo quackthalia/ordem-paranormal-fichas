@@ -493,17 +493,18 @@ export function usePericias(
     [regrasAtivas, periciasGratis, veteranasGratis, expertsGratis, nivel, limites, profissoes]
   );
 
-  // Bônus dinâmico por atributo da perícia (Regras 106, 112, 113, 114, 115)
+  // Bônus dinâmico por atributo da perícia (Regras 100, 106, 112, 113, 114, 115)
   const bonusAtributoDinamico = useMemo(() => {
     const mapa: Record<string, number> = {};
     if (!regrasAutomaticasAtivas) return mapa;
+    const tem100 = regrasAutomaticasAtivas.has(100);
     const tem106 = regrasAutomaticasAtivas.has(106);
     const tem112 = regrasAutomaticasAtivas.has(112);
     const tem113 = regrasAutomaticasAtivas.has(113);
     const tem114 = regrasAutomaticasAtivas.has(114);
     const tem115 = regrasAutomaticasAtivas.has(115);
 
-    if (!tem106 && !tem112 && !tem113 && !tem114 && !tem115) return mapa;
+    if (!tem100 && !tem106 && !tem112 && !tem113 && !tem114 && !tem115) return mapa;
 
     const atrRef = atributosFinais || atributos;
 
@@ -512,7 +513,8 @@ export function usePericias(
       if (tem106 && dados.atributo === 'INT' && inexistirAgiCount > 0) {
         b += inexistirAgiCount * 2;
       }
-      if (tem112 && dados.atributo === 'FOR') {
+      // Regra 100 (Sangue 10%) e 112 (Sangue 99%, substitui a 100): soma FOR nas perícias que usam FOR (inclusive se o atributo foi trocado)
+      if ((tem100 || tem112) && dados.atributo === 'FOR') {
         b += atrRef.FOR;
       }
       if (tem113 && dados.atributo === 'VIG') {

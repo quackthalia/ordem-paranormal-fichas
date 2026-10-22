@@ -353,10 +353,11 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     const hasMonst99 = isMonstTrilha && (regras['nex_experiencia'] ? effNivel >= 20 : effNex >= 99);
     const elemMonst = afinidadeEscolhida || poderesExtras['monstruoso_elemento'] || 'Sangue';
 
-    const isMonstAtivo10 = hasMonst99 || poderesExtras['monstruoso_ativo_10'] !== 'false';
-    const isMonstAtivo40 = hasMonst99 || poderesExtras['monstruoso_ativo_40'] !== 'false';
-    const isMonstAtivo65 = hasMonst99 || poderesExtras['monstruoso_ativo_65'] !== 'false';
-    const isMonstAtivo75 = hasMonst99 || poderesExtras['monstruoso_ativo_75'] !== 'false';
+    const isMonstruosoAtivo = hasMonst99 || poderesExtras['monstruoso_ativo'] !== 'false';
+    const isMonstAtivo10 = isMonstruosoAtivo;
+    const isMonstAtivo40 = isMonstruosoAtivo;
+    const isMonstAtivo65 = isMonstruosoAtivo;
+    const isMonstAtivo75 = isMonstruosoAtivo;
 
     if (hasMonst10 && isMonstAtivo10) {
       if (elemMonst === 'Sangue') set.add(70);
@@ -472,10 +473,11 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const temMonstruoso75 = isTrilhaMonstruoso && (regras['nex_experiencia'] ? effectiveNivel >= 15 : effectiveNex >= 75);
   const temMonstruoso99 = isTrilhaMonstruoso && (regras['nex_experiencia'] ? effectiveNivel >= 20 : effectiveNex >= 99);
 
-  const isMonstruosoAtivo10 = temMonstruoso99 || poderesExtras['monstruoso_ativo_10'] !== 'false';
-  const isMonstruosoAtivo40 = temMonstruoso99 || poderesExtras['monstruoso_ativo_40'] !== 'false';
-  const isMonstruosoAtivo65 = temMonstruoso99 || poderesExtras['monstruoso_ativo_65'] !== 'false';
-  const isMonstruosoAtivo75 = temMonstruoso99 || poderesExtras['monstruoso_ativo_75'] !== 'false';
+  const isMonstruosoAtivo = temMonstruoso99 || poderesExtras['monstruoso_ativo'] !== 'false';
+  const isMonstruosoAtivo10 = isMonstruosoAtivo;
+  const isMonstruosoAtivo40 = isMonstruosoAtivo;
+  const isMonstruosoAtivo65 = isMonstruosoAtivo;
+  const isMonstruosoAtivo75 = isMonstruosoAtivo;
 
   const monstruosoElemento = useMemo(() => {
     if (afinidadeEscolhida) return afinidadeEscolhida;

@@ -1064,10 +1064,9 @@ export const AbasPanel: React.FC = () => {
                                     );
                                     const toggleAtivoMonst = (e?: React.MouseEvent | React.ChangeEvent) => {
                                       if (e && 'stopPropagation' in e) e.stopPropagation();
-                                      const chave = `monstruoso_ativo_${nexLvl}`;
                                       setPoderesExtras(prev => ({
                                         ...prev,
-                                        [chave]: prev[chave] === 'false' ? 'true' : 'false'
+                                        monstruoso_ativo: prev['monstruoso_ativo'] === 'false' ? 'true' : 'false'
                                       }));
                                     };
               
@@ -1457,7 +1456,7 @@ export const AbasPanel: React.FC = () => {
                                     <input
                                       type="checkbox"
                                       checked={isMonstruosoAtivo75}
-                                      onChange={() => setPoderesExtras(prev => ({ ...prev, monstruoso_ativo_75: prev['monstruoso_ativo_75'] === 'false' ? 'true' : 'false' }))}
+                                      onChange={() => setPoderesExtras(prev => ({ ...prev, monstruoso_ativo: prev['monstruoso_ativo'] === 'false' ? 'true' : 'false' }))}
                                       className="accent-green-500 rounded cursor-pointer h-3.5 w-3.5"
                                     />
                                     <span className={`text-[10px] font-bold uppercase tracking-wider ${isMonstruosoAtivo75 ? 'text-green-400' : 'text-zinc-500'}`}>
@@ -1485,19 +1484,6 @@ export const AbasPanel: React.FC = () => {
                                 {hab.automatico && (
                                   <div className="mb-3 flex items-center justify-between gap-2 border-b border-zinc-800/50 pb-2">
                                     <div className="flex items-center gap-2">
-                                      {isPoder187 && !temMonstruoso99 && (
-                                        <label className="flex items-center gap-1.5 cursor-pointer" onClick={e => e.stopPropagation()}>
-                                          <input
-                                            type="checkbox"
-                                            checked={isMonstruosoAtivo75}
-                                            onChange={() => setPoderesExtras(prev => ({ ...prev, monstruoso_ativo_75: prev['monstruoso_ativo_75'] === 'false' ? 'true' : 'false' }))}
-                                            className="accent-green-500 rounded cursor-pointer h-3.5 w-3.5"
-                                          />
-                                          <span className={`text-[10px] font-bold uppercase tracking-wider ${isMonstruosoAtivo75 ? 'text-green-400' : 'text-zinc-500'}`}>
-                                            {isMonstruosoAtivo75 ? 'Ativo' : 'Inativo'}
-                                          </span>
-                                        </label>
-                                      )}
                                       <span
                                         title={hab.automatico.toLowerCase().trim() === 'sim' ? 'Totalmente automático' : 'Semi-automático'}
                                         className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider ${

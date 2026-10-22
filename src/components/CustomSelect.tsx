@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 interface CustomSelectProps {
   value: string;
@@ -8,18 +9,23 @@ interface CustomSelectProps {
   wrapperClassName?: string;
   placeholder?: string;
   hideIcon?: boolean;
+  /** Renderiza a lista no document.body (evita ser cortada por containers com overflow-hidden) */
+  portal?: boolean;
 }
 
-export function CustomSelect({ value, onChange, options, className = '', wrapperClassName = 'w-full', placeholder, hideIcon = false }: CustomSelectProps) {
+export function CustomSelect({ value, onChange, options, className = '', wrapperClassName = 'w-full', placeholder, hideIcon = false, portal = false }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState<{ top: number; left: number; width: number; openUp: boolean } | null>(null);
 
   // Fecha o dropdown se clicar fora
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
+      const target = event.target as Node;
+      if (containerRef.current?.contains(target)) return;
+      if (dropdownRef.current?.contains(target)) return;
+      setIsOpen(false);
     }
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
@@ -29,12 +35,77 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
     };
   }, [isOpen]);
 
+  // Posicionamento do dropdown em modo portal
+  useLayoutEffect(() => {
+    if (!portal || !isOpen) return;
+    const atualizar = () => {
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const alturaMax = 240 + 8;
+      const espacoAbaixo = window.innerHeight - rect.bottom;
+      const openUp = espacoAbaixo < alturaMax && rect.top > espacoAbaixo;
+      setPos({
+        top: openUp ? rect.top - 4 : rect.bottom + 4,
+        left: rect.left,
+        width: rect.width,
+        openUp,
+      });
+    };
+    atualizar();
+    window.addEventListener('scroll', atualizar, true);
+    window.addEventListener('resize', atualizar);
+    return () => {
+      window.removeEventListener('scroll', atualizar, true);
+      window.removeEventListener('resize', atualizar);
+    };
+  }, [portal, isOpen]);
+
   // Normaliza as opções para o formato {value, label}
   const normalizedOptions = options.map(opt => 
     typeof opt === 'string' ? { value: opt, label: opt } : opt
   );
 
   const selectedOption = normalizedOptions.find(opt => opt.value === value);
+
+  const lista = (
+    <ul className="max-h-60 overflow-auto custom-scrollbar py-1 text-sm text-zinc-300">
+      {normalizedOptions.map((opt) => (
+        <li
+          key={opt.value}
+          onClick={(e) => {
+            if (opt.disabled) {
+              e.stopPropagation();
+              return;
+            }
+            onChange(opt.value);
+            setIsOpen(false);
+          }}
+          onPointerDown={(e) => {
+            if (opt.disabled) return;
+            e.preventDefault();
+            onChange(opt.value);
+            setIsOpen(false);
+          }}
+          className={`relative py-2 px-3 transition-colors ${
+            opt.disabled
+              ? 'opacity-60 cursor-not-allowed bg-zinc-900/50 text-zinc-500'
+              : 'cursor-pointer select-none hover:bg-green-600/20 hover:text-green-400'
+          } ${
+            value === opt.value ? 'bg-green-900/30 font-bold text-green-400' : ''
+          }`}
+        >
+          <div className="flex flex-col">
+            <span className="block truncate">{opt.label}</span>
+            {opt.subtitle && (
+              <span className="text-[10px] mt-0.5 whitespace-normal leading-tight text-red-400/80">
+                {opt.subtitle}
+              </span>
+            )}
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
 
   return (
     <div className={`relative text-left ${wrapperClassName}`} ref={containerRef}>
@@ -55,50 +126,33 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
         )}
       </button>
 
-      {/* Dropdown com animação */}
-      <div 
-        className={`absolute z-[100] mt-1 ${hideIcon ? 'w-full min-w-max left-1/2 -translate-x-1/2' : 'w-full'} overflow-hidden rounded-md border border-zinc-700 bg-zinc-900 shadow-xl shadow-black transition-all duration-200 origin-top ${
-          isOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
-        }`}
-      >
-        <ul className="max-h-60 overflow-auto custom-scrollbar py-1 text-sm text-zinc-300">
-          {normalizedOptions.map((opt) => (
-            <li
-              key={opt.value}
-              onClick={(e) => {
-                if (opt.disabled) {
-                  e.stopPropagation();
-                  return;
-                }
-                onChange(opt.value);
-                setIsOpen(false);
-              }}
-              onPointerDown={(e) => {
-                if (opt.disabled) return;
-                e.preventDefault();
-                onChange(opt.value);
-                setIsOpen(false);
-              }}
-              className={`relative py-2 px-3 transition-colors ${
-                opt.disabled
-                  ? 'opacity-60 cursor-not-allowed bg-zinc-900/50 text-zinc-500'
-                  : 'cursor-pointer select-none hover:bg-green-600/20 hover:text-green-400'
-              } ${
-                value === opt.value ? 'bg-green-900/30 font-bold text-green-400' : ''
-              }`}
-            >
-              <div className="flex flex-col">
-                <span className="block truncate">{opt.label}</span>
-                {opt.subtitle && (
-                  <span className="text-[10px] mt-0.5 whitespace-normal leading-tight text-red-400/80">
-                    {opt.subtitle}
-                  </span>
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
+      {portal ? (
+        isOpen && pos && createPortal(
+          <div
+            ref={dropdownRef}
+            style={{
+              position: 'fixed',
+              left: pos.left,
+              top: pos.top,
+              width: pos.width,
+              transform: pos.openUp ? 'translateY(-100%)' : undefined,
+            }}
+            className="z-[1000] overflow-hidden rounded-md border border-zinc-700 bg-zinc-900 shadow-xl shadow-black"
+          >
+            {lista}
+          </div>,
+          document.body
+        )
+      ) : (
+        /* Dropdown com animação */
+        <div 
+          className={`absolute z-[100] mt-1 ${hideIcon ? 'w-full min-w-max left-1/2 -translate-x-1/2' : 'w-full'} overflow-hidden rounded-md border border-zinc-700 bg-zinc-900 shadow-xl shadow-black transition-all duration-200 origin-top ${
+            isOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
+          }`}
+        >
+          {lista}
+        </div>
+      )}
     </div>
   );
 }

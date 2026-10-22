@@ -29,9 +29,9 @@ import { ModalHabilidadeTrilhaExtra } from '../../components/ModalHabilidadeTril
 import { ProgressaoNEXPanel } from './ProgressaoNEXPanel';
 import { InventarioPanel } from './InventarioPanel';
 import { CombatePanel } from './CombatePanel';
-// ═══════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // CORES DOS ELEMENTOS
-// ═══════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 const CORES_ELEMENTOS: Record<string, string> = {
   sangue: '#b31717',
   conhecimento: '#b07902',
@@ -115,8 +115,8 @@ function formatarDescricao(texto: string): string {
 }
 
 /**
- * Extrai o valor correto de um campo com "/" baseado na versão selecionada.
- * Formato: "Normal/Discente/Verdadeiro" ou "Normal/Verdadeiro" (quando só tem verdadeiro).
+ * Extrai o valor correto de um campo com "/" baseado na versÃ£o selecionada.
+ * Formato: "Normal/Discente/Verdadeiro" ou "Normal/Verdadeiro" (quando sÃ³ tem verdadeiro).
  */
 function obterValorVersao(
   campo: string,
@@ -125,7 +125,7 @@ function obterValorVersao(
   temVerdadeiro: boolean
 ): string {
   if (!campo || versao === 'normal') {
-    // Na versão normal, pega tudo antes da primeira /
+    // Na versÃ£o normal, pega tudo antes da primeira /
     if (campo && campo.includes('/')) {
       return campo.split('/')[0].trim();
     }
@@ -135,21 +135,21 @@ function obterValorVersao(
   const partes = campo.split('/').map(p => p.trim());
   const normal = partes[0]; // Valor base (Normal)
 
-  if (partes.length === 1) return normal; // Sem /, valor único
+  if (partes.length === 1) return normal; // Sem /, valor Ãºnico
 
   if (versao === 'discente') {
-    // Discente é sempre o segundo valor (índice 1)
-    // Se vazio (convenção // = sem alteração), cai pro Normal
+    // Discente Ã© sempre o segundo valor (Ã­ndice 1)
+    // Se vazio (convenÃ§Ã£o // = sem alteraÃ§Ã£o), cai pro Normal
     return partes[1] || normal;
   }
 
   if (versao === 'verdadeiro') {
     if (temDiscente && temVerdadeiro) {
-      // Formato: Normal/Discente/Verdadeiro → índice 2
+      // Formato: Normal/Discente/Verdadeiro â†’ Ã­ndice 2
       // Se vazio, cai pro Normal
       return partes[2] || normal;
     }
-    // Formato: Normal/Verdadeiro → índice 1
+    // Formato: Normal/Verdadeiro â†’ Ã­ndice 1
     return partes[1] || normal;
   }
 
@@ -275,7 +275,7 @@ export const AbasPanel: React.FC = () => {
     if (regras['nex_experiencia']) {
       Object.entries(novosPoderes).forEach(([key, p]) => {
         const keyNum = parseInt(key, 10);
-        if (!isNaN(keyNum) && keyNum >= 1000) return; // Ignora slots específicos da Progressão NEX
+        if (!isNaN(keyNum) && keyNum >= 1000) return; // Ignora slots especÃ­ficos da ProgressÃ£o NEX
         
         const baseNomeStr = p.nome.toLowerCase().trim();
         const isAprenderRitual = baseNomeStr.startsWith('aprender ritual');
@@ -321,7 +321,7 @@ export const AbasPanel: React.FC = () => {
       const isResistir = baseNomeStr.startsWith('resistir a ');
       const nomeBase = isAprenderRitual ? 'aprender ritual' : (isResistir ? 'resistir a <elemento>' : baseNomeStr);
       const pp = poderesParanormaisMap.get(nomeBase);
-      const trackingKey = baseNomeStr; // Usa o nome específico (ex: "resistir a sangue")
+      const trackingKey = baseNomeStr; // Usa o nome especÃ­fico (ex: "resistir a sangue")
       
       contagemPoderes[trackingKey] = (contagemPoderes[trackingKey] || 0) + 1;
       
@@ -404,7 +404,7 @@ export const AbasPanel: React.FC = () => {
           id: 'escolha_trilha',
           nome: 'Escolher Trilha',
           descricao: 'Clique no "+" para abrir a lista e selecionar sua trilha.',
-          tipo: regras['nex_experiencia'] ? `Nível 2` : `NEX 10%`,
+          tipo: regras['nex_experiencia'] ? `NÃ­vel 2` : `NEX 10%`,
           isSlotVazio: true,
           nexDoSlot: 10,
           categoria: 'trilha',
@@ -427,8 +427,8 @@ export const AbasPanel: React.FC = () => {
         lista.push({
           id: 'escolha_versatilidade',
           nome: 'Escolher Versatilidade',
-          descricao: `Em ${regras['nex_experiencia'] ? 'Nível 10' : 'NEX 50%'}, escolha entre receber um poder de ${classe.toLowerCase()} ou o primeiro poder de uma trilha de ${classe.toLowerCase()} que não a sua. Clique no "+" para selecionar.`,
-          tipo: regras['nex_experiencia'] ? `Nível 10` : `NEX 50%`,
+          descricao: `Em ${regras['nex_experiencia'] ? 'NÃ­vel 10' : 'NEX 50%'}, escolha entre receber um poder de ${classe.toLowerCase()} ou o primeiro poder de uma trilha de ${classe.toLowerCase()} que nÃ£o a sua. Clique no "+" para selecionar.`,
+          tipo: regras['nex_experiencia'] ? `NÃ­vel 10` : `NEX 50%`,
           isSlotVazio: true,
           nexDoSlot: 50,
           categoria: 'trilha',
@@ -436,15 +436,15 @@ export const AbasPanel: React.FC = () => {
       }
     }
 
-    // 1.6 Poder de Trilha Automático (Monstruoso 75% -> Poder 187)
+    // 1.6 Poder de Trilha AutomÃ¡tico (Monstruoso 75% -> Poder 187)
     if (temMonstruoso75 || temMonstruosoEsp75) {
       const p187 = listaPoderesUtilidade.find(p => Number(p.codigo_poder) === 187) || poderesClasse.find(p => Number(p.codigo_poder) === 187);
-      const fallbackDesc = "Quando o personagem atinge NEX 75%, se torna permanentemente perturbado. Suas ações já não são mais aceitas pela Ordem, que vai banir e potencialmente caçar o ex-agente. Considere que ele começa cada missão com equipamento equivalente a uma patente um nível inferior à sua, conseguido por conta própria.\nQuando o personagem atinge NEX 99%, sua Sanidade é reduzida a 1. Por fim, sempre que ficar enlouquecendo, em vez de sofrer um efeito de insanidade (veja OPRPG, p.111), o personagem fica confuso (a condição se encerra normalmente ou quando o personagem não está mais enlouquecendo). Se um personagem Monstruoso enlouquecer com 99% de NEX, se torna permanentemente uma criatura do Outro Lado.\nSe estiver usando a regra opcional Jogando sem Sanidade, em vez disso considere que o personagem está sempre perturbado e fica enlouquecendo (e confuso) sempre que perde 1 ponto de determinação por qualquer efeito (exceto por pagar custos de habilidades e itens).";
+      const fallbackDesc = "Quando o personagem atinge NEX 75%, se torna permanentemente perturbado. Suas aÃ§Ãµes jÃ¡ nÃ£o sÃ£o mais aceitas pela Ordem, que vai banir e potencialmente caÃ§ar o ex-agente. Considere que ele comeÃ§a cada missÃ£o com equipamento equivalente a uma patente um nÃ­vel inferior Ã  sua, conseguido por conta prÃ³pria.\nQuando o personagem atinge NEX 99%, sua Sanidade Ã© reduzida a 1. Por fim, sempre que ficar enlouquecendo, em vez de sofrer um efeito de insanidade (veja OPRPG, p.111), o personagem fica confuso (a condiÃ§Ã£o se encerra normalmente ou quando o personagem nÃ£o estÃ¡ mais enlouquecendo). Se um personagem Monstruoso enlouquecer com 99% de NEX, se torna permanentemente uma criatura do Outro Lado.\nSe estiver usando a regra opcional Jogando sem Sanidade, em vez disso considere que o personagem estÃ¡ sempre perturbado e fica enlouquecendo (e confuso) sempre que perde 1 ponto de determinaÃ§Ã£o por qualquer efeito (exceto por pagar custos de habilidades e itens).";
       lista.push({
         id: 'trilha_monstruoso_poder_187',
-        nome: p187?.Nome || 'Monstruosa Transformação',
+        nome: p187?.Nome || 'Monstruosa TransformaÃ§Ã£o',
         descricao: p187?.Descricao || fallbackDesc,
-        tipo: regras['nex_experiencia'] ? 'Nível 15' : 'NEX 75%',
+        tipo: regras['nex_experiencia'] ? 'NÃ­vel 15' : 'NEX 75%',
         categoria: 'trilha',
         fonte: p187?.Fonte || 'SaH',
         preRequisitos: p187?.PreRequisitos || 'Trilha Monstruoso',
@@ -498,7 +498,7 @@ export const AbasPanel: React.FC = () => {
           } else {
             categoria = 'utilidade';
           }
-          const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
+          const nivelLabel = regras['nex_experiencia'] ? `NÃ­vel ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
           const tipoLabel = categoria === 'paranormais' ? `Transcender ${nivelPatamar}%` : nivelLabel;
           const afinidadeDoPoder = escolhido.afinidade || pp?.Afinidade;
           const nomeBaseCheck = escolhido.nome.toLowerCase().trim();
@@ -507,8 +507,8 @@ export const AbasPanel: React.FC = () => {
           const adqLabel = adqKey ? (
             String(adqKey).startsWith('extra_') ? 'Extra' : (
               (parseInt(String(adqKey), 10) >= 1000) ? 
-              (regras['nex_experiencia'] ? `Nível ${calcularNivel(parseInt(String(adqKey), 10) - 1000)}` : `NEX ${parseInt(String(adqKey), 10) - 1000}%`) :
-              (regras['nex_experiencia'] ? `Nível ${calcularNivel(parseInt(String(adqKey), 10))}` : `NEX ${parseInt(String(adqKey), 10)}%`)
+              (regras['nex_experiencia'] ? `NÃ­vel ${calcularNivel(parseInt(String(adqKey), 10) - 1000)}` : `NEX ${parseInt(String(adqKey), 10) - 1000}%`) :
+              (regras['nex_experiencia'] ? `NÃ­vel ${calcularNivel(parseInt(String(adqKey), 10))}` : `NEX ${parseInt(String(adqKey), 10)}%`)
             )
           ) : '';
           
@@ -524,7 +524,7 @@ export const AbasPanel: React.FC = () => {
             lista.push({ id: `escolha_nex_${nivelPatamar}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal, codigoRegra: escolhido.codigoRegra });
           }
         } else {
-          const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
+          const nivelLabel = regras['nex_experiencia'] ? `NÃ­vel ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
           lista.push({ id: `escolha_nex_${nivelPatamar}`, nome: 'Escolher Poder de Utilidade', descricao: 'Clique no "+" para abrir a lista e selecionar seu poder.', tipo: nivelLabel, isSlotVazio: true, nexDoSlot: nivelPatamar, categoria: 'utilidade' });
         }
       }
@@ -559,7 +559,7 @@ export const AbasPanel: React.FC = () => {
           } else {
             categoria = 'combate';
           }
-          const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
+          const nivelLabel = regras['nex_experiencia'] ? `NÃ­vel ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
           const tipoLabel = categoria === 'paranormais' ? `Transcender ${nivelPatamar}%` : nivelLabel;
           const afinidadeDoPoder = escolhido.afinidade || pp?.Afinidade;
           const nomeBaseCheck = escolhido.nome.toLowerCase().trim();
@@ -568,8 +568,8 @@ export const AbasPanel: React.FC = () => {
           const adqLabel = adqKey ? (
             String(adqKey).startsWith('extra_') ? 'Extra' : (
               (parseInt(String(adqKey), 10) >= 1000) ? 
-              (regras['nex_experiencia'] ? `Nível ${calcularNivel(parseInt(String(adqKey), 10) - 1000)}` : `NEX ${parseInt(String(adqKey), 10) - 1000}%`) :
-              (regras['nex_experiencia'] ? `Nível ${calcularNivel(parseInt(String(adqKey), 10))}` : `NEX ${parseInt(String(adqKey), 10)}%`)
+              (regras['nex_experiencia'] ? `NÃ­vel ${calcularNivel(parseInt(String(adqKey), 10) - 1000)}` : `NEX ${parseInt(String(adqKey), 10) - 1000}%`) :
+              (regras['nex_experiencia'] ? `NÃ­vel ${calcularNivel(parseInt(String(adqKey), 10))}` : `NEX ${parseInt(String(adqKey), 10)}%`)
             )
           ) : '';
           
@@ -585,7 +585,7 @@ export const AbasPanel: React.FC = () => {
             lista.push({ id: `escolha_nex_combate_${nivelPatamar}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal, codigoRegra: escolhido.codigoRegra });
           }
         } else {
-          const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
+          const nivelLabel = regras['nex_experiencia'] ? `NÃ­vel ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
           lista.push({ id: `escolha_nex_combate_${nivelPatamar}`, nome: 'Escolher Poder de Combate', descricao: 'Clique no "+" para abrir a lista e selecionar seu poder de combate.', tipo: nivelLabel, isSlotVazio: true, nexDoSlot: nivelPatamar, categoria: 'combate' });
         }
       }
@@ -626,8 +626,8 @@ export const AbasPanel: React.FC = () => {
         const adqLabel = adqKey ? (
           String(adqKey).startsWith('extra_') ? 'Extra' : (
             (parseInt(String(adqKey), 10) >= 1000) ? 
-            (regras['nex_experiencia'] ? `Nível ${calcularNivel(parseInt(String(adqKey), 10) - 1000)}` : `NEX ${parseInt(String(adqKey), 10) - 1000}%`) :
-            (regras['nex_experiencia'] ? `Nível ${calcularNivel(parseInt(String(adqKey), 10))}` : `NEX ${parseInt(String(adqKey), 10)}%`)
+            (regras['nex_experiencia'] ? `NÃ­vel ${calcularNivel(parseInt(String(adqKey), 10) - 1000)}` : `NEX ${parseInt(String(adqKey), 10) - 1000}%`) :
+            (regras['nex_experiencia'] ? `NÃ­vel ${calcularNivel(parseInt(String(adqKey), 10))}` : `NEX ${parseInt(String(adqKey), 10)}%`)
           )
         ) : '';
         
@@ -645,7 +645,7 @@ export const AbasPanel: React.FC = () => {
       }
     });
 
-    // 6. Transcender via Progressão de NEX (Custom)
+    // 6. Transcender via ProgressÃ£o de NEX (Custom)
     const patamaresTranscenderProgressao = temPossuido ? [15, 30, 45, 60, 75, 90] : [25, 35, 50, 60, 75, 90];
     if (temPossuido && poderesExtras['possuido_opcao_65'] === 'transcender') {
       patamaresTranscenderProgressao.push(65);
@@ -670,7 +670,7 @@ export const AbasPanel: React.FC = () => {
           }
         }
 
-        const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
+        const nivelLabel = regras['nex_experiencia'] ? `NÃ­vel ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
         const tipoLabel = `Transcender ${nivelPatamar}%`;
         const afinidadeDoPoder = escolhido.afinidade || pp?.Afinidade;
         const nomeBaseCheck = escolhido.nome.toLowerCase().trim();
@@ -680,8 +680,8 @@ export const AbasPanel: React.FC = () => {
         const adqLabel = adqKey ? (
           String(adqKey).startsWith('extra_') ? 'Extra' : (
             (parseInt(String(adqKey), 10) >= 1000) ? 
-            (regras['nex_experiencia'] ? `Nível ${calcularNivel(parseInt(String(adqKey), 10) - 1000)}` : `NEX ${parseInt(String(adqKey), 10) - 1000}%`) :
-            (regras['nex_experiencia'] ? `Nível ${calcularNivel(parseInt(String(adqKey), 10))}` : `NEX ${parseInt(String(adqKey), 10)}%`)
+            (regras['nex_experiencia'] ? `NÃ­vel ${calcularNivel(parseInt(String(adqKey), 10) - 1000)}` : `NEX ${parseInt(String(adqKey), 10) - 1000}%`) :
+            (regras['nex_experiencia'] ? `NÃ­vel ${calcularNivel(parseInt(String(adqKey), 10))}` : `NEX ${parseInt(String(adqKey), 10)}%`)
           )
         ) : '';
         
@@ -710,7 +710,7 @@ export const AbasPanel: React.FC = () => {
           });
         }
       } else if (temPossuido && effectiveNex >= nivelPatamar) {
-        const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
+        const nivelLabel = regras['nex_experiencia'] ? `NÃ­vel ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
         lista.push({
           id: `escolha_transcender_${chave}`,
           nome: 'Escolher Poder Paranormal',
@@ -778,9 +778,9 @@ export const AbasPanel: React.FC = () => {
         const extraKey = 'extra_regra37';
         const usouRegra37 = poderesEscolhidos[extraKey];
         if (usouRegra37) {
-           lista.push({ id: `escolha_${extraKey}`, nome: usouRegra37.nome, descricao: usouRegra37.descricao, tipo: 'Dominar Habilidade Ritualística', categoria: 'trilha', fonte: usouRegra37.fonte, preRequisitos: usouRegra37.preRequisitos, elemento: usouRegra37.elemento, afinidade: usouRegra37.afinidade });
+           lista.push({ id: `escolha_${extraKey}`, nome: usouRegra37.nome, descricao: usouRegra37.descricao, tipo: 'Dominar Habilidade RitualÃ­stica', categoria: 'trilha', fonte: usouRegra37.fonte, preRequisitos: usouRegra37.preRequisitos, elemento: usouRegra37.elemento, afinidade: usouRegra37.afinidade });
         } else {
-           lista.push({ id: `escolha_${extraKey}`, nome: 'Escolher Poder de Trilha', descricao: 'Clique no "+" para abrir a lista e selecionar sua habilidade ritualística.', tipo: 'Dominar Habilidade Ritualística', isSlotVazio: true, nexDoSlot: 0, categoria: 'trilha' });
+           lista.push({ id: `escolha_${extraKey}`, nome: 'Escolher Poder de Trilha', descricao: 'Clique no "+" para abrir a lista e selecionar sua habilidade ritualÃ­stica.', tipo: 'Dominar Habilidade RitualÃ­stica', isSlotVazio: true, nexDoSlot: 0, categoria: 'trilha' });
         }
       }
 
@@ -796,7 +796,7 @@ export const AbasPanel: React.FC = () => {
 
 
 
-    // Desbloqueio Cronológico: Separado por Combate e Utilidade/Trilha
+    // Desbloqueio CronolÃ³gico: Separado por Combate e Utilidade/Trilha
     const slotsVazios = lista.filter(h => h.isSlotVazio && h.nexDoSlot !== undefined);
     if (slotsVazios.length > 0) {
       const vaziosCombate = slotsVazios.filter(h => h.categoria === 'combate' && !String(h.id).includes('_extra_'));
@@ -859,7 +859,7 @@ export const AbasPanel: React.FC = () => {
             className={`shrink-0 px-1 py-2 text-[10px] md:text-[11px] 2xl:text-xs font-bold uppercase tracking-wide transition whitespace-nowrap flex-1 text-center ${
               abaDireita === aba ? 'border-b-2 border-green-800 text-zinc-100' : 'border-b-2 border-transparent text-zinc-500 hover:text-zinc-300'
             }`}
-          >{aba === 'inventario' ? 'Inventário' : aba === 'descricao' ? 'Descrição' : aba === 'regras' ? 'Regras' : aba}</button>
+          >{aba === 'inventario' ? 'InventÃ¡rio' : aba === 'descricao' ? 'DescriÃ§Ã£o' : aba === 'regras' ? 'Regras' : aba}</button>
         ))}
       </div>
 
@@ -1005,7 +1005,7 @@ export const AbasPanel: React.FC = () => {
                                     </div>
                                   </div>
                                   <span className="text-xs text-zinc-600">
-                                    {trilhasHook.trilhasExpandidas.includes(isVersatilidade ? t.Codigo_Trilha + 10000 : t.Codigo_Trilha) ? '▲' : '▼'}
+                                    {trilhasHook.trilhasExpandidas.includes(isVersatilidade ? t.Codigo_Trilha + 10000 : t.Codigo_Trilha) ? 'â–²' : 'â–¼'}
                                   </span>
                                 </div>
                               </div>
@@ -1014,7 +1014,7 @@ export const AbasPanel: React.FC = () => {
                                 <div className="px-4 pb-4 pt-1 text-sm text-zinc-400">
                                   <div
                                     className="mb-4 text-zinc-400 text-left leading-relaxed text-sm"
-                                    dangerouslySetInnerHTML={{ __html: formatarDescricao(isVersatilidade ? `Em ${regras['nex_experiencia'] ? 'Nível 10' : 'NEX 50%'}, escolha entre receber um poder de ${classe.toLowerCase()} ou o primeiro poder de uma trilha de ${classe.toLowerCase()} que não a sua.<br/><br/>Trilha Escolhida: <strong>${t.Nome_Trilha}</strong>` : t.Descricao_Trilha) }}
+                                    dangerouslySetInnerHTML={{ __html: formatarDescricao(isVersatilidade ? `Em ${regras['nex_experiencia'] ? 'NÃ­vel 10' : 'NEX 50%'}, escolha entre receber um poder de ${classe.toLowerCase()} ou o primeiro poder de uma trilha de ${classe.toLowerCase()} que nÃ£o a sua.<br/><br/>Trilha Escolhida: <strong>${t.Nome_Trilha}</strong>` : t.Descricao_Trilha) }}
                                   />
                                   
                                   <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-green-400 border-b border-zinc-800 pb-1">
@@ -1082,11 +1082,11 @@ export const AbasPanel: React.FC = () => {
                                               />
                                             )}
                                             <span className="font-bold text-zinc-200 text-xs truncate">
-                                              {regras['nex_experiencia'] ? `Nível ${calcularNivel(nexLvl)}` : `NEX ${nexLvl}%`} - <span className={!isAtivoMonst ? "text-zinc-500 line-through" : "text-zinc-400"}>{nomeHab}</span>
+                                              {regras['nex_experiencia'] ? `NÃ­vel ${calcularNivel(nexLvl)}` : `NEX ${nexLvl}%`} - <span className={!isAtivoMonst ? "text-zinc-500 line-through" : "text-zinc-400"}>{nomeHab}</span>
                                             </span>
                                           </div>
                                           <span className="text-xs text-zinc-600 shrink-0">
-                                            {isHabExpanded ? '▲' : '▼'}
+                                            {isHabExpanded ? 'â–²' : 'â–¼'}
                                           </span>
                                         </div>
                                         <Collapse isOpen={isHabExpanded}>
@@ -1102,7 +1102,7 @@ export const AbasPanel: React.FC = () => {
                                                 </span>
                                                 {afinidadeEscolhida && (
                                                   <span className="text-[10px] text-zinc-500 italic">
-                                                    (Vinculado à Afinidade: {afinidadeEscolhida})
+                                                    (Vinculado Ã  Afinidade: {afinidadeEscolhida})
                                                   </span>
                                                 )}
                                               </div>
@@ -1171,7 +1171,7 @@ export const AbasPanel: React.FC = () => {
                                                   <Collapse isOpen={codPoder === 217 && isAtivoMonst && !regrasAutomaticasAtivas.has(114)}>
                                                     <div className="mt-3 pt-2.5 border-t border-zinc-800/80 flex flex-col gap-2">
                                                       <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                                                        Perícias Escolhidas (Treinar ou +2):
+                                                        PerÃ­cias Escolhidas (Treinar ou +2):
                                                       </span>
                                                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                                         {[1, 2].map(slot => {
@@ -1200,7 +1200,7 @@ export const AbasPanel: React.FC = () => {
                                                                 }));
                                                               }}
                                                               options={[
-                                                                { value: '', label: `Perícia ${slot}...` },
+                                                                { value: '', label: `PerÃ­cia ${slot}...` },
                                                                 ...listaNomes.map(nomeP => ({
                                                                   value: nomeP,
                                                                   label: nomeP,
@@ -1209,6 +1209,7 @@ export const AbasPanel: React.FC = () => {
                                                               ]}
                                                               wrapperClassName="w-full"
                                                               className="w-full rounded border border-zinc-700 bg-zinc-900 px-2.5 py-1.5 text-xs text-zinc-200"
+                                                              portal
                                                             />
                                                           );
                                                         })}
@@ -1220,7 +1221,7 @@ export const AbasPanel: React.FC = () => {
                                                   <Collapse isOpen={codPoder === 229 && isAtivoMonst}>
                                                     <div className="mt-3 pt-2.5 border-t border-zinc-800/80 flex flex-col gap-2">
                                                       <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                                                        Perícias Escolhidas (Expert ou +10):
+                                                        PerÃ­cias Escolhidas (Expert ou +10):
                                                       </span>
                                                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                                                         {[1, 2, 3].map(slot => {
@@ -1249,7 +1250,7 @@ export const AbasPanel: React.FC = () => {
                                                                 }));
                                                               }}
                                                               options={[
-                                                                { value: '', label: `Perícia ${slot}...` },
+                                                                { value: '', label: `PerÃ­cia ${slot}...` },
                                                                 ...listaNomes.map(nomeP => ({
                                                                   value: nomeP,
                                                                   label: nomeP,
@@ -1258,6 +1259,7 @@ export const AbasPanel: React.FC = () => {
                                                               ]}
                                                               wrapperClassName="w-full"
                                                               className="w-full rounded border border-zinc-700 bg-zinc-900 px-2.5 py-1.5 text-xs text-zinc-200"
+                                                              portal
                                                             />
                                                           );
                                                         })}
@@ -1271,10 +1273,10 @@ export const AbasPanel: React.FC = () => {
                                           {t.Codigo_Trilha === 21 && nexLvl === 65 && !isVersatilidade && (
                                             <div className="px-3 pb-3 pt-1 border-t border-zinc-800/80 flex flex-col gap-1.5" onClick={e => e.stopPropagation()}>
                                               <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
-                                                Profissão do Laboratório de Campo (65%):
+                                                ProfissÃ£o do LaboratÃ³rio de Campo (65%):
                                               </span>
                                               <div className="flex flex-wrap gap-2 items-center">
-                                                {['Armeiro', 'Engenheiro', 'Químico'].map(prof => {
+                                                {['Armeiro', 'Engenheiro', 'QuÃ­mico'].map(prof => {
                                                   const isSelected = poderesExtras['muambeiro_profissao_65'] === prof;
                                                   return (
                                                     <button
@@ -1300,7 +1302,7 @@ export const AbasPanel: React.FC = () => {
                                                                                    {t.Codigo_Trilha === 23 && nexLvl === 65 && !isVersatilidade && (
                                               <div className="px-3 pb-3 pt-1 border-t border-zinc-800/80 flex flex-col gap-1.5" onClick={e => e.stopPropagation()}>
                                                 <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
-                                                  Opção de 65%:
+                                                  OpÃ§Ã£o de 65%:
                                                 </span>
                                                 <div className="flex flex-wrap gap-2 items-center">
                                                   <button
@@ -1326,17 +1328,17 @@ export const AbasPanel: React.FC = () => {
                                                   Presente da Afinidade:
                                                 </span>
                                                 <p className="text-xs text-zinc-300">
-                                                  {afinidadeEscolhida.toLowerCase() === 'sangue' && 'Poder de código 204: Presente da Obsessão (Sangue) — Uma vez por rodada, você pode gastar 6 PE para recuperar 50 PV. Quando faz isso, até o início do seu próximo turno, os bônus por treinamento em suas perícias baseadas em Força e Vigor, e em Intimidação, mudam para +35. As demais perícias baseadas em Presença mudam para –10. Você pode ativar esse poder mesmo inconsciente.'}
-                                                   {afinidadeEscolhida.toLowerCase() === 'morte' && 'Poder de código 205: Presente do Tempo (Morte) — Uma vez por rodada, você pode gastar 6 PE para receber um turno adicional na última contagem de iniciativa da rodada. Você pode ativar essa habilidade mesmo inconsciente.'}
-                                                   {afinidadeEscolhida.toLowerCase() === 'conhecimento' && 'Poder de código 206: Presente do Saber (Conhecimento) — Uma vez por cena, você pode gastar 6 PE para reescrever uma fração de seu próprio ser. Você recebe um poder qualquer até o fim da cena. Você deve cumprir os pré-requisitos do poder escolhido, e não pode escolher poderes de trilha de NEX 99%. A cada vez que usa este poder, você deve fazer um teste de Vontade (DT 15 + 5 para cada vez que usou este poder na mesma missão). Se falhar, perde 1d6 pontos de Sanidade para cada vez que usou esse poder nesta missão.'}
-                                                   {afinidadeEscolhida.toLowerCase() === 'energia' && 'Poder de código 207: Presente do Espaço (Energia) — Uma vez por rodada, você pode gastar 6 PE para se teletransportar para outro ponto em alcance médio. Você não precisa conhecer o local para onde vai nem precisa vê-lo, mas se teletransportar-se para um espaço ocupado vai ser arremessado para o espaço disponível mais próximo.'}
+                                                  {afinidadeEscolhida.toLowerCase() === 'sangue' && 'Poder de cÃ³digo 204: Presente da ObsessÃ£o (Sangue) â€” Uma vez por rodada, vocÃª pode gastar 6 PE para recuperar 50 PV. Quando faz isso, atÃ© o inÃ­cio do seu prÃ³ximo turno, os bÃ´nus por treinamento em suas perÃ­cias baseadas em ForÃ§a e Vigor, e em IntimidaÃ§Ã£o, mudam para +35. As demais perÃ­cias baseadas em PresenÃ§a mudam para â€“10. VocÃª pode ativar esse poder mesmo inconsciente.'}
+                                                   {afinidadeEscolhida.toLowerCase() === 'morte' && 'Poder de cÃ³digo 205: Presente do Tempo (Morte) â€” Uma vez por rodada, vocÃª pode gastar 6 PE para receber um turno adicional na Ãºltima contagem de iniciativa da rodada. VocÃª pode ativar essa habilidade mesmo inconsciente.'}
+                                                   {afinidadeEscolhida.toLowerCase() === 'conhecimento' && 'Poder de cÃ³digo 206: Presente do Saber (Conhecimento) â€” Uma vez por cena, vocÃª pode gastar 6 PE para reescrever uma fraÃ§Ã£o de seu prÃ³prio ser. VocÃª recebe um poder qualquer atÃ© o fim da cena. VocÃª deve cumprir os prÃ©-requisitos do poder escolhido, e nÃ£o pode escolher poderes de trilha de NEX 99%. A cada vez que usa este poder, vocÃª deve fazer um teste de Vontade (DT 15 + 5 para cada vez que usou este poder na mesma missÃ£o). Se falhar, perde 1d6 pontos de Sanidade para cada vez que usou esse poder nesta missÃ£o.'}
+                                                   {afinidadeEscolhida.toLowerCase() === 'energia' && 'Poder de cÃ³digo 207: Presente do EspaÃ§o (Energia) â€” Uma vez por rodada, vocÃª pode gastar 6 PE para se teletransportar para outro ponto em alcance mÃ©dio. VocÃª nÃ£o precisa conhecer o local para onde vai nem precisa vÃª-lo, mas se teletransportar-se para um espaÃ§o ocupado vai ser arremessado para o espaÃ§o disponÃ­vel mais prÃ³ximo.'}
                                                  </p>
                                               </div>
                                             )}
                                             {t.Codigo_Trilha === 22 && nexLvl === 40 && !isVersatilidade && (
                                              <div className="px-3 pb-3 pt-1 border-t border-zinc-800/80 flex flex-col gap-1.5" onClick={e => e.stopPropagation()}>
                                                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
-                                                 Benefício de Poder da Fé (40%):
+                                                 BenefÃ­cio de Poder da FÃ© (40%):
                                                </span>
                                                <div className="flex flex-wrap gap-2 items-center">
                                                  <button
@@ -1351,7 +1353,7 @@ export const AbasPanel: React.FC = () => {
                                                        : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
                                                    }`}
                                                  >
-                                                   Tornar Veterano (Grátis)
+                                                   Tornar Veterano (GrÃ¡tis)
                                                  </button>
                                                  <button
                                                    type="button"
@@ -1365,7 +1367,7 @@ export const AbasPanel: React.FC = () => {
                                                        : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
                                                    }`}
                                                  >
-                                                   Já era Veterano (+1d20)
+                                                   JÃ¡ era Veterano (+1d20)
                                                  </button>
                                                </div>
                                              </div>
@@ -1388,7 +1390,7 @@ export const AbasPanel: React.FC = () => {
                                                         : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
                                                     }}`}
                                                   >
-                                                    Vigor (Padrão)
+                                                    Vigor (PadrÃ£o)
                                                   </button>
                                                   <button
                                                     type="button"
@@ -1540,7 +1542,7 @@ export const AbasPanel: React.FC = () => {
                                          elStr.includes('morte') ? 'border-l-black' :
                                          elStr.includes('conhecimento') ? 'border-l-yellow-600' :
                                          elStr.includes('energia') ? 'border-l-purple-600' : 
-                                         (elStr.includes('varia') || elStr.includes('vária')) ? 'border-l-green-600' : 'border-l-zinc-600';
+                                         (elStr.includes('varia') || elStr.includes('vÃ¡ria')) ? 'border-l-green-600' : 'border-l-zinc-600';
                         }
 
                         return (
@@ -1566,7 +1568,7 @@ export const AbasPanel: React.FC = () => {
                                   </span>
                                 )}
                                 <span className="rounded border border-zinc-800 bg-zinc-950 px-2 py-0.5 text-[0.65rem] uppercase tracking-wider text-zinc-500">{hab.tipo}</span>
-                                <span className="text-xs text-zinc-600">{estaExpandida ? '▲' : '▼'}</span>
+                                <span className="text-xs text-zinc-600">{estaExpandida ? 'â–²' : 'â–¼'}</span>
                               </div>
                             </div>
 
@@ -1576,7 +1578,7 @@ export const AbasPanel: React.FC = () => {
                                   <div className="mb-3 flex items-center justify-between gap-2 border-b border-zinc-800/50 pb-2">
                                     <div className="flex items-center gap-2">
                                       <span
-                                        title={hab.automatico.toLowerCase().trim() === 'sim' ? 'Totalmente automático' : 'Semi-automático'}
+                                        title={hab.automatico.toLowerCase().trim() === 'sim' ? 'Totalmente automÃ¡tico' : 'Semi-automÃ¡tico'}
                                         className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider ${
                                           hab.automatico.toLowerCase().trim() === 'sim'
                                             ? 'bg-green-950/60 text-green-400 border border-green-800/50'
@@ -1598,18 +1600,18 @@ export const AbasPanel: React.FC = () => {
                                   </div>
                                   <span className="text-[10px] text-zinc-500 italic">
                                       {hab.automatico.toLowerCase().trim() === 'sim' 
-                                        ? 'Os bônus deste poder já estão aplicados na sua ficha.' 
-                                        : 'Uma parte deste poder é aplicada automaticamente na sua ficha, e a outra não.'}
+                                        ? 'Os bÃ´nus deste poder jÃ¡ estÃ£o aplicados na sua ficha.' 
+                                        : 'Uma parte deste poder Ã© aplicada automaticamente na sua ficha, e a outra nÃ£o.'}
                                     </span>
                                   </div>
                                 )}
                                 <div dangerouslySetInnerHTML={{ __html: formatarDescricao(hab.descricao) }} />
 
-                                {/* Regra 102: escolha 2 perícias para treinar (ou +2 se já treinado) */}
+                                {/* Regra 102: escolha 2 perÃ­cias para treinar (ou +2 se jÃ¡ treinado) */}
                                 {hab.codigoRegra === 102 && !regrasAutomaticasAtivas.has(114) && (
                                   <div className="mt-3 pt-3 border-t border-zinc-800/80 flex flex-col gap-2" onClick={e => e.stopPropagation()}>
                                     <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                                      Perícias Escolhidas (Treinar ou +2):
+                                      PerÃ­cias Escolhidas (Treinar ou +2):
                                     </span>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                       {[1, 2].map(slot => {
@@ -1638,7 +1640,7 @@ export const AbasPanel: React.FC = () => {
                                               }));
                                             }}
                                             options={[
-                                              { value: '', label: `Perícia ${slot}...` },
+                                              { value: '', label: `PerÃ­cia ${slot}...` },
                                               ...listaNomes.map(nomeP => ({
                                                 value: nomeP,
                                                 label: nomeP,
@@ -1647,6 +1649,7 @@ export const AbasPanel: React.FC = () => {
                                             ]}
                                             wrapperClassName="w-full"
                                             className="w-full rounded border border-zinc-700 bg-zinc-900 px-2.5 py-1.5 text-xs text-zinc-200"
+                                            portal
                                           />
                                         );
                                       })}
@@ -1654,11 +1657,11 @@ export const AbasPanel: React.FC = () => {
                                   </div>
                                 )}
 
-                                {/* Regra 114: escolha 3 perícias para se tornar Expert (ou +10 se já Expert) */}
+                                {/* Regra 114: escolha 3 perÃ­cias para se tornar Expert (ou +10 se jÃ¡ Expert) */}
                                 {hab.codigoRegra === 114 && (
                                   <div className="mt-3 pt-3 border-t border-zinc-800/80 flex flex-col gap-2" onClick={e => e.stopPropagation()}>
                                     <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                                      Perícias Escolhidas (Expert ou +10):
+                                      PerÃ­cias Escolhidas (Expert ou +10):
                                     </span>
                                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                                       {[1, 2, 3].map(slot => {
@@ -1687,7 +1690,7 @@ export const AbasPanel: React.FC = () => {
                                               }));
                                             }}
                                             options={[
-                                              { value: '', label: `Perícia ${slot}...` },
+                                              { value: '', label: `PerÃ­cia ${slot}...` },
                                               ...listaNomes.map(nomeP => ({
                                                 value: nomeP,
                                                 label: nomeP,
@@ -1696,6 +1699,7 @@ export const AbasPanel: React.FC = () => {
                                             ]}
                                             wrapperClassName="w-full"
                                             className="w-full rounded border border-zinc-700 bg-zinc-900 px-2.5 py-1.5 text-xs text-zinc-200"
+                                            portal
                                           />
                                         );
                                       })}
@@ -1703,7 +1707,7 @@ export const AbasPanel: React.FC = () => {
                                   </div>
                                 )}
 
-                                {/* 🔥 Afinidade: texto puro */}
+                                {/* ðŸ”¥ Afinidade: texto puro */}
                                 {hab.afinidade && (
                                   <div className={`mt-2 text-sm leading-relaxed transition-opacity duration-300 ${hab.afinidadeAtiva ? 'text-zinc-300 opacity-100' : 'text-zinc-500 opacity-40'}`}>
                                     {hab.afinidadeAtiva && hab.afinidadeAdquiridaKey && (
@@ -1736,7 +1740,7 @@ export const AbasPanel: React.FC = () => {
                                   </div>
                                 )}
 
-                                <div className="mt-3 text-[0.6rem] uppercase tracking-wider text-zinc-600">Fonte: {hab.fonte || 'NÃO DEFINIDA'}</div>
+                                <div className="mt-3 text-[0.6rem] uppercase tracking-wider text-zinc-600">Fonte: {hab.fonte || 'NÃƒO DEFINIDA'}</div>
 
                                 {hab.subPoder && (
                                   <div className="mt-4 rounded-r border-l-2 border-amber-500 bg-zinc-900/80 p-3">
@@ -1752,7 +1756,7 @@ export const AbasPanel: React.FC = () => {
                                   <div className="mt-4 rounded-r border-l-2 border-zinc-400 bg-zinc-900/80 p-3">
                                     <div className="mb-2 text-sm font-bold text-zinc-100">Rituais:</div>
                                     <div className="flex flex-wrap gap-2">
-                                      {([['1° Círculo', hab.limiteCirculos.c1], ['2° Círculo', hab.limiteCirculos.c2], ['3° Círculo', hab.limiteCirculos.c3], ['4° Círculo', hab.limiteCirculos.c4]] as const).map(([r,q]) => (
+                                      {([['1Â° CÃ­rculo', hab.limiteCirculos.c1], ['2Â° CÃ­rculo', hab.limiteCirculos.c2], ['3Â° CÃ­rculo', hab.limiteCirculos.c3], ['4Â° CÃ­rculo', hab.limiteCirculos.c4]] as const).map(([r,q]) => (
                                         <span key={r} className={`rounded border border-zinc-800 bg-zinc-950 px-2 py-1 text-xs ${q > 0 ? 'text-zinc-100' : 'text-zinc-600'}`}>{r}: <strong>{q}</strong></span>
                                       ))}
                                     </div>
@@ -1761,7 +1765,7 @@ export const AbasPanel: React.FC = () => {
 
                                 {hab.preRequisitos && (
                                   <div className="mt-3 inline-block rounded bg-amber-400/5 px-2.5 py-1.5 text-xs italic text-amber-400">
-                                    <strong>Pré-requisitos:</strong> {hab.preRequisitos}
+                                    <strong>PrÃ©-requisitos:</strong> {hab.preRequisitos}
                                   </div>
                                 )}
 
@@ -1781,7 +1785,7 @@ export const AbasPanel: React.FC = () => {
                                           const baseName = nomePoder.startsWith('aprender ritual (') ? 'aprender ritual' : (isResistir ? 'resistir a <elemento>' : nomePoder);
                                           const isParanormal = poderesParanormaisMap.has(baseName) || baseName === 'aprender ritual';
                                           
-                                          // A penalidade de sanidade é atualizada automaticamente pelo useStatus
+                                          // A penalidade de sanidade Ã© atualizada automaticamente pelo useStatus
 
                                           if (baseName === 'aprender ritual') {
                                             const ra = rituaisHook.rituaisAprendidos.find(r => r.origem === `poder_57_${nivel}` || r.origem === `poder_57_combate_${nivel}`);
@@ -1803,13 +1807,13 @@ export const AbasPanel: React.FC = () => {
 
                         if (categoria === 'paranormais') {
                           const grouped = itensDaCategoria.reduce((acc, hab) => {
-                             const el = hab.isSlotVazio ? 'Disponível' : (hab.elemento || 'Sem Elemento');
+                             const el = hab.isSlotVazio ? 'DisponÃ­vel' : (hab.elemento || 'Sem Elemento');
                              if (!acc[el]) acc[el] = [];
                              acc[el].push(hab);
                              return acc;
                           }, {} as Record<string, typeof itensDaCategoria>);
                           
-                          const order = ['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo', 'Sem Elemento', 'Disponível'];
+                          const order = ['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo', 'Sem Elemento', 'DisponÃ­vel'];
                           const getOrder = (e: string) => {
                              for (let i=0; i<order.length; i++) {
                                if (e.toLowerCase().includes(order[i].toLowerCase())) return i;
@@ -1821,7 +1825,7 @@ export const AbasPanel: React.FC = () => {
                           return sortedKeys.map(el => (
                             <div key={el} className="flex flex-col gap-2.5">
                               <div className={`flex items-center gap-3 ${el !== sortedKeys[0] ? 'mt-3 mb-1' : 'mb-1'}`}>
-                                <span className="h-2 w-2 rounded-full" style={{ background: el === 'Sem Elemento' || el === 'Disponível' ? '#52525b' : obterCorBadge(el) }}></span>
+                                <span className="h-2 w-2 rounded-full" style={{ background: el === 'Sem Elemento' || el === 'DisponÃ­vel' ? '#52525b' : obterCorBadge(el) }}></span>
                                 <span className="text-[0.6rem] font-bold uppercase tracking-[0.15em] text-zinc-500">{el}</span>
                                 <div className="flex-1 border-t border-zinc-800/50" />
                               </div>
@@ -1855,7 +1859,7 @@ export const AbasPanel: React.FC = () => {
             .filter(([nexStr, poder]) => poder.nome.trim().toLowerCase() === 'aprender ritual')
             .map(([nexStr]) => nexStr);
             
-          // Filtra os que já foram pegos
+          // Filtra os que jÃ¡ foram pegos
           const slotsPoderPendentesList = [];
           for (const chave of slotsPoderPendentesRaw) {
              const pego = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === `poder_57_${chave}`);
@@ -1888,7 +1892,7 @@ export const AbasPanel: React.FC = () => {
               todosSlots.push({ index: todosSlots.length + 1, nex: nexEquiv, maxCirculo: c });
             }
             
-            // Filtra os que já foram pegos
+            // Filtra os que jÃ¡ foram pegos
             for (const slot of todosSlots) {
               const pego = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === `ocultista_${slot.index}`);
               if (!pego) {
@@ -1948,37 +1952,37 @@ export const AbasPanel: React.FC = () => {
           // 2.8 Calcular slots de Graduado (Trilha 13)
           const slotsGraduadoPendentesList: { chave?: string, index: number, nex: number, maxCirculo: number, isOcultista: boolean, isGraduado?: boolean }[] = [];
           
-          // Saber Ampliado (10%): 1 ritual de 1º círculo + 1 ritual a cada novo círculo que desbloqueia (2º, 3º, 4º)
+          // Saber Ampliado (10%): 1 ritual de 1Âº cÃ­rculo + 1 ritual a cada novo cÃ­rculo que desbloqueia (2Âº, 3Âº, 4Âº)
           const isGraduado10 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 13 && (regras['nex_experiencia'] ? nivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 13 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
           if (isGraduado10) {
-            // 1º Círculo (10%)
+            // 1Âº CÃ­rculo (10%)
             const pego1 = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'graduado_10_1' || r.origem === 'graduado_10_c');
             if (!pego1) slotsGraduadoPendentesList.push({ chave: 'graduado_10_1', index: 951, nex: 10, maxCirculo: 1, isOcultista: true, isGraduado: true });
 
-            // 2º Círculo (25% / Nível 5)
+            // 2Âº CÃ­rculo (25% / NÃ­vel 5)
             if (regras['nex_experiencia'] ? nivel >= 5 : effectiveNex >= 25) {
               const pego2 = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'graduado_10_2');
               if (!pego2) slotsGraduadoPendentesList.push({ chave: 'graduado_10_2', index: 952, nex: 25, maxCirculo: 2, isOcultista: true, isGraduado: true });
             }
 
-            // 3º Círculo (55% / Nível 11)
+            // 3Âº CÃ­rculo (55% / NÃ­vel 11)
             if (regras['nex_experiencia'] ? nivel >= 11 : effectiveNex >= 55) {
               const pego3 = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'graduado_10_3');
               if (!pego3) slotsGraduadoPendentesList.push({ chave: 'graduado_10_3', index: 953, nex: 55, maxCirculo: 3, isOcultista: true, isGraduado: true });
             }
 
-            // 4º Círculo (85% / Nível 17)
+            // 4Âº CÃ­rculo (85% / NÃ­vel 17)
             if (regras['nex_experiencia'] ? nivel >= 17 : effectiveNex >= 85) {
               const pego4 = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'graduado_10_4');
               if (!pego4) slotsGraduadoPendentesList.push({ chave: 'graduado_10_4', index: 954, nex: 85, maxCirculo: 4, isOcultista: true, isGraduado: true });
             }
           }
 
-          // Grimório Ritualístico (40%): INT rituais de 1º ou 2º círculos + 1 ritual a cada novo círculo (3º e 4º)
+          // GrimÃ³rio RitualÃ­stico (40%): INT rituais de 1Âº ou 2Âº cÃ­rculos + 1 ritual a cada novo cÃ­rculo (3Âº e 4Âº)
           const isGraduado40 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 13 && (regras['nex_experiencia'] ? nivel >= 8 : effectiveNex >= 40));
           if (isGraduado40) {
             const intVal = (atributosFinais?.INT !== undefined ? atributosFinais.INT : (atributos?.INT || 0));
-            // Slots base: INT rituais de 1º ou 2º círculos
+            // Slots base: INT rituais de 1Âº ou 2Âº cÃ­rculos
             if (intVal > 0) {
               for (let i = 1; i <= intVal; i++) {
                 const pego = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === `graduado_40_${i}` || r.origem === `graduado_40_base_${i}`);
@@ -1988,7 +1992,7 @@ export const AbasPanel: React.FC = () => {
               }
             }
 
-            // +1 ritual de 3º círculo (55% / Nível 11)
+            // +1 ritual de 3Âº cÃ­rculo (55% / NÃ­vel 11)
             if (regras['nex_experiencia'] ? nivel >= 11 : effectiveNex >= 55) {
               const pegoC3 = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'graduado_40_c3');
               if (!pegoC3) {
@@ -1996,7 +2000,7 @@ export const AbasPanel: React.FC = () => {
               }
             }
 
-            // +1 ritual de 4º círculo (85% / Nível 17)
+            // +1 ritual de 4Âº cÃ­rculo (85% / NÃ­vel 17)
             if (regras['nex_experiencia'] ? nivel >= 17 : effectiveNex >= 85) {
               const pegoC4 = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'graduado_40_c4');
               if (!pegoC4) {
@@ -2058,7 +2062,7 @@ export const AbasPanel: React.FC = () => {
             }
           }
 
-          // 3. Desbloqueio Cronológico por Círculo
+          // 3. Desbloqueio CronolÃ³gico por CÃ­rculo
           const slotsMonstruosoPendentesList: any[] = [];
           if (temMonstruoso99 && monstruosoElemento === 'Conhecimento') {
             const chaveMonstruoso = 'monstruoso_99_conhecimento';
@@ -2131,7 +2135,7 @@ export const AbasPanel: React.FC = () => {
                         : 'border-b-2 border-transparent text-zinc-500 hover:text-zinc-300'
                     }`}
                   >
-                    Grimório ({(rituaisHook.rituaisAprendidos || []).filter(r => r.origem?.startsWith('graduado_40')).length})
+                    GrimÃ³rio ({(rituaisHook.rituaisAprendidos || []).filter(r => r.origem?.startsWith('graduado_40')).length})
                   </button>
                 </div>
               )}
@@ -2153,13 +2157,13 @@ export const AbasPanel: React.FC = () => {
                 )}
                 {!rituaisHook.loading && !hasAnyRitual && (
                   <div className="mt-10 text-center text-zinc-500">
-                    <p className="text-sm">Você ainda não aprendeu nenhum ritual.</p>
+                    <p className="text-sm">VocÃª ainda nÃ£o aprendeu nenhum ritual.</p>
                   </div>
                 )}
 
 
 
-                {/* Agrupamento por Círculo usando Rituais Aprendidos */}
+                {/* Agrupamento por CÃ­rculo usando Rituais Aprendidos */}
               {[1, 2, 3, 4].map(circulo => {
                 const rituaisAprendidosNesteCirculo = (rituaisHook.rituaisAprendidos || [])
                   .map(ra => {
@@ -2190,21 +2194,21 @@ export const AbasPanel: React.FC = () => {
                   return (r.customNome || r.Nome_Ritual).toLowerCase().includes(search);
                 });
 
-                // Slots vazios pertencentes a este círculo
+                // Slots vazios pertencentes a este cÃ­rculo
                 const slotsVaziosNesteCirculo = visibleRitualSlots.filter(s => s.maxCirculo === circulo);
 
                 if (rituaisAprendidosNesteCirculoFiltrados.length === 0 && slotsVaziosNesteCirculo.length === 0) return null;
 
                 return (
                   <div key={circulo} className="mb-4">
-                    {/* Header do grupo — mesma estética dos poderes */}
+                    {/* Header do grupo â€” mesma estÃ©tica dos poderes */}
                     <div className="mb-2 flex items-center gap-3">
-                      <span className="text-[0.65rem] font-bold uppercase tracking-[0.15em] text-zinc-400">{circulo}° Círculo</span>
+                      <span className="text-[0.65rem] font-bold uppercase tracking-[0.15em] text-zinc-400">{circulo}Â° CÃ­rculo</span>
                       <div className="flex-1 border-t border-zinc-800" />
                     </div>
 
                     <div className="flex flex-col gap-2.5">
-                      {/* Slots Vazios do Círculo */}
+                      {/* Slots Vazios do CÃ­rculo */}
                       {slotsVaziosNesteCirculo.map((slot, idx) => {
                         if (slot.isOcultista) {
                             return (
@@ -2224,7 +2228,7 @@ export const AbasPanel: React.FC = () => {
                                     <div className="flex flex-col items-start gap-0.5 text-left">
                                       <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">Escolher Ritual</span>
                                       <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-500 group-hover:text-zinc-400">
-                                        {(slot as any).chave?.startsWith('graduado_10') ? 'Saber Ampliado (Trilha)' : ((slot as any).chave?.startsWith('graduado_40') ? 'Grimório Ritualístico' : `Ocultista (${regras['nex_experiencia'] ? `Nível ${calcularNivel(slot.nex)}` : `NEX ${slot.nex}%`})`)}
+                                        {(slot as any).chave?.startsWith('graduado_10') ? 'Saber Ampliado (Trilha)' : ((slot as any).chave?.startsWith('graduado_40') ? 'GrimÃ³rio RitualÃ­stico' : `Ocultista (${regras['nex_experiencia'] ? `NÃ­vel ${calcularNivel(slot.nex)}` : `NEX ${slot.nex}%`})`)}
                                       </span>
                                     </div>
                                     <span className="whitespace-nowrap rounded bg-green-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-green-400 transition group-hover:bg-green-900/60 group-hover:text-green-300">+ Adicionar</span>
@@ -2246,7 +2250,7 @@ export const AbasPanel: React.FC = () => {
                                   <div className="flex flex-col items-start gap-0.5 text-left">
                                     <span className="text-xs font-semibold text-zinc-400">Ritual Recusado</span>
                                     <span className="text-[0.65rem] text-zinc-600">
-                                      Adepto ao Oculto ({regras['nex_experiencia'] ? `Nível ${calcularNivel(nexSlot)}` : `NEX ${nexSlot}%`})
+                                      Adepto ao Oculto ({regras['nex_experiencia'] ? `NÃ­vel ${calcularNivel(nexSlot)}` : `NEX ${nexSlot}%`})
                                     </span>
                                   </div>
                                   <div className="flex items-center gap-2">
@@ -2284,8 +2288,8 @@ export const AbasPanel: React.FC = () => {
                             }
 
                             const labelSlot = is99 
-                              ? `Adepto ao Oculto (NEX 99% - 4º Círculo)`
-                              : `Adepto ao Oculto (${regras['nex_experiencia'] ? `Nível ${calcularNivel(nexSlot)}` : `NEX ${nexSlot}%`})`;
+                              ? `Adepto ao Oculto (NEX 99% - 4Âº CÃ­rculo)`
+                              : `Adepto ao Oculto (${regras['nex_experiencia'] ? `NÃ­vel ${calcularNivel(nexSlot)}` : `NEX ${nexSlot}%`})`;
 
                             return (
                               <div
@@ -2338,7 +2342,7 @@ export const AbasPanel: React.FC = () => {
                                 <div className="flex flex-col items-start gap-0.5 text-left">
                                   <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">Escolher Ritual</span>
                                   <span className="text-[0.65rem] font-bold uppercase tracking-wider text-yellow-500 group-hover:text-yellow-400">
-                                    Monstruoso (Conhecimento 99% - 4º Círculo)
+                                    Monstruoso (Conhecimento 99% - 4Âº CÃ­rculo)
                                   </span>
                                 </div>
                                 <span className="whitespace-nowrap rounded bg-yellow-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-yellow-400 transition group-hover:bg-yellow-900/60 group-hover:text-yellow-300">+ Adicionar</span>
@@ -2353,7 +2357,7 @@ export const AbasPanel: React.FC = () => {
                             const isExtra = chave?.startsWith('extra_');
                             const nivelNum = isOrigemSlot ? 0 : (isExtra ? nex : parseInt(chave || '0', 10));
                             const nivelParaLabel = (isRegra61 || isRegra62) ? (slot as any).nex : nivelNum;
-                            const labelNex = isOrigemSlot ? 'Origem' : (isRegra61 ? `Recompensa Racional (${regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelParaLabel)}` : `NEX ${nivelParaLabel}%`})` : (isRegra62 ? `Recompensa Racional, Afinidade (${regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelParaLabel)}` : `NEX ${nivelParaLabel}%`})` : (regras['nex_experiencia'] ? `Poder Nível ${calcularNivel(nivelParaLabel)}` : `Poder NEX ${nivelParaLabel}%`)));
+                            const labelNex = isOrigemSlot ? 'Origem' : (isRegra61 ? `Recompensa Racional (${regras['nex_experiencia'] ? `NÃ­vel ${calcularNivel(nivelParaLabel)}` : `NEX ${nivelParaLabel}%`})` : (isRegra62 ? `Recompensa Racional, Afinidade (${regras['nex_experiencia'] ? `NÃ­vel ${calcularNivel(nivelParaLabel)}` : `NEX ${nivelParaLabel}%`})` : (regras['nex_experiencia'] ? `Poder NÃ­vel ${calcularNivel(nivelParaLabel)}` : `Poder NEX ${nivelParaLabel}%`)));
                             return (
                               <div
                               key={`vazio_poder_${chave}_${idx}`}
@@ -2416,13 +2420,13 @@ export const AbasPanel: React.FC = () => {
                                   <span className="h-2 w-2 rounded-full shrink-0" style={{ background: obterCorBadge(elemento) || '#52525b' }}></span>
                                   <span className="text-[0.6rem] font-bold uppercase tracking-[0.15em] text-zinc-500">{elemento}</span>
                                   <div className="flex-1 border-t border-zinc-800/50"></div>
-                                  <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500" title={`10 + ${atrParaDT} + Nível`}>DT {baseDT}</span>
+                                  <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500" title={`10 + ${atrParaDT} + NÃ­vel`}>DT {baseDT}</span>
                                 </div>
                                 <div className="flex flex-col gap-2.5">
                                 {ritualsOfElement.map(ritual => {
                         if (!ritual) return null;
                         
-                        // O código único na interface do usuário agora é uma combinação do código do ritual e a origem (para suportar o mesmo ritual pego mais de uma vez, caso aconteça)
+                        // O cÃ³digo Ãºnico na interface do usuÃ¡rio agora Ã© uma combinaÃ§Ã£o do cÃ³digo do ritual e a origem (para suportar o mesmo ritual pego mais de uma vez, caso aconteÃ§a)
                         const chaveUnica = `${ritual.Codigo_Ritual}_${ritual.Origem}`;
                         const expandido = rituaisExpandidos.includes(chaveUnica as any);
                         const versao: VersaoRitual = versaoRitual[chaveUnica] || 'normal';
@@ -2437,12 +2441,12 @@ export const AbasPanel: React.FC = () => {
                         const corTextoElemento = obterCorTexto(elementoEscolhido);
                         const simboloImg = rituaisHook.getSimboloUrl ? rituaisHook.getSimboloUrl(ritual.Codigo_Ritual, elementoEscolhido) : '';
 
-                        // Valores dinâmicos baseados na versão
+                        // Valores dinÃ¢micos baseados na versÃ£o
                         const isOrigemConjuracao = Boolean(ritual.Origem?.startsWith('maldicao_conjuracao_'));
                         const temConjuracaoNoItem = (itensHook?.itensInventario || []).some(i => {
                           const nomeItem = (i.item.Nome_Item || '').toLowerCase();
                           const grupoItem = (i.item.Grupo_Item || '').toLowerCase();
-                          const reqEquip = nomeItem.includes('vestimenta') || nomeItem.includes('amuleto sagrado') || grupoItem === 'proteções' || grupoItem === 'protecoes';
+                          const reqEquip = nomeItem.includes('vestimenta') || nomeItem.includes('amuleto sagrado') || grupoItem === 'proteÃ§Ãµes' || grupoItem === 'protecoes';
                           const ativo = reqEquip ? Boolean(i.equipado) : true;
                           return ativo && Array.isArray(i.maldicoes) && i.maldicoes.includes(24) && (i.maldicoes_elementos?.[24] || '').trim().toLowerCase() === (ritual.Nome_Ritual || '').trim().toLowerCase();
                         });
@@ -2475,7 +2479,7 @@ export const AbasPanel: React.FC = () => {
                         const resistencia = ritual.customProps?.[versao]?.Resistencia_Ritual || obterValorVersao(ritual.Resistencia_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
                         const dados = ritual.customProps?.[versao]?.Dados_Ritual || obterValorVersao(ritual.Dados_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
 
-                        // Opções de versão disponíveis
+                        // OpÃ§Ãµes de versÃ£o disponÃ­veis
                         const reqNormal = verificarAcessoCirculo(ritual.Circulo_Ritual, nivel, classe);
                         const versoesDisponiveis: { value: VersaoRitual; label: string; disabled?: boolean; title?: string }[] = [
                           { 
@@ -2504,7 +2508,7 @@ export const AbasPanel: React.FC = () => {
                         return (
                           <div key={chaveUnica} className="overflow-hidden rounded-r border-l-4 bg-zinc-900/70" style={{ borderLeftColor: corPrimaria }}>
 
-                            {/* ══════ CABEÇALHO (sempre visível) ══════ */}
+                            {/* â•â•â•â•â•â• CABEÃ‡ALHO (sempre visÃ­vel) â•â•â•â•â•â• */}
                             <div
                               onClick={() =>
                                 setRituaisExpandidos(prev =>
@@ -2551,12 +2555,12 @@ export const AbasPanel: React.FC = () => {
                                 )}
                                 <div className="flex flex-col gap-1 justify-center py-1">
                                   <div className="flex items-center gap-2">
-                                    <span className="text-sm font-bold text-zinc-100">{ritual.customNome || (ritual.learnedNome && ritual.learnedNome !== ritual.Nome_Ritual ? ritual.learnedNome : (ritual.Origem === 'trilha_conduite' ? `${ritual.Nome_Ritual} (Conduíte)` : (ritual.Origem === 'trilha_flagelador' ? `${ritual.Nome_Ritual} (Flagelador)` : (ritual.Origem === 'trilha_graduado' ? `${ritual.Nome_Ritual} (Graduado)` : (ritual.Origem === 'trilha_viajante_das_sombras' ? `${ritual.Nome_Ritual} (Viajante das Sombras)` : (ritual.Origem?.startsWith('adepto_') ? `${ritual.Nome_Ritual} (Adepto)` : (ritual.Origem?.startsWith('trilha_monstruoso_99_') || ritual.Origem === 'monstruoso_99_conhecimento' ? `${ritual.Nome_Ritual} (Monstruoso)` : ritual.Nome_Ritual)))))))}</span>
+                                    <span className="text-sm font-bold text-zinc-100">{ritual.customNome || (ritual.learnedNome && ritual.learnedNome !== ritual.Nome_Ritual ? ritual.learnedNome : (ritual.Origem === 'trilha_conduite' ? `${ritual.Nome_Ritual} (ConduÃ­te)` : (ritual.Origem === 'trilha_flagelador' ? `${ritual.Nome_Ritual} (Flagelador)` : (ritual.Origem === 'trilha_graduado' ? `${ritual.Nome_Ritual} (Graduado)` : (ritual.Origem === 'trilha_viajante_das_sombras' ? `${ritual.Nome_Ritual} (Viajante das Sombras)` : (ritual.Origem?.startsWith('adepto_') ? `${ritual.Nome_Ritual} (Adepto)` : (ritual.Origem?.startsWith('trilha_monstruoso_99_') || ritual.Origem === 'monstruoso_99_conhecimento' ? `${ritual.Nome_Ritual} (Monstruoso)` : ritual.Nome_Ritual)))))))}</span>
                                     <span className="rounded bg-blue-950/30 px-1.5 py-0.5 text-[10px] font-bold text-blue-400 border border-blue-900/50">
                                       {pe} PE
                                     </span>
                                   </div>
-                                  {/* Dados abaixo do título — todas as versões, ativa acesa */}
+                                  {/* Dados abaixo do tÃ­tulo â€” todas as versÃµes, ativa acesa */}
                                   {ritual.Dados_Ritual && (() => {
                                     const partesDados = ritual.Dados_Ritual.split('/').map(p => p.trim());
                                     const normal = partesDados[0];
@@ -2574,7 +2578,7 @@ export const AbasPanel: React.FC = () => {
                                       <div className="flex items-center gap-2">
                                         {preenchidas.map((parte, idx) => (
                                           <React.Fragment key={idx}>
-                                            {idx > 0 && <span className="text-xs text-zinc-700">›</span>}
+                                            {idx > 0 && <span className="text-xs text-zinc-700">â€º</span>}
                                             <span
                                               className={`text-sm font-bold transition-all duration-300 ${idx === ativo ? 'text-zinc-100' : 'text-zinc-600'}`}
                                             >
@@ -2610,30 +2614,30 @@ export const AbasPanel: React.FC = () => {
                                 <div className={`flex items-center gap-2 ${simboloImg ? 'mt-auto' : 'mt-2'}`}>
                                   {(isOrigemConjuracao || temConjuracaoNoItem) && (
                                     <span className="text-[9px] font-bold uppercase tracking-wider text-yellow-500/90 bg-yellow-950/30 border border-yellow-800/40 px-1.5 py-0.5 rounded">
-                                      Conjuração
+                                      ConjuraÃ§Ã£o
                                     </span>
                                   )}
                                   {/* Seta */}
-                                  <span className="text-xs text-zinc-600 ml-1">{expandido ? '▲' : '▼'}</span>
+                                  <span className="text-xs text-zinc-600 ml-1">{expandido ? 'â–²' : 'â–¼'}</span>
                                 </div>
                               </div>
                             </div>
                             
-                            {/* ══════ CONTEÚDO EXPANDIDO ══════ */}
+                            {/* â•â•â•â•â•â• CONTEÃšDO EXPANDIDO â•â•â•â•â•â• */}
                             <Collapse isOpen={expandido}>
                               <div className="border-t border-zinc-800 px-4 py-4 text-left text-sm leading-relaxed text-zinc-400">
                                 
                                 <div className="flex flex-row items-center justify-between gap-4">
                                   <div className="flex flex-col flex-1 min-w-0">
                                     
-                                    {/* Dropdowns de configurações (Elemento e Versão) */}
+                                    {/* Dropdowns de configuraÃ§Ãµes (Elemento e VersÃ£o) */}
                                     {(isLista || versoesDisponiveis.length > 1) && (
                                       <div className="mb-4 flex flex-wrap items-center justify-between border-b border-zinc-800/50 pb-3">
                                         <div className="flex items-center gap-5">
-                                          {/* Dropdown de Versão */}
+                                          {/* Dropdown de VersÃ£o */}
                                           {versoesDisponiveis.length > 1 && (
                                             <div className="flex items-center gap-2">
-                                              <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-600">Versão:</span>
+                                              <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-600">VersÃ£o:</span>
                                               <CustomSelect
                                                 value={versao}
                                                 onChange={(val) => {
@@ -2652,11 +2656,11 @@ export const AbasPanel: React.FC = () => {
                                       </div>
                                     )}
 
-                                    {/* Campos de metadados — só mostram se têm valor */}
+                                    {/* Campos de metadados â€” sÃ³ mostram se tÃªm valor */}
                                     <div className="mb-4 flex flex-col gap-1">
                                       {execucao && (
                                         <div className="text-xs">
-                                          <span className="font-bold text-zinc-300">Execução: </span>
+                                          <span className="font-bold text-zinc-300">ExecuÃ§Ã£o: </span>
                                           <span className="text-zinc-400">{execucao}</span>
                                         </div>
                                       )}
@@ -2668,7 +2672,7 @@ export const AbasPanel: React.FC = () => {
                                       )}
                                       {area && (
                                         <div className="text-xs">
-                                          <span className="font-bold text-zinc-300">Área: </span>
+                                          <span className="font-bold text-zinc-300">Ãrea: </span>
                                           <span className="text-zinc-400">{area}</span>
                                         </div>
                                       )}
@@ -2680,7 +2684,7 @@ export const AbasPanel: React.FC = () => {
                                       )}
                                       {duracao && (
                                         <div className="text-xs">
-                                          <span className="font-bold text-zinc-300">Duração: </span>
+                                          <span className="font-bold text-zinc-300">DuraÃ§Ã£o: </span>
                                           <span className="text-zinc-400">{duracao}</span>
                                         </div>
                                       )}
@@ -2692,7 +2696,7 @@ export const AbasPanel: React.FC = () => {
                                       )}
                                       {resistencia && (
                                         <div className="text-xs">
-                                          <span className="font-bold text-zinc-300">Resistência: </span>
+                                          <span className="font-bold text-zinc-300">ResistÃªncia: </span>
                                           <span className="text-zinc-400">{resistencia}</span>
                                         </div>
                                       )}
@@ -2705,7 +2709,7 @@ export const AbasPanel: React.FC = () => {
                                     </div>
                                   </div>
 
-                                  {/* Símbolo do Ritual Centralizado Verticalmente */}
+                                  {/* SÃ­mbolo do Ritual Centralizado Verticalmente */}
                                   {simboloImg && (
                                     <img
                                       src={simboloImg}
@@ -2719,7 +2723,7 @@ export const AbasPanel: React.FC = () => {
                             </Collapse>
                             <Collapse isOpen={expandido}>
                               <div className="px-4 pb-4 text-left text-sm leading-relaxed text-zinc-400">
-                                {/* Descrição formatada com versões dimmed */}
+                                {/* DescriÃ§Ã£o formatada com versÃµes dimmed */}
                                 <div className="text-sm leading-relaxed text-zinc-400">
                                   {(() => {
                                     let currentScope = 'normal';
@@ -2747,7 +2751,7 @@ export const AbasPanel: React.FC = () => {
                                   })()}
                                 </div>
 
-                                <div className="mt-3 text-[0.6rem] uppercase tracking-wider text-zinc-600">Fonte: {ritual.Fonte || 'NÃO DEFINIDA'}</div>
+                                <div className="mt-3 text-[0.6rem] uppercase tracking-wider text-zinc-600">Fonte: {ritual.Fonte || 'NÃƒO DEFINIDA'}</div>
 
                                 <div className="mt-4 flex justify-end gap-2 border-t border-zinc-800/50 pt-3">
                                   <button
@@ -2793,7 +2797,7 @@ export const AbasPanel: React.FC = () => {
                                               ...prev.filter(r => r.origem !== ritual.Origem && r.origem !== 'trilha_lamina_paranormal'),
                                               {
                                                 codigo_ritual: 3,
-                                                nome: `${baseRitual.Nome_Ritual} (Lâmina Paranormal)`,
+                                                nome: `${baseRitual.Nome_Ritual} (LÃ¢mina Paranormal)`,
                                                 origem: 'trilha_lamina_paranormal',
                                                 circulo: baseRitual.Circulo_Ritual,
                                                 elemento: baseRitual.Elemento_Ritual,
@@ -2830,45 +2834,45 @@ export const AbasPanel: React.FC = () => {
           );
         })()}
         {abaDireita === 'inventario' && <InventarioPanel />}
-        {abaDireita === 'descricao' && <div className="mt-5 text-center italic text-zinc-600">Conteúdo de Descrição</div>}
+        {abaDireita === 'descricao' && <div className="mt-5 text-center italic text-zinc-600">ConteÃºdo de DescriÃ§Ã£o</div>}
 
         {abaDireita === 'regras' && (
           <div className="flex flex-col gap-3">
                             <div className="bg-red-500 text-white p-2 text-xs">
-                              DEBUG RITUAIS: {rituaisHook.simbolosRituais?.size || 0} símbolos carregados.
+                              DEBUG RITUAIS: {rituaisHook.simbolosRituais?.size || 0} sÃ­mbolos carregados.
                               Exemplo de chave no mapa: {Array.from(rituaisHook.simbolosRituais?.keys() || [])[0]}
                             </div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-500">Regras Opcionais</h4>
             <RegraCheckbox
               nome="nex_experiencia"
-              titulo="NEX & Experiência"
-              descricao="O nível de experiência substitui o NEX em Benefícios por NEX, como pré-requisitos de habilidades de classe (exceto poderes paranormais) e em efeitos de origens e habilidades baseados em NEX. 1 nível equivale a 5% de NEX."
+              titulo="NEX & ExperiÃªncia"
+              descricao="O nÃ­vel de experiÃªncia substitui o NEX em BenefÃ­cios por NEX, como prÃ©-requisitos de habilidades de classe (exceto poderes paranormais) e em efeitos de origens e habilidades baseados em NEX. 1 nÃ­vel equivale a 5% de NEX."
             />
               <RegraCheckbox
                 nome="media_dano"
-                titulo="Cálculo de Média de Dano"
-                descricao="Exibe uma seção retrátil nos blocos de ataque com a média matemática do dano causado pelas armas no combate."
+                titulo="CÃ¡lculo de MÃ©dia de Dano"
+                descricao="Exibe uma seÃ§Ã£o retrÃ¡til nos blocos de ataque com a mÃ©dia matemÃ¡tica do dano causado pelas armas no combate."
               />
             <RegraCheckbox
               nome="sem_sanidade"
               titulo="Jogando sem Sanidade"
-              descricao="Personagens não recebem mais PE ou SAN. Em vez disso, recebem Pontos de Determinação (PD) de acordo com sua classe."
+              descricao="Personagens nÃ£o recebem mais PE ou SAN. Em vez disso, recebem Pontos de DeterminaÃ§Ã£o (PD) de acordo com sua classe."
             />
             <RegraCheckbox
               nome="reter_ritual"
               titulo="Reter Ritual"
-              descricao="Retida. Quando conjura um ritual com duração cena, pode mudar a duração para retida como ação livre ou reação. Você retém os PE, reduzindo eles do seu valor atual e máximo. Enquanto você mantiver os PE retidos, o ritual permanecerá funcionando. Você está usando suas energias naturais e sobrenaturais para abrir sua comunicação com o Outro Lado e manter o fluxo a partir dela aberto. Entretanto, sempre que reter um ritual, você perde 1 SAN — manter seu pedido para o Outro Lado cobra seu preço."
+              descricao="Retida. Quando conjura um ritual com duraÃ§Ã£o cena, pode mudar a duraÃ§Ã£o para retida como aÃ§Ã£o livre ou reaÃ§Ã£o. VocÃª retÃ©m os PE, reduzindo eles do seu valor atual e mÃ¡ximo. Enquanto vocÃª mantiver os PE retidos, o ritual permanecerÃ¡ funcionando. VocÃª estÃ¡ usando suas energias naturais e sobrenaturais para abrir sua comunicaÃ§Ã£o com o Outro Lado e manter o fluxo a partir dela aberto. Entretanto, sempre que reter um ritual, vocÃª perde 1 SAN â€” manter seu pedido para o Outro Lado cobra seu preÃ§o."
             />
             <RegraCheckbox
               nome="contagem_municao"
-              titulo="Contagem de Munição"
-              descricao="A regra de munição, explicada na página 59, foi desenvolvida para simular ação cinematográfica e para agilizar o jogo, evitando que jogadores gastem tempo contando cada bala disparada. Se o seu grupo preferir uma abordagem mais realista — e não se importar com um pouco de “contabilidade” — pode usar contagem de munição concreta, e não abstrata. Fonte: OPRPG, p. 174."
+              titulo="Contagem de MuniÃ§Ã£o"
+              descricao="A regra de muniÃ§Ã£o, explicada na pÃ¡gina 59, foi desenvolvida para simular aÃ§Ã£o cinematogrÃ¡fica e para agilizar o jogo, evitando que jogadores gastem tempo contando cada bala disparada. Se o seu grupo preferir uma abordagem mais realista â€” e nÃ£o se importar com um pouco de â€œcontabilidadeâ€ â€” pode usar contagem de muniÃ§Ã£o concreta, e nÃ£o abstrata. Fonte: OPRPG, p. 174."
             />
           </div>
         )}
       </div>
 
-      {/* Informações de restrição para Lâmina Paranormal */}
+      {/* InformaÃ§Ãµes de restriÃ§Ã£o para LÃ¢mina Paranormal */}
       {(() => {
         const amaldicoarExistente = (rituaisHook.rituaisAprendidos || []).find((r: any) => Number(r.codigo_ritual) === 3);
         const elementoLaminaRestrito = poderesExtras.lamina_elemento || amaldicoarExistente?.elemento_escolhido || amaldicoarExistente?.customProps?.normal?.Elemento_Ritual;
@@ -2887,7 +2891,7 @@ export const AbasPanel: React.FC = () => {
 
         return (
           <>
-            {/* Modal de seleção de rituais EXTRAS para qualquer círculo */}
+            {/* Modal de seleÃ§Ã£o de rituais EXTRAS para qualquer cÃ­rculo */}
             {modalRituaisExtraAberto && (
               <ModalRituaisExtra
                 getSimboloUrl={rituaisHook.getSimboloUrl || (() => '')}
@@ -2924,7 +2928,7 @@ export const AbasPanel: React.FC = () => {
               />
             )}
 
-            {/* Modal de seleção de rituais para os slots */}
+            {/* Modal de seleÃ§Ã£o de rituais para os slots */}
             {escolhendoRitualPlaceholder && (
               <ModalRituais
                 rituais={rituaisHook.rituais || []}
@@ -2993,7 +2997,7 @@ export const AbasPanel: React.FC = () => {
         );
       })()}
 
-      {/* Modal para Edição Inline de Ritual */}
+      {/* Modal para EdiÃ§Ã£o Inline de Ritual */}
       {(() => {
         if (!ritualEditandoOrigem) return null;
         const ritualEditando = rituaisHook.rituaisAprendidos.find(r => r.origem === ritualEditandoOrigem);
@@ -3016,7 +3020,7 @@ export const AbasPanel: React.FC = () => {
                   onClick={() => setRitualEditandoOrigem(null)}
                   className="rounded-lg p-2 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-100"
                 >
-                  ✕
+                  âœ•
                 </button>
               </div>
 
@@ -3033,7 +3037,7 @@ export const AbasPanel: React.FC = () => {
 
                 {(ritualBase.Tem_Discente || ritualBase.Tem_Verdadeiro) && (
                   <section className="flex flex-col gap-3 border-t border-zinc-800/50 pt-5">
-                    <h4 className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Propriedades Específicas por Versão</h4>
+                    <h4 className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Propriedades EspecÃ­ficas por VersÃ£o</h4>
                     <CustomSelect
                       value={ritualVersaoEditando}
                       onChange={(val) => setRitualVersaoEditando(val as any)}
@@ -3053,13 +3057,13 @@ export const AbasPanel: React.FC = () => {
                   <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                   {[
                     { key: 'Elemento_Ritual', label: 'Elemento' },
-                      { key: 'Execucao_Ritual', label: 'Execução' },
+                      { key: 'Execucao_Ritual', label: 'ExecuÃ§Ã£o' },
                     { key: 'PE_Ritual', label: 'Custo' },
                     { key: 'Alcance_Ritual', label: 'Alcance' },
-                    { key: 'Area_Ritual', label: 'Área' },
+                    { key: 'Area_Ritual', label: 'Ãrea' },
                     { key: 'Alvo_Ritual', label: 'Alvo' },
-                    { key: 'Duracao_Ritual', label: 'Duração' },
-                    { key: 'Resistencia_Ritual', label: 'Resistência' },
+                    { key: 'Duracao_Ritual', label: 'DuraÃ§Ã£o' },
+                    { key: 'Resistencia_Ritual', label: 'ResistÃªncia' },
                     { key: 'Dados_Ritual', label: 'Dados' },
                   ].map(prop => {
                     const valorBase = (ritualBase as any)[prop.key];
@@ -3069,10 +3073,10 @@ export const AbasPanel: React.FC = () => {
                     let opts = null;
                                           if (prop.key === 'Elemento_Ritual') opts = ['Sangue', 'Morte', 'Energia', 'Conhecimento', 'Medo'];
                       if (prop.key === 'Elemento_Ritual') opts = ['Sangue', 'Morte', 'Energia', 'Conhecimento', 'Medo'];
-                      if (prop.key === 'Execucao_Ritual') opts = ['Padrão', 'Movimento', 'Movimento (+1 PE)', 'Livre', 'Reação', 'Completa'];
-                    if (prop.key === 'Alcance_Ritual') opts = ['Pessoal', 'Toque', 'Curto', 'Médio', 'Longo', 'Extremo', 'Ilimitado'];
-                    if (prop.key === 'Resistencia_Ritual') opts = ['Nenhuma', 'Fortitude', 'Reflexos', 'Vontade', 'Fortitude reduz à metade', 'Reflexos reduz à metade', 'Vontade reduz à metade', 'Fortitude anula', 'Reflexos anula', 'Vontade anula'];
-                    if (prop.key === 'Duracao_Ritual') opts = ['Instantânea', '1 rodada', 'Cena', 'Sustentada', 'Sustentada (1 rodada)', '1 dia'];
+                      if (prop.key === 'Execucao_Ritual') opts = ['PadrÃ£o', 'Movimento', 'Movimento (+1 PE)', 'Livre', 'ReaÃ§Ã£o', 'Completa'];
+                    if (prop.key === 'Alcance_Ritual') opts = ['Pessoal', 'Toque', 'Curto', 'MÃ©dio', 'Longo', 'Extremo', 'Ilimitado'];
+                    if (prop.key === 'Resistencia_Ritual') opts = ['Nenhuma', 'Fortitude', 'Reflexos', 'Vontade', 'Fortitude reduz Ã  metade', 'Reflexos reduz Ã  metade', 'Vontade reduz Ã  metade', 'Fortitude anula', 'Reflexos anula', 'Vontade anula'];
+                    if (prop.key === 'Duracao_Ritual') opts = ['InstantÃ¢nea', '1 rodada', 'Cena', 'Sustentada', 'Sustentada (1 rodada)', '1 dia'];
                     
                     
                     if (opts && currentValue && !opts.includes(currentValue)) {
@@ -3087,14 +3091,14 @@ export const AbasPanel: React.FC = () => {
                             value={currentValue}
                             onChange={(val) => setRitualPropsEditando(prev => ({ ...prev, [ritualVersaoEditando]: { ...(prev?.[ritualVersaoEditando] || {}), [prop.key]: val } }))}
                             options={opts}
-                            placeholder={valorCalculado ? String(valorCalculado) : 'Padrão'}
+                            placeholder={valorCalculado ? String(valorCalculado) : 'PadrÃ£o'}
                             className="w-full rounded border border-zinc-800/80 bg-zinc-900/50 px-3 py-2 text-sm text-zinc-200 focus:border-green-700/50 focus:bg-zinc-900 focus:outline-none focus:ring-1 focus:ring-green-700/50"
                           />
                         ) : (
                           <InputOtimizado
                             value={currentValue}
                             onChange={(val) => setRitualPropsEditando(prev => ({ ...prev, [ritualVersaoEditando]: { ...(prev?.[ritualVersaoEditando] || {}), [prop.key]: val } }))}
-                            placeholder={valorCalculado ? String(valorCalculado) : 'Padrão'}
+                            placeholder={valorCalculado ? String(valorCalculado) : 'PadrÃ£o'}
                             className="w-full rounded border border-zinc-800/80 bg-zinc-900/50 px-3 py-2 text-sm text-zinc-200 focus:border-green-700/50 focus:bg-zinc-900 focus:outline-none focus:ring-1 focus:ring-green-700/50"
                           />
                         )}
@@ -3105,7 +3109,7 @@ export const AbasPanel: React.FC = () => {
                 </section>
 
                 <section className="flex flex-col gap-3 flex-1 min-h-[150px] border-t border-zinc-800/50 pt-5">
-                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Descrição Personalizada</h4>
+                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">DescriÃ§Ã£o Personalizada</h4>
                   <div className="overflow-hidden rounded border border-zinc-800/80 bg-zinc-900/30 flex flex-col flex-1">
                     <ToolbarFormato editorRef={ritualEditorRef as any} />
                     <div
@@ -3139,7 +3143,7 @@ export const AbasPanel: React.FC = () => {
                   }}
                   className="rounded-lg bg-green-600 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-green-500"
                 >
-                  Salvar Alterações
+                  Salvar AlteraÃ§Ãµes
                 </button>
               </div>
             </div>

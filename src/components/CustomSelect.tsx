@@ -18,6 +18,24 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
   const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState<{ top: number; left: number; width: number; openUp: boolean } | null>(null);
+  // Controla a animação de entrada/saída do modo portal (ativada um frame depois de montar)
+  const [animIn, setAnimIn] = useState(false);
+
+  useEffect(() => {
+    if (!portal) return;
+    if (!isOpen) {
+      setAnimIn(false);
+      return;
+    }
+    let id2 = 0;
+    const id1 = requestAnimationFrame(() => {
+      id2 = requestAnimationFrame(() => setAnimIn(true));
+    });
+    return () => {
+      cancelAnimationFrame(id1);
+      cancelAnimationFrame(id2);
+    };
+  }, [portal, isOpen]);
 
   // Fecha o dropdown se clicar fora
   useEffect(() => {
@@ -35,7 +53,7 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
     };
   }, [isOpen]);
 
-  // Posicionamento do dropdown em modo portal
+  // Posicionamento do dropdown em modo portal (abre para cima se não couber embaixo)
   useLayoutEffect(() => {
     if (!portal || !isOpen) return;
     const atualizar = () => {
@@ -127,19 +145,24 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
       </button>
 
       {portal ? (
-        isOpen && pos && createPortal(
+        /* Dropdown em portal (fixo na tela), sempre montado para manter a animação de abrir/fechar */
+        pos && createPortal(
           <div
             ref={dropdownRef}
-            style={{
-              position: 'fixed',
-              left: pos.left,
-              top: pos.top,
-              width: pos.width,
-              transform: pos.openUp ? 'translateY(-100%)' : undefined,
-            }}
-            className="z-[1000] overflow-hidden rounded-md border border-zinc-700 bg-zinc-900 shadow-xl shadow-black"
+            style={{ position: 'fixed', left: pos.left, top: pos.top, width: pos.width }}
+            className="z-[1000] pointer-events-none"
           >
-            {lista}
+            <div
+              style={{
+                opacity: animIn ? 1 : 0,
+                transform: `translateY(${pos.openUp ? `calc(-100% + ${animIn ? 0 : 8}px)` : `${animIn ? 0 : -8}px`}) scale(${animIn ? 1 : 0.95})`,
+                transformOrigin: pos.openUp ? 'bottom' : 'top',
+                transition: 'opacity 200ms, transform 200ms',
+              }}
+              className={`overflow-hidden rounded-md border border-zinc-700 bg-zinc-900 shadow-xl shadow-black ${animIn ? 'pointer-events-auto' : ''}`}
+            >
+              {lista}
+            </div>
           </div>,
           document.body
         )

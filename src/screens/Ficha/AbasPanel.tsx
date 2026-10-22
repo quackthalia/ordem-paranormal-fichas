@@ -1156,10 +1156,10 @@ export const AbasPanel: React.FC = () => {
                                             if (!pData) return null;
                                             const badgeClasses = getBadgeElemento(monstruosoElemento);
                                             return (
-                                              <div className={`mx-3 mb-3 mt-1 rounded-r border-l-2 ${isAtivoMonst ? 'border-green-500 bg-zinc-900/80' : 'border-zinc-700 bg-zinc-900/40 opacity-60'} p-3 flex flex-col gap-2`} onClick={e => e.stopPropagation()}>
-                                                <div className="flex items-center justify-between gap-2">
-                                                  <span className={`text-sm font-bold ${isAtivoMonst ? 'text-zinc-100' : 'text-zinc-400'}`}>{pData.Nome}</span>
-                                                  <span className={`rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${badgeClasses}`}>
+                                              <div className={`mx-3 mb-3 mt-1 rounded-r border-l-2 transition-all duration-300 ${isAtivoMonst ? 'border-green-500 bg-zinc-900/80' : 'border-zinc-700 bg-zinc-900/40 opacity-60'} p-3 flex flex-col`} onClick={e => e.stopPropagation()}>
+                                                <div className="flex items-center justify-between gap-2 mb-2">
+                                                  <span className={`text-sm font-bold transition-colors duration-200 ${isAtivoMonst ? 'text-zinc-100' : 'text-zinc-400'}`}>{pData.Nome}</span>
+                                                  <span className={`rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider transition-all duration-200 ${badgeClasses}`}>
                                                     {monstruosoElemento}
                                                   </span>
                                                 </div>
@@ -1167,99 +1167,103 @@ export const AbasPanel: React.FC = () => {
                                                   className="text-xs text-zinc-300 leading-relaxed"
                                                   dangerouslySetInnerHTML={{ __html: formatarDescricao(pData.Descricao) }}
                                                 />
-                                                {codPoder === 217 && isAtivoMonst && !regrasAutomaticasAtivas.has(114) && (
-                                                  <div className="mt-2 pt-2 border-t border-zinc-800/80 flex flex-col gap-2">
-                                                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                                                      Perícias Escolhidas (Treinar ou +2):
-                                                    </span>
-                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                      {[1, 2].map(slot => {
-                                                        const atual = poderesExtras[`regra102_pericia_${slot}`] || '';
-                                                        const outra = poderesExtras[`regra102_pericia_${slot === 1 ? 2 : 1}`] || '';
-                                                        const listaNomes = Object.keys(periciasHook.pericias || {}).sort((a, b) => a.localeCompare(b, 'pt-BR'));
-                                                        return (
-                                                          <CustomSelect
-                                                            key={slot}
-                                                            value={atual}
-                                                            onChange={(val) => {
-                                                              if (!val) {
-                                                                setPoderesExtras(prev => {
-                                                                  const n = { ...prev };
-                                                                  delete n[`regra102_pericia_${slot}`];
-                                                                  delete n[`regra102_jatinha_${slot}`];
-                                                                  return n;
-                                                                });
-                                                                return;
-                                                              }
-                                                              const jaEraTreinado = (periciasHook.pericias[val]?.treino || 0) >= 5;
-                                                              setPoderesExtras(prev => ({
-                                                                ...prev,
-                                                                [`regra102_pericia_${slot}`]: val,
-                                                                [`regra102_jatinha_${slot}`]: jaEraTreinado ? 'true' : 'false',
-                                                              }));
-                                                            }}
-                                                            options={[
-                                                              { value: '', label: `Perícia ${slot}...` },
-                                                              ...listaNomes.map(nomeP => ({
-                                                                value: nomeP,
-                                                                label: nomeP,
-                                                                disabled: nomeP === outra
-                                                              }))
-                                                            ]}
-                                                            wrapperClassName="w-full"
-                                                            className="w-full rounded border border-zinc-700 bg-zinc-900 px-2.5 py-1.5 text-xs text-zinc-200"
-                                                          />
-                                                        );
-                                                      })}
+                                                {isMonstruosoEsp && nexLvl === 10 && (
+                                                  <Collapse isOpen={codPoder === 217 && isAtivoMonst && !regrasAutomaticasAtivas.has(114)}>
+                                                    <div className="mt-3 pt-2.5 border-t border-zinc-800/80 flex flex-col gap-2">
+                                                      <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                                                        Perícias Escolhidas (Treinar ou +2):
+                                                      </span>
+                                                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                        {[1, 2].map(slot => {
+                                                          const atual = poderesExtras[`regra102_pericia_${slot}`] || '';
+                                                          const outra = poderesExtras[`regra102_pericia_${slot === 1 ? 2 : 1}`] || '';
+                                                          const listaNomes = Object.keys(periciasHook.pericias || {}).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+                                                          return (
+                                                            <CustomSelect
+                                                              key={slot}
+                                                              value={atual}
+                                                              onChange={(val) => {
+                                                                if (!val) {
+                                                                  setPoderesExtras(prev => {
+                                                                    const n = { ...prev };
+                                                                    delete n[`regra102_pericia_${slot}`];
+                                                                    delete n[`regra102_jatinha_${slot}`];
+                                                                    return n;
+                                                                  });
+                                                                  return;
+                                                                }
+                                                                const jaEraTreinado = (periciasHook.pericias[val]?.treino || 0) >= 5;
+                                                                setPoderesExtras(prev => ({
+                                                                  ...prev,
+                                                                  [`regra102_pericia_${slot}`]: val,
+                                                                  [`regra102_jatinha_${slot}`]: jaEraTreinado ? 'true' : 'false',
+                                                                }));
+                                                              }}
+                                                              options={[
+                                                                { value: '', label: `Perícia ${slot}...` },
+                                                                ...listaNomes.map(nomeP => ({
+                                                                  value: nomeP,
+                                                                  label: nomeP,
+                                                                  disabled: nomeP === outra
+                                                                }))
+                                                              ]}
+                                                              wrapperClassName="w-full"
+                                                              className="w-full rounded border border-zinc-700 bg-zinc-900 px-2.5 py-1.5 text-xs text-zinc-200"
+                                                            />
+                                                          );
+                                                        })}
+                                                      </div>
                                                     </div>
-                                                  </div>
+                                                  </Collapse>
                                                 )}
-                                                {codPoder === 229 && isAtivoMonst && (
-                                                  <div className="mt-2 pt-2 border-t border-zinc-800/80 flex flex-col gap-2">
-                                                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                                                      Perícias Escolhidas (Expert ou +10):
-                                                    </span>
-                                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                                                      {[1, 2, 3].map(slot => {
-                                                        const atual = poderesExtras[`regra114_pericia_${slot}`] || '';
-                                                        const outras = [1, 2, 3].filter(s => s !== slot).map(s => poderesExtras[`regra114_pericia_${s}`]).filter(Boolean);
-                                                        const listaNomes = Object.keys(periciasHook.pericias || {}).sort((a, b) => a.localeCompare(b, 'pt-BR'));
-                                                        return (
-                                                          <CustomSelect
-                                                            key={slot}
-                                                            value={atual}
-                                                            onChange={(val) => {
-                                                              if (!val) {
-                                                                setPoderesExtras(prev => {
-                                                                  const n = { ...prev };
-                                                                  delete n[`regra114_pericia_${slot}`];
-                                                                  delete n[`regra114_jaexpert_${slot}`];
-                                                                  return n;
-                                                                });
-                                                                return;
-                                                              }
-                                                              const jaEraExpert = (periciasHook.pericias[val]?.treino || 0) >= 15;
-                                                              setPoderesExtras(prev => ({
-                                                                ...prev,
-                                                                [`regra114_pericia_${slot}`]: val,
-                                                                [`regra114_jaexpert_${slot}`]: jaEraExpert ? 'true' : 'false',
-                                                              }));
-                                                            }}
-                                                            options={[
-                                                              { value: '', label: `Perícia ${slot}...` },
-                                                              ...listaNomes.map(nomeP => ({
-                                                                value: nomeP,
-                                                                label: nomeP,
-                                                                disabled: outras.includes(nomeP)
-                                                              }))
-                                                            ]}
-                                                            wrapperClassName="w-full"
-                                                            className="w-full rounded border border-zinc-700 bg-zinc-900 px-2.5 py-1.5 text-xs text-zinc-200"
-                                                          />
-                                                        );
-                                                      })}
+                                                {isMonstruosoEsp && nexLvl === 99 && (
+                                                  <Collapse isOpen={codPoder === 229 && isAtivoMonst}>
+                                                    <div className="mt-3 pt-2.5 border-t border-zinc-800/80 flex flex-col gap-2">
+                                                      <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                                                        Perícias Escolhidas (Expert ou +10):
+                                                      </span>
+                                                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                                        {[1, 2, 3].map(slot => {
+                                                          const atual = poderesExtras[`regra114_pericia_${slot}`] || '';
+                                                          const outras = [1, 2, 3].filter(s => s !== slot).map(s => poderesExtras[`regra114_pericia_${s}`]).filter(Boolean);
+                                                          const listaNomes = Object.keys(periciasHook.pericias || {}).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+                                                          return (
+                                                            <CustomSelect
+                                                              key={slot}
+                                                              value={atual}
+                                                              onChange={(val) => {
+                                                                if (!val) {
+                                                                  setPoderesExtras(prev => {
+                                                                    const n = { ...prev };
+                                                                    delete n[`regra114_pericia_${slot}`];
+                                                                    delete n[`regra114_jaexpert_${slot}`];
+                                                                    return n;
+                                                                  });
+                                                                  return;
+                                                                }
+                                                                const jaEraExpert = (periciasHook.pericias[val]?.treino || 0) >= 15;
+                                                                setPoderesExtras(prev => ({
+                                                                  ...prev,
+                                                                  [`regra114_pericia_${slot}`]: val,
+                                                                  [`regra114_jaexpert_${slot}`]: jaEraExpert ? 'true' : 'false',
+                                                                }));
+                                                              }}
+                                                              options={[
+                                                                { value: '', label: `Perícia ${slot}...` },
+                                                                ...listaNomes.map(nomeP => ({
+                                                                  value: nomeP,
+                                                                  label: nomeP,
+                                                                  disabled: outras.includes(nomeP)
+                                                                }))
+                                                              ]}
+                                                              wrapperClassName="w-full"
+                                                              className="w-full rounded border border-zinc-700 bg-zinc-900 px-2.5 py-1.5 text-xs text-zinc-200"
+                                                            />
+                                                          );
+                                                        })}
+                                                      </div>
                                                     </div>
-                                                  </div>
+                                                  </Collapse>
                                                 )}
                                               </div>
                                             );

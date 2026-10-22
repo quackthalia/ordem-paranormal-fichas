@@ -610,9 +610,9 @@ function AtributosFicha() {
         {renderAtributo('FOR', 'top-[36%] left-[19%] -translate-x-1/2 -translate-y-1/2')}
       </div>
 
-      {(regrasAutomaticasAtivas.has(104) || regrasAutomaticasAtivas.has(105) || regrasAutomaticasAtivas.has(106) || regrasAutomaticasAtivas.has(107)) && (
-        <div className="mt-4 flex w-full flex-col gap-2 px-2">
-          {regrasAutomaticasAtivas.has(104) && (
+      <div className="w-full px-2">
+        <Collapse isOpen={Boolean(regrasAutomaticasAtivas.has(104))}>
+          <div className="pt-2.5">
             <div className="flex flex-col gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/80 p-2.5 shadow-sm transition hover:border-zinc-700">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-zinc-100 truncate">Devorar Intelecto</span>
@@ -645,9 +645,11 @@ function AtributosFicha() {
                 +{1 + devorarIntCount}d{regrasAutomaticasAtivas.has(108) ? 8 : 6} Sangue • RD Dano {2 + devorarIntCount * 2} {devorarIntCount > 0 && <span className="text-red-400 font-semibold">(–{devorarIntCount} INT)</span>}
               </div>
             </div>
-          )}
+          </div>
+        </Collapse>
 
-          {regrasAutomaticasAtivas.has(105) && (
+        <Collapse isOpen={Boolean(regrasAutomaticasAtivas.has(105))}>
+          <div className="pt-2.5">
             <div className="flex flex-col gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/80 p-2.5 shadow-sm transition hover:border-zinc-700">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-zinc-100 truncate">Necrosar Força</span>
@@ -680,9 +682,11 @@ function AtributosFicha() {
                 +{1 + necrosarForCount} turno(s) morrendo {necrosarForCount > 0 && <span className="text-zinc-300 font-semibold">(–{necrosarForCount} FOR)</span>}
               </div>
             </div>
-          )}
+          </div>
+        </Collapse>
 
-          {regrasAutomaticasAtivas.has(106) && (
+        <Collapse isOpen={Boolean(regrasAutomaticasAtivas.has(106))}>
+          <div className="pt-2.5">
             <div className="flex flex-col gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/80 p-2.5 shadow-sm transition hover:border-zinc-700">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-zinc-100 truncate">Inexistir Agilidade</span>
@@ -715,9 +719,11 @@ function AtributosFicha() {
                 +{inexistirAgiCount * 2} em testes de INT {inexistirAgiCount > 0 && <span className="text-yellow-500/90 font-semibold">(–{inexistirAgiCount} AGI)</span>}
               </div>
             </div>
-          )}
+          </div>
+        </Collapse>
 
-          {regrasAutomaticasAtivas.has(107) && (
+        <Collapse isOpen={Boolean(regrasAutomaticasAtivas.has(107))}>
+          <div className="pt-2.5">
             <div className="flex flex-col gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900/80 p-2.5 shadow-sm transition hover:border-zinc-700">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-zinc-100 truncate">Queimar Vigor</span>
@@ -750,9 +756,9 @@ function AtributosFicha() {
                 +{2 + queimarVigCount * 2} Defesa • +1d6{queimarVigCount > 0 ? `+${queimarVigCount}d4` : ''} Ataque {queimarVigCount > 0 && <span className="text-purple-400 font-semibold">(–{queimarVigCount} VIG)</span>}
               </div>
             </div>
-          )}
-        </div>
-      )}
+          </div>
+        </Collapse>
+      </div>
     </div>
   );
 }

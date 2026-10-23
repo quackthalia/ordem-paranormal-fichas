@@ -922,6 +922,7 @@ function ProtecoesPanel() {
     trilhasHook, regras, nivel, nex,
     temMonstruoso10, temMonstruoso40, temMonstruoso65, temMonstruoso99, monstruosoElemento,
     isMonstruosoAtivo10, isMonstruosoAtivo40, isMonstruosoAtivo65,
+    temVampiro40,
     devorarIntCount
   } = useRPG();
   const [mostrarOutros, setMostrarOutros] = React.useState(false);
@@ -932,6 +933,11 @@ function ProtecoesPanel() {
   // REGRA 5: Resistência Mental +INT
   if (regrasAutomaticasAtivas.has(5) && atributosFinais.INT > 0) {
     resistenciasExtras.push(`Mental ${atributosFinais.INT}`);
+  }
+
+  // TRILHA 48 (Vontade Vampírica): 40% Opção 2 - Resistência Mental +10
+  if (temVampiro40 && poderesExtras['vampiro_opcao_40'] === '2') {
+    resistenciasExtras.push('Mental 10');
   }
   // REGRA 9, 60 e 104: Resistência a Dano
   let danoResist = 0;

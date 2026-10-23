@@ -144,6 +144,15 @@ export function ModalTrilhas({
       }));
     }
 
+    if (trilha.Codigo_Trilha === 48) {
+      const pNome = trilha.nome_pericia || 'Fortitude';
+      const jaTinha = (periciasHook.pericias[pNome]?.treino || 0) >= 5 || periciasGratisSemTrilha.includes(pNome);
+      setPoderesExtras(prev => ({
+        ...prev,
+        vampiro_ja_tinha_pericia: String(jaTinha),
+      }));
+    }
+
     if (trilha.Codigo_Trilha === 22) {
       const jaTinha = (periciasHook.pericias['Religião']?.treino || 0) >= 5 || periciasGratisSemTrilha.includes('Religião');
       if (modoVersatilidade) {
@@ -193,6 +202,20 @@ export function ModalTrilhas({
             delete n.adepto_atributo_40;
             delete n.adepto_recusados;
             delete n.adepto_excluidos;
+            return n;
+          });
+        }
+      }
+      if (trilhaAtual?.Codigo_Trilha === 48 && novaTrilhaId !== 48) {
+        const outraTem48 = modoVersatilidade ? trilhasHook.trilhaSelecionada?.Codigo_Trilha === 48 : trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 48;
+        if (!outraTem48) {
+          setPoderesExtras(prev => {
+            const n = { ...prev };
+            delete n.vampiro_ja_tinha_pericia;
+            delete n.vampiro_arquetipo;
+            delete n.vampiro_opcao_40;
+            delete n.vampiro_opcao_65;
+            delete n.vampiro_opcao_99;
             return n;
           });
         }

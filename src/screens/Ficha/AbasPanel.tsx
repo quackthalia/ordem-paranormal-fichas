@@ -180,6 +180,7 @@ export const AbasPanel: React.FC = () => {
     isMonstruosoAtivo10, isMonstruosoAtivo40, isMonstruosoAtivo65, isMonstruosoAtivo75,
     temMonstruosoEsp10, temMonstruosoEsp40, temMonstruosoEsp65, temMonstruosoEsp75, temMonstruosoEsp99, isMonstruosoEspAtivo,
     temMonstruosoOcult10, temMonstruosoOcult40, temMonstruosoOcult65, temMonstruosoOcult75, temMonstruosoOcult99, isMonstruosoOcultAtivo,
+    temVampiro10, temVampiro40, temVampiro65, temVampiro99, vampiroArquetipo,
   } = useRPG();
 
   const [escolhendoRitualPlaceholder, setEscolhendoRitualPlaceholder] = React.useState<{ origem: string, nex?: number, maxCirculo?: number, circuloFixo?: number, elementoFiltro?: string } | null>(null);
@@ -466,6 +467,23 @@ export const AbasPanel: React.FC = () => {
         tipo: 'Habilidade de Trilha',
         categoria: 'utilidade',
         fonte: 'Criptologista do Oculto',
+        automatico: 'Sim',
+      });
+    }
+
+    // Trilha 48 (Vontade Vampírica - 40% Opção 3): Concede Aura de Pavor
+    const temAuraPavorNosPoderes = Object.values(poderesEscolhidos).some(p => 
+      p.codigoRegra === 29 || (p as any).codigo_poder === 29 || (p as any).Codigo_Poder_Paranormal === 29 || p.nome?.toLowerCase().trim() === 'aura de pavor'
+    );
+    if (temVampiro40 && poderesExtras['vampiro_opcao_40'] === '3' && !temAuraPavorNosPoderes) {
+      lista.push({
+        id: 'trilha_vampiro_aura_de_pavor',
+        nome: 'Aura de Pavor',
+        descricao: 'Ao receber esse poder, você é tomado por uma aura de Morte que nunca mais o abandona. Do ponto de vista dos outros, é como se o mundo ao seu redor perdesse as cores e se tornasse mais opressor. Você pode gastar 2 PE e uma ação de movimento para deixar uma pessoa ou animal em alcance médio apavorado (Vontade DT Pre reduz para abalado). O alvo não precisa ser capaz de ver você. Esta condição termina ao fim da cena, se o alvo se afastar de você além de alcance médio ou se você usar este efeito em outro alvo. Uma mesma pessoa ou animal só pode sofrer o efeito deste poder uma vez por dia.',
+        tipo: 'Habilidade de Trilha',
+        categoria: 'paranormais',
+        elemento: 'Morte',
+        fonte: 'Vontade Vampírica (40%)',
         automatico: 'Sim',
       });
     }
@@ -1177,10 +1195,141 @@ export const AbasPanel: React.FC = () => {
                                           </span>
                                         </div>
                                         <Collapse isOpen={isHabExpanded}>
-                                          <div
-                                            className="px-3 pb-3 pt-1 text-xs text-zinc-400"
-                                            dangerouslySetInnerHTML={{ __html: formatarDescricao(descHab) }}
-                                          />
+                                          {(() => {
+                                            const isTrilha48 = t.Codigo_Trilha === 48;
+                                            const opcaoKey = `vampiro_opcao_${nexLvl}`;
+                                            const opcaoEscolhida = poderesExtras[opcaoKey];
+                                            const temOpcoesDelimitadas = descHab && descHab.includes('&-');
+
+                                            if (isTrilha48 && temOpcoesDelimitadas && !opcaoEscolhida) {
+                                              const partesIntro = descHab.split(/&-[\s\S]*?&/)[0].trim();
+                                              const regexOpcoes = /&-([\s\S]*?)&/g;
+                                              const opcoes: string[] = [];
+                                              let m;
+                                              while ((m = regexOpcoes.exec(descHab)) !== null) {
+                                                opcoes.push(m[1].trim());
+                                              }
+
+                                              return (
+                                                <div className="flex flex-col gap-3 px-3 pb-3 pt-1">
+                                                  {partesIntro && (
+                                                    <div
+                                                      className="text-xs text-zinc-400"
+                                                      dangerouslySetInnerHTML={{ __html: formatarDescricao(partesIntro) }}
+                                                    />
+                                                  )}
+                                                  <div className="flex flex-col gap-2.5">
+                                                    {opcoes.map((opcaoTexto, idx) => {
+                                                      const numOpcao = String(idx + 1);
+                                                      const badgeTag = nexLvl === 40 ? (idx === 1 ? 'Semi' : idx === 2 ? 'Auto' : null) : null;
+                                                      return (
+                                                        <div
+                                                          key={numOpcao}
+                                                          onClick={e => e.stopPropagation()}
+                                                          className="rounded-lg border border-zinc-800 bg-zinc-950/60 p-3 shadow-sm hover:border-zinc-700 transition flex flex-col gap-2.5"
+                                                        >
+                                                          <div className="flex items-center justify-between gap-2">
+                                                            <div className="flex items-center gap-2">
+                                                              <span className="text-[11px] font-bold uppercase tracking-wider text-green-400">
+                                                                Opção {numOpcao}
+                                                              </span>
+                                                              {badgeTag && (
+                                                                <span
+                                                                  title={badgeTag === 'Auto' ? 'Totalmente automático — acontece sozinho' : 'Semi-automático — parte funciona automaticamente'}
+                                                                  className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider ${
+                                                                    badgeTag === 'Auto'
+                                                                      ? 'bg-green-950/60 text-green-400 border border-green-800/50'
+                                                                      : 'bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
+                                                                  }`}
+                                                                >
+                                                                  {badgeTag === 'Auto' ? (
+                                                                    <>
+                                                                      <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z"/></svg>
+                                                                      Auto
+                                                                    </>
+                                                                  ) : (
+                                                                    <>
+                                                                      <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z" opacity="0.5"/><path d="M19 3v4m0 4v10" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
+                                                                      Semi
+                                                                    </>
+                                                                  )}
+                                                                </span>
+                                                              )}
+                                                            </div>
+                                                            <button
+                                                              type="button"
+                                                              onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setPoderesExtras(prev => ({
+                                                                  ...prev,
+                                                                  [opcaoKey]: numOpcao
+                                                                }));
+                                                              }}
+                                                              className="px-2.5 py-1 rounded bg-green-950/50 border border-green-700/60 text-green-300 hover:bg-green-900/60 hover:text-white text-[11px] font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1 shadow-sm"
+                                                            >
+                                                              + Escolher
+                                                            </button>
+                                                          </div>
+                                                          <div
+                                                            className="max-h-48 overflow-y-auto pr-1 text-xs text-zinc-300 leading-relaxed custom-scrollbar"
+                                                            dangerouslySetInnerHTML={{ __html: formatarDescricao(opcaoTexto) }}
+                                                          />
+                                                        </div>
+                                                      );
+                                                    })}
+                                                  </div>
+                                                </div>
+                                              );
+                                            }
+
+                                            // Se for trilha 48 com opção escolhida, substitui o bloco de opções pelo texto da opção escolhida
+                                            let textoExibicao = descHab;
+                                            if (isTrilha48 && temOpcoesDelimitadas && opcaoEscolhida) {
+                                              const chosenIdx = Number(opcaoEscolhida);
+                                              let curr = 0;
+                                              textoExibicao = descHab.replace(/&-([\s\S]*?)&/g, (_match, p1) => {
+                                                curr++;
+                                                if (curr === chosenIdx) return p1.trim();
+                                                return '';
+                                              }).replace(/\n\s*\n\s*\n/g, '\n\n').trim();
+                                            }
+
+                                            return (
+                                              <div
+                                                className="px-3 pb-3 pt-1 text-xs text-zinc-400"
+                                                dangerouslySetInnerHTML={{ __html: formatarDescricao(textoExibicao) }}
+                                              />
+                                            );
+                                          })()}
+                                          {t.Codigo_Trilha === 48 && nexLvl === 10 && (
+                                            <div className="px-3 pb-3 pt-2 border-t border-zinc-800/80 flex flex-col gap-2" onClick={e => e.stopPropagation()}>
+                                              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                                                Arquétipo Vampírico (10%):
+                                              </span>
+                                              <div className="flex flex-wrap gap-2 items-center">
+                                                {(['Ancião', 'Bestial', 'Encantador'] as const).map(arq => {
+                                                  const isSelected = vampiroArquetipo === arq;
+                                                  return (
+                                                    <button
+                                                      key={arq}
+                                                      type="button"
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setPoderesExtras(prev => ({ ...prev, vampiro_arquetipo: arq }));
+                                                      }}
+                                                      className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${
+                                                        isSelected
+                                                          ? 'bg-green-950/60 border-green-600 text-green-300'
+                                                          : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                                                      }`}
+                                                    >
+                                                      {arq}
+                                                    </button>
+                                                  );
+                                                })}
+                                              </div>
+                                            </div>
+                                          )}
                                           {isMonstruoso && nexLvl === 10 && (
                                             <div className="px-3 pb-3 pt-2 border-t border-zinc-800/80 flex flex-col gap-2" onClick={e => e.stopPropagation()}>
                                               <div className="flex items-center justify-between">
@@ -1582,6 +1731,19 @@ export const AbasPanel: React.FC = () => {
                                              });
                                            }
                                          }
+                                         if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 48) {
+                                           if (trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 48) {
+                                             setPoderesExtras(prev => {
+                                               const n = { ...prev };
+                                               delete n.vampiro_ja_tinha_pericia;
+                                               delete n.vampiro_arquetipo;
+                                               delete n.vampiro_opcao_40;
+                                               delete n.vampiro_opcao_65;
+                                               delete n.vampiro_opcao_99;
+                                               return n;
+                                             });
+                                           }
+                                         }
                                          if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 18 || trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 45 || trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 47) {
                                            if (trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 18 && trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 45 && trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 47) {
                                              setPoderesExtras(prev => {
@@ -1643,6 +1805,19 @@ export const AbasPanel: React.FC = () => {
                                                delete n.adepto_atributo_40;
                                                delete n.adepto_recusados;
                                                delete n.adepto_excluidos;
+                                               return n;
+                                             });
+                                           }
+                                         }
+                                         if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 48) {
+                                           if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha !== 48) {
+                                             setPoderesExtras(prev => {
+                                               const n = { ...prev };
+                                               delete n.vampiro_ja_tinha_pericia;
+                                               delete n.vampiro_arquetipo;
+                                               delete n.vampiro_opcao_40;
+                                               delete n.vampiro_opcao_65;
+                                               delete n.vampiro_opcao_99;
                                                return n;
                                              });
                                            }

@@ -1127,16 +1127,6 @@ export const AbasPanel: React.FC = () => {
                                       const maxSelos = temDobroCriarSelo ? atributosFinais.PRE * 2 : atributosFinais.PRE;
                                       descHab += `<br/><br/><strong class="text-green-400">❖ Método Intuitivo${temDobroCriarSelo ? ' Aprimorado' : ''}:</strong> você pode fabricar ${selosPorInterludio} selo(s) em uma ação de interlúdio e ter um máximo de ${maxSelos} selo(s) ativos simultâneos${temDobroCriarSelo ? ' (Presença × 2)' : ' (Presença)'}.`;
                                     }
-                                    if (t.Codigo_Trilha === 47 && nexLvl === 40) {
-                                      let extraTatuagem = `Diferente do normal, este poder também se aplica a todos os rituais de ${monstruosoElemento} marcados em sua pele, não apenas aos de alcance pessoal que têm você como alvo.`;
-                                      if (temMonstruosoOcult65) {
-                                        extraTatuagem += `<br/><br/><strong class="text-green-400">❖ Ser Rasgado (65%):</strong> a DT dos rituais de ${monstruosoElemento} marcados na pele tem sua DT aumentada em +2.`;
-                                      }
-                                      if (temMonstruosoOcult99) {
-                                        extraTatuagem += `<br/><br/><strong class="text-green-400">❖ Ser Mutilado (99%):</strong> você pode conjurar rituais de ${monstruosoElemento} marcados na pele sem a necessidade de fala, gestos e componentes.`;
-                                      }
-                                      descHab += `<br/><br/><strong class="text-green-400">❖ Escarificação (${monstruosoElemento}):</strong> ${extraTatuagem}`;
-                                    }
               
                                     if (!nomeHab) return null;
               

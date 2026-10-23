@@ -175,6 +175,7 @@ export const AbasPanel: React.FC = () => {
     elementoRitual, setElementoRitual,
     status, trilhasHook, periciasHook, poderesExtras, setPoderesExtras,
     temAdepto10, temAdepto40, temAdepto65, temAdepto99,
+    temCriptologista10, temCriptologista40, temCriptologista65, temCriptologista99, selosPorInterludio, temDobroCriarSelo,
     temMonstruoso10, temMonstruoso40, temMonstruoso65, temMonstruoso75, temMonstruoso99, monstruosoElemento,
     isMonstruosoAtivo10, isMonstruosoAtivo40, isMonstruosoAtivo65, isMonstruosoAtivo75,
     temMonstruosoEsp10, temMonstruosoEsp40, temMonstruosoEsp65, temMonstruosoEsp75, temMonstruosoEsp99, isMonstruosoEspAtivo,
@@ -450,6 +451,22 @@ export const AbasPanel: React.FC = () => {
         fonte: p187?.Fonte || 'SaH',
         preRequisitos: p187?.PreRequisitos || 'Trilha Monstruoso',
         automatico: (p187 as any)?.['Automatico?'] || p187?.Automatico || undefined,
+      });
+    }
+
+    // Trilha 26 (Criptologista do Oculto - 10% Método Intuitivo): Concede Criar Selo
+    const temCriarSeloNosPoderes = Object.values(poderesEscolhidos).some(p => 
+      p.nome?.toLowerCase() === 'criar selo' || p.nome?.toLowerCase().startsWith('criar selo')
+    );
+    if (temCriptologista10 && !temCriarSeloNosPoderes) {
+      lista.push({
+        id: 'trilha_criptologista_criar_selo',
+        nome: 'Criar Selo',
+        descricao: 'Você sabe fabricar selos paranormais de rituais que conheça (veja a página 151). Fabricar um selo gasta uma ação de interlúdio e um número de PE iguais ao custo de conjurar o ritual. Você pode ter um número máximo de selos criados a qualquer momento igual à sua Presença.',
+        tipo: 'Habilidade de Trilha',
+        categoria: 'utilidade',
+        fonte: 'Criptologista do Oculto',
+        automatico: 'Sim',
       });
     }
 
@@ -899,7 +916,7 @@ export const AbasPanel: React.FC = () => {
     }
 
     return lista;
-  }, [classe, nex, nivel, origemSelecionada, poderClasse, poderesClasse, poderesEscolhidos, poderesParanormaisMap, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras, trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, regrasAutomaticasAtivas, temMonstruoso75, temMonstruosoEsp75, listaPoderesUtilidade]);
+  }, [classe, nex, nivel, origemSelecionada, poderClasse, poderesClasse, poderesEscolhidos, poderesParanormaisMap, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras, trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, regrasAutomaticasAtivas, temMonstruoso75, temMonstruosoEsp75, listaPoderesUtilidade, temCriptologista10, temCriptologista40, temCriptologista65, temCriptologista99]);
 
   const habilidadesFiltradas = listaHabilidades.filter(hab =>
     hab.nome.toLowerCase().includes(filtroHabilidades.toLowerCase()) ||
@@ -1117,7 +1134,11 @@ export const AbasPanel: React.FC = () => {
                                       if (effectiveNex >= 65) nomeHab += ' (8 PE, +2d20)';
                                       else if (effectiveNex >= 40) nomeHab += ' (4 PE, +1d10)';
                                     }
-                                    const descHab = t[habDescKey] as string;
+                                    let descHab = t[habDescKey] as string;
+                                    if (t.Codigo_Trilha === 26 && nexLvl === 10) {
+                                      const maxSelos = temDobroCriarSelo ? atributosFinais.PRE * 2 : atributosFinais.PRE;
+                                      descHab += `<br/><br/><strong class="text-green-400">❖ Método Intuitivo${temDobroCriarSelo ? ' Aprimorado' : ''}:</strong> você pode fabricar ${selosPorInterludio} selo(s) em uma ação de interlúdio e ter um máximo de ${maxSelos} selo(s) ativos simultâneos${temDobroCriarSelo ? ' (Presença × 2)' : ' (Presença)'}.`;
+                                    }
               
                                     if (!nomeHab) return null;
               
@@ -1727,7 +1748,11 @@ export const AbasPanel: React.FC = () => {
                                     </div>
                                   );
                                 })()}
-                                <div dangerouslySetInnerHTML={{ __html: formatarDescricao(hab.descricao) }} />
+                                <div dangerouslySetInnerHTML={{ __html: formatarDescricao(
+                                  (hab.nome?.toLowerCase() === 'criar selo' && temCriptologista10)
+                                    ? `${hab.descricao}<br/><br/><strong class="text-green-400">❖ Método Intuitivo${temDobroCriarSelo ? ' Aprimorado' : ''}:</strong> você pode fabricar ${selosPorInterludio} selo(s) em uma ação de interlúdio e ter um máximo de ${temDobroCriarSelo ? atributosFinais.PRE * 2 : atributosFinais.PRE} selo(s) ativos simultâneos${temDobroCriarSelo ? ' (Presença × 2)' : ' (Presença)'}.`
+                                    : hab.descricao
+                                ) }} />
 
                                 {/* Regra 102: escolha 2 perícias para treinar (ou +2 se já treinado) */}
                                 {hab.codigoRegra === 102 && !regrasAutomaticasAtivas.has(114) && (

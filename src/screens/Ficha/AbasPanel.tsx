@@ -473,19 +473,7 @@ export const AbasPanel: React.FC = () => {
     // 1.7 Monstruoso Ocultista 40%: Tatuagem Ritualística (ou Slot Extra se já tiver)
     const p89Tatuagem = listaPoderesUtilidade.find(p => Number(p.codigo_poder) === 89) || poderesClasse.find(p => Number(p.codigo_poder) === 89);
     const buildDescTatuagem = (baseDesc?: string) => {
-      let text = baseDesc || p89Tatuagem?.Descricao || "Símbolos marcados em sua pele reduzem em –1 PE o custo de rituais de alcance pessoal que têm você como alvo.";
-      if (temMonstruosoOcult40) {
-        if (!text.includes('++Escarificação')) {
-          text += `\n\n++Escarificação (${monstruosoElemento})++: Diferente do normal, este poder também se aplica a todos os rituais de ${monstruosoElemento} marcados em sua pele, não apenas aos de alcance pessoal que têm você como alvo.`;
-        }
-        if (temMonstruosoOcult65 && !text.includes('tem sua DT aumentada em +2')) {
-          text += `\n\nA DT dos rituais de ${monstruosoElemento} marcados na pele tem sua DT aumentada em +2.`;
-        }
-        if (temMonstruosoOcult99 && !text.includes('sem a necessidade de fala')) {
-          text += `\n\nVocê pode conjurar rituais de ${monstruosoElemento} marcados na pele sem a necessidade de fala, gestos e componentes.`;
-        }
-      }
-      return text;
+      return baseDesc || p89Tatuagem?.Descricao || "Símbolos marcados em sua pele reduzem em –1 PE o custo de rituais de alcance pessoal que têm você como alvo.";
     };
 
     if (temMonstruosoOcult40) {
@@ -1139,6 +1127,16 @@ export const AbasPanel: React.FC = () => {
                                       const maxSelos = temDobroCriarSelo ? atributosFinais.PRE * 2 : atributosFinais.PRE;
                                       descHab += `<br/><br/><strong class="text-green-400">❖ Método Intuitivo${temDobroCriarSelo ? ' Aprimorado' : ''}:</strong> você pode fabricar ${selosPorInterludio} selo(s) em uma ação de interlúdio e ter um máximo de ${maxSelos} selo(s) ativos simultâneos${temDobroCriarSelo ? ' (Presença × 2)' : ' (Presença)'}.`;
                                     }
+                                    if (t.Codigo_Trilha === 47 && nexLvl === 40) {
+                                      let extraTatuagem = `Diferente do normal, este poder também se aplica a todos os rituais de ${monstruosoElemento} marcados em sua pele, não apenas aos de alcance pessoal que têm você como alvo.`;
+                                      if (temMonstruosoOcult65) {
+                                        extraTatuagem += `<br/><br/><strong class="text-green-400">❖ Ser Rasgado (65%):</strong> a DT dos rituais de ${monstruosoElemento} marcados na pele tem sua DT aumentada em +2.`;
+                                      }
+                                      if (temMonstruosoOcult99) {
+                                        extraTatuagem += `<br/><br/><strong class="text-green-400">❖ Ser Mutilado (99%):</strong> você pode conjurar rituais de ${monstruosoElemento} marcados na pele sem a necessidade de fala, gestos e componentes.`;
+                                      }
+                                      descHab += `<br/><br/><strong class="text-green-400">❖ Escarificação (${monstruosoElemento}):</strong> ${extraTatuagem}`;
+                                    }
               
                                     if (!nomeHab) return null;
               
@@ -1751,7 +1749,9 @@ export const AbasPanel: React.FC = () => {
                                 <div dangerouslySetInnerHTML={{ __html: formatarDescricao(
                                   (hab.nome?.toLowerCase() === 'criar selo' && temCriptologista10)
                                     ? `${hab.descricao}<br/><br/><strong class="text-green-400">❖ Método Intuitivo${temDobroCriarSelo ? ' Aprimorado' : ''}:</strong> você pode fabricar ${selosPorInterludio} selo(s) em uma ação de interlúdio e ter um máximo de ${temDobroCriarSelo ? atributosFinais.PRE * 2 : atributosFinais.PRE} selo(s) ativos simultâneos${temDobroCriarSelo ? ' (Presença × 2)' : ' (Presença)'}.`
-                                    : hab.descricao
+                                    : (hab.nome?.toLowerCase() === 'tatuagem ritualística' && temMonstruosoOcult40)
+                                      ? `${hab.descricao}<br/><br/><strong class="text-green-400">❖ Escarificação (${monstruosoElemento}):</strong> Diferente do normal, este poder também se aplica a todos os rituais de ${monstruosoElemento} marcados em sua pele, não apenas aos de alcance pessoal que têm você como alvo.${temMonstruosoOcult65 ? `<br/><br/><strong class="text-green-400">❖ Ser Rasgado (65%):</strong> a DT dos rituais de ${monstruosoElemento} marcados na pele tem sua DT aumentada em +2.` : ''}${temMonstruosoOcult99 ? `<br/><br/><strong class="text-green-400">❖ Ser Mutilado (99%):</strong> você pode conjurar rituais de ${monstruosoElemento} marcados na pele sem a necessidade de fala, gestos e componentes.` : ''}`
+                                      : hab.descricao
                                 ) }} />
 
                                 {/* Regra 102: escolha 2 perícias para treinar (ou +2 se já treinado) */}

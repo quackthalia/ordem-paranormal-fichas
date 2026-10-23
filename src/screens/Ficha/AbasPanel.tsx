@@ -454,37 +454,29 @@ export const AbasPanel: React.FC = () => {
     }
 
     // 1.7 Monstruoso Ocultista 40%: Tatuagem Ritualística (ou Slot Extra se já tiver)
+    const p89Tatuagem = listaPoderesUtilidade.find(p => Number(p.codigo_poder) === 89) || poderesClasse.find(p => Number(p.codigo_poder) === 89);
+    const buildDescTatuagem = (baseDesc?: string) => {
+      let text = baseDesc || p89Tatuagem?.Descricao || "Símbolos marcados em sua pele reduzem em –1 PE o custo de rituais de alcance pessoal que têm você como alvo.";
+      if (temMonstruosoOcult40) {
+        if (!text.includes('++Escarificação')) {
+          text += `\n\n++Escarificação (${monstruosoElemento})++: Diferente do normal, este poder também se aplica a todos os rituais de ${monstruosoElemento} marcados em sua pele, não apenas aos de alcance pessoal que têm você como alvo.`;
+        }
+        if (temMonstruosoOcult65 && !text.includes('tem sua DT aumentada em +2')) {
+          text += `\n\nA DT dos rituais de ${monstruosoElemento} marcados na pele tem sua DT aumentada em +2.`;
+        }
+        if (temMonstruosoOcult99 && !text.includes('sem a necessidade de fala')) {
+          text += `\n\nVocê pode conjurar rituais de ${monstruosoElemento} marcados na pele sem a necessidade de fala, gestos e componentes.`;
+        }
+      }
+      return text;
+    };
+
     if (temMonstruosoOcult40) {
       const temTatuagemEscolhida = Object.values(poderesEscolhidos).some(p => 
         p.codigoRegra === 89 || (p as any).codigo_poder === 89 || p.nome?.toLowerCase().trim() === 'tatuagem ritualística'
       );
-      
-      const buildDescTatuagem = () => {
-        let base = "Símbolos marcados em sua pele reduzem em –1 PE o custo de rituais de alcance pessoal que têm você como alvo.";
-        base += `\n\n++Escarificação (${monstruosoElemento})++: Diferente do normal, este poder também se aplica a todos os rituais de ${monstruosoElemento} marcados em sua pele, não apenas aos de alcance pessoal que têm você como alvo (-1 PE). Além disso, uma vez por cena, se estiver `;
-        if (monstruosoElemento === 'Sangue') {
-          base += "machucado ou sob efeito de uma condição de fadiga, você pode conjurar um ritual marcado em sua pele como reação. Finalmente, você recebe +5 em testes de concentração com rituais de Sangue marcados.";
-        } else if (monstruosoElemento === 'Morte') {
-          base += "morrendo ou sob efeito de uma condição de sentidos, você pode conjurar um ritual marcado em sua pele como reação. Finalmente, você recebe +5 em testes de concentração com rituais de Morte marcados.";
-        } else if (monstruosoElemento === 'Conhecimento') {
-          base += "sob efeito de uma condição mental ou de medo, você pode conjurar um ritual marcado em sua pele como reação. Finalmente, você recebe +5 em testes de concentração com rituais de Conhecimento marcados.";
-        } else {
-          base += "sob efeito de uma condição de paralisia ou de sentidos, você pode conjurar um ritual marcado em sua pele como reação. Finalmente, você recebe +5 em testes de concentração com rituais de Energia marcados.";
-        }
-        if (temMonstruosoOcult65) {
-          base += `\n\nA DT dos seus rituais de ${monstruosoElemento} marcados na pele aumenta em +2.`;
-          if (monstruosoElemento === 'Morte') {
-            base += " Quando conjura um ritual de Morte diferente de Cicatrização, você pode conjurar Cicatrização como ação de movimento.";
-          }
-        }
-        if (temMonstruosoOcult99) {
-          base += `\n\nVocê pode conjurar rituais de ${monstruosoElemento} marcados na pele sem a necessidade de fala, gestos e componentes.`;
-        }
-        return base;
-      };
 
       if (!temTatuagemEscolhida) {
-        const p89 = listaPoderesUtilidade.find(p => Number(p.codigo_poder) === 89) || poderesClasse.find(p => Number(p.codigo_poder) === 89);
         lista.push({
           id: 'trilha_monstruoso_poder_tatuagem',
           nome: 'Tatuagem Ritualística',
@@ -493,7 +485,7 @@ export const AbasPanel: React.FC = () => {
           categoria: 'trilha',
           fonte: 'OPRPG',
           preRequisitos: 'Trilha Monstruoso (40%)',
-          automatico: (p89 as any)?.['Automatico?'] || p89?.Automatico || undefined,
+          automatico: (p89Tatuagem as any)?.['Automatico?'] || p89Tatuagem?.Automatico || undefined,
         });
       } else {
         const extraKey = 'extra_monstruoso_ocult_40';
@@ -594,7 +586,9 @@ export const AbasPanel: React.FC = () => {
           } else {
             if (pp) poderesRenderizados.add(nomeBaseCheck);
             const automaticoVal = pp ? (afinidadeAtiva ? (pp['Automatico?_Afinidade'] ?? pp['Automatico?']) : pp['Automatico?']) : (poderesGeraisMap.get(nomeBaseCheck) || undefined);
-            lista.push({ id: `escolha_nex_${nivelPatamar}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal, codigoRegra: escolhido.codigoRegra });
+            const isTatuagem = escolhido.codigoRegra === 89 || (escolhido as any).codigo_poder === 89 || escolhido.nome?.toLowerCase().trim() === 'tatuagem ritualística';
+            const descFinal = (temMonstruosoOcult40 && isTatuagem) ? buildDescTatuagem(escolhido.descricao) : escolhido.descricao;
+            lista.push({ id: `escolha_nex_${nivelPatamar}`, nome: escolhido.nome, descricao: descFinal, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal, codigoRegra: escolhido.codigoRegra });
           }
         } else {
           const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
@@ -655,7 +649,9 @@ export const AbasPanel: React.FC = () => {
           } else {
             if (pp) poderesRenderizados.add(nomeBaseCheck);
             const automaticoVal = pp ? (afinidadeAtiva ? (pp['Automatico?_Afinidade'] ?? pp['Automatico?']) : pp['Automatico?']) : (poderesGeraisMap.get(nomeBaseCheck) || undefined);
-            lista.push({ id: `escolha_nex_combate_${nivelPatamar}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal, codigoRegra: escolhido.codigoRegra });
+            const isTatuagemComb = escolhido.codigoRegra === 89 || (escolhido as any).codigo_poder === 89 || escolhido.nome?.toLowerCase().trim() === 'tatuagem ritualística';
+            const descFinalComb = (temMonstruosoOcult40 && isTatuagemComb) ? buildDescTatuagem(escolhido.descricao) : escolhido.descricao;
+            lista.push({ id: `escolha_nex_combate_${nivelPatamar}`, nome: escolhido.nome, descricao: descFinalComb, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal, codigoRegra: escolhido.codigoRegra });
           }
         } else {
           const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
@@ -713,7 +709,9 @@ export const AbasPanel: React.FC = () => {
         } else {
           if (pp) poderesRenderizados.add(nomeBaseCheck);
           const automaticoVal = pp ? (afinidadeAtiva ? (pp['Automatico?_Afinidade'] ?? pp['Automatico?']) : pp['Automatico?']) : (poderesGeraisMap.get(nomeBaseCheck) || undefined);
-          lista.push({ id: `escolha_${key}`, nome: escolhido.nome, descricao: escolhido.descricao, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal, codigoRegra: escolhido.codigoRegra });
+          const isTatuagemExtra = escolhido.codigoRegra === 89 || (escolhido as any).codigo_poder === 89 || escolhido.nome?.toLowerCase().trim() === 'tatuagem ritualística';
+          const descFinalExtra = (temMonstruosoOcult40 && isTatuagemExtra) ? buildDescTatuagem(escolhido.descricao) : escolhido.descricao;
+          lista.push({ id: `escolha_${key}`, nome: escolhido.nome, descricao: descFinalExtra, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal, codigoRegra: escolhido.codigoRegra });
         }
       }
     });

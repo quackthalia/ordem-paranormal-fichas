@@ -178,6 +178,7 @@ export const AbasPanel: React.FC = () => {
     temMonstruoso10, temMonstruoso40, temMonstruoso65, temMonstruoso75, temMonstruoso99, monstruosoElemento,
     isMonstruosoAtivo10, isMonstruosoAtivo40, isMonstruosoAtivo65, isMonstruosoAtivo75,
     temMonstruosoEsp10, temMonstruosoEsp40, temMonstruosoEsp65, temMonstruosoEsp75, temMonstruosoEsp99, isMonstruosoEspAtivo,
+    temMonstruosoOcult10, temMonstruosoOcult40, temMonstruosoOcult65, temMonstruosoOcult75, temMonstruosoOcult99, isMonstruosoOcultAtivo,
   } = useRPG();
 
   const [escolhendoRitualPlaceholder, setEscolhendoRitualPlaceholder] = React.useState<{ origem: string, nex?: number, maxCirculo?: number, circuloFixo?: number, elementoFiltro?: string } | null>(null);
@@ -437,7 +438,7 @@ export const AbasPanel: React.FC = () => {
     }
 
     // 1.6 Poder de Trilha Automático (Monstruoso 75% -> Poder 187)
-    if (temMonstruoso75 || temMonstruosoEsp75) {
+    if (temMonstruoso75 || temMonstruosoEsp75 || temMonstruosoOcult75) {
       const p187 = listaPoderesUtilidade.find(p => Number(p.codigo_poder) === 187) || poderesClasse.find(p => Number(p.codigo_poder) === 187);
       const fallbackDesc = "Quando o personagem atinge NEX 75%, se torna permanentemente perturbado. Suas ações já não são mais aceitas pela Ordem, que vai banir e potencialmente caçar o ex-agente. Considere que ele começa cada missão com equipamento equivalente a uma patente um nível inferior à sua, conseguido por conta própria.\nQuando o personagem atinge NEX 99%, sua Sanidade é reduzida a 1. Por fim, sempre que ficar enlouquecendo, em vez de sofrer um efeito de insanidade (veja OPRPG, p.111), o personagem fica confuso (a condição se encerra normalmente ou quando o personagem não está mais enlouquecendo). Se um personagem Monstruoso enlouquecer com 99% de NEX, se torna permanentemente uma criatura do Outro Lado.\nSe estiver usando a regra opcional Jogando sem Sanidade, em vez disso considere que o personagem está sempre perturbado e fica enlouquecendo (e confuso) sempre que perde 1 ponto de determinação por qualquer efeito (exceto por pagar custos de habilidades e itens).";
       lista.push({
@@ -450,6 +451,77 @@ export const AbasPanel: React.FC = () => {
         preRequisitos: p187?.PreRequisitos || 'Trilha Monstruoso',
         automatico: 'Sim',
       });
+    }
+
+    // 1.7 Monstruoso Ocultista 40%: Tatuagem Ritualística (ou Slot Extra se já tiver)
+    if (temMonstruosoOcult40 && isMonstruosoOcultAtivo) {
+      const temTatuagemEscolhida = Object.values(poderesEscolhidos).some(p => 
+        p.codigoRegra === 89 || (p as any).codigo_poder === 89 || p.nome?.toLowerCase().trim() === 'tatuagem ritualística'
+      );
+      
+      const buildDescTatuagem = () => {
+        let base = "Símbolos marcados em sua pele reduzem em –1 PE o custo de rituais de alcance pessoal que têm você como alvo.";
+        base += `\n\n++Escarificação (${monstruosoElemento})++: Diferente do normal, este poder também se aplica a todos os rituais de ${monstruosoElemento} marcados em sua pele, não apenas aos de alcance pessoal que têm você como alvo (-1 PE). Além disso, uma vez por cena, se estiver `;
+        if (monstruosoElemento === 'Sangue') {
+          base += "machucado ou sob efeito de uma condição de fadiga, você pode conjurar um ritual marcado em sua pele como reação. Finalmente, você recebe +5 em testes de concentração com rituais de Sangue marcados.";
+        } else if (monstruosoElemento === 'Morte') {
+          base += "morrendo ou sob efeito de uma condição de sentidos, você pode conjurar um ritual marcado em sua pele como reação. Finalmente, você recebe +5 em testes de concentração com rituais de Morte marcados.";
+        } else if (monstruosoElemento === 'Conhecimento') {
+          base += "sob efeito de uma condição mental ou de medo, você pode conjurar um ritual marcado em sua pele como reação. Finalmente, você recebe +5 em testes de concentração com rituais de Conhecimento marcados.";
+        } else {
+          base += "sob efeito de uma condição de paralisia ou de sentidos, você pode conjurar um ritual marcado em sua pele como reação. Finalmente, você recebe +5 em testes de concentração com rituais de Energia marcados.";
+        }
+        if (temMonstruosoOcult65) {
+          base += `\n\nA DT dos seus rituais de ${monstruosoElemento} marcados na pele aumenta em +2.`;
+          if (monstruosoElemento === 'Morte') {
+            base += " Quando conjura um ritual de Morte diferente de Cicatrização, você pode conjurar Cicatrização como ação de movimento.";
+          }
+        }
+        if (temMonstruosoOcult99) {
+          base += `\n\nVocê pode conjurar rituais de ${monstruosoElemento} marcados na pele sem a necessidade de fala, gestos e componentes.`;
+        }
+        return base;
+      };
+
+      if (!temTatuagemEscolhida) {
+        lista.push({
+          id: 'trilha_monstruoso_poder_tatuagem',
+          nome: 'Tatuagem Ritualística',
+          descricao: buildDescTatuagem(),
+          tipo: regras['nex_experiencia'] ? 'Nível 8' : 'NEX 40%',
+          categoria: 'trilha',
+          fonte: 'OPRPG',
+          preRequisitos: 'Trilha Monstruoso (40%)',
+          automatico: 'Semi',
+        });
+      } else {
+        const extraKey = 'extra_monstruoso_ocult_40';
+        const usouExtra = poderesEscolhidos[extraKey];
+        if (usouExtra) {
+          lista.push({
+            id: `escolha_${extraKey}`,
+            nome: usouExtra.nome,
+            descricao: usouExtra.descricao,
+            tipo: 'Monstruoso 40%',
+            categoria: (usouExtra.categoria as any) || 'utilidade',
+            fonte: usouExtra.fonte,
+            preRequisitos: usouExtra.preRequisitos,
+            elemento: usouExtra.elemento,
+            afinidade: usouExtra.afinidade,
+            automatico: usouExtra.automatico,
+          });
+        } else {
+          lista.push({
+            id: `escolha_${extraKey}`,
+            nome: 'Escolher Poder de Ocultista Extra',
+            descricao: 'Como você já possui Tatuagem Ritualística, a trilha fornece um poder de ocultista extra (Combate, Utilidade ou Geral). Clique no "+" para selecionar.',
+            tipo: 'Monstruoso 40%',
+            isSlotVazio: true,
+            nexDoSlot: 40,
+            categoria: 'utilidade',
+          });
+        }
+      }
     }
 
     // 2. Classe
@@ -947,6 +1019,10 @@ export const AbasPanel: React.FC = () => {
                                   setModalPoderOutraClasseAberto(true);
                                 } else if (hab.id === 'escolha_extra_regra32') {
                                   setModalPoderOutraOrigemAberto(true);
+                                } else if (hab.id === 'escolha_extra_monstruoso_ocult_40') {
+                                  setTipoModalPoderes('utilidade');
+                                  setAbaModalPoderes('classe');
+                                  setNexModalAberto('extra_monstruoso_ocult_40');
                                 } else if (hab.id === 'escolha_extra_regra39') {
                                   setNexModalAberto('extra_regra39');
                                 } else {
@@ -981,7 +1057,8 @@ export const AbasPanel: React.FC = () => {
 
                           const isMonstruosoComb = Number(t.Codigo_Trilha) === 18 || (String(t.Nome_Trilha || '').trim().toLowerCase().includes('monstruoso') && t.Classe_Trilha === 'Combatente');
                           const isMonstruosoEsp = Number(t.Codigo_Trilha) === 45 || (String(t.Nome_Trilha || '').trim().toLowerCase().includes('monstruoso') && t.Classe_Trilha === 'Especialista');
-                          const isMonstruoso = isMonstruosoComb || isMonstruosoEsp || String(t.Nome_Trilha || '').trim().toLowerCase().includes('monstruoso');
+                          const isMonstruosoOcult = Number(t.Codigo_Trilha) === 47 || (String(t.Nome_Trilha || '').trim().toLowerCase().includes('monstruoso') && t.Classe_Trilha === 'Ocultista');
+                          const isMonstruoso = isMonstruosoComb || isMonstruosoEsp || isMonstruosoOcult || String(t.Nome_Trilha || '').trim().toLowerCase().includes('monstruoso');
                           const nexLevels = isVersatilidade ? [10] : [10, 40, 65, 99];
                           
                           return (
@@ -1049,10 +1126,12 @@ export const AbasPanel: React.FC = () => {
                                     const isHabExpanded = habilidadesExpandidas.includes(uniqueHabId);
                                     const isAtivoMonst = !isMonstruoso ? true : (
                                       isMonstruosoEsp ? isMonstruosoEspAtivo : (
-                                        temMonstruoso99 ? true : (
-                                          nexLvl === 10 ? isMonstruosoAtivo10 :
-                                          nexLvl === 40 ? isMonstruosoAtivo40 :
-                                          nexLvl === 65 ? isMonstruosoAtivo65 : true
+                                        isMonstruosoOcult ? isMonstruosoOcultAtivo : (
+                                          temMonstruoso99 ? true : (
+                                            nexLvl === 10 ? isMonstruosoAtivo10 :
+                                            nexLvl === 40 ? isMonstruosoAtivo40 :
+                                            nexLvl === 65 ? isMonstruosoAtivo65 : true
+                                          )
                                         )
                                       )
                                     );
@@ -1071,7 +1150,7 @@ export const AbasPanel: React.FC = () => {
                                           className="flex cursor-pointer items-center justify-between px-3 py-2 transition hover:bg-zinc-800"
                                         >
                                           <div className="flex items-center gap-2 min-w-0">
-                                            {isMonstruoso && (isMonstruosoEsp || !temMonstruoso99) && (
+                                            {isMonstruoso && (isMonstruosoEsp || isMonstruosoOcult || !temMonstruoso99) && (
                                               <input
                                                 type="checkbox"
                                                 checked={isAtivoMonst}
@@ -1137,7 +1216,14 @@ export const AbasPanel: React.FC = () => {
                                             </div>
                                           )}
                                           {isMonstruoso && (() => {
-                                            const poderMonstruosoMap: Record<number, Record<string, number>> = isMonstruosoEsp
+                                            const poderMonstruosoMap: Record<number, Record<string, number>> = isMonstruosoOcult
+                                              ? {
+                                                  10: { Sangue: 231, Morte: 232, Conhecimento: 233, Energia: 234 },
+                                                  40: { Sangue: 235, Morte: 236, Conhecimento: 237, Energia: 238 },
+                                                  65: { Sangue: 239, Morte: 240, Conhecimento: 241, Energia: 242 },
+                                                  99: { Sangue: 243, Morte: 244, Conhecimento: 245, Energia: 246 },
+                                                }
+                                              : isMonstruosoEsp
                                               ? {
                                                   10: { Sangue: 215, Morte: 216, Conhecimento: 217, Energia: 218 },
                                                   40: { Sangue: 219, Morte: 220, Conhecimento: 221, Energia: 222 },
@@ -1155,7 +1241,10 @@ export const AbasPanel: React.FC = () => {
                                             const pData = listaPoderesUtilidade.find(p => p.codigo_poder === codPoder);
                                             if (!pData) return null;
                                             const badgeClasses = getBadgeElemento(monstruosoElemento);
-                                            const pAuto = (pData as any)['Automatico?'] || pData.Automatico;
+                                            const pAuto = (pData as any)['Automatico?'] || pData.Automatico || (
+                                              codPoder >= 231 && codPoder <= 234 ? 'Sim' :
+                                              codPoder >= 235 && codPoder <= 246 ? 'Semi' : undefined
+                                            );
                                             return (
                                               <div className={`mx-3 mb-3 mt-1 rounded-r border-l-2 transition-all duration-300 ${isAtivoMonst ? 'border-green-500 bg-zinc-900/80' : 'border-zinc-700 bg-zinc-900/40 opacity-60'} p-3 flex flex-col`} onClick={e => e.stopPropagation()}>
                                                 <div className="flex items-center justify-between gap-2 mb-2">
@@ -1486,30 +1575,34 @@ export const AbasPanel: React.FC = () => {
                                              });
                                            }
                                          }
-                                         if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 18 || trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 45) {
-                                           if (trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 18 && trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 45) {
+                                         if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 18 || trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 45 || trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 47) {
+                                           if (trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 18 && trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 45 && trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 47) {
                                              setPoderesExtras(prev => {
                                                const n = { ...prev };
                                                delete n.monstruoso_ja_tinha_ocultismo;
                                                delete n.monstruoso_ocultismo_jatinha;
                                                delete n.monstruoso_elemento;
                                                delete n.monstruoso_ativo;
+                                               delete n.extra_monstruoso_ocult_40;
                                                return n;
                                              });
+                                             rituaisHook.atualizarRituaisAprendidos(prev => prev.filter(r => !r.origem?.startsWith('monstruoso_ocult_') && r.origem !== 'trilha_monstruoso_ocult_cicatrizacao'));
                                            }
                                          }
                                          trilhasHook.setVersatilidadeSelecionada(null);
                                        } else {
-                                         if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 18 || trilhasHook.trilhaSelecionada?.Codigo_Trilha === 45) {
-                                           if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha !== 18 && trilhasHook.versatilidadeSelecionada?.Codigo_Trilha !== 45) {
+                                         if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 18 || trilhasHook.trilhaSelecionada?.Codigo_Trilha === 45 || trilhasHook.trilhaSelecionada?.Codigo_Trilha === 47) {
+                                           if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha !== 18 && trilhasHook.versatilidadeSelecionada?.Codigo_Trilha !== 45 && trilhasHook.versatilidadeSelecionada?.Codigo_Trilha !== 47) {
                                              setPoderesExtras(prev => {
                                                const n = { ...prev };
                                                delete n.monstruoso_ja_tinha_ocultismo;
                                                delete n.monstruoso_ocultismo_jatinha;
                                                delete n.monstruoso_elemento;
                                                delete n.monstruoso_ativo;
+                                               delete n.extra_monstruoso_ocult_40;
                                                return n;
                                              });
+                                             rituaisHook.atualizarRituaisAprendidos(prev => prev.filter(r => !r.origem?.startsWith('monstruoso_ocult_') && r.origem !== 'trilha_monstruoso_ocult_cicatrizacao'));
                                            }
                                          }
                                          if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 17) {
@@ -2103,6 +2196,21 @@ export const AbasPanel: React.FC = () => {
               });
             }
           }
+          if (temMonstruosoOcult99 && isMonstruosoOcultAtivo) {
+            const chaveMonstOcult = `monstruoso_ocult_99_${monstruosoElemento.toLowerCase()}`;
+            const jaAprendeuOcult99 = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === chaveMonstOcult);
+            if (!jaAprendeuOcult99) {
+              slotsMonstruosoPendentesList.push({
+                chave: chaveMonstOcult,
+                index: 3099,
+                nex: 99,
+                maxCirculo: 4,
+                isOcultista: false,
+                isMonstruosoOcult: true,
+                elementoFiltro: monstruosoElemento,
+              });
+            }
+          }
 
           const allRitualSlots = [...slotsPoderPendentesList, ...slotsOcultistaPendentesList, ...slotsOrigemPendentesList, ...slotsRegra61PendentesList, ...slotsRegra62PendentesList, ...slotsGraduadoPendentesList, ...slotsAdeptoPendentesList, ...slotsMonstruosoPendentesList];
           const sortedSlots = allRitualSlots.sort((a, b) => {
@@ -2120,7 +2228,7 @@ export const AbasPanel: React.FC = () => {
              return subAbaRituais === 'grimorio' ? isGrimorio : !isGrimorio;
           });
           for (const slot of slotsParaSubAba) {
-             if ((slot as any).isAdepto || (slot as any).isMonstruoso) {
+             if ((slot as any).isAdepto || (slot as any).isMonstruoso || (slot as any).isMonstruosoOcult) {
                 visibleRitualSlots.push(slot);
              } else if (!circlesSeen.has(slot.maxCirculo)) {
                 visibleRitualSlots.push(slot);
@@ -2354,6 +2462,31 @@ export const AbasPanel: React.FC = () => {
                                 </div>
                               </div>
                             );
+                        } else if ((slot as any).isMonstruosoOcult) {
+                          const chave = (slot as any).chave;
+                          const elem = (slot as any).elementoFiltro || monstruosoElemento;
+                          const corBorder = elem === 'Sangue' ? 'border-l-red-600 hover:border-red-600' :
+                                            elem === 'Morte' ? 'border-l-zinc-400 hover:border-zinc-400' :
+                                            elem === 'Conhecimento' ? 'border-l-yellow-600 hover:border-yellow-600' :
+                                            'border-l-purple-600 hover:border-purple-600';
+                          return (
+                            <div
+                              key={`monstruoso_ocult_${chave}_${idx}`}
+                              onClick={() => setEscolhendoRitualPlaceholder({ origem: chave, nex: 99, maxCirculo: 4, circuloFixo: 4, elementoFiltro: elem })}
+                              className={`group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 ${corBorder} border-l-4 bg-zinc-900/40 transition hover:bg-zinc-900/80`}
+                              style={{ borderLeftStyle: 'solid' }}
+                            >
+                              <div className="flex items-center justify-between gap-3 bg-zinc-800/40 px-4 py-3 transition group-hover:bg-zinc-800/60">
+                                <div className="flex flex-col items-start gap-0.5 text-left">
+                                  <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">Escolher Ritual</span>
+                                  <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-400">
+                                    Monstruoso ({elem} 99% - 4º Círculo)
+                                  </span>
+                                </div>
+                                <span className="whitespace-nowrap rounded bg-green-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-green-400 transition group-hover:bg-green-900/60 group-hover:text-green-300">+ Adicionar</span>
+                              </div>
+                            </div>
+                          );
                         } else if ((slot as any).isMonstruoso) {
                           const chave = (slot as any).chave;
                           return (
@@ -2436,8 +2569,28 @@ export const AbasPanel: React.FC = () => {
                           }).map(elemento => {
                             const ritualsOfElement = ritualsByElement[elemento];
                             const hasAntena = armasHook?.armasInventario?.some(a => a.arma.Nome_Item?.trim().toLowerCase() === 'a antena');
-                            const atrParaDT = temAdepto40 ? (poderesExtras['adepto_atributo_40'] === 'AGI' ? 'AGI' : 'VIG') : 'PRE';
-                            const baseDT = 10 + (atributosFinais[atrParaDT] || 0) + calcularNivel(nex) + (hasAntena ? 3 : 0) + (bonusMaldicoes?.bonusDT || 0);
+                            const atrParaDT = temAdepto40
+                              ? (poderesExtras['adepto_atributo_40'] === 'AGI' ? 'AGI' : 'VIG')
+                              : (regrasAutomaticasAtivas.has(116)
+                              ? 'FOR'
+                              : regrasAutomaticasAtivas.has(117)
+                              ? 'VIG'
+                              : regrasAutomaticasAtivas.has(118)
+                              ? 'INT'
+                              : regrasAutomaticasAtivas.has(119)
+                              ? 'AGI'
+                              : 'PRE');
+
+                            let bonusDtMonstruoso = 0;
+                            if (
+                              (regrasAutomaticasAtivas.has(124) && elemento.toLowerCase() === 'sangue') ||
+                              (regrasAutomaticasAtivas.has(125) && elemento.toLowerCase() === 'morte') ||
+                              (regrasAutomaticasAtivas.has(126) && elemento.toLowerCase() === 'conhecimento') ||
+                              (regrasAutomaticasAtivas.has(127) && elemento.toLowerCase() === 'energia')
+                            ) {
+                              bonusDtMonstruoso = 2;
+                            }
+                            const baseDT = 10 + (atributosFinais[atrParaDT] || 0) + calcularNivel(nex) + (hasAntena ? 3 : 0) + (bonusMaldicoes?.bonusDT || 0) + bonusDtMonstruoso;
                             
                             return (
                               <div key={elemento} className="mt-2 mb-2 flex flex-col gap-2.5">
@@ -2445,7 +2598,7 @@ export const AbasPanel: React.FC = () => {
                                   <span className="h-2 w-2 rounded-full shrink-0" style={{ background: obterCorBadge(elemento) || '#52525b' }}></span>
                                   <span className="text-[0.6rem] font-bold uppercase tracking-[0.15em] text-zinc-500">{elemento}</span>
                                   <div className="flex-1 border-t border-zinc-800/50"></div>
-                                  <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500" title={`10 + ${atrParaDT} + Nível`}>DT {baseDT}</span>
+                                  <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500" title={`10 + ${atrParaDT} + Nível${bonusDtMonstruoso ? ' + 2 (Tatuagem Ritualística)' : ''}`}>DT {baseDT}</span>
                                 </div>
                                 <div className="flex flex-col gap-2.5">
                                 {ritualsOfElement.map(ritual => {
@@ -2477,6 +2630,9 @@ export const AbasPanel: React.FC = () => {
                         });
 
                         const peOriginal = ritual.customProps?.[versao]?.PE_Ritual || obterValorVersao(ritual.PE_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                        const alcance = ritual.customProps?.[versao]?.Alcance_Ritual || obterValorVersao(ritual.Alcance_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                        const area = ritual.customProps?.[versao]?.Area_Ritual || obterValorVersao(ritual.Area_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                        const alvo = ritual.customProps?.[versao]?.Alvo_Ritual || obterValorVersao(ritual.Alvo_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
                         let peValor = parseInt(String(peOriginal).replace(/\D+/g, ''), 10);
                         if (!isNaN(peValor)) {
                           if (regrasAutomaticasAtivas.has(34)) {
@@ -2490,12 +2646,31 @@ export const AbasPanel: React.FC = () => {
                           if (!isOrigemConjuracao && temConjuracaoNoItem) {
                             peValor -= 1;
                           }
+                          // Monstruoso Ocultista (Regra 125 - Morte 65%): Cicatrização se o personagem já o conhecia
+                          if (regrasAutomaticasAtivas.has(125) && Number(ritual.Codigo_Ritual) === 13) {
+                            const jaTinhaAntes = (rituaisHook.rituaisAprendidos || []).filter(r => Number(r.codigo_ritual) === 13).length > 1;
+                            if (jaTinhaAntes) {
+                              peValor -= 1;
+                            }
+                          }
+                          // Tatuagem Ritualística (-1 PE)
+                          const temTatuagem = temMonstruosoOcult40 || Object.values(poderesEscolhidos).some(p => p.codigoRegra === 89 || (p as any).codigo_poder === 89 || p.nome?.toLowerCase().trim() === 'tatuagem ritualística');
+                          if (temTatuagem) {
+                            const alcanceLower = (alcance || '').toLowerCase();
+                            const alvoLower = (alvo || '').toLowerCase();
+                            const isPessoalAlvoVoce = alcanceLower.includes('pessoal') && alvoLower.includes('você');
+                            const isElementoMonstruoso = (regrasAutomaticasAtivas.has(120) && elementoEscolhido === 'Sangue')
+                              || (regrasAutomaticasAtivas.has(121) && elementoEscolhido === 'Morte')
+                              || (regrasAutomaticasAtivas.has(122) && elementoEscolhido === 'Conhecimento')
+                              || (regrasAutomaticasAtivas.has(123) && elementoEscolhido === 'Energia');
+
+                            if (isPessoalAlvoVoce || isElementoMonstruoso) {
+                              peValor -= 1;
+                            }
+                          }
                           peValor = Math.max(1, peValor);
                         }
                         const pe = isNaN(peValor) ? peOriginal : String(peOriginal).replace(/\d+/, peValor.toString());
-                        const alcance = ritual.customProps?.[versao]?.Alcance_Ritual || obterValorVersao(ritual.Alcance_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
-                        const area = ritual.customProps?.[versao]?.Area_Ritual || obterValorVersao(ritual.Area_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
-                        const alvo = ritual.customProps?.[versao]?.Alvo_Ritual || obterValorVersao(ritual.Alvo_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
                         const duracao = ritual.customProps?.[versao]?.Duracao_Ritual || obterValorVersao(ritual.Duracao_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
                         let execucao = ritual.customProps?.[versao]?.Execucao_Ritual || obterValorVersao(ritual.Execucao_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
 

@@ -240,6 +240,48 @@ export const BonusCondicionaisPanel: React.FC = () => {
                 <span>+1d8 em testes de ataques corpo a corpo (Ser Expurgado - Sangue)</span>
               </div>
             )}
+            {regrasAutomaticasAtivas.has(120) && (
+              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                <span>+5 em testes de concentração com rituais de Sangue marcados (Tatuagem Ritualística - Sangue)</span>
+              </div>
+            )}
+            {regrasAutomaticasAtivas.has(121) && (
+              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                <span>+5 em testes de concentração com rituais de Morte marcados (Tatuagem Ritualística - Morte)</span>
+              </div>
+            )}
+            {regrasAutomaticasAtivas.has(122) && (
+              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                <span>+5 em testes de concentração com rituais de Conhecimento marcados (Tatuagem Ritualística - Conhecimento)</span>
+              </div>
+            )}
+            {regrasAutomaticasAtivas.has(123) && (
+              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                <span>+5 em testes de concentração com rituais de Energia marcados (Tatuagem Ritualística - Energia)</span>
+              </div>
+            )}
+            {regrasAutomaticasAtivas.has(124) && (
+              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                <span>Ação de movimento e 2d8+2 PV: aliado que ingerir sangue recebe +1d20 em testes de AGI, FOR e VIG até o fim da cena (Sangue 65%)</span>
+              </div>
+            )}
+            {regrasAutomaticasAtivas.has(126) && (
+              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                <span>Ação de movimento e 2 PE: revelações sobre o alvo (5 perguntas sim/não) ou ver incorpóreos/invisíveis até o fim da cena (Conhecimento 65%)</span>
+              </div>
+            )}
+            {regrasAutomaticasAtivas.has(127) && (
+              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                <span>Ação de movimento e 3 PE: teletransportar 3m e receber bônus na Defesa igual aos PE gastos por 1 rodada (Energia 65%)</span>
+              </div>
+            )}
             {Object.values(poderesHook.poderesEscolhidos).map((poder, idx) => {
               if (poder.codigoRegra === 42 && poder.periciaEscolhidaNome) {
                 return (

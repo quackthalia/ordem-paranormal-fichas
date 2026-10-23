@@ -54,14 +54,14 @@ export function calcularStatusBase(
   // Se a origem/poder possui a Regra 1, a sanidade inicial é reduzida pela metade.
   const redSanidade = temRegra(1) ? 0.5 : 1;
 
-  // Regras 100, 101, 102, 103: atributo alternativo para calcular PE (em vez de PRE)
-  const atrPe = temRegra(100)
+  // Regras 100..103 (Especialista) e 116..119 (Ocultista): atributo alternativo para calcular PE (em vez de PRE)
+  const atrPe = (temRegra(100) || temRegra(116))
     ? atributos.FOR
-    : temRegra(101)
+    : (temRegra(101) || temRegra(117))
     ? atributos.VIG
-    : temRegra(102)
+    : (temRegra(102) || temRegra(118))
     ? atributos.INT
-    : temRegra(103)
+    : (temRegra(103) || temRegra(119))
     ? atributos.AGI
     : atributos.PRE;
 
@@ -207,13 +207,13 @@ export function calcularPD(
   regrasAtivas?: Set<number>
 ): number {
   const temRegra = (r: number) => regrasAtivas?.has(r) ?? false;
-  const pre = temRegra(100)
+  const pre = (temRegra(100) || temRegra(116))
     ? atributos.FOR
-    : temRegra(101)
+    : (temRegra(101) || temRegra(117))
     ? atributos.VIG
-    : temRegra(102)
+    : (temRegra(102) || temRegra(118))
     ? atributos.INT
-    : temRegra(103)
+    : (temRegra(103) || temRegra(119))
     ? atributos.AGI
     : atributos.PRE;
   let pd = 0;

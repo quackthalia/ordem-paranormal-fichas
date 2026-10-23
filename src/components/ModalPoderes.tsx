@@ -445,6 +445,13 @@ export const ModalPoderes: React.FC = () => {
   const ehCombate = nexModalAberto !== null && PATAMARES_COMBATE.includes(nexModalAberto);
 
   const abasDisponiveis = useMemo((): [AbaModalPoderes, string][] => {
+    if (nexModalAberto === 'extra_monstruoso_ocult_40') {
+      return [
+        ['classe', 'Poderes de Utilidade'],
+        ['combate', 'Poderes de Combate'],
+        ['gerais', 'Poderes Gerais'],
+      ];
+    }
     if ((nexModalAberto !== null && typeof nexModalAberto === 'number' && nexModalAberto > 1000) || nexModalAberto === 'extra_regra1' || (typeof nexModalAberto === 'string' && nexModalAberto.startsWith('extra_dedo_decepado'))) {
       return [['paranormais', 'Poderes Paranormais']];
     }
@@ -597,7 +604,7 @@ export const ModalPoderes: React.FC = () => {
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-display text-lg uppercase tracking-wide text-zinc-100 m-0">
-              ESCOLHER PODER — <span className="text-green-500">{typeof nexModalAberto === 'string' ? (nexModalAberto.startsWith('extra_dedo_decepado') ? 'DEDO DECEPADO' : 'PODER EXTRA') : `NEX ${nexModalAberto && (nexModalAberto as number) > 1000 ? (nexModalAberto as number) - 1000 : nexModalAberto}%`}</span>
+              ESCOLHER PODER — <span className="text-green-500">{typeof nexModalAberto === 'string' ? (nexModalAberto.startsWith('extra_dedo_decepado') ? 'DEDO DECEPADO' : nexModalAberto === 'extra_monstruoso_ocult_40' ? 'MONSTRUOSO 40%' : 'PODER EXTRA') : `NEX ${nexModalAberto && (nexModalAberto as number) > 1000 ? (nexModalAberto as number) - 1000 : nexModalAberto}%`}</span>
             </h3>
             <button
               onClick={() => setNexModalAberto(null)}

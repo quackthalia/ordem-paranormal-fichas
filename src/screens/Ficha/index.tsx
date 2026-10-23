@@ -34,7 +34,9 @@ export const FichaScreen: React.FC = () => {
     setPoderesExtras,
     temMonstruoso99,
     monstruosoElemento,
-    regrasAutomaticasAtivas
+    regrasAutomaticasAtivas,
+    temMonstruosoOcult65,
+    isMonstruosoOcultAtivo
   } = useRPG();
 
     const effectiveNex = regras["nex_experiencia"] ? nivel * 5 : nex;
@@ -184,6 +186,28 @@ export const FichaScreen: React.FC = () => {
       }
     } else if (!temLamina99 && (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_lamina_paranormal_99')) {
       rituaisHook.esquecerRitual('trilha_lamina_paranormal_99');
+    }
+
+    // MONSTRUOSO OCULTISTA: 65% MORTE (CICATRIZAÇÃO)
+    const temMonstOcultMorte65 = temMonstruosoOcult65 && isMonstruosoOcultAtivo && monstruosoElemento === 'Morte';
+    const jaTemCicatrizaTrilha = (rituaisHook.rituaisAprendidos || []).find((r: any) => Number(r.codigo_ritual) === 13 && r.origem === 'trilha_monstruoso_ocult_cicatrizacao');
+    const jaTemCicatrizaNormal = (rituaisHook.rituaisAprendidos || []).find((r: any) => Number(r.codigo_ritual) === 13 && r.origem !== 'trilha_monstruoso_ocult_cicatrizacao');
+
+    if (temMonstOcultMorte65 && !jaTemCicatrizaTrilha && !jaTemCicatrizaNormal) {
+      const baseRitual = (rituaisHook.rituais || []).find(r => Number(r.Codigo_Ritual) === 13);
+      if (baseRitual) {
+        rituaisHook.aprenderRitual({
+          codigo_ritual: 13,
+          nome: `${baseRitual.Nome_Ritual} (Monstruoso)`,
+          origem: 'trilha_monstruoso_ocult_cicatrizacao',
+          circulo: baseRitual.Circulo_Ritual,
+          elemento: baseRitual.Elemento_Ritual
+        });
+      }
+    } else if (temMonstOcultMorte65 && jaTemCicatrizaNormal && jaTemCicatrizaTrilha) {
+      rituaisHook.esquecerRitual('trilha_monstruoso_ocult_cicatrizacao');
+    } else if (!temMonstOcultMorte65 && jaTemCicatrizaTrilha) {
+      rituaisHook.esquecerRitual('trilha_monstruoso_ocult_cicatrizacao');
     }
 
     // TRILHA 29: ILUSIONISTA

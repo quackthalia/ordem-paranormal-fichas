@@ -1197,139 +1197,171 @@ export const AbasPanel: React.FC = () => {
                                         <Collapse isOpen={isHabExpanded}>
                                           {(() => {
                                             const isTrilha48 = t.Codigo_Trilha === 48;
-                                            const opcaoKey = `vampiro_opcao_${nexLvl}`;
-                                            const opcaoEscolhida = poderesExtras[opcaoKey];
-                                            const temOpcoesDelimitadas = descHab && descHab.includes('&-');
+const opcaoKey = `vampiro_opcao_${nexLvl}`;
+const opcaoEscolhida = poderesExtras[opcaoKey];
 
-                                            if (isTrilha48 && temOpcoesDelimitadas && !opcaoEscolhida) {
-                                              const partesIntro = descHab.split(/&-[\s\S]*?&/)[0].trim();
-                                              const regexOpcoes = /&-([\s\S]*?)&/g;
-                                              const opcoes: string[] = [];
-                                              let m;
-                                              while ((m = regexOpcoes.exec(descHab)) !== null) {
-                                                opcoes.push(m[1].trim());
-                                              }
+// Em 10%, extrai os 3 arquétipos do texto (Ancião, Bestial, Encantador)
+if (isTrilha48 && nexLvl === 10 && !opcaoEscolhida) {
+  const intro10 = descHab.split(/•\s*Ancião:/)[0].trim();
+  const regexArqs = /•\s*(Ancião|Bestial|Encantador):([\s\S]*?)(?=(?:•\s*(?:Ancião|Bestial|Encantador):|$))/g;
+  const arqs: { nome: string; texto: string }[] = [];
+  let ma;
+  while ((ma = regexArqs.exec(descHab)) !== null) {
+    arqs.push({ nome: ma[1].trim(), texto: ma[2].trim() });
+  }
 
-                                              return (
-                                                <div className="flex flex-col gap-3 px-3 pb-3 pt-1">
-                                                  {partesIntro && (
-                                                    <div
-                                                      className="text-xs text-zinc-400"
-                                                      dangerouslySetInnerHTML={{ __html: formatarDescricao(partesIntro) }}
-                                                    />
-                                                  )}
-                                                  <div className="flex flex-col gap-2.5">
-                                                    {opcoes.map((opcaoTexto, idx) => {
-                                                      const numOpcao = String(idx + 1);
-                                                      const badgeTag = nexLvl === 40 ? (idx === 1 ? 'Semi' : idx === 2 ? 'Auto' : null) : null;
-                                                      return (
-                                                        <div
-                                                          key={numOpcao}
-                                                          onClick={e => e.stopPropagation()}
-                                                          className="rounded-lg border border-zinc-800 bg-zinc-950/60 p-3 shadow-sm hover:border-zinc-700 transition flex flex-col gap-2.5"
-                                                        >
-                                                          <div className="flex items-center justify-between gap-2">
-                                                            <div className="flex items-center gap-2">
-                                                              <span className="text-[11px] font-bold uppercase tracking-wider text-green-400">
-                                                                Opção {numOpcao}
-                                                              </span>
-                                                              {badgeTag && (
-                                                                <span
-                                                                  title={badgeTag === 'Auto' ? 'Totalmente automático — acontece sozinho' : 'Semi-automático — parte funciona automaticamente'}
-                                                                  className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider ${
-                                                                    badgeTag === 'Auto'
-                                                                      ? 'bg-green-950/60 text-green-400 border border-green-800/50'
-                                                                      : 'bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
-                                                                  }`}
-                                                                >
-                                                                  {badgeTag === 'Auto' ? (
-                                                                    <>
-                                                                      <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z"/></svg>
-                                                                      Auto
-                                                                    </>
-                                                                  ) : (
-                                                                    <>
-                                                                      <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z" opacity="0.5"/><path d="M19 3v4m0 4v10" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
-                                                                      Semi
-                                                                    </>
-                                                                  )}
-                                                                </span>
-                                                              )}
-                                                            </div>
-                                                            <button
-                                                              type="button"
-                                                              onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                setPoderesExtras(prev => ({
-                                                                  ...prev,
-                                                                  [opcaoKey]: numOpcao
-                                                                }));
-                                                              }}
-                                                              className="px-2.5 py-1 rounded bg-green-950/50 border border-green-700/60 text-green-300 hover:bg-green-900/60 hover:text-white text-[11px] font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1 shadow-sm"
-                                                            >
-                                                              + Escolher
-                                                            </button>
-                                                          </div>
-                                                          <div
-                                                            className="max-h-48 overflow-y-auto pr-1 text-xs text-zinc-300 leading-relaxed custom-scrollbar"
-                                                            dangerouslySetInnerHTML={{ __html: formatarDescricao(opcaoTexto) }}
-                                                          />
-                                                        </div>
-                                                      );
-                                                    })}
-                                                  </div>
-                                                </div>
-                                              );
-                                            }
+  return (
+    <div className="flex flex-col gap-3 px-3 pb-3 pt-1">
+      {intro10 && (
+        <div
+          className="text-xs text-zinc-400"
+          dangerouslySetInnerHTML={{ __html: formatarDescricao(intro10) }}
+        />
+      )}
+      <div className="flex flex-col gap-2.5">
+        {arqs.map((arqItem) => {
+          return (
+            <div
+              key={arqItem.nome}
+              onClick={e => e.stopPropagation()}
+              className="rounded-lg border border-zinc-800 bg-zinc-950/60 p-3 shadow-sm hover:border-zinc-700 transition flex flex-col gap-2.5"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-green-400">
+                  {arqItem.nome}
+                </span>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setPoderesExtras(prev => ({
+                      ...prev,
+                      [opcaoKey]: arqItem.nome,
+                      vampiro_arquetipo: arqItem.nome
+                    }));
+                  }}
+                  className="px-2.5 py-1 rounded bg-green-950/50 border border-green-700/60 text-green-300 hover:bg-green-900/60 hover:text-white text-[11px] font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1 shadow-sm"
+                >
+                  + Escolher
+                </button>
+              </div>
+              <div
+                className="max-h-48 overflow-y-auto pr-1 text-xs text-zinc-300 leading-relaxed custom-scrollbar"
+                dangerouslySetInnerHTML={{ __html: formatarDescricao(arqItem.texto) }}
+              />
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
-                                            // Se for trilha 48 com opção escolhida, substitui o bloco de opções pelo texto da opção escolhida
-                                            let textoExibicao = descHab;
-                                            if (isTrilha48 && temOpcoesDelimitadas && opcaoEscolhida) {
-                                              const chosenIdx = Number(opcaoEscolhida);
-                                              let curr = 0;
-                                              textoExibicao = descHab.replace(/&-([\s\S]*?)&/g, (_match, p1) => {
-                                                curr++;
-                                                if (curr === chosenIdx) return p1.trim();
-                                                return '';
-                                              }).replace(/\n\s*\n\s*\n/g, '\n\n').trim();
-                                            }
+// Em 40%, 65%, 99% com opções delimitadas &- ... &
+const temOpcoesDelimitadas = descHab && descHab.includes("&" + "-");
 
-                                            return (
-                                              <div
-                                                className="px-3 pb-3 pt-1 text-xs text-zinc-400"
-                                                dangerouslySetInnerHTML={{ __html: formatarDescricao(textoExibicao) }}
-                                              />
-                                            );
-                                          })()}
-                                          {t.Codigo_Trilha === 48 && nexLvl === 10 && (
-                                            <div className="px-3 pb-3 pt-2 border-t border-zinc-800/80 flex flex-col gap-2" onClick={e => e.stopPropagation()}>
-                                              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                                                Arquétipo Vampírico (10%):
-                                              </span>
-                                              <div className="flex flex-wrap gap-2 items-center">
-                                                {(['Ancião', 'Bestial', 'Encantador'] as const).map(arq => {
-                                                  const isSelected = vampiroArquetipo === arq;
-                                                  return (
-                                                    <button
-                                                      key={arq}
-                                                      type="button"
-                                                      onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setPoderesExtras(prev => ({ ...prev, vampiro_arquetipo: arq }));
-                                                      }}
-                                                      className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${
-                                                        isSelected
-                                                          ? 'bg-green-950/60 border-green-600 text-green-300'
-                                                          : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
-                                                      }`}
-                                                    >
-                                                      {arq}
-                                                    </button>
-                                                  );
-                                                })}
-                                              </div>
-                                            </div>
-                                          )}
+if (isTrilha48 && temOpcoesDelimitadas && !opcaoEscolhida) {
+  const partesIntro = descHab.split(/&-[\s\S]*?&/)[0].trim();
+  const regexOpcoes = /&-([\s\S]*?)&/g;
+  const opcoes: string[] = [];
+  let m;
+  while ((m = regexOpcoes.exec(descHab)) !== null) {
+    opcoes.push(m[1].trim());
+  }
+
+  return (
+    <div className="flex flex-col gap-3 px-3 pb-3 pt-1">
+      {partesIntro && (
+        <div
+          className="text-xs text-zinc-400"
+          dangerouslySetInnerHTML={{ __html: formatarDescricao(partesIntro) }}
+        />
+      )}
+      <div className="flex flex-col gap-2.5">
+        {opcoes.map((opcaoTexto, idx) => {
+          const numOpcao = String(idx + 1);
+          const badgeTag = nexLvl === 40 ? (idx === 1 ? "Semi" : idx === 2 ? "Auto" : null) : null;
+          return (
+            <div
+              key={numOpcao}
+              onClick={e => e.stopPropagation()}
+              className="rounded-lg border border-zinc-800 bg-zinc-950/60 p-3 shadow-sm hover:border-zinc-700 transition flex flex-col gap-2.5"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-green-400">
+                    Opção {numOpcao}
+                  </span>
+                  {badgeTag && (
+                    <span
+                      title={badgeTag === "Auto" ? "Totalmente automático — acontece sozinho" : "Semi-automático — parte funciona automaticamente"}
+                      className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider ${badgeTag === "Auto" ? "bg-green-950/60 text-green-400 border border-green-800/50" : "bg-yellow-950/60 text-yellow-400 border border-yellow-800/50"}`}
+                    >
+                      {badgeTag === "Auto" ? (
+                        <>
+                          <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z"/></svg>
+                          Auto
+                        </>
+                      ) : (
+                        <>
+                          <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z" opacity="0.5"/><path d="M19 3v4m0 4v10" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
+                          Semi
+                        </>
+                      )}
+                    </span>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setPoderesExtras(prev => ({
+                      ...prev,
+                      [opcaoKey]: numOpcao
+                    }));
+                  }}
+                  className="px-2.5 py-1 rounded bg-green-950/50 border border-green-700/60 text-green-300 hover:bg-green-900/60 hover:text-white text-[11px] font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1 shadow-sm"
+                >
+                  + Escolher
+                </button>
+              </div>
+              <div
+                className="max-h-48 overflow-y-auto pr-1 text-xs text-zinc-300 leading-relaxed custom-scrollbar"
+                dangerouslySetInnerHTML={{ __html: formatarDescricao(opcaoTexto) }}
+              />
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// Se for trilha 48 com opção escolhida, substitui o bloco de opções pelo texto da opção escolhida
+let textoExibicao = descHab;
+if (isTrilha48 && nexLvl === 10 && opcaoEscolhida) {
+  const intro10 = descHab.split(/•\s*Ancião:/)[0].trim();
+  const regexEscolhido = new RegExp("(•\\s*" + opcaoEscolhida + ":[\\s\\S]*?)(?=(?:•\\s*(?:Ancião|Bestial|Encantador):|$))");
+  const textoDoArq = (descHab.match(regexEscolhido)?.[1] || "").trim();
+  textoExibicao = (intro10 + "\n\n" + textoDoArq).trim();
+} else if (isTrilha48 && temOpcoesDelimitadas && opcaoEscolhida) {
+  const chosenIdx = Number(opcaoEscolhida);
+  let curr = 0;
+  textoExibicao = descHab.replace(/&-([\s\S]*?)&/g, (_match, p1) => {
+    curr++;
+    if (curr === chosenIdx) return p1.trim();
+    return "";
+  }).replace(/\n\s*\n\s*\n/g, "\n\n").trim();
+}
+
+return (
+  <div
+    className="px-3 pb-3 pt-1 text-xs text-zinc-400"
+    dangerouslySetInnerHTML={{ __html: formatarDescricao(textoExibicao) }}
+  />
+);
+})()}
+
                                           {isMonstruoso && nexLvl === 10 && (
                                             <div className="px-3 pb-3 pt-2 border-t border-zinc-800/80 flex flex-col gap-2" onClick={e => e.stopPropagation()}>
                                               <div className="flex items-center justify-between">

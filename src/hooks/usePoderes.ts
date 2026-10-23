@@ -39,7 +39,12 @@ function normalizarPoder(item: Record<string, unknown>): Poder {
     Pre_Codigo: primeiro('Pre_Codigo', 'pre_codigo') ? Number(primeiro('Pre_Codigo', 'pre_codigo')) : null,
     Codigo_Regra: primeiro('Codigo_Regra', 'codigo_regra') ? Number(primeiro('Codigo_Regra', 'codigo_regra')) : null,
     Pericia_Poder: primeiro('Pericia_Poder', 'pericia_poder') ? Number(primeiro('Pericia_Poder', 'pericia_poder')) : null,
-    Automatico: (primeiro('Automatico?', 'automatico?', 'Automatico', 'automatico', 'Automático', 'automático', 'Automático?', 'automático?') as string) || null,
+    Automatico: (() => {
+      const val = primeiro('Automatico?', 'automatico?', 'Automatico', 'automatico', 'Automático', 'automático', 'Automático?', 'automático?');
+      if (val === null || val === undefined) return null;
+      const s = String(val).trim();
+      return s.length > 0 ? s : null;
+    })(),
   };
 }
 
@@ -84,8 +89,18 @@ function normalizarPoderParanormal(item: Record<string, unknown>): PoderParanorm
     Pericia_Poder: primeiro('Pericia_Poder_Paranormal', 'pericia_poder_paranormal', 'Pericia_Poder', 'pericia_poder')
       ? Number(primeiro('Pericia_Poder_Paranormal', 'pericia_poder_paranormal', 'Pericia_Poder', 'pericia_poder'))
       : null,
-    'Automatico?': (primeiro('Automatico?', 'automatico?', 'Automático?', 'automático?', 'Automatico', 'automatico') as string) || null,
-    'Automatico?_Afinidade': (primeiro('Automatico?_Afinidade', 'automatico?_afinidade', 'Automático?_Afinidade', 'automático?_afinidade') as string) || null,
+    'Automatico?': (() => {
+      const val = primeiro('Automatico?', 'automatico?', 'Automático?', 'automático?', 'Automatico', 'automatico');
+      if (val === null || val === undefined) return null;
+      const s = String(val).trim();
+      return s.length > 0 ? s : null;
+    })(),
+    'Automatico?_Afinidade': (() => {
+      const val = primeiro('Automatico?_Afinidade', 'automatico?_afinidade', 'Automático?_Afinidade', 'automático?_afinidade');
+      if (val === null || val === undefined) return null;
+      const s = String(val).trim();
+      return s.length > 0 ? s : null;
+    })(),
   };
 }
 

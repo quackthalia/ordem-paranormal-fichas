@@ -460,28 +460,34 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                 >
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none truncate">{poder.Nome}</span>
-                    {automaticoVal && (
-                      <span
-                        title={automaticoVal.toLowerCase().trim() === 'sim' ? 'Totalmente automático — acontece sozinho' : 'Semi-automático — parte funciona automaticamente'}
-                        className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider ${
-                          automaticoVal.toLowerCase().trim() === 'sim'
-                            ? 'bg-green-950/60 text-green-400 border border-green-800/50'
-                            : 'bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
-                        }`}
-                      >
-                        {automaticoVal.toLowerCase().trim() === 'sim' ? (
-                          <>
-                            <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z"/></svg>
-                            Auto
-                          </>
-                        ) : (
-                          <>
-                            <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z" opacity="0.5"/><path d="M19 3v4m0 4v10" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
-                            Semi
-                          </>
-                        )}
-                      </span>
-                    )}
+                    {(() => {
+                      const rawAuto = (automaticoVal || '').toString().toLowerCase().trim();
+                      const isAuto = rawAuto === 'sim' || rawAuto === 'auto';
+                      const isSemi = rawAuto === 'semi';
+                      if (!isAuto && !isSemi) return null;
+                      return (
+                        <span
+                          title={isAuto ? 'Totalmente automático — acontece sozinho' : 'Semi-automático — parte funciona automaticamente'}
+                          className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider ${
+                            isAuto
+                              ? 'bg-green-950/60 text-green-400 border border-green-800/50'
+                              : 'bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
+                          }`}
+                        >
+                          {isAuto ? (
+                            <>
+                              <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z"/></svg>
+                              Auto
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z" opacity="0.5"/><path d="M19 3v4m0 4v10" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
+                              Semi
+                            </>
+                          )}
+                        </span>
+                      );
+                    })()}
                     {ehParanormal && 'Elemento' in poder && poder.Elemento && (
                       <span
                         className={`inline-block rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight ${

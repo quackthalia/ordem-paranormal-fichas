@@ -2491,7 +2491,7 @@ export const AbasPanel: React.FC = () => {
                           return (
                             <div
                               key={`monstruoso_ocult_${chave}_${idx}`}
-                              onClick={() => setEscolhendoRitualPlaceholder({ origem: chave, nex: 99, maxCirculo: 4, circuloFixo: 4, elementoFiltro: elem })}
+                              onClick={() => setEscolhendoRitualPlaceholder({ origem: chave, nex: 99, maxCirculo: 4, elementoFiltro: elem })}
                               className={`group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 ${corBorder} border-l-4 bg-zinc-900/40 transition hover:bg-zinc-900/80`}
                               style={{ borderLeftStyle: 'solid' }}
                             >
@@ -2499,7 +2499,7 @@ export const AbasPanel: React.FC = () => {
                                 <div className="flex flex-col items-start gap-0.5 text-left">
                                   <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">Escolher Ritual</span>
                                   <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-400">
-                                    Monstruoso ({elem} 99% - 4º Círculo)
+                                    Monstruoso ({elem} 99% - até 4º Círculo)
                                   </span>
                                 </div>
                                 <span className="whitespace-nowrap rounded bg-green-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-green-400 transition group-hover:bg-green-900/60 group-hover:text-green-300">+ Adicionar</span>
@@ -2774,7 +2774,7 @@ export const AbasPanel: React.FC = () => {
                                 )}
                                 <div className="flex flex-col gap-1 justify-center py-1">
                                   <div className="flex items-center gap-2">
-                                    <span className="text-sm font-bold text-zinc-100">{ritual.customNome || (ritual.learnedNome && ritual.learnedNome !== ritual.Nome_Ritual ? ritual.learnedNome : (ritual.Origem === 'trilha_conduite' ? `${ritual.Nome_Ritual} (Conduíte)` : (ritual.Origem === 'trilha_flagelador' ? `${ritual.Nome_Ritual} (Flagelador)` : (ritual.Origem === 'trilha_graduado' ? `${ritual.Nome_Ritual} (Graduado)` : (ritual.Origem === 'trilha_viajante_das_sombras' ? `${ritual.Nome_Ritual} (Viajante das Sombras)` : (ritual.Origem?.startsWith('adepto_') ? `${ritual.Nome_Ritual} (Adepto)` : (ritual.Origem?.startsWith('trilha_monstruoso_99_') || ritual.Origem === 'monstruoso_99_conhecimento' ? `${ritual.Nome_Ritual} (Monstruoso)` : ritual.Nome_Ritual)))))))}</span>
+                                    <span className="text-sm font-bold text-zinc-100">{ritual.customNome || (ritual.learnedNome && ritual.learnedNome !== ritual.Nome_Ritual ? ritual.learnedNome : (ritual.Origem === 'trilha_conduite' ? `${ritual.Nome_Ritual} (Conduíte)` : (ritual.Origem === 'trilha_flagelador' ? `${ritual.Nome_Ritual} (Flagelador)` : (ritual.Origem === 'trilha_graduado' ? `${ritual.Nome_Ritual} (Graduado)` : (ritual.Origem === 'trilha_viajante_das_sombras' ? `${ritual.Nome_Ritual} (Viajante das Sombras)` : (ritual.Origem?.startsWith('adepto_') ? `${ritual.Nome_Ritual} (Adepto)` : (ritual.Origem?.startsWith('trilha_monstruoso_99_') || ritual.Origem === 'monstruoso_99_conhecimento' || ritual.Origem?.startsWith('monstruoso_ocult_99_') ? `${ritual.Nome_Ritual} (Monstruoso)` : ritual.Nome_Ritual)))))))}</span>
                                     <span className="rounded bg-blue-950/30 px-1.5 py-0.5 text-[10px] font-bold text-blue-400 border border-blue-900/50">
                                       {pe} PE
                                     </span>

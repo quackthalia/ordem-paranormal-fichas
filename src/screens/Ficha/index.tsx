@@ -189,7 +189,7 @@ export const FichaScreen: React.FC = () => {
     }
 
     // MONSTRUOSO OCULTISTA: 65% MORTE (CICATRIZAÇÃO)
-    const temMonstOcultMorte65 = temMonstruosoOcult65 && isMonstruosoOcultAtivo && monstruosoElemento === 'Morte';
+    const temMonstOcultMorte65 = temMonstruosoOcult65 && monstruosoElemento === 'Morte';
     const jaTemCicatrizaTrilha = (rituaisHook.rituaisAprendidos || []).find((r: any) => Number(r.codigo_ritual) === 13 && r.origem === 'trilha_monstruoso_ocult_cicatrizacao');
     const jaTemCicatrizaNormal = (rituaisHook.rituaisAprendidos || []).find((r: any) => Number(r.codigo_ritual) === 13 && r.origem !== 'trilha_monstruoso_ocult_cicatrizacao');
 

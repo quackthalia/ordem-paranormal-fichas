@@ -454,7 +454,7 @@ export const AbasPanel: React.FC = () => {
     }
 
     // 1.7 Monstruoso Ocultista 40%: Tatuagem Ritualística (ou Slot Extra se já tiver)
-    if (temMonstruosoOcult40 && isMonstruosoOcultAtivo) {
+    if (temMonstruosoOcult40) {
       const temTatuagemEscolhida = Object.values(poderesEscolhidos).some(p => 
         p.codigoRegra === 89 || (p as any).codigo_poder === 89 || p.nome?.toLowerCase().trim() === 'tatuagem ritualística'
       );
@@ -1158,11 +1158,11 @@ export const AbasPanel: React.FC = () => {
                                                 onClick={e => e.stopPropagation()}
                                                 onChange={toggleAtivoMonst}
                                                 className="accent-green-500 rounded cursor-pointer h-3.5 w-3.5 shrink-0"
-                                                title={isAtivoMonst ? "Desativar poder" : "Ativar poder"}
+                                                title={isAtivoMonst ? "Desativar poderes do elemento" : "Ativar poderes do elemento"}
                                               />
                                             )}
                                             <span className="font-bold text-zinc-200 text-xs truncate">
-                                              {regras['nex_experiencia'] ? `Nível ${calcularNivel(nexLvl)}` : `NEX ${nexLvl}%`} - <span className={!isAtivoMonst ? "text-zinc-500 line-through" : "text-zinc-400"}>{nomeHab}</span>
+                                              {regras['nex_experiencia'] ? `Nível ${calcularNivel(nexLvl)}` : `NEX ${nexLvl}%`} - <span className="text-zinc-300">{nomeHab}</span>
                                             </span>
                                           </div>
                                           <span className="text-xs text-zinc-600 shrink-0">
@@ -1249,7 +1249,7 @@ export const AbasPanel: React.FC = () => {
                                               <div className={`mx-3 mb-3 mt-1 rounded-r border-l-2 transition-all duration-300 ${isAtivoMonst ? 'border-green-500 bg-zinc-900/80' : 'border-zinc-700 bg-zinc-900/40 opacity-60'} p-3 flex flex-col`} onClick={e => e.stopPropagation()}>
                                                 <div className="flex items-center justify-between gap-2 mb-2">
                                                   <div className="flex items-center gap-2 min-w-0">
-                                                    <span className={`text-sm font-bold transition-colors duration-200 ${isAtivoMonst ? 'text-zinc-100' : 'text-zinc-400'}`}>{pData.Nome}</span>
+                                                    <span className={`text-sm font-bold transition-colors duration-200 ${isAtivoMonst ? 'text-zinc-100' : 'text-zinc-500 line-through'}`}>{pData.Nome}</span>
                                                     {(isAuto || isSemi) && (
                                                       <span
                                                         title={isAuto ? 'Totalmente automático — acontece sozinho' : 'Semi-automático — parte funciona automaticamente'}
@@ -2202,7 +2202,7 @@ export const AbasPanel: React.FC = () => {
               });
             }
           }
-          if (temMonstruosoOcult99 && isMonstruosoOcultAtivo) {
+          if (temMonstruosoOcult99) {
             const chaveMonstOcult = `monstruoso_ocult_99_${monstruosoElemento.toLowerCase()}`;
             const jaAprendeuOcult99 = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === chaveMonstOcult);
             if (!jaAprendeuOcult99) {

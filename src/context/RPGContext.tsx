@@ -800,7 +800,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
       obj.FOR += 1;
     }
     // Monstruoso
-    if (temMonstruoso65 && isMonstruosoAtivo65) {
+    if (temMonstruoso65) {
       obj.PRE -= 1;
     }
     if (temMonstruoso40 && isMonstruosoAtivo40 && monstruosoElemento === 'Conhecimento') {
@@ -1168,8 +1168,8 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
       list.push(poderesExtras['agente_secreto_pericia_versatilidade']);
     }
 
-    // Monstruoso (Trilha 18 e Trilha 45): em 10%, torna-se treinado em Ocultismo se ainda não era treinado
-    if (((temMonstruoso10 && isMonstruosoAtivo10) || temMonstruosoEsp10) && !jaTinhaOcultismoMonstruoso && !list.includes('Ocultismo')) {
+    // Monstruoso (Trilhas 18, 45 e 47): em 10%, torna-se treinado em Ocultismo se ainda não era treinado
+    if ((temMonstruoso10 || temMonstruosoEsp10 || temMonstruosoOcult10) && !jaTinhaOcultismoMonstruoso && !list.includes('Ocultismo')) {
       list.push('Ocultismo');
     }
 
@@ -1195,8 +1195,8 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     temExorcistaVersatilidade,
     jaTinhaReligiaoVersatilidade,
     temMonstruoso10,
-    isMonstruosoAtivo10,
     temMonstruosoEsp10,
+    temMonstruosoOcult10,
     jaTinhaOcultismoMonstruoso,
     regrasAutomaticasAtivas
   ]);
@@ -1327,13 +1327,8 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
            }
          }
 
-         // Monstruoso (Trilha 18 e Trilha 45): +2 em Ocultismo caso já fosse treinado antes da trilha
-         if (((temMonstruoso10 && isMonstruosoAtivo10) || temMonstruosoEsp10) && jaTinhaOcultismoMonstruoso) {
-           comb['Ocultismo'] = (comb['Ocultismo'] || 0) + 2;
-         }
-
-         // Trilha 47 (Monstruoso Ocultista): +2 em Ocultismo
-         if (temMonstruosoOcult10 && isMonstruosoOcultAtivo) {
+         // Monstruoso (Trilhas 18, 45 e 47): +2 em Ocultismo caso já fosse treinado antes da trilha
+         if ((temMonstruoso10 || temMonstruosoEsp10 || temMonstruosoOcult10) && jaTinhaOcultismoMonstruoso) {
            comb['Ocultismo'] = (comb['Ocultismo'] || 0) + 2;
          }
 

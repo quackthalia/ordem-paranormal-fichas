@@ -30,6 +30,8 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
       return () => { document.body.style.overflow = 'unset'; };
     } else {
       setFiltro('');
+      setFiltroFonte('Todas');
+      setMostrarFiltrosAvancados(false);
       setExpandidos([]);
       setEscolhendoElementoId(null);
       setEscolhendoRitualId(null);
@@ -40,6 +42,8 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
   const { classe, nex, nivel, regras, atributos, periciasHook, poderesHook, rituaisHook } = useRPG();
   const [poderes, setPoderes] = useState<Poder[]>([]);
   const [filtro, setFiltro] = useState('');
+  const [filtroFonte, setFiltroFonte] = useState<string>('Todas');
+  const [mostrarFiltrosAvancados, setMostrarFiltrosAvancados] = useState(false);
   const [expandidos, setExpandidos] = useState<number[]>([]);
   const [abaAtiva, setAbaAtiva] = useState<string>('');
 
@@ -117,7 +121,20 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
   else if (classe === 'Combatente') classesDisponiveis = ['Especialista', 'Ocultista'];
   else if (classe === 'Ocultista') classesDisponiveis = ['Combatente', 'Especialista'];
 
-  const poderesFiltrados = poderes.filter(p => p.Nome.toLowerCase().includes(filtro.toLowerCase()));
+  const poderesFiltrados = poderes.filter(p => {
+    if (filtro && !p.Nome.toLowerCase().includes(filtro.toLowerCase())) return false;
+    if (filtroFonte !== 'Todas') {
+      const fonte = (p.Fonte || '').trim().toLowerCase();
+      if (filtroFonte === 'Homebrew') {
+        if (fonte !== 'homebrew' && fonte !== 'hb') return false;
+      } else if (filtroFonte === 'AS') {
+        if (fonte !== 'as' && fonte !== 'a.s.' && fonte !== 'a.s' && !fonte.includes('sobreviv') && !fonte.includes('arquivo') && !fonte.includes('aurora') && !fonte.includes('aniquila')) return false;
+      } else {
+        if (fonte !== filtroFonte.toLowerCase()) return false;
+      }
+    }
+    return true;
+  });
   const periciasDisponiveis = Object.entries(contextoPrereq.nomesPericias).map(([id, nome]) => ({ id: Number(id), nome })).sort((a, b) => a.nome.localeCompare(b.nome));
 
 
@@ -295,7 +312,38 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
             <h3 className="font-display text-lg uppercase tracking-wide text-zinc-100">PODER DE OUTRA CLASSE</h3>
             <button onClick={onClose} className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100">&times;</button>
           </div>
-          <InputOtimizado value={filtro} onChange={setFiltro} placeholder={`Buscar poder de ${abaAtiva}...`} className="flex-1 rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700" />
+          <div className="flex items-stretch gap-2">
+            <InputOtimizado value={filtro} onChange={setFiltro} placeholder={`Buscar poder de ${abaAtiva}...`} className="flex-1 rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700" />
+            <button
+              onClick={() => setMostrarFiltrosAvancados(!mostrarFiltrosAvancados)}
+              className={`rounded border px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider transition ${
+                mostrarFiltrosAvancados || filtroFonte !== 'Todas'
+                  ? 'border-green-800 bg-green-900/40 text-green-300'
+                  : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
+              }`}
+            >
+              Filtros
+            </button>
+          </div>
+          <Collapse isOpen={mostrarFiltrosAvancados} className="z-50">
+            <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-zinc-800/80 mt-3">
+              <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Fonte</label>
+                <CustomSelect
+                  value={filtroFonte}
+                  onChange={setFiltroFonte}
+                  options={[
+                    { value: 'Todas', label: 'Todas' },
+                    { value: 'OPRPG', label: 'OPRPG' },
+                    { value: 'SaH', label: 'SaH' },
+                    { value: 'AS', label: 'AS' },
+                    { value: 'Homebrew', label: 'Homebrew' }
+                  ]}
+                  wrapperClassName="w-full"
+                />
+              </div>
+            </div>
+          </Collapse>
         </div>
         
         <div className="flex border-b border-zinc-800 bg-zinc-950">

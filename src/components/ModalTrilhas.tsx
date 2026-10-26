@@ -53,6 +53,8 @@ export function ModalTrilhas({
   const [abaAtual, setAbaAtual] = useState<'classe' | 'gerais'>('classe');
   const [habilidadesExpandidas, setHabilidadesExpandidas] = useState<number[]>([]);
   const [busca, setBusca] = useState('');
+  const [filtroFonte, setFiltroFonte] = useState<string>('Todas');
+  const [mostrarFiltrosAvancados, setMostrarFiltrosAvancados] = useState(false);
   const [trilhasModalExpandidas, setTrilhasModalExpandidas] = useState<number[]>([]);
   const [escolhendoArmaTrilha1, setEscolhendoArmaTrilha1] = useState<Trilha | null>(null);
     const [escolhendoElementoLamina, setEscolhendoElementoLamina] = useState<number | null>(null);
@@ -76,9 +78,20 @@ export function ModalTrilhas({
         if (!t.Nome_Trilha.toLowerCase().includes(lower)) return false;
       }
 
+      if (filtroFonte !== 'Todas') {
+        const fonte = (t.Fonte_Trilha || '').trim().toLowerCase();
+        if (filtroFonte === 'Homebrew') {
+          if (fonte !== 'homebrew' && fonte !== 'hb') return false;
+        } else if (filtroFonte === 'AS') {
+          if (fonte !== 'as' && fonte !== 'a.s.' && fonte !== 'a.s' && !fonte.includes('sobreviv') && !fonte.includes('arquivo') && !fonte.includes('aurora') && !fonte.includes('aniquila')) return false;
+        } else {
+          if (fonte !== filtroFonte.toLowerCase()) return false;
+        }
+      }
+
       return true;
     });
-  }, [trilhas, abaAtual, classe, modoVersatilidade, trilhaSelecionada, busca]);
+  }, [trilhas, abaAtual, classe, modoVersatilidade, trilhaSelecionada, busca, filtroFonte]);
 
   const toggleHabilidade = (codigo: number) => {
     setHabilidadesExpandidas((prev) =>
@@ -359,13 +372,44 @@ export function ModalTrilhas({
               &times;
             </button>
           </div>
-          <input
-            type="text"
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-            placeholder="Buscar trilha..."
-            className="flex-1 rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700"
-          />
+          <div className="flex items-stretch gap-2">
+            <input
+              type="text"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar trilha..."
+              className="flex-1 rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700"
+            />
+            <button
+              onClick={() => setMostrarFiltrosAvancados(!mostrarFiltrosAvancados)}
+              className={`rounded border px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider transition ${
+                mostrarFiltrosAvancados || filtroFonte !== 'Todas'
+                  ? 'border-green-800 bg-green-900/40 text-green-300'
+                  : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
+              }`}
+            >
+              Filtros
+            </button>
+          </div>
+          <Collapse isOpen={mostrarFiltrosAvancados} className="z-50">
+            <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-zinc-800/80 mt-3">
+              <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Fonte</label>
+                <CustomSelect
+                  value={filtroFonte}
+                  onChange={setFiltroFonte}
+                  options={[
+                    { value: 'Todas', label: 'Todas' },
+                    { value: 'OPRPG', label: 'OPRPG' },
+                    { value: 'SaH', label: 'SaH' },
+                    { value: 'AS', label: 'AS' },
+                    { value: 'Homebrew', label: 'Homebrew' }
+                  ]}
+                  wrapperClassName="w-full"
+                />
+              </div>
+            </div>
+          </Collapse>
         </div>
 
         {/* Abas */}

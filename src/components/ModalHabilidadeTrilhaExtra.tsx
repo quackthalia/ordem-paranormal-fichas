@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../services/supabase';
 import { Collapse } from './Collapse';
+import { CustomSelect } from './CustomSelect';
+import { InputOtimizado } from './InputOtimizado';
 import { useRPG } from '../context/RPGContext';
 import { calcularNivel } from '../utils/rpgRules';
 
@@ -42,6 +44,9 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
   const [trilhas, setTrilhas] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandidos, setExpandidos] = useState<string[]>([]);
+  const [busca, setBusca] = useState('');
+  const [filtroFonte, setFiltroFonte] = useState<string>('Todas');
+  const [mostrarFiltrosAvancados, setMostrarFiltrosAvancados] = useState(false);
 
   React.useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -69,6 +74,30 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
   if (!isOpen) return null;
 
   const nexLevels = apenas10 ? [10] : [10, 40, 65, 99];
+  const trilhasFiltradas = trilhas.filter((trilha) => {
+    if (busca.trim()) {
+      const lower = busca.toLowerCase();
+      const matchNome = trilha.Nome_Trilha?.toLowerCase().includes(lower);
+      const matchHab = nexLevels.some(lvl => {
+        const nome = trilha[`Nome_Habilidade_${lvl}`];
+        return nome && nome.toLowerCase().includes(lower);
+      });
+      if (!matchNome && !matchHab) return false;
+    }
+    if (filtroFonte !== 'Todas') {
+      const fonte = (trilha.Fonte_Trilha || '').trim().toLowerCase();
+      if (filtroFonte === 'Homebrew') {
+        if (fonte !== 'homebrew' && fonte !== 'hb') return false;
+      } else if (filtroFonte === 'AS') {
+        if (fonte !== 'as' && fonte !== 'a.s.' && fonte !== 'a.s' && !fonte.includes('sobreviv') && !fonte.includes('arquivo') && !fonte.includes('aurora') && !fonte.includes('aniquila')) return false;
+      } else {
+        if (fonte !== filtroFonte.toLowerCase()) return false;
+      }
+    }
+    return true;
+  });
+
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onClose}>
@@ -83,6 +112,43 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
               ? (regras['nex_experiencia'] ? 'Selecione o poder de Nível 2 de uma trilha de Ocultista' : 'Selecione o poder de 10% de uma trilha de Ocultista')
               : (regras['nex_experiencia'] ? `Selecione uma habilidade ritualística (Nível atual: ${calcularNivel(nexAtual)})` : `Selecione uma habilidade ritualística (NEX atual: ${nexAtual}%)`)}
           </p>
+          <div className="flex items-stretch gap-2 mt-3">
+            <InputOtimizado
+              value={busca}
+              onChange={setBusca}
+              placeholder="Buscar trilha ou habilidade..."
+              className="flex-1 rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700"
+            />
+            <button
+              onClick={() => setMostrarFiltrosAvancados(!mostrarFiltrosAvancados)}
+              className={`rounded border px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider transition ${
+                mostrarFiltrosAvancados || filtroFonte !== 'Todas'
+                  ? 'border-green-800 bg-green-900/40 text-green-300'
+                  : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
+              }`}
+            >
+              Filtros
+            </button>
+          </div>
+          <Collapse isOpen={mostrarFiltrosAvancados} className="z-50">
+            <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-zinc-800/80 mt-3">
+              <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Fonte</label>
+                <CustomSelect
+                  value={filtroFonte}
+                  onChange={setFiltroFonte}
+                  options={[
+                    { value: 'Todas', label: 'Todas' },
+                    { value: 'OPRPG', label: 'OPRPG' },
+                    { value: 'SaH', label: 'SaH' },
+                    { value: 'AS', label: 'AS' },
+                    { value: 'Homebrew', label: 'Homebrew' }
+                  ]}
+                  wrapperClassName="w-full"
+                />
+              </div>
+            </div>
+          </Collapse>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
@@ -90,7 +156,7 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
             <div className="text-center py-10 text-zinc-500 italic">Carregando trilhas de Ocultista...</div>
           ) : (
             <div className="flex flex-col gap-6">
-              {trilhas.map((trilha) => (
+              {trilhasFiltradas.map((trilha) => (
                 <div key={trilha.Codigo_Trilha} className="rounded border border-zinc-700 bg-zinc-800/50 overflow-hidden">
                   <div className="bg-zinc-800/80 px-4 py-2 border-b border-zinc-700/50 flex justify-between items-center">
                     <span className="font-bold text-zinc-200 uppercase tracking-wider text-sm">{trilha.Nome_Trilha}</span>

@@ -258,6 +258,8 @@ export function ModalEditarItem({
       }
       
       if (nomeMod === 'aprimorado') {
+        const isKit = nome.toLowerCase().includes('kit de perícia') || nome.toLowerCase().includes('kit de pericia');
+        if (isKit) return false;
         const isVestimenta = nome.toLowerCase().includes('vestimenta');
         const isUtensilio = nome.toLowerCase().includes('utensílio') || nome.toLowerCase().includes('utensilio');
         const isAmuleto = nome.toLowerCase().includes('amuleto sagrado');

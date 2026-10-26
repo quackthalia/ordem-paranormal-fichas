@@ -183,6 +183,11 @@ export const PericiasTable: React.FC = () => {
 
     itensHook.itensInventario.forEach(obj => {
       const nomeItem = obj.item.Nome_Item.toLowerCase();
+      // Kits de perícia NÃO concedem bônus numérico na perícia (apenas removem a penalidade de -5 por falta de kit)
+      if (nomeItem.includes('kit de perícia') || nomeItem.includes('kit de pericia')) {
+        return;
+      }
+
       const isVestimenta = nomeItem.includes('vestimenta');
       const isAmuleto = nomeItem.includes('amuleto sagrado');
       const isUtensilio = nomeItem.includes('utensílio') || nomeItem.includes('utensilio');

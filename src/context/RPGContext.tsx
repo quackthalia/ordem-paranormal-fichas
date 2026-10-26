@@ -1193,7 +1193,7 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
       list.push(poderesExtras['agente_secreto_pericia']);
     }
 
-    // Versatilidade Selecionada (não dá a perícia da trilha por padrão; para Caçador e Exorcista, dá treino apenas se não tiver a perícia)
+    // Versatilidade Selecionada (não dá a perícia da trilha por padrão; somente se a própria habilidade de 10% da trilha conceder a perícia)
     if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 17) {
       if (temCacadorVersatilidade && !jaTinhaSobrevivenciaVersatilidade) {
         list.push('Sobrevivência');
@@ -1202,15 +1202,9 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
       if (temExorcistaVersatilidade && !jaTinhaReligiaoVersatilidade) {
         list.push('Religião');
       }
-    } else if (trilhasHook.versatilidadeSelecionada && trilhasHook.versatilidadeSelecionada.nome_pericia) {
-      const codV = Number(trilhasHook.versatilidadeSelecionada.Codigo_Trilha);
-      const nomeV = (codV === 18 || codV === 45) && trilhasHook.versatilidadeSelecionada.nome_pericia === 'Ocultismo'
-        ? 'Fortitude'
-        : trilhasHook.versatilidadeSelecionada.nome_pericia;
-      list.push(nomeV);
     }
-    if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 16 && poderesExtras['agente_secreto_pericia_versatilidade']) {
-      list.push(poderesExtras['agente_secreto_pericia_versatilidade']);
+    if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 16 && (poderesExtras['agente_secreto_pericia_versatilidade'] || poderesExtras['agente_secreto_pericia'])) {
+      list.push(poderesExtras['agente_secreto_pericia_versatilidade'] || poderesExtras['agente_secreto_pericia']);
     }
 
     // Monstruoso (Trilhas 18, 45 e 47): em 10%, torna-se treinado em Ocultismo se ainda não era treinado

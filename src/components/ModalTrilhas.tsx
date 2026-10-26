@@ -238,7 +238,10 @@ export function ModalTrilhas({
     };
 
     const prosseguirEscolhaAgenteSecreto = (trilha: Trilha, pericia: string) => {
-      setPoderesExtras(prev => ({ ...prev, agente_secreto_pericia: pericia }));
+      setPoderesExtras(prev => ({
+        ...prev,
+        [modoVersatilidade ? 'agente_secreto_pericia_versatilidade' : 'agente_secreto_pericia']: pericia
+      }));
       prosseguirEscolha(trilha);
     };
 

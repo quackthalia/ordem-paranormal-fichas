@@ -457,8 +457,11 @@ export const PericiasTable: React.FC = () => {
 
                               <button
                                 onClick={() => {
-                                  if (regrasAtivas && totais.totalTreinadasUsadas >= limites.maxTreinadas) {
-                                    return; // Não deixa criar se não tiver pontos
+                                  // Se profissoes estiver vazio, a própria linha 'Profissão' já estava consumindo 1 ponto de treinada,
+                                  // então transformar/adicionar a primeira profissão não gasta um ponto a mais!
+                                  const pontosDisponiveis = limites.maxTreinadas - totais.totalTreinadasUsadas;
+                                  if (regrasAtivas && profissoes.length > 0 && pontosDisponiveis <= 0) {
+                                    return; // Não deixa criar se já não tiver pontos extras
                                   }
                                   React.startTransition(() => {
                                     setProfissoes(prev => [...prev, { id: Math.random().toString(36).substr(2, 9), nome: '', treino: 5, outros: 0 }]);

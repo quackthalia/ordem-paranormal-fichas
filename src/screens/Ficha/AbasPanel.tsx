@@ -940,7 +940,7 @@ export const AbasPanel: React.FC = () => {
     }
 
     return lista;
-  }, [classe, nex, nivel, origemSelecionada, poderClasse, poderesClasse, poderesEscolhidos, poderesParanormaisMap, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras, trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, regrasAutomaticasAtivas, temMonstruoso75, temMonstruosoEsp75, listaPoderesUtilidade, temCriptologista10, temCriptologista40, temCriptologista65, temCriptologista99]);
+  }, [classe, nex, nivel, origemSelecionada, poderClasse, poderesClasse, poderesEscolhidos, poderesParanormais, poderesParanormaisMap, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras, trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, regrasAutomaticasAtivas, temMonstruoso75, temMonstruosoEsp75, listaPoderesUtilidade, temCriptologista10, temCriptologista40, temCriptologista65, temCriptologista99, temVampiro40, poderesExtras]);
 
   const habilidadesFiltradas = listaHabilidades.filter(hab =>
     hab.nome.toLowerCase().includes(filtroHabilidades.toLowerCase()) ||

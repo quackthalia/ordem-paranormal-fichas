@@ -141,7 +141,8 @@ export const PericiasTable: React.FC = () => {
     status, periciasHook, regrasAtivas, setRegrasAtivas, regrasAutomaticasAtivas, protecoesHook,
     trilhasHook, nivel, nex, regras,
     itensHook,
-    temMonstruoso10, isMonstruosoAtivo10, temMonstruosoEsp10, jaTinhaOcultismoMonstruoso
+    temMonstruoso10, isMonstruosoAtivo10, temMonstruosoEsp10, jaTinhaOcultismoMonstruoso,
+    bloquearIntimidacaoVampiro
   } = useRPG();
   const { pericias, handleMudarPericia, limites, totais, profissoes, setProfissoes } = periciasHook;
 
@@ -301,13 +302,14 @@ export const PericiasTable: React.FC = () => {
               const bonusInventario = bonusInventarioGlobal[nome] || 0;
               // Nota: dadosPericia.outros já inclui periciasHook.bonusVestimentas (maldições, itens amaldiçoados e trilhas) e bonusRegra40
               const bonusMonstruoso10 = 0;
+              const isPericiaBloqueada = nome === 'Intimidação' && bloquearIntimidacaoVampiro;
               const totalBonus = dadosPericia.treino + dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10 + bonusInventario;
-              const corTexto = COR_TREINO[dadosPericia.treino] ?? 'text-zinc-400';
-              const corBorda = BORDA_TREINO[dadosPericia.treino] ?? 'border-zinc-600';
+              const corTexto = isPericiaBloqueada ? '!text-zinc-600 line-through' : (COR_TREINO[dadosPericia.treino] ?? 'text-zinc-400');
+              const corBorda = isPericiaBloqueada ? 'border-zinc-700 opacity-40' : (BORDA_TREINO[dadosPericia.treino] ?? 'border-zinc-600');
 
               return (
                 <React.Fragment key={nome}>
-                <tr className="border-b border-zinc-800/70 transition hover:bg-zinc-800/30">
+                <tr className={`border-b border-zinc-800/70 transition hover:bg-zinc-800/30 ${isPericiaBloqueada ? 'opacity-60 bg-red-950/10' : ''}`}>
                   <td className={`px-2 py-1.5 font-bold text-sm ${corTexto}`}>
                     <div className="flex items-center gap-1">
                       {nome === 'Profissão' && dadosPericia.treino >= 5 && (
@@ -326,11 +328,17 @@ export const PericiasTable: React.FC = () => {
                         </button>
                       )}
                       <span 
-                        className="cursor-pointer hover:underline hover:text-green-400 transition"
-                        onClick={() => setPericiaAberta({ nome, descricao: dadosPericia.descricao || 'Sem descrição..' })}
+                        className={`cursor-pointer transition ${isPericiaBloqueada ? 'cursor-not-allowed hover:text-red-400' : 'hover:underline hover:text-green-400'}`}
+                        onClick={() => setPericiaAberta({ nome: isPericiaBloqueada ? `${nome} (Bloqueada)` : nome, descricao: isPericiaBloqueada ? 'Esta perícia foi bloqueada pela trilha Vontade Vampírica (Inocência aparente te torna incapaz de usar Intimidação).' : (dadosPericia.descricao || 'Sem descrição..') })}
+                        title={isPericiaBloqueada ? 'Incapaz de usar Intimidação (Vontade Vampírica)' : undefined}
                       >
                         {nome}
                       </span>
+                      {isPericiaBloqueada && (
+                        <span className="ml-1 text-[9px] uppercase px-1 py-0.5 rounded bg-red-950/80 border border-red-800/50 text-red-400 font-bold no-underline">
+                          Bloqueada
+                        </span>
+                      )}
                       {dadosPericia.kit && (
                         <div className="group relative flex items-center">
                           <img 

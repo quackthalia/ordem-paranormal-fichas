@@ -215,6 +215,7 @@ interface RPGContextType {
   temVampiro65: boolean;
   temVampiro99: boolean;
   vampiroArquetipo: string;
+  bloquearIntimidacaoVampiro: boolean;
   bonusDeslocTrilha34: number;
   bonusDeslocTotal: number;
   deslocamentoTotalM: number;
@@ -647,19 +648,21 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     return poderesExtras['monstruoso_elemento'] || 'Sangue';
   }, [afinidadeEscolhida, poderesExtras]);
 
-  // Trilha 48: Vontade Vampírica (Ancião / Bestial / Encantador)
+  // Trilha 48 e 49: Vontade Vampírica (Ancião / Bestial / Encantador)
+  const codTrilhaSel = Number(trilhasHook.trilhaSelecionada?.Codigo_Trilha || (trilhasHook.trilhaSelecionada as any)?.codigo_trilha);
+  const codVersatilidadeSel = Number(trilhasHook.versatilidadeSelecionada?.Codigo_Trilha || (trilhasHook.versatilidadeSelecionada as any)?.codigo_trilha);
   const isTrilhaVampiro = Boolean(
     trilhasHook.trilhaSelecionada && (
-      Number(trilhasHook.trilhaSelecionada.Codigo_Trilha) === 48 ||
-      Number((trilhasHook.trilhaSelecionada as any)?.codigo_trilha) === 48 ||
+      codTrilhaSel === 48 ||
+      codTrilhaSel === 49 ||
       String(trilhasHook.trilhaSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('vontade vampírica') ||
       String(trilhasHook.trilhaSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('vontade vampirica')
     )
   );
   const isVersatilidadeVampiro = Boolean(
     trilhasHook.versatilidadeSelecionada && (
-      Number(trilhasHook.versatilidadeSelecionada.Codigo_Trilha) === 48 ||
-      Number((trilhasHook.versatilidadeSelecionada as any)?.codigo_trilha) === 48 ||
+      codVersatilidadeSel === 48 ||
+      codVersatilidadeSel === 49 ||
       String(trilhasHook.versatilidadeSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('vontade vampírica') ||
       String(trilhasHook.versatilidadeSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('vontade vampirica')
     )
@@ -669,6 +672,11 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const temVampiro65 = isTrilhaVampiro && (regras['nex_experiencia'] ? effectiveNivel >= 13 : effectiveNex >= 65);
   const temVampiro99 = isTrilhaVampiro && (regras['nex_experiencia'] ? effectiveNivel >= 20 : effectiveNex >= 99);
   const vampiroArquetipo = poderesExtras['vampiro_arquetipo'] || 'Ancião';
+  const bloquearIntimidacaoVampiro = Boolean(
+    temVampiro40 &&
+    codTrilhaSel === 49 &&
+    poderesExtras['vampiro_opcao_40'] === '2'
+  );
 
   const armasHook = useArmas(nex, regrasAutomaticasAtivas, {
     temArtistaMarcialTrilha: temArtistaMarcialTrilha10,
@@ -1244,7 +1252,7 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
       return periciasGratisSemTrilha.includes(poderesExtras['agente_secreto_pericia']);
     }
     // Caçador, Muambeiro, Exorcista, Monstruoso e Vampiro resolvem suas perícias diretamente em regras específicas
-    if (trilhasHook.trilhaSelecionada.Codigo_Trilha === 17 || trilhasHook.trilhaSelecionada.Codigo_Trilha === 18 || trilhasHook.trilhaSelecionada.Codigo_Trilha === 45 || trilhasHook.trilhaSelecionada.Codigo_Trilha === 47 || trilhasHook.trilhaSelecionada.Codigo_Trilha === 48 || trilhasHook.trilhaSelecionada.Codigo_Trilha === 21 || trilhasHook.trilhaSelecionada.Codigo_Trilha === 22) {
+    if (trilhasHook.trilhaSelecionada.Codigo_Trilha === 17 || trilhasHook.trilhaSelecionada.Codigo_Trilha === 18 || trilhasHook.trilhaSelecionada.Codigo_Trilha === 45 || trilhasHook.trilhaSelecionada.Codigo_Trilha === 47 || trilhasHook.trilhaSelecionada.Codigo_Trilha === 48 || trilhasHook.trilhaSelecionada.Codigo_Trilha === 49 || trilhasHook.trilhaSelecionada.Codigo_Trilha === 21 || trilhasHook.trilhaSelecionada.Codigo_Trilha === 22) {
       return false;
     }
     if (!trilhasHook.trilhaSelecionada.nome_pericia) return false;
@@ -1257,7 +1265,7 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
       return periciasGratisSemTrilha.includes(poderesExtras['agente_secreto_pericia_versatilidade']);
     }
     // Caçador, Muambeiro, Exorcista, Monstruoso e Vampiro não dão o +1d20 de duplicata de trilha na Versatilidade
-    if (trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 17 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 18 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 45 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 47 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 48 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 21 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 22) {
+    if (trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 17 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 18 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 45 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 47 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 48 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 49 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 21 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 22) {
       return false;
     }
     if (!trilhasHook.versatilidadeSelecionada.nome_pericia) return false;
@@ -1369,19 +1377,19 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
            comb['Ocultismo'] = (comb['Ocultismo'] || 0) + 2;
          }
 
-         // Trilha 48 (Vontade Vampírica): 10% dá +2 na perícia da trilha (Fortitude) se já fosse treinado
+         // Trilha 48 e 49 (Vontade Vampírica): 10% dá +2 na perícia da trilha (Fortitude) se já fosse treinado
          if (temVampiro10 && jaTinhaPericiaVampiro) {
            const pNome = trilhasHook.trilhaSelecionada?.nome_pericia || 'Fortitude';
            comb[pNome] = (comb[pNome] || 0) + 2;
          }
 
          // Trilha 48 (Vontade Vampírica): 40% Opção 2 (+2 Vontade)
-         if (temVampiro40 && poderesExtras['vampiro_opcao_40'] === '2') {
+         if (temVampiro40 && codTrilhaSel === 48 && poderesExtras['vampiro_opcao_40'] === '2') {
            comb['Vontade'] = (comb['Vontade'] || 0) + 2;
          }
 
          // Trilha 48 (Vontade Vampírica): 40% Opção 3 (-2 Diplomacia, Enganação e Intuição)
-         if (temVampiro40 && poderesExtras['vampiro_opcao_40'] === '3') {
+         if (temVampiro40 && codTrilhaSel === 48 && poderesExtras['vampiro_opcao_40'] === '3') {
            comb['Diplomacia'] = (comb['Diplomacia'] || 0) - 2;
            comb['Enganação'] = (comb['Enganação'] || 0) - 2;
            comb['Intuição'] = (comb['Intuição'] || 0) - 2;
@@ -1454,7 +1462,7 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
         monstruoso_ja_tinha_ocultismo: String(jaTinha),
       }));
     }
-    if ((codT === 48 || codV === 48) && poderesExtras['vampiro_ja_tinha_pericia'] === undefined && Object.keys(periciasHook.pericias).length > 0) {
+    if ((codT === 48 || codT === 49 || codV === 48 || codV === 49) && poderesExtras['vampiro_ja_tinha_pericia'] === undefined && Object.keys(periciasHook.pericias).length > 0) {
       const pNome = trilhasHook.trilhaSelecionada?.nome_pericia || 'Fortitude';
       const jaTinha = (periciasHook.pericias[pNome]?.treino || 0) >= 5 || periciasGratisSemTrilha.includes(pNome);
       setPoderesExtras(prev => ({
@@ -1867,6 +1875,7 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     temVampiro65,
     temVampiro99,
     vampiroArquetipo,
+    bloquearIntimidacaoVampiro,
     defOutrosBonusRegra72,
     defOutrosBonusRegra107,
     devorarIntCount,

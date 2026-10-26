@@ -144,7 +144,7 @@ export function ModalTrilhas({
       }));
     }
 
-    if (trilha.Codigo_Trilha === 48) {
+    if (trilha.Codigo_Trilha === 48 || trilha.Codigo_Trilha === 49) {
       const pNome = trilha.nome_pericia || 'Fortitude';
       const jaTinha = (periciasHook.pericias[pNome]?.treino || 0) >= 5 || periciasGratisSemTrilha.includes(pNome);
       setPoderesExtras(prev => ({
@@ -206,9 +206,11 @@ export function ModalTrilhas({
           });
         }
       }
-      if (trilhaAtual?.Codigo_Trilha === 48 && novaTrilhaId !== 48) {
-        const outraTem48 = modoVersatilidade ? trilhasHook.trilhaSelecionada?.Codigo_Trilha === 48 : trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 48;
-        if (!outraTem48) {
+      if ((trilhaAtual?.Codigo_Trilha === 48 || trilhaAtual?.Codigo_Trilha === 49) && novaTrilhaId !== 48 && novaTrilhaId !== 49) {
+        const outraTemVamp = modoVersatilidade
+          ? (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 48 || trilhasHook.trilhaSelecionada?.Codigo_Trilha === 49)
+          : (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 48 || trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 49);
+        if (!outraTemVamp) {
           setPoderesExtras(prev => {
             const n = { ...prev };
             delete n.vampiro_ja_tinha_pericia;

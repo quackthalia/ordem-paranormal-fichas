@@ -471,11 +471,11 @@ export const AbasPanel: React.FC = () => {
       });
     }
 
-    // Trilha 48 (Vontade Vampírica - 40% Opção 3): Concede Aura de Pavor
+    // Trilha 48 (Vontade Vampírica Ancião - 40% Opção 3): Concede Aura de Pavor
     const temAuraPavorNosPoderes = Object.values(poderesEscolhidos).some(p => 
       p.codigoRegra === 29 || (p as any).codigo_poder === 29 || (p as any).Codigo_Poder_Paranormal === 29 || p.nome?.toLowerCase().trim() === 'aura de pavor'
     );
-    if (temVampiro40 && poderesExtras['vampiro_opcao_40'] === '3' && !temAuraPavorNosPoderes) {
+    if (temVampiro40 && trilhasHook.trilhaSelecionada?.Codigo_Trilha === 48 && poderesExtras['vampiro_opcao_40'] === '3' && !temAuraPavorNosPoderes) {
       lista.push({
         id: 'trilha_vampiro_aura_de_pavor',
         nome: 'Aura de Pavor',
@@ -485,6 +485,24 @@ export const AbasPanel: React.FC = () => {
         elemento: 'Morte',
         fonte: 'Vontade Vampírica (40%)',
         automatico: 'Sim',
+      });
+    }
+
+    // Trilha 49 (Vontade Vampírica Bestial - 40% Opção 3): Concede Instintos Sanguinários
+    const temInstintosSanguinariosNosPoderes = Object.values(poderesEscolhidos).some(p => 
+      p.codigoRegra === 23 || (p as any).codigo_poder === 23 || (p as any).Codigo_Poder_Paranormal === 23 || p.nome?.toLowerCase().trim() === 'instintos sanguinários' || p.nome?.toLowerCase().trim() === 'instintos sanguinarios'
+    );
+    if (temVampiro40 && trilhasHook.trilhaSelecionada?.Codigo_Trilha === 49 && poderesExtras['vampiro_opcao_40'] === '3' && !temInstintosSanguinariosNosPoderes) {
+      const p23Instintos = poderesParanormais.find(p => Number(p.codigo_poder) === 23);
+      lista.push({
+        id: 'trilha_vampiro_instintos_sanguinarios',
+        nome: 'Instintos Sanguinários',
+        descricao: p23Instintos?.Descricao || 'Você recebe +2 em testes de ataque e rolagens de dano com armas corpo a corpo e +5 em testes de Atletismo e Fortitude.',
+        tipo: 'Habilidade de Trilha',
+        categoria: 'paranormais',
+        elemento: 'Sangue',
+        fonte: 'Vontade Vampírica (40%)',
+        automatico: 'Semi',
       });
     }
 
@@ -1196,12 +1214,12 @@ export const AbasPanel: React.FC = () => {
                                         </div>
                                         <Collapse isOpen={isHabExpanded}>
                                           {(() => {
-                                            const isTrilha48 = t.Codigo_Trilha === 48;
+                                            const isTrilhaVamp = t.Codigo_Trilha === 48 || t.Codigo_Trilha === 49;
 const opcaoKey = `vampiro_opcao_${nexLvl}`;
 const opcaoEscolhida = poderesExtras[opcaoKey];
 
 // Em 10%, extrai os 3 arquétipos do texto (Ancião, Bestial, Encantador)
-if (isTrilha48 && nexLvl === 10 && !opcaoEscolhida) {
+if (isTrilhaVamp && nexLvl === 10 && !opcaoEscolhida) {
   const intro10 = descHab.split(/•\s*Ancião:/)[0].trim();
   const regexArqs = /•\s*(Ancião|Bestial|Encantador):([\s\S]*?)(?=(?:•\s*(?:Ancião|Bestial|Encantador):|$))/g;
   const arqs: { nome: string; texto: string }[] = [];
@@ -1260,7 +1278,7 @@ if (isTrilha48 && nexLvl === 10 && !opcaoEscolhida) {
 // Em 40%, 65%, 99% com opções delimitadas &- ... &
 const temOpcoesDelimitadas = descHab && descHab.includes("&" + "-");
 
-if (isTrilha48 && temOpcoesDelimitadas && !opcaoEscolhida) {
+if (isTrilhaVamp && temOpcoesDelimitadas && !opcaoEscolhida) {
   const partesIntro = descHab.split(/&-[\s\S]*?&/)[0].trim();
   const regexOpcoes = /&-([\s\S]*?)&/g;
   const opcoes: string[] = [];
@@ -1280,7 +1298,13 @@ if (isTrilha48 && temOpcoesDelimitadas && !opcaoEscolhida) {
       <div className="flex flex-col gap-2.5">
         {opcoes.map((opcaoTexto, idx) => {
           const numOpcao = String(idx + 1);
-          const badgeTag = nexLvl === 40 ? (idx === 1 ? "Semi" : idx === 2 ? "Auto" : null) : null;
+          const badgeTag = nexLvl === 40
+            ? (t.Codigo_Trilha === 48
+                ? (idx === 1 ? "Semi" : idx === 2 ? "Auto" : null)
+                : t.Codigo_Trilha === 49
+                ? (idx === 1 ? null : idx === 2 ? "Semi" : null)
+                : null)
+            : null;
           return (
             <div
               key={numOpcao}
@@ -1337,14 +1361,14 @@ if (isTrilha48 && temOpcoesDelimitadas && !opcaoEscolhida) {
   );
 }
 
-// Se for trilha 48 com opção escolhida, substitui o bloco de opções pelo texto da opção escolhida
+// Se for trilha vampírica com opção escolhida, substitui o bloco de opções pelo texto da opção escolhida
 let textoExibicao = descHab;
-if (isTrilha48 && nexLvl === 10 && opcaoEscolhida) {
+if (isTrilhaVamp && nexLvl === 10 && opcaoEscolhida) {
   const intro10 = descHab.split(/•\s*Ancião:/)[0].trim();
   const regexEscolhido = new RegExp("(•\\s*" + opcaoEscolhida + ":[\\s\\S]*?)(?=(?:•\\s*(?:Ancião|Bestial|Encantador):|$))");
   const textoDoArq = (descHab.match(regexEscolhido)?.[1] || "").trim();
   textoExibicao = (intro10 + "\n\n" + textoDoArq).trim();
-} else if (isTrilha48 && temOpcoesDelimitadas && opcaoEscolhida) {
+} else if (isTrilhaVamp && temOpcoesDelimitadas && opcaoEscolhida) {
   const chosenIdx = Number(opcaoEscolhida);
   let curr = 0;
   textoExibicao = descHab.replace(/&-([\s\S]*?)&/g, (_match, p1) => {
@@ -1763,8 +1787,8 @@ return (
                                              });
                                            }
                                          }
-                                         if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 48) {
-                                           if (trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 48) {
+                                         if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 48 || trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 49) {
+                                           if (trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 48 && trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 49) {
                                              setPoderesExtras(prev => {
                                                const n = { ...prev };
                                                delete n.vampiro_ja_tinha_pericia;
@@ -1841,8 +1865,8 @@ return (
                                              });
                                            }
                                          }
-                                         if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 48) {
-                                           if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha !== 48) {
+                                         if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 48 || trilhasHook.trilhaSelecionada?.Codigo_Trilha === 49) {
+                                           if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha !== 48 && trilhasHook.versatilidadeSelecionada?.Codigo_Trilha !== 49) {
                                              setPoderesExtras(prev => {
                                                const n = { ...prev };
                                                delete n.vampiro_ja_tinha_pericia;

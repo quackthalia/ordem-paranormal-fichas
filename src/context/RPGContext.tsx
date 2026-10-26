@@ -960,7 +960,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   // Trilha 34: Acrobata
   const bonusDeslocTrilha34 = (temAcrobata10 ? 3 : 0) + (temAcrobata65 ? 3 : 0) + (temAcrobata99 ? 3 : 0);
   const bonusDeslocRegra103_115 = regrasAutomaticasAtivas.has(115) ? 12 : (regrasAutomaticasAtivas.has(103) ? 6 : 0);
-  const bonusDeslocGeral = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(22) ? 3 : 0) + (regrasAutomaticasAtivas.has(41) ? 3 : 0) + bonusDeslocRegra103_115 + (bonusVestimentas?.deslocamento || 0) + (bonusMaldicoes?.deslocamento || 0);
+  const bonusDeslocGeral = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(41) ? 3 : 0) + bonusDeslocRegra103_115 + (bonusVestimentas?.deslocamento || 0) + (bonusMaldicoes?.deslocamento || 0);
   const bonusDeslocTotal = bonusDeslocGeral + bonusDeslocTrilha34;
   const deslocamentoTotalM = deslocM + bonusDeslocTotal;
   const danoDeMovimento = Math.floor(deslocamentoTotalM / 1.5);

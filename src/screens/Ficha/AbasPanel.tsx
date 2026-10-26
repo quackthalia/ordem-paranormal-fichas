@@ -2840,7 +2840,15 @@ return (
                             ) {
                               bonusDtMonstruoso = 2;
                             }
-                            const baseDT = 10 + (atributosFinais[atrParaDT] || 0) + calcularNivel(nex) + (hasAntena ? 3 : 0) + (bonusMaldicoes?.bonusDT || 0) + bonusDtMonstruoso;
+                            const temEspecialistaElemento = Object.values(poderesEscolhidos).some(p => {
+                              const nomeLower = (p.nome || '').toLowerCase();
+                              return (
+                                (nomeLower.includes('especialista em elemento') || p.codigoRegra === 79 || (p as any).codigo_poder === 79) &&
+                                (p.elemento?.toLowerCase() === elemento.toLowerCase() || nomeLower.includes(elemento.toLowerCase()))
+                              );
+                            });
+                            const bonusDtEspecialista = temEspecialistaElemento ? 2 : 0;
+                            const baseDT = 10 + (atributosFinais[atrParaDT] || 0) + calcularNivel(nex) + (hasAntena ? 3 : 0) + (bonusMaldicoes?.bonusDT || 0) + bonusDtMonstruoso + bonusDtEspecialista;
                             
                             return (
                               <div key={elemento} className="mt-2 mb-2 flex flex-col gap-2.5">
@@ -2848,7 +2856,7 @@ return (
                                   <span className="h-2 w-2 rounded-full shrink-0" style={{ background: obterCorBadge(elemento) || '#52525b' }}></span>
                                   <span className="text-[0.6rem] font-bold uppercase tracking-[0.15em] text-zinc-500">{elemento}</span>
                                   <div className="flex-1 border-t border-zinc-800/50"></div>
-                                  <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500" title={`10 + ${atrParaDT} + Nível${bonusDtMonstruoso ? ' + 2 (Tatuagem Ritualística)' : ''}`}>DT {baseDT}</span>
+                                  <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500" title={`10 + ${atrParaDT} + Nível${bonusDtMonstruoso ? ' + 2 (Tatuagem Ritualística)' : ''}${bonusDtEspecialista ? ' + 2 (Especialista em Elemento)' : ''}`}>DT {baseDT}</span>
                                 </div>
                                 <div className="flex flex-col gap-2.5">
                                 {ritualsOfElement.map(ritual => {

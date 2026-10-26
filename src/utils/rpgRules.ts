@@ -126,8 +126,12 @@ export function calcularStatusBase(
     sanMax += nivel;
   }
 
-  // Regra 24: +1 PE por nível de NEX
+  // Regra 22 / 24: Potencial Aprimorado
+  // Regra 22 (base): +1 PE por nível de NEX
+  // Regra 24 (afinidade): +1 PE adicional por nível de NEX (total +2 PE por nível)
   if (temRegra(24)) {
+    peMax += (nivel * 2);
+  } else if (temRegra(22)) {
     peMax += nivel;
   }
 

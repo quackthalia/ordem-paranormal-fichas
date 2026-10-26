@@ -2,7 +2,7 @@ import { Collapse } from './Collapse';
 import React, { useState, useMemo, useEffect } from 'react';
 import { CustomSelect } from './CustomSelect';
 import type { Poder, PoderParanormal, Trilha } from '../types';
-import { sortPorElementoENome } from '../utils/rpgRules';
+import { sortPorElementoENome, calcularNivel } from '../utils/rpgRules';
 import { useRPG } from '../context/RPGContext';
 import { verificarPreRequisitos, formatarTextoPreRequisitos } from '../utils/preRequisitos';
 
@@ -391,7 +391,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                         <div key={nexLvl} className="mb-2 rounded border border-zinc-800 bg-zinc-900/40 p-3">
                           <div className="mb-2 flex items-center justify-between">
                             <span className="text-sm font-bold text-zinc-300">
-                              NEX {nexLvl}% - <span className="text-zinc-400">{nomeHab}</span>
+                              {regras['nex_experiencia'] ? `Nível ${calcularNivel(nexLvl)}` : `NEX ${nexLvl}%`} - <span className="text-zinc-400">{nomeHab}</span>
                             </span>
                             <button
                               onClick={(e) => {

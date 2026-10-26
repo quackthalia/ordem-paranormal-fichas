@@ -346,7 +346,9 @@ export function ModalTrilhas({
             <div>
               <h2 className="font-display text-lg uppercase tracking-wide text-zinc-100">
                 {tituloCustom || (modoVersatilidade ? 'SELECIONAR VERSATILIDADE' : 'SELECIONAR TRILHA')} 
-                <span className="text-green-500 ml-2">{subtituloCustom || (modoVersatilidade ? '(NEX 50%)' : '(NEX 10%)')}</span>
+                <span className="text-green-500 ml-2">
+                  {subtituloCustom || (modoVersatilidade ? (regras['nex_experiencia'] ? '(Nível 10)' : '(NEX 50%)') : (regras['nex_experiencia'] ? '(Nível 2)' : '(NEX 10%)'))}
+                </span>
               </h2>
               <p className="mt-1 text-xs text-zinc-400">Selecione uma opção da lista abaixo.</p>
             </div>

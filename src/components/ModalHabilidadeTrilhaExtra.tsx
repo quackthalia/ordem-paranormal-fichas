@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../services/supabase';
 import { Collapse } from './Collapse';
+import { useRPG } from '../context/RPGContext';
+import { calcularNivel } from '../utils/rpgRules';
 
 function formatarDescricao(texto: string): string {
   if (!texto) return '';
@@ -36,6 +38,7 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
   trilhaIdIgnorar,
   tituloCustom,
 }) => {
+  const { regras } = useRPG();
   const [trilhas, setTrilhas] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandidos, setExpandidos] = useState<string[]>([]);
@@ -75,7 +78,11 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
             <h2 className="font-display text-lg uppercase tracking-wide text-zinc-100">{tituloCustom || 'Escolher Poder de Trilha'} <span className="text-green-500">(Ocultista)</span></h2>
             <button onClick={onClose} className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100">&times;</button>
           </div>
-          <p className="mt-1 text-xs text-zinc-400">{apenas10 ? 'Selecione o poder de 10% de uma trilha de Ocultista' : `Selecione uma habilidade ritualística (NEX atual: ${nexAtual}%)`}</p>
+          <p className="mt-1 text-xs text-zinc-400">
+            {apenas10 
+              ? (regras['nex_experiencia'] ? 'Selecione o poder de Nível 2 de uma trilha de Ocultista' : 'Selecione o poder de 10% de uma trilha de Ocultista')
+              : (regras['nex_experiencia'] ? `Selecione uma habilidade ritualística (Nível atual: ${calcularNivel(nexAtual)})` : `Selecione uma habilidade ritualística (NEX atual: ${nexAtual}%)`)}
+          </p>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
@@ -107,7 +114,9 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
                               onClick={() => setExpandidos(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])}
                             >
                               <div>
-                                <span className="inline-block rounded bg-green-900/40 px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight text-green-300 mb-1">NEX {nivel}%</span>
+                                <span className="inline-block rounded bg-green-900/40 px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight text-green-300 mb-1">
+                                  {regras['nex_experiencia'] ? `Nível ${calcularNivel(nivel)}` : `NEX ${nivel}%`}
+                                </span>
                                 <h4 className="font-bold text-zinc-200 group-hover:text-green-400 transition">{nome}</h4>
                               </div>
                               <span className="text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
@@ -130,7 +139,7 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
                                     onSelect({
                                       nome,
                                       descricao,
-                                      preRequisitos: `NEX ${nivel}% (${trilha.Nome_Trilha})`,
+                                      preRequisitos: regras['nex_experiencia'] ? `Nível ${calcularNivel(nivel)} (${trilha.Nome_Trilha})` : `NEX ${nivel}% (${trilha.Nome_Trilha})`,
                                       fonte: trilha.Fonte_Trilha || 'OPRPG',
                                       tipo: 'Trilha'
                                     });
@@ -140,7 +149,9 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
                                   Escolher
                                 </button>
                               ) : (
-                                <span className="ml-auto text-[0.65rem] uppercase font-bold text-zinc-600 tracking-wider">NEX Insuficiente</span>
+                                <span className="ml-auto text-[0.65rem] uppercase font-bold text-zinc-600 tracking-wider">
+                                  {regras['nex_experiencia'] ? 'Nível Insuficiente' : 'NEX Insuficiente'}
+                                </span>
                               )}
                             </div>
                           </div>
@@ -164,7 +175,9 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
                               onClick={() => setExpandidos(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])}
                             >
                               <div>
-                                <span className="inline-block rounded bg-green-900/40 px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight text-green-300 mb-1">NEX {nivel}%</span>
+                                <span className="inline-block rounded bg-green-900/40 px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight text-green-300 mb-1">
+                                  {regras['nex_experiencia'] ? `Nível ${calcularNivel(nivel)}` : `NEX ${nivel}%`}
+                                </span>
                                 <h4 className="font-bold text-zinc-200 group-hover:text-green-400 transition">{nome}</h4>
                               </div>
                               <span className="text-zinc-500 text-xs">{isExpanded ? '▲' : '▼'}</span>
@@ -187,7 +200,7 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
                                     onSelect({
                                       nome,
                                       descricao,
-                                      preRequisitos: `NEX ${nivel}% (${trilha.Nome_Trilha})`,
+                                      preRequisitos: regras['nex_experiencia'] ? `Nível ${calcularNivel(nivel)} (${trilha.Nome_Trilha})` : `NEX ${nivel}% (${trilha.Nome_Trilha})`,
                                       fonte: trilha.Fonte_Trilha || 'OPRPG',
                                       tipo: 'Trilha'
                                     });
@@ -197,7 +210,9 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
                                   Escolher
                                 </button>
                               ) : (
-                                <span className="ml-auto text-[0.65rem] uppercase font-bold text-zinc-600 tracking-wider">NEX Insuficiente</span>
+                                <span className="ml-auto text-[0.65rem] uppercase font-bold text-zinc-600 tracking-wider">
+                                  {regras['nex_experiencia'] ? 'Nível Insuficiente' : 'NEX Insuficiente'}
+                                </span>
                               )}
                             </div>
                           </div>

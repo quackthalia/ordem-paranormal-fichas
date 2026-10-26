@@ -9,7 +9,7 @@ import { ModalEscolherRitualAprendido } from './ModalEscolherRitualAprendido';
 import type { AbaModalPoderes, Poder } from '../types';
 import { verificarPreRequisitos, formatarTextoPreRequisitos } from '../utils/preRequisitos';
 import type { ContextoPreRequisitos } from '../utils/preRequisitos';
-import { sortPorElementoENome } from '../utils/rpgRules';
+import { sortPorElementoENome, calcularNivel } from '../utils/rpgRules';
 
 const PATAMARES_COMBATE = [15, 25, 35, 45, 55, 65, 75, 85, 95];
 
@@ -517,7 +517,7 @@ export const ModalPoderes: React.FC = () => {
                   EDITAR PODER
                 </h2>
                 <p className="text-[11px] text-zinc-500 mt-1 uppercase tracking-widest font-semibold">
-                  {typeof nexPoderEditando === 'number' ? `NEX ${nexPoderEditando}%` : 'PODER EXTRA'}
+                  {typeof nexPoderEditando === 'number' ? (regras['nex_experiencia'] ? `NÍVEL ${calcularNivel(nexPoderEditando)}` : `NEX ${nexPoderEditando}%`) : 'PODER EXTRA'}
                 </p>
               </div>
             </div>
@@ -610,7 +610,7 @@ export const ModalPoderes: React.FC = () => {
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-display text-lg uppercase tracking-wide text-zinc-100 m-0">
-              ESCOLHER PODER — <span className="text-green-500">{typeof nexModalAberto === 'string' ? (nexModalAberto.startsWith('extra_dedo_decepado') ? 'DEDO DECEPADO' : nexModalAberto === 'extra_monstruoso_ocult_40' ? 'MONSTRUOSO 40%' : 'PODER EXTRA') : `NEX ${nexModalAberto && (nexModalAberto as number) > 1000 ? (nexModalAberto as number) - 1000 : nexModalAberto}%`}</span>
+              ESCOLHER PODER — <span className="text-green-500">{typeof nexModalAberto === 'string' ? (nexModalAberto.startsWith('extra_dedo_decepado') ? 'DEDO DECEPADO' : nexModalAberto === 'extra_monstruoso_ocult_40' ? 'MONSTRUOSO 40%' : 'PODER EXTRA') : (regras['nex_experiencia'] ? `NÍVEL ${calcularNivel((nexModalAberto as number) > 1000 ? (nexModalAberto as number) - 1000 : (nexModalAberto as number))}` : `NEX ${nexModalAberto && (nexModalAberto as number) > 1000 ? (nexModalAberto as number) - 1000 : nexModalAberto}%`)}</span>
             </h3>
             <button
               onClick={() => setNexModalAberto(null)}

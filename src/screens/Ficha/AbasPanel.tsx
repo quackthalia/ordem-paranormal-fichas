@@ -2671,7 +2671,7 @@ return (
                             }
 
                             const labelSlot = is99 
-                              ? `Adepto ao Oculto (NEX 99% - 4º Círculo)`
+                              ? (regras['nex_experiencia'] ? `Adepto ao Oculto (Nível 20 - 4º Círculo)` : `Adepto ao Oculto (NEX 99% - 4º Círculo)`)
                               : `Adepto ao Oculto (${regras['nex_experiencia'] ? `Nível ${calcularNivel(nexSlot)}` : `NEX ${nexSlot}%`})`;
 
                             return (

@@ -929,6 +929,7 @@ function ProtecoesPanel() {
 
   const protecoesExtras: string[] = [];
   const resistenciasExtras: string[] = [...(bonusVestimentas?.resistenciasExtras || []), ...(bonusMaldicoes?.resistenciasExtras || [])];
+  const vulnerabilidadesExtras: string[] = [...(bonusVestimentas?.vulnerabilidadesExtras || [])];
   
   // REGRA 5: Resistência Mental +INT
   if (regrasAutomaticasAtivas.has(5) && atributosFinais.INT > 0) {
@@ -1209,7 +1210,7 @@ function ProtecoesPanel() {
 
         <Collapse isOpen={mostrarOutros}>
           <div className="flex flex-col gap-5 pt-4">
-            <BadgeBlock titulo="Vulnerabilidades" itens={vulnerabilidades} setItens={setVulnerabilidades} />
+            <BadgeBlock titulo="Vulnerabilidades" itens={vulnerabilidades} setItens={setVulnerabilidades} itensExtras={vulnerabilidadesExtras} />
             <BadgeBlock titulo="Imunidades" itens={imunidades} setItens={setImunidades} itensExtras={imunidadesExtras} />
             <BadgeBlock titulo="Sentidos" itens={sentidos} setItens={setSentidos} itensExtras={sentidosExtras} />
           </div>

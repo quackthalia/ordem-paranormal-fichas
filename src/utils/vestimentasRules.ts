@@ -7,6 +7,7 @@ export interface VestimentasBonus {
   deslocamento: number; // in meters
   pericias: Record<string, number>;
   resistenciasExtras: string[];
+  vulnerabilidadesExtras: string[];
 }
 
 export function calcularBonusVestimentas(
@@ -18,6 +19,7 @@ export function calcularBonusVestimentas(
   let deslocamento = 0;
   const pericias: Record<string, number> = {};
   const resistenciasExtras: string[] = [];
+  const vulnerabilidadesExtras: string[] = [];
 
   const equipadas = itensAmaldicoadosInventario.filter(
     i => i.equipado && i.item['Vestimenta?']?.toLowerCase() === 'true'
@@ -28,7 +30,8 @@ export function calcularBonusVestimentas(
 
     // Casaco de Lodo
     if (id === 7) {
-      resistenciasExtras.push('Corte 5', 'Impacto 5', 'Morte 5', 'Perfuração 5', 'Balístico (Vulnerável)', 'Energia (Vulnerável)');
+      resistenciasExtras.push('Corte 5', 'Impacto 5', 'Morte 5', 'Perfuração 5');
+      vulnerabilidadesExtras.push('Balístico', 'Energia');
     }
     // Faixas da Vidência
     if (id === 49) {
@@ -64,5 +67,5 @@ export function calcularBonusVestimentas(
     }
   }
 
-  return { pv, pe, defesa, deslocamento, pericias, resistenciasExtras };
+  return { pv, pe, defesa, deslocamento, pericias, resistenciasExtras, vulnerabilidadesExtras };
 }

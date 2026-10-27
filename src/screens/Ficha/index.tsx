@@ -924,7 +924,7 @@ function ProtecoesPanel() {
     trilhasHook, regras, nivel, nex,
     temMonstruoso10, temMonstruoso40, temMonstruoso65, temMonstruoso99, monstruosoElemento,
     isMonstruosoAtivo10, isMonstruosoAtivo40, isMonstruosoAtivo65,
-    temVampiro40,
+    temVampiro40, vampiroArquetipo,
     devorarIntCount
   } = useRPG();
   const [mostrarOutros, setMostrarOutros] = React.useState(false);

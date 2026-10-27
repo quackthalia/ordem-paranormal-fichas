@@ -242,9 +242,9 @@ export function useArmas(
         if (tem99) numDadosMordida += 2;
         const danoMordida = `${numDadosMordida}d6`;
 
-        // Custo PE da mordida no nome/item
+        // Custo PE da mordida no Especial_Arma para a linha de estatísticas
         const custoPEMordida = isBestial40Opcao1 ? '2(+2) PE' : '2 PE';
-        const nomeMordida = `Mordida (${custoPEMordida})`;
+        const nomeMordida = 'Mordida';
 
         // Efeitos extras para a descrição
         const efeitosExtras: string[] = ['• Deixa o alvo Sangrando.'];
@@ -282,7 +282,8 @@ export function useArmas(
               dt_item: null,
               'Automatica?': false,
               Fonte_Arma: 'Trilha',
-              Elemento_Arma: 'Sangue'
+              Elemento_Arma: 'Sangue',
+              Especial_Arma: custoPEMordida
             } as any,
             modificacoes: [],
             municoesAcopladas: []
@@ -293,7 +294,8 @@ export function useArmas(
           if (
             mordida.arma.Nome_Item !== nomeMordida ||
             mordida.arma.Dano_Arma !== danoMordida ||
-            mordida.arma.Descricao_Item !== descMordida
+            mordida.arma.Descricao_Item !== descMordida ||
+            mordida.arma.Especial_Arma !== custoPEMordida
           ) {
             next[mordidaIndex] = {
               ...mordida,
@@ -301,7 +303,8 @@ export function useArmas(
                 ...mordida.arma,
                 Nome_Item: nomeMordida,
                 Dano_Arma: danoMordida,
-                Descricao_Item: descMordida
+                Descricao_Item: descMordida,
+                Especial_Arma: custoPEMordida
               } as any
             };
             changed = true;

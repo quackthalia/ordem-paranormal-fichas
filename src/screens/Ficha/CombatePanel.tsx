@@ -567,6 +567,13 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
                 <>
                   <span className="font-bold text-green-400">Crítico:</span> {critico}/x{multCrit}
                   
+                  {armaInv.id === 'mordida-virtual' && arma.Especial_Arma && (
+                    <>
+                      <span className="mx-2 text-zinc-700">|</span>
+                      <span className="font-bold text-green-400">Custo:</span> <span className="text-zinc-300 font-semibold">{arma.Especial_Arma}</span>
+                    </>
+                  )}
+
                   {arma.Resistencia_Item && String(arma.Resistencia_Item).trim() !== '-' && (
                     <>
                       <span className="mx-2 text-zinc-700">|</span>

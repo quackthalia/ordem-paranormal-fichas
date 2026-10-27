@@ -685,6 +685,12 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     temArtistaMarcialTrilha: temArtistaMarcialTrilha10,
     temArtistaMarcialDuplicata: temArtistaMarcialAprimorado,
     temAcrobata10,
+    temVampiro10,
+    temVampiro40,
+    temVampiro65,
+    temVampiro99,
+    vampiroArquetipo,
+    vampiroOpcao40: poderesExtras['vampiro_opcao_40'],
   });
   const municoesHook = useMunicoes();
   const apenasEscudosMonstruoso = temMonstruoso99 && monstruosoElemento === 'Energia';

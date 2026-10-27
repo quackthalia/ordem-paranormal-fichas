@@ -557,6 +557,12 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
                 />
               </div>
             )}
+
+            {armaInv.id === 'mordida-virtual' && (
+              <span className="inline-flex items-center gap-1 rounded bg-red-950/70 border border-red-800/80 px-1.5 py-0.5 text-[10px] font-bold text-red-300">
+                🩸 Sangrando
+              </span>
+            )}
           </div>
           <span className="text-xs text-zinc-400">
             <span className="font-bold text-green-400">Dano:</span> {danoHeader.replace(/\[.*?\]/g, '') || '-'} 
@@ -699,6 +705,13 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
             )}
           </div>
 
+          {armaInv.arma.Descricao_Item && (
+            <div className="mt-2 pt-2 border-t border-zinc-800/50 text-[11px] text-zinc-400 leading-relaxed">
+              <span className="font-bold text-zinc-300">Efeito: </span>
+              {armaInv.arma.Descricao_Item}
+            </div>
+          )}
+
 
 
           {/* 4. MÉDIA DE DANO ESCONDIDA */}
@@ -813,7 +826,7 @@ export const CombatePanel: React.FC = () => {
   }
 
   // Sort Duplas Obsessivas together, hide Punhos Enraivecidos
-  armas = armas.filter(a => !(a.arma.Nome_Item?.trim().toLowerCase().includes('enraivecido')) || a.id === 'ataque-desarmado-virtual' || a.id === 'golpe-desarmado-acrobacia-virtual').sort((a, b) => {
+  armas = armas.filter(a => !(a.arma.Nome_Item?.trim().toLowerCase().includes('enraivecido')) || a.id === 'ataque-desarmado-virtual' || a.id === 'golpe-desarmado-acrobacia-virtual' || a.id === 'mordida-virtual').sort((a, b) => {
     if (a.arma.Nome_Item?.includes('Dupla Obsessiva') && b.arma.Nome_Item?.includes('Dupla Obsessiva')) return a.arma.Nome_Item.localeCompare(b.arma.Nome_Item);
     return 0; // maintain original order for others
   });

@@ -778,7 +778,7 @@ export function InventarioPanel() {
     }
   };
 
-  let armasExibidas = [...(armasHook?.armasInventario || [])].filter(a => a.id !== 'coronhada-virtual' && a.id !== 'ataque-desarmado-virtual');
+  let armasExibidas = [...(armasHook?.armasInventario || [])].filter(a => a.id !== 'coronhada-virtual' && a.id !== 'ataque-desarmado-virtual' && a.id !== 'mordida-virtual' && a.id !== 'golpe-desarmado-acrobacia-virtual');
   armasExibidas = armasExibidas.filter((item: ArmaInventario) => {
     if (buscaItem && !item.arma.Nome_Item.toLowerCase().includes(buscaItem.toLowerCase())) return false;
     return true;

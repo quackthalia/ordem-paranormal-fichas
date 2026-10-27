@@ -9,6 +9,12 @@ export function useArmas(
     temArtistaMarcialTrilha?: boolean;
     temArtistaMarcialDuplicata?: boolean;
     temAcrobata10?: boolean;
+    temVampiro10?: boolean;
+    temVampiro40?: boolean;
+    temVampiro65?: boolean;
+    temVampiro99?: boolean;
+    vampiroArquetipo?: string;
+    vampiroOpcao40?: string;
   }
 ) {
   const [armas, setArmas] = useState<Arma[]>([]);
@@ -220,6 +226,92 @@ export function useArmas(
         changed = true;
       }
 
+      // 1.2 Mordida - Trilha Vampírica (10%)
+      const mordidaIndex = next.findIndex(a => a.id === 'mordida-virtual');
+      if (opcoesTrilhas?.temVampiro10) {
+        const isBestial40Opcao1 = Boolean(
+          opcoesTrilhas.temVampiro40 &&
+          opcoesTrilhas.vampiroArquetipo === 'Bestial' &&
+          opcoesTrilhas.vampiroOpcao40 === '1'
+        );
+        const tem99 = Boolean(opcoesTrilhas.temVampiro99);
+
+        // Dano: base 3d6. Se Bestial 40% Opção 1: +2d6 (5d6). Se 99%: +2d6 adicionais.
+        let numDadosMordida = 3;
+        if (isBestial40Opcao1) numDadosMordida += 2;
+        if (tem99) numDadosMordida += 2;
+        const danoMordida = `${numDadosMordida}d6`;
+
+        // Custo PE da mordida no nome/item
+        const custoPEMordida = isBestial40Opcao1 ? '2(+2) PE' : '2 PE';
+        const nomeMordida = `Mordida (${custoPEMordida})`;
+
+        // Efeitos extras para a descrição
+        const efeitosExtras: string[] = ['Deixa o alvo Sangrando e você bebe o sangue dele.'];
+        if (opcoesTrilhas.temVampiro40) {
+          const custoCura = isBestial40Opcao1 ? '1 PE' : '2 PE';
+          efeitosExtras.push(`Recuperação de Vida: ao acertar o ataque, pode gastar ${custoCura} para recuperar uma quantidade de PV igual ao dano causado.`);
+        }
+        if (opcoesTrilhas.temVampiro65) {
+          efeitosExtras.push('Aumento de Atributo: ao acertar o ataque, pode gastar 2 PE para receber +1 em Força, Agilidade ou Vigor (à sua escolha) até o fim da cena.');
+        }
+        if (opcoesTrilhas.temVampiro99) {
+          efeitosExtras.push('Cura Acelerada: ao acertar o ataque, pode gastar 2 PE para receber Cura Acelerada 5 até o fim da cena.');
+        }
+        const descMordida = efeitosExtras.join(' ');
+
+        if (mordidaIndex === -1) {
+          next.push({
+            id: 'mordida-virtual',
+            arma: {
+              Codigo_Arma: -4,
+              Nome_Item: nomeMordida,
+              Descricao_Item: descMordida,
+              Proficiencia: 'Armas Simples',
+              Tipo_Arma: 'Corpo a Corpo',
+              Empunhadura_Arma: 'Uma Mão',
+              Dano_Arma: danoMordida,
+              Critico_Arma: 20,
+              Multiplicador_Arma: 2,
+              Tipo_Dano_Arma: 'Perfuração',
+              Alcance_Item: null,
+              Categoria_Item: '0',
+              'Espaços_Item': 0,
+              'Agil?': false,
+              Capacidade_Municao: null,
+              dt_item: null,
+              'Automatica?': false,
+              Fonte_Arma: 'Trilha',
+              Elemento_Arma: 'Sangue'
+            } as any,
+            modificacoes: [],
+            municoesAcopladas: []
+          });
+          changed = true;
+        } else {
+          const mordida = next[mordidaIndex];
+          if (
+            mordida.arma.Nome_Item !== nomeMordida ||
+            mordida.arma.Dano_Arma !== danoMordida ||
+            mordida.arma.Descricao_Item !== descMordida
+          ) {
+            next[mordidaIndex] = {
+              ...mordida,
+              arma: {
+                ...mordida.arma,
+                Nome_Item: nomeMordida,
+                Dano_Arma: danoMordida,
+                Descricao_Item: descMordida
+              } as any
+            };
+            changed = true;
+          }
+        }
+      } else if (mordidaIndex !== -1) {
+        next = next.filter(a => a.id !== 'mordida-virtual');
+        changed = true;
+      }
+
       // 2. Coronhada
       const armasDeFogo = next.filter(a => a.id !== 'coronhada-virtual' && a.id !== 'ataque-desarmado-virtual' && a.id !== 'golpe-desarmado-acrobacia-virtual' && (a.arma.Tipo_Arma?.toLowerCase() || '').includes('fogo'));
       const coronhadaIndex = next.findIndex(a => a.id === 'coronhada-virtual');
@@ -290,7 +382,13 @@ export function useArmas(
     regrasAutomaticasAtivas.has(84),
     opcoesTrilhas?.temArtistaMarcialTrilha,
     opcoesTrilhas?.temArtistaMarcialDuplicata,
-    opcoesTrilhas?.temAcrobata10
+    opcoesTrilhas?.temAcrobata10,
+    opcoesTrilhas?.temVampiro10,
+    opcoesTrilhas?.temVampiro40,
+    opcoesTrilhas?.temVampiro65,
+    opcoesTrilhas?.temVampiro99,
+    opcoesTrilhas?.vampiroArquetipo,
+    opcoesTrilhas?.vampiroOpcao40
   ]);
 
   const adicionarArma = (arma: Arma) => {

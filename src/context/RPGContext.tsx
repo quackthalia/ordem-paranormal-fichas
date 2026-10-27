@@ -69,6 +69,7 @@ interface RPGContextType {
   defOutros: number;
   setDefOutros: React.Dispatch<React.SetStateAction<number>>;
   defesaTotal: number;
+  defOutrosBonusVampiro: number;
   totalDefesaProtecoes: number;
   bloqueioData: { base: number, bonusVig: boolean };
   setBloqueioData: React.Dispatch<React.SetStateAction<{ base: number, bonusVig: boolean }>>;
@@ -648,13 +649,14 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     return poderesExtras['monstruoso_elemento'] || 'Sangue';
   }, [afinidadeEscolhida, poderesExtras]);
 
-  // Trilha 48 e 49: Vontade Vampírica (Ancião / Bestial / Encantador)
+  // Trilha 48, 49 e 50: Vontade Vampírica (Ancião / Bestial / Encantador)
   const codTrilhaSel = Number(trilhasHook.trilhaSelecionada?.Codigo_Trilha || (trilhasHook.trilhaSelecionada as any)?.codigo_trilha);
   const codVersatilidadeSel = Number(trilhasHook.versatilidadeSelecionada?.Codigo_Trilha || (trilhasHook.versatilidadeSelecionada as any)?.codigo_trilha);
   const isTrilhaVampiro = Boolean(
     trilhasHook.trilhaSelecionada && (
       codTrilhaSel === 48 ||
       codTrilhaSel === 49 ||
+      codTrilhaSel === 50 ||
       String(trilhasHook.trilhaSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('vontade vampírica') ||
       String(trilhasHook.trilhaSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('vontade vampirica')
     )
@@ -663,6 +665,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     trilhasHook.versatilidadeSelecionada && (
       codVersatilidadeSel === 48 ||
       codVersatilidadeSel === 49 ||
+      codVersatilidadeSel === 50 ||
       String(trilhasHook.versatilidadeSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('vontade vampírica') ||
       String(trilhasHook.versatilidadeSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('vontade vampirica')
     )
@@ -674,7 +677,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const vampiroArquetipo = poderesExtras['vampiro_arquetipo'] || 'Ancião';
   const bloquearIntimidacaoVampiro = Boolean(
     temVampiro40 &&
-    codTrilhaSel === 49 &&
+    vampiroArquetipo === 'Bestial' &&
     poderesExtras['vampiro_opcao_40'] === '2'
   );
 
@@ -868,6 +871,11 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     if (regrasAutomaticasAtivas.has(113)) obj.VIG += 1;
     if (regrasAutomaticasAtivas.has(114)) obj.INT += 1;
     if (regrasAutomaticasAtivas.has(115)) obj.AGI += 1;
+
+    // Vontade Vampírica (Encantador): 65% Opção 1 (+1 AGI)
+    if (temVampiro65 && vampiroArquetipo === 'Encantador' && poderesExtras['vampiro_opcao_65'] === '1') {
+      obj.AGI += 1;
+    }
     // Regras 116..119 e 128..131 (Poderes de Monstruoso Ocultista)
     if (regrasAutomaticasAtivas.has(116)) obj.FOR += 1;
     if (regrasAutomaticasAtivas.has(117)) obj.VIG += 1;
@@ -960,7 +968,8 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   // Trilha 34: Acrobata
   const bonusDeslocTrilha34 = (temAcrobata10 ? 3 : 0) + (temAcrobata65 ? 3 : 0) + (temAcrobata99 ? 3 : 0);
   const bonusDeslocRegra103_115 = regrasAutomaticasAtivas.has(115) ? 12 : (regrasAutomaticasAtivas.has(103) ? 6 : 0);
-  const bonusDeslocGeral = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(41) ? 3 : 0) + bonusDeslocRegra103_115 + (bonusVestimentas?.deslocamento || 0) + (bonusMaldicoes?.deslocamento || 0);
+  const bonusDeslocVampiro = (temVampiro65 && vampiroArquetipo === 'Encantador' && poderesExtras['vampiro_opcao_65'] === '1') ? 3 : 0;
+  const bonusDeslocGeral = (regrasAutomaticasAtivas.has(12) ? 3 : 0) + (regrasAutomaticasAtivas.has(41) ? 3 : 0) + bonusDeslocRegra103_115 + bonusDeslocVampiro + (bonusVestimentas?.deslocamento || 0) + (bonusMaldicoes?.deslocamento || 0);
   const bonusDeslocTotal = bonusDeslocGeral + bonusDeslocTrilha34;
   const deslocamentoTotalM = deslocM + bonusDeslocTotal;
   const danoDeMovimento = Math.floor(deslocamentoTotalM / 1.5);
@@ -1371,22 +1380,34 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
            comb['Ocultismo'] = (comb['Ocultismo'] || 0) + 2;
          }
 
-         // Trilha 48 e 49 (Vontade Vampírica): 10% dá +2 na perícia da trilha (Fortitude) se já fosse treinado
+         // Trilha Vampírica: 10% dá +2 na perícia da trilha (Fortitude) se já fosse treinado
          if (temVampiro10 && jaTinhaPericiaVampiro) {
            const pNome = trilhasHook.trilhaSelecionada?.nome_pericia || 'Fortitude';
            comb[pNome] = (comb[pNome] || 0) + 2;
          }
 
-         // Trilha 48 (Vontade Vampírica): 40% Opção 2 (+2 Vontade)
-         if (temVampiro40 && codTrilhaSel === 48 && poderesExtras['vampiro_opcao_40'] === '2') {
+         // Trilha Vampírica (Ancião): 40% Opção 2 (+2 Vontade)
+         if (temVampiro40 && vampiroArquetipo === 'Ancião' && poderesExtras['vampiro_opcao_40'] === '2') {
            comb['Vontade'] = (comb['Vontade'] || 0) + 2;
          }
 
-         // Trilha 48 (Vontade Vampírica): 40% Opção 3 (-2 Diplomacia, Enganação e Intuição)
-         if (temVampiro40 && codTrilhaSel === 48 && poderesExtras['vampiro_opcao_40'] === '3') {
+         // Trilha Vampírica (Ancião): 40% Opção 3 (-2 Diplomacia, Enganação e Intuição)
+         if (temVampiro40 && vampiroArquetipo === 'Ancião' && poderesExtras['vampiro_opcao_40'] === '3') {
            comb['Diplomacia'] = (comb['Diplomacia'] || 0) - 2;
            comb['Enganação'] = (comb['Enganação'] || 0) - 2;
            comb['Intuição'] = (comb['Intuição'] || 0) - 2;
+         }
+
+         // Trilha Vampírica (Encantador): 65% Opção 1 (+2 em todas as perícias baseadas em Agilidade)
+         if (temVampiro65 && vampiroArquetipo === 'Encantador' && poderesExtras['vampiro_opcao_65'] === '1') {
+           ['Acrobacia', 'Crime', 'Furtividade', 'Iniciativa', 'Pilotagem', 'Pontaria', 'Reflexos'].forEach(p => {
+             comb[p] = (comb[p] || 0) + 2;
+           });
+         }
+
+         // Trilha Vampírica (Encantador): 99% Opção 2 (+10 Reflexos)
+         if (temVampiro99 && vampiroArquetipo === 'Encantador' && poderesExtras['vampiro_opcao_99'] === '2') {
+           comb['Reflexos'] = (comb['Reflexos'] || 0) + 10;
          }
 
          // Trilha 45 e 47: Penalidade permanente em Diplomacia, Enganação e Intuição (-2 em 10%, -5 em 40%, -10 em 99%)
@@ -1456,7 +1477,7 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
         monstruoso_ja_tinha_ocultismo: String(jaTinha),
       }));
     }
-    if ((codT === 48 || codT === 49 || codV === 48 || codV === 49) && poderesExtras['vampiro_ja_tinha_pericia'] === undefined && Object.keys(periciasHook.pericias).length > 0) {
+    if (([48, 49, 50].includes(codT || 0) || [48, 49, 50].includes(codV || 0)) && poderesExtras['vampiro_ja_tinha_pericia'] === undefined && Object.keys(periciasHook.pericias).length > 0) {
       const pNome = trilhasHook.trilhaSelecionada?.nome_pericia || 'Fortitude';
       const jaTinha = (periciasHook.pericias[pNome]?.treino || 0) >= 5 || periciasGratisSemTrilha.includes(pNome);
       setPoderesExtras(prev => ({
@@ -1712,8 +1733,10 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
 
   const defOutrosBonusRegra72 = regrasAutomaticasAtivas.has(72) ? atributosFinais.INT : 0;
   const defOutrosBonusRegra107 = regrasAutomaticasAtivas.has(107) ? (2 + queimarVigCount * 2) : 0;
+  const defOutrosBonusVampiro = (temVampiro40 && vampiroArquetipo === 'Encantador' && poderesExtras['vampiro_opcao_40'] === '3' ? -2 : 0) +
+    (temVampiro99 && vampiroArquetipo === 'Encantador' && poderesExtras['vampiro_opcao_99'] === '2' ? 10 : 0);
 
-  const defesaTotal = 10 + atributosFinais.AGI + defEquip + defOutros + defOutrosBonusRegra4 + defOutrosBonusRegra12 + defOutrosBonusRegra21 + defOutrosBonusRegra25 + defOutrosBonusRegra72 + defOutrosBonusRegra107 + defOutrosBonusTrilha5 + bonusDefesaTrilha34 + totalDefesaProtecoes + (bonusVestimentas?.defesa || 0) + (bonusMaldicoes?.defesa || 0);
+  const defesaTotal = 10 + atributosFinais.AGI + defEquip + defOutros + defOutrosBonusRegra4 + defOutrosBonusRegra12 + defOutrosBonusRegra21 + defOutrosBonusRegra25 + defOutrosBonusRegra72 + defOutrosBonusRegra107 + defOutrosBonusTrilha5 + bonusDefesaTrilha34 + defOutrosBonusVampiro + totalDefesaProtecoes + (bonusVestimentas?.defesa || 0) + (bonusMaldicoes?.defesa || 0);
 
   // ============================================================
   // UTILITÁRIOS
@@ -1761,6 +1784,7 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     defEquip, setDefEquip,
     defOutros, setDefOutros,
     defesaTotal,
+    defOutrosBonusVampiro,
     totalDefesaProtecoes,
     bloqueioData, setBloqueioData,
     protecoes, setProtecoes,

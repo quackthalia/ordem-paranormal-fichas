@@ -157,7 +157,7 @@ export function ModalTrilhas({
       }));
     }
 
-    if (trilha.Codigo_Trilha === 48 || trilha.Codigo_Trilha === 49) {
+    if (trilha.Codigo_Trilha === 48 || trilha.Codigo_Trilha === 49 || trilha.Codigo_Trilha === 50) {
       const pNome = trilha.nome_pericia || 'Fortitude';
       const jaTinha = (periciasHook.pericias[pNome]?.treino || 0) >= 5 || periciasGratisSemTrilha.includes(pNome);
       setPoderesExtras(prev => ({
@@ -219,10 +219,10 @@ export function ModalTrilhas({
           });
         }
       }
-      if ((trilhaAtual?.Codigo_Trilha === 48 || trilhaAtual?.Codigo_Trilha === 49) && novaTrilhaId !== 48 && novaTrilhaId !== 49) {
+      if ([48, 49, 50].includes(trilhaAtual?.Codigo_Trilha || 0) && ![48, 49, 50].includes(novaTrilhaId)) {
         const outraTemVamp = modoVersatilidade
-          ? (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 48 || trilhasHook.trilhaSelecionada?.Codigo_Trilha === 49)
-          : (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 48 || trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 49);
+          ? [48, 49, 50].includes(trilhasHook.trilhaSelecionada?.Codigo_Trilha || 0)
+          : [48, 49, 50].includes(trilhasHook.versatilidadeSelecionada?.Codigo_Trilha || 0);
         if (!outraTemVamp) {
           setPoderesExtras(prev => {
             const n = { ...prev };

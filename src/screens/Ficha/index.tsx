@@ -791,7 +791,7 @@ function AtributosFicha() {
 // COMPONENTE INTERNO: DEFESA
 // ============================================================
 function DefesaPanel() {
-  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, bloquearLetras, periciasHook, atributosFinais, regrasAutomaticasAtivas, protecoes, protecoesHook, totalDefesaProtecoes, bonusVestimentas, bonusMaldicoes, trilhasHook, status, regras, nivel, nex, bonusDefesaTrilha34, defOutrosBonusRegra72, defOutrosBonusRegra107 } = useRPG();
+  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, defOutrosBonusVampiro, bloquearLetras, periciasHook, atributosFinais, regrasAutomaticasAtivas, protecoes, protecoesHook, totalDefesaProtecoes, bonusVestimentas, bonusMaldicoes, trilhasHook, status, regras, nivel, nex, bonusDefesaTrilha34, defOutrosBonusRegra72, defOutrosBonusRegra107 } = useRPG();
 
   const [bloqueio, setBloqueio] = React.useState(0);
   const [esquiva, setEsquiva] = React.useState(0);
@@ -855,7 +855,8 @@ function DefesaPanel() {
                   const temInquebravel = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 5 && (regras['nex_experiencia'] ? (nivel >= 20) : (nex >= 99));
                   const bonusTrilha5 = (temInquebravel && isMachucado) ? 5 : 0;
                   const bonusDefesa34 = bonusDefesaTrilha34 || 0;
-                  return defOutros + defOutrosBonusRegra + bonusRegra21 + bonusRegra25 + bonusTrilha5 + bonusDefesa34 + totalDefesaProtecoes + (bonusVestimentas?.defesa || 0) + (bonusMaldicoes?.defesa || 0) || '';
+                  const bonusVamp = defOutrosBonusVampiro || 0;
+                  return defOutros + defOutrosBonusRegra + bonusRegra21 + bonusRegra25 + bonusTrilha5 + bonusDefesa34 + bonusVamp + totalDefesaProtecoes + (bonusVestimentas?.defesa || 0) + (bonusMaldicoes?.defesa || 0) || '';
                 })()}
                 placeholder="0"
                 title="Outros bônus de defesa"
@@ -870,7 +871,8 @@ function DefesaPanel() {
                   const temInquebravel = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 5 && (regras['nex_experiencia'] ? (nivel >= 20) : (nex >= 99));
                   const bonusTrilha5 = (temInquebravel && isMachucado) ? 5 : 0;
                   const bonusDefesa34 = bonusDefesaTrilha34 || 0;
-                  setDefOutros(Math.max(0, valDigitado - defOutrosBonusRegra - bonusRegra21 - bonusRegra25 - bonusTrilha5 - bonusDefesa34 - totalDefesaProtecoes));
+                  const bonusVamp = defOutrosBonusVampiro || 0;
+                  setDefOutros(Math.max(0, valDigitado - defOutrosBonusRegra - bonusRegra21 - bonusRegra25 - bonusTrilha5 - bonusDefesa34 - bonusVamp - totalDefesaProtecoes));
                 }}
                 className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-green-600"
               />
@@ -936,8 +938,8 @@ function ProtecoesPanel() {
     resistenciasExtras.push(`Mental ${atributosFinais.INT}`);
   }
 
-  // TRILHA 48 (Vontade Vampírica): 40% Opção 2 - Resistência Mental +10
-  if (temVampiro40 && poderesExtras['vampiro_opcao_40'] === '2') {
+  // TRILHA VAMPÍRICA (Ancião): 40% Opção 2 - Resistência Mental +10
+  if (temVampiro40 && vampiroArquetipo === 'Ancião' && poderesExtras['vampiro_opcao_40'] === '2') {
     resistenciasExtras.push('Mental 10');
   }
   // REGRA 9, 60 e 104: Resistência a Dano

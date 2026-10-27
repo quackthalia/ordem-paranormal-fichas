@@ -57,7 +57,50 @@ export function useTrilhas(): UseTrilhasReturn {
       if (errRegras) console.error("Erro Regras Trilhas:", errRegras);
 
       if (dataTrilhas) {
-        const trilhasComRegras = dataTrilhas.map(t => {
+        // Fusão das 3 trilhas de vampiro (48, 49, 50) em uma trilha única (48 - Vontade Vampírica)
+        const t48 = dataTrilhas.find(t => t.Codigo_Trilha === 48);
+        const t49 = dataTrilhas.find(t => t.Codigo_Trilha === 49);
+        const t50 = dataTrilhas.find(t => t.Codigo_Trilha === 50);
+
+        let dataTrilhasProcessadas = dataTrilhas;
+        if (t48 && (t49 || t50)) {
+          const getCorpoArq = (desc: string | null | undefined, arq: string) => {
+            if (!desc) return '';
+            const regex = new RegExp('(•\\s*' + arq + ':[\\s\\S]*?)$');
+            const m = desc.match(regex);
+            return m ? m[1].trim() : '';
+          };
+
+          const desc40 = (t48.Descricao_Habilidade_40 || '').split(/•\s*Ancião:/)[0].trim() + '\n\n' +
+            getCorpoArq(t48.Descricao_Habilidade_40, 'Ancião') + '\n\n' +
+            getCorpoArq(t49?.Descricao_Habilidade_40, 'Bestial') + '\n\n' +
+            getCorpoArq(t50?.Descricao_Habilidade_40, 'Encantador');
+
+          const desc65 = (t48.Descricao_Habilidade_65 || '').split(/•\s*Ancião:/)[0].trim() + '\n\n' +
+            getCorpoArq(t48.Descricao_Habilidade_65, 'Ancião') + '\n\n' +
+            getCorpoArq(t49?.Descricao_Habilidade_65, 'Bestial') + '\n\n' +
+            getCorpoArq(t50?.Descricao_Habilidade_65, 'Encantador');
+
+          const desc99 = (t48.Descricao_Habilidade_99 || '').split(/•\s*Ancião:/)[0].trim() + '\n\n' +
+            getCorpoArq(t48.Descricao_Habilidade_99, 'Ancião') + '\n\n' +
+            getCorpoArq(t49?.Descricao_Habilidade_99, 'Bestial') + '\n\n' +
+            getCorpoArq(t50?.Descricao_Habilidade_99, 'Encantador');
+
+          const t48Fundida = {
+            ...t48,
+            Nome_Trilha: 'Vontade Vampírica',
+            Descricao_Habilidade_40: desc40,
+            Descricao_Habilidade_65: desc65,
+            Descricao_Habilidade_99: desc99
+          };
+
+          // Remove 49 e 50 da listagem, mantém 48 unificada
+          dataTrilhasProcessadas = dataTrilhas
+            .filter(t => t.Codigo_Trilha !== 49 && t.Codigo_Trilha !== 50)
+            .map(t => t.Codigo_Trilha === 48 ? t48Fundida : t);
+        }
+
+        const trilhasComRegras = dataTrilhasProcessadas.map(t => {
           // Perícia da trilha vem do banco (Monstruoso = Fortitude). O treino em Ocultismo do Monstruoso é uma regra separada (10%).
           const periciaTrilha = t.Perícia_Trilha;
           const regra = dataRegras?.find((r: any) => r.Codigo_Trilha === t.Codigo_Trilha);

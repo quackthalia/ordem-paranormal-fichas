@@ -471,11 +471,12 @@ export const AbasPanel: React.FC = () => {
       });
     }
 
-    // Trilha 48 (Vontade Vampírica Ancião - 40% Opção 3): Concede Aura de Pavor
+    // Trilha Vampírica (40% Opção 3 baseada no Arquétipo)
+    // Ancião: Concede Aura de Pavor
     const temAuraPavorNosPoderes = Object.values(poderesEscolhidos).some(p => 
       p.codigoRegra === 29 || (p as any).codigo_poder === 29 || (p as any).Codigo_Poder_Paranormal === 29 || p.nome?.toLowerCase().trim() === 'aura de pavor'
     );
-    if (temVampiro40 && trilhasHook.trilhaSelecionada?.Codigo_Trilha === 48 && poderesExtras['vampiro_opcao_40'] === '3' && !temAuraPavorNosPoderes) {
+    if (temVampiro40 && vampiroArquetipo === 'Ancião' && poderesExtras['vampiro_opcao_40'] === '3' && !temAuraPavorNosPoderes) {
       lista.push({
         id: 'trilha_vampiro_aura_de_pavor',
         nome: 'Aura de Pavor',
@@ -488,11 +489,11 @@ export const AbasPanel: React.FC = () => {
       });
     }
 
-    // Trilha 49 (Vontade Vampírica Bestial - 40% Opção 3): Concede Instintos Sanguinários
+    // Bestial: Concede Instintos Sanguinários
     const temInstintosSanguinariosNosPoderes = Object.values(poderesEscolhidos).some(p => 
       p.codigoRegra === 23 || (p as any).codigo_poder === 23 || (p as any).Codigo_Poder_Paranormal === 23 || p.nome?.toLowerCase().trim() === 'instintos sanguinários' || p.nome?.toLowerCase().trim() === 'instintos sanguinarios'
     );
-    if (temVampiro40 && trilhasHook.trilhaSelecionada?.Codigo_Trilha === 49 && poderesExtras['vampiro_opcao_40'] === '3' && !temInstintosSanguinariosNosPoderes) {
+    if (temVampiro40 && vampiroArquetipo === 'Bestial' && poderesExtras['vampiro_opcao_40'] === '3' && !temInstintosSanguinariosNosPoderes) {
       const p23Instintos = poderesParanormais.find(p => Number(p.codigo_poder) === 23);
       lista.push({
         id: 'trilha_vampiro_instintos_sanguinarios',
@@ -506,10 +507,40 @@ export const AbasPanel: React.FC = () => {
       });
     }
 
+    // Encantador: Concede Sensitivo
+    const temSensitivoNosPoderes = Object.values(poderesEscolhidos).some(p => 
+      p.codigoRegra === 55 || (p as any).codigo_poder === 10 || (p as any).Codigo_Poder_Paranormal === 10 || p.nome?.toLowerCase().trim() === 'sensitivo'
+    );
+    if (temVampiro40 && vampiroArquetipo === 'Encantador' && poderesExtras['vampiro_opcao_40'] === '3' && !temSensitivoNosPoderes) {
+      const p10Sensitivo = poderesParanormais.find(p => Number(p.codigo_poder) === 10 || p.codigoRegra === 55);
+      lista.push({
+        id: 'trilha_vampiro_sensitivo',
+        nome: 'Sensitivo',
+        descricao: p10Sensitivo?.Descricao || 'Você consegue sentir as emoções e intenções de outros personagens, como medo, raiva ou malícia, recebendo +5 em testes de Diplomacia, Intimidação e Intuição.',
+        tipo: 'Habilidade de Trilha',
+        categoria: 'paranormais',
+        elemento: 'Conhecimento',
+        fonte: 'Vontade Vampírica (40%)',
+        automatico: 'Sim',
+      });
+    }
+
     // 1.7 Monstruoso Ocultista 40%: Tatuagem Ritualística (ou Slot Extra se já tiver)
     const p89Tatuagem = listaPoderesUtilidade.find(p => Number(p.codigo_poder) === 89) || poderesClasse.find(p => Number(p.codigo_poder) === 89);
     const buildDescTatuagem = (baseDesc?: string) => {
-      return baseDesc || p89Tatuagem?.Descricao || "Símbolos marcados em sua pele reduzem em –1 PE o custo de rituais de alcance pessoal que têm você como alvo.";
+      let text = baseDesc || p89Tatuagem?.Descricao || "Símbolos marcados em sua pele reduzem em –1 PE o custo de rituais de alcance pessoal que têm você como alvo.";
+      if (temMonstruosoOcult40) {
+        if (!text.includes('++Escarificação')) {
+          text += `\n\n++Escarificação (${monstruosoElemento})++: Diferente do normal, este poder também se aplica a todos os rituais de ${monstruosoElemento} marcados em sua pele, não apenas aos de alcance pessoal que têm você como alvo.`;
+        }
+        if (temMonstruosoOcult65 && !text.includes('tem sua DT aumentada em +2')) {
+          text += `\n\nA DT dos rituais de ${monstruosoElemento} marcados na pele tem sua DT aumentada em +2.`;
+        }
+        if (temMonstruosoOcult99 && !text.includes('sem a necessidade de fala')) {
+          text += `\n\nVocê pode conjurar rituais de ${monstruosoElemento} marcados na pele sem a necessidade de fala, gestos e componentes.`;
+        }
+      }
+      return text;
     };
 
     if (temMonstruosoOcult40) {
@@ -1214,7 +1245,7 @@ export const AbasPanel: React.FC = () => {
                                         </div>
                                         <Collapse isOpen={isHabExpanded}>
                                           {(() => {
-                                            const isTrilhaVamp = t.Codigo_Trilha === 48 || t.Codigo_Trilha === 49;
+                                            const isTrilhaVamp = t.Codigo_Trilha === 48 || t.Codigo_Trilha === 49 || t.Codigo_Trilha === 50 || (t.Nome_Trilha && t.Nome_Trilha.toLowerCase().includes('vontade vamp'));
 const opcaoKey = `vampiro_opcao_${nexLvl}`;
 const opcaoEscolhida = poderesExtras[opcaoKey];
 
@@ -1275,36 +1306,66 @@ if (isTrilhaVamp && nexLvl === 10 && !opcaoEscolhida) {
   );
 }
 
-// Em 40%, 65%, 99% com opções delimitadas &- ... &
-const temOpcoesDelimitadas = descHab && descHab.includes("&" + "-");
+// Em 40%, 65%, 99%: extrai a seção do arquétipo escolhido em 10%
+const arqEscolhido = poderesExtras['vampiro_opcao_10'] || poderesExtras['vampiro_arquetipo'] || 'Ancião';
+let blocoArq = descHab;
+let subintroArq = '';
+const opcoesArq: string[] = [];
 
-if (isTrilhaVamp && temOpcoesDelimitadas && !opcaoEscolhida) {
-  const partesIntro = descHab.split(/&-[\s\S]*?&/)[0].trim();
-  const regexOpcoes = /&-([\s\S]*?)&/g;
-  const opcoes: string[] = [];
-  let m;
-  while ((m = regexOpcoes.exec(descHab)) !== null) {
-    opcoes.push(m[1].trim());
+if (isTrilhaVamp && nexLvl > 10) {
+  const regexBloco = new RegExp('•\\s*' + arqEscolhido + ':([\\s\\S]*?)(?=(?:•\\s*(?:Ancião|Bestial|Encantador):|$))');
+  const matchBloco = descHab.match(regexBloco);
+  if (matchBloco) {
+    blocoArq = matchBloco[1].trim();
+    subintroArq = blocoArq.split(/&-/)[0].trim();
+    const regexOpcoes = /&-([\s\S]*?)&/g;
+    let mo;
+    while ((mo = regexOpcoes.exec(blocoArq)) !== null) {
+      opcoesArq.push(mo[1].trim());
+    }
+  } else {
+    subintroArq = descHab.split(/&-/)[0].trim();
+    const regexOpcoes = /&-([\s\S]*?)&/g;
+    let mo;
+    while ((mo = regexOpcoes.exec(descHab)) !== null) {
+      opcoesArq.push(mo[1].trim());
+    }
   }
+}
+
+if (isTrilhaVamp && nexLvl > 10 && opcoesArq.length > 0 && !opcaoEscolhida) {
+  const introComum = descHab.split(/•\s*(?:Ancião|Bestial|Encantador):/)[0].trim();
 
   return (
     <div className="flex flex-col gap-3 px-3 pb-3 pt-1">
-      {partesIntro && (
+      {introComum && (
         <div
-          className="text-xs text-zinc-400"
-          dangerouslySetInnerHTML={{ __html: formatarDescricao(partesIntro) }}
+          className="text-xs text-zinc-400 leading-relaxed"
+          dangerouslySetInnerHTML={{ __html: formatarDescricao(introComum) }}
+        />
+      )}
+      {subintroArq && (
+        <div
+          className="text-xs text-zinc-400 leading-relaxed border-l-2 border-green-800/60 pl-2.5 my-1"
+          dangerouslySetInnerHTML={{ __html: formatarDescricao(subintroArq) }}
         />
       )}
       <div className="flex flex-col gap-2.5">
-        {opcoes.map((opcaoTexto, idx) => {
+        {opcoesArq.map((opcaoTexto, idx) => {
           const numOpcao = String(idx + 1);
-          const badgeTag = nexLvl === 40
-            ? (t.Codigo_Trilha === 48
-                ? (idx === 1 ? "Semi" : idx === 2 ? "Auto" : null)
-                : t.Codigo_Trilha === 49
-                ? (idx === 1 ? null : idx === 2 ? "Semi" : null)
-                : null)
-            : null;
+          const badgeTag = (() => {
+            if (nexLvl === 40) {
+              if (arqEscolhido === 'Ancião') return idx === 1 ? 'Semi' : idx === 2 ? 'Auto' : null;
+              if (arqEscolhido === 'Bestial') return idx === 1 ? null : idx === 2 ? 'Semi' : null;
+              if (arqEscolhido === 'Encantador') return idx === 2 ? 'Auto' : null;
+            } else if (nexLvl === 65) {
+              if (arqEscolhido === 'Encantador') return idx === 0 ? 'Semi' : null;
+            } else if (nexLvl === 99) {
+              if (arqEscolhido === 'Encantador') return idx === 1 ? 'Semi' : null;
+            }
+            return null;
+          })();
+
           return (
             <div
               key={numOpcao}
@@ -1318,10 +1379,10 @@ if (isTrilhaVamp && temOpcoesDelimitadas && !opcaoEscolhida) {
                   </span>
                   {badgeTag && (
                     <span
-                      title={badgeTag === "Auto" ? "Totalmente automático — acontece sozinho" : "Semi-automático — parte funciona automaticamente"}
-                      className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider ${badgeTag === "Auto" ? "bg-green-950/60 text-green-400 border border-green-800/50" : "bg-yellow-950/60 text-yellow-400 border border-yellow-800/50"}`}
+                      title={badgeTag === 'Auto' ? 'Totalmente automático — acontece sozinho' : 'Semi-automático — parte funciona automaticamente'}
+                      className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider ${badgeTag === 'Auto' ? 'bg-green-950/60 text-green-400 border border-green-800/50' : 'bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'}`}
                     >
-                      {badgeTag === "Auto" ? (
+                      {badgeTag === 'Auto' ? (
                         <>
                           <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z"/></svg>
                           Auto
@@ -1365,17 +1426,18 @@ if (isTrilhaVamp && temOpcoesDelimitadas && !opcaoEscolhida) {
 let textoExibicao = descHab;
 if (isTrilhaVamp && nexLvl === 10 && opcaoEscolhida) {
   const intro10 = descHab.split(/•\s*Ancião:/)[0].trim();
-  const regexEscolhido = new RegExp("(•\\s*" + opcaoEscolhida + ":[\\s\\S]*?)(?=(?:•\\s*(?:Ancião|Bestial|Encantador):|$))");
-  const textoDoArq = (descHab.match(regexEscolhido)?.[1] || "").trim();
-  textoExibicao = (intro10 + "\n\n" + textoDoArq).trim();
-} else if (isTrilhaVamp && temOpcoesDelimitadas && opcaoEscolhida) {
-  const chosenIdx = Number(opcaoEscolhida);
-  let curr = 0;
-  textoExibicao = descHab.replace(/&-([\s\S]*?)&/g, (_match, p1) => {
-    curr++;
-    if (curr === chosenIdx) return p1.trim();
-    return "";
-  }).replace(/\n\s*\n\s*\n/g, "\n\n").trim();
+  const regexEscolhido = new RegExp('(•\\s*' + opcaoEscolhida + ':[\\s\\S]*?)(?=(?:•\\s*(?:Ancião|Bestial|Encantador):|$))');
+  const textoDoArq = (descHab.match(regexEscolhido)?.[1] || '').trim();
+  textoExibicao = (intro10 + '\n\n' + textoDoArq).trim();
+} else if (isTrilhaVamp && nexLvl > 10 && opcaoEscolhida) {
+  const chosenIdx = Number(opcaoEscolhida) - 1;
+  const textoOpcaoEscolhida = opcoesArq[chosenIdx] || '';
+  const introComum = descHab.split(/•\s*(?:Ancião|Bestial|Encantador):/)[0].trim();
+  const partes = [];
+  if (introComum) partes.push(introComum);
+  if (subintroArq) partes.push(subintroArq);
+  if (textoOpcaoEscolhida) partes.push(textoOpcaoEscolhida);
+  textoExibicao = partes.join('\n\n').trim();
 }
 
 return (

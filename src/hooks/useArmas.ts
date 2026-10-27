@@ -247,18 +247,18 @@ export function useArmas(
         const nomeMordida = `Mordida (${custoPEMordida})`;
 
         // Efeitos extras para a descrição
-        const efeitosExtras: string[] = ['Deixa o alvo Sangrando.'];
+        const efeitosExtras: string[] = ['• Deixa o alvo Sangrando.'];
         if (opcoesTrilhas.temVampiro40) {
           const custoCura = isBestial40Opcao1 ? '1 PE' : '2 PE';
-          efeitosExtras.push(`Recuperação de Vida: ao acertar o ataque, pode gastar ${custoCura} para recuperar uma quantidade de PV igual ao dano causado.`);
+          efeitosExtras.push(`• Recuperação de Vida: ao acertar o ataque, pode gastar ${custoCura} para recuperar uma quantidade de PV igual ao dano causado.`);
         }
         if (opcoesTrilhas.temVampiro65) {
-          efeitosExtras.push('Aumento de Atributo: ao acertar o ataque, pode gastar 2 PE para receber +1 em Força, Agilidade ou Vigor (à sua escolha) até o fim da cena.');
+          efeitosExtras.push('• Aumento de Atributo: ao acertar o ataque, pode gastar 2 PE para receber +1 em Força, Agilidade ou Vigor (à sua escolha) até o fim da cena.');
         }
         if (opcoesTrilhas.temVampiro99) {
-          efeitosExtras.push('Cura Acelerada: ao acertar o ataque, pode gastar 2 PE para receber Cura Acelerada 5 até o fim da cena.');
+          efeitosExtras.push('• Cura Acelerada: ao acertar o ataque, pode gastar 2 PE para receber Cura Acelerada 5 até o fim da cena.');
         }
-        const descMordida = efeitosExtras.join(' ');
+        const descMordida = efeitosExtras.join('\n');
 
         if (mordidaIndex === -1) {
           next.push({

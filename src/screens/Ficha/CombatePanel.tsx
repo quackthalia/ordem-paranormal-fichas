@@ -700,9 +700,11 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
           </div>
 
           {armaInv.arma.Descricao_Item && (
-            <div className="mt-2 pt-2 border-t border-zinc-800/50 text-xs text-zinc-300 leading-relaxed">
-              <span className="font-bold text-green-400">Efeito: </span>
-              {armaInv.arma.Descricao_Item}
+            <div className="mt-2 pt-2 border-t border-zinc-800/50 text-xs text-zinc-300 leading-relaxed whitespace-pre-line">
+              <span className="font-bold text-green-400">Efeito:</span>
+              <div className="mt-1 flex flex-col gap-1 text-zinc-300">
+                {armaInv.arma.Descricao_Item}
+              </div>
             </div>
           )}
 

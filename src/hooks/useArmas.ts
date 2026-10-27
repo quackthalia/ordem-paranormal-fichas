@@ -247,7 +247,7 @@ export function useArmas(
         const nomeMordida = `Mordida (${custoPEMordida})`;
 
         // Efeitos extras para a descrição
-        const efeitosExtras: string[] = ['Deixa o alvo Sangrando e você bebe o sangue dele.'];
+        const efeitosExtras: string[] = ['Deixa o alvo Sangrando.'];
         if (opcoesTrilhas.temVampiro40) {
           const custoCura = isBestial40Opcao1 ? '1 PE' : '2 PE';
           efeitosExtras.push(`Recuperação de Vida: ao acertar o ataque, pode gastar ${custoCura} para recuperar uma quantidade de PV igual ao dano causado.`);

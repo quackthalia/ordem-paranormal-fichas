@@ -3,6 +3,7 @@ import { useRPG } from '../context/RPGContext';
 import type { Trilha } from '../types';
 import { calcularNivel } from '../utils/rpgRules';
 import { Collapse } from './Collapse';
+import { CustomSelect } from './CustomSelect';
 
 function formatarDescricao(texto: string): string {
   if (!texto) return '';

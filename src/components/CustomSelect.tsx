@@ -99,8 +99,8 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
             value === opt.value ? 'bg-green-900/30 font-bold text-green-400' : ''
           }`}
         >
-          <div className={`flex flex-col ${isCentered ? 'items-center' : isRight ? 'items-end' : 'items-start'}`}>
-            <span className="block truncate">{opt.label}</span>
+          <div className={`w-full flex flex-col ${isCentered ? 'items-center text-center' : isRight ? 'items-end text-right' : 'items-start text-left'}`}>
+            <span className={`block w-full truncate ${isCentered ? 'text-center' : isRight ? 'text-right' : 'text-left'}`}>{opt.label}</span>
             {opt.subtitle && (
               <span className="text-[10px] mt-0.5 whitespace-normal leading-tight text-red-400/80">
                 {opt.subtitle}

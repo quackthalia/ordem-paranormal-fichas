@@ -91,7 +91,7 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
             onChange(opt.value);
             setIsOpen(false);
           }}
-          className={`relative py-2 px-3 transition-colors ${
+          className={`relative py-2 px-1 transition-colors ${
             opt.disabled
               ? 'opacity-60 cursor-not-allowed bg-zinc-900/50 text-zinc-500'
               : 'cursor-pointer select-none hover:bg-green-600/20 hover:text-green-400'
@@ -99,7 +99,7 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
             value === opt.value ? 'bg-green-900/30 font-bold text-green-400' : ''
           }`}
         >
-          <div className={`w-full flex flex-col ${isCentered ? 'items-center text-center' : isRight ? 'items-end text-right' : 'items-start text-left'}`}>
+          <div className={`w-full flex flex-col justify-center ${isCentered ? 'items-center text-center' : isRight ? 'items-end text-right' : 'items-start text-left'}`}>
             <span className={`block w-full truncate ${isCentered ? 'text-center' : isRight ? 'text-right' : 'text-left'}`}>{opt.label}</span>
             {opt.subtitle && (
               <span className="text-[10px] mt-0.5 whitespace-normal leading-tight text-red-400/80">
@@ -154,7 +154,7 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
       ) : (
         /* Dropdown com animação normal */
         <div 
-          className={`absolute z-[100] mt-1 ${hideIcon ? 'w-full min-w-max left-1/2 -translate-x-1/2' : 'w-full'} overflow-hidden rounded-md border border-zinc-700 bg-zinc-900 shadow-xl shadow-black transition-all duration-200 origin-top ${
+          className={`absolute z-[100] mt-1 ${hideIcon ? 'w-full left-0' : 'w-full'} overflow-hidden rounded-md border border-zinc-700 bg-zinc-900 shadow-xl shadow-black transition-all duration-200 origin-top ${
             isOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
           }`}
         >

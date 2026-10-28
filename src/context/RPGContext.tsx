@@ -181,6 +181,10 @@ interface RPGContextType {
   temAdepto40: boolean;
   temAdepto65: boolean;
   temAdepto99: boolean;
+  temEstudioso10: boolean;
+  temEstudioso40: boolean;
+  temEstudioso65: boolean;
+  temEstudioso99: boolean;
   temMataLeao10: boolean;
   temAcrobata10: boolean;
   temAcrobata40: boolean;
@@ -1058,6 +1062,66 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     }
   }, [isTrilhaAdepto, isVersatilidadeAdepto, rituaisHook.rituaisAprendidos, poderesExtras, rituaisHook.atualizarRituaisAprendidos, setPoderesExtras]);
 
+  // Trilha 37: Estudioso Paranormal (Especialista)
+  const isTrilhaEstudioso = Boolean(
+    trilhasHook.trilhaSelecionada && (
+      Number(trilhasHook.trilhaSelecionada.Codigo_Trilha) === 37 ||
+      Number((trilhasHook.trilhaSelecionada as any)?.codigo_trilha) === 37 ||
+      String(trilhasHook.trilhaSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('estudioso paranormal')
+    )
+  );
+  const isVersatilidadeEstudioso = Boolean(
+    trilhasHook.versatilidadeSelecionada && (
+      Number(trilhasHook.versatilidadeSelecionada.Codigo_Trilha) === 37 ||
+      Number((trilhasHook.versatilidadeSelecionada as any)?.codigo_trilha) === 37 ||
+      String(trilhasHook.versatilidadeSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('estudioso paranormal')
+    )
+  );
+  const temEstudioso10 = (isTrilhaEstudioso && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10)) || (isVersatilidadeEstudioso && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
+  const temEstudioso40 = isTrilhaEstudioso && (regras['nex_experiencia'] ? effectiveNivel >= 8 : effectiveNex >= 40);
+  const temEstudioso65 = isTrilhaEstudioso && (regras['nex_experiencia'] ? effectiveNivel >= 13 : effectiveNex >= 65);
+  const temEstudioso99 = isTrilhaEstudioso && (regras['nex_experiencia'] ? effectiveNivel >= 20 : effectiveNex >= 99);
+
+  // 10%: +2 PE por NEX (nível)
+  const bonusPeEstudioso10 = temEstudioso10 ? 2 * effectiveNivel : 0;
+  // 40%: Intelecto se torna atributo chave para PE em vez de Presença
+  const bonusPeEstudioso40 = temEstudioso40 ? Math.max(0, atributosBaseComBonus.INT - atributosBaseComBonus.PRE) * effectiveNivel : 0;
+  const bonusPeTrilha37 = bonusPeEstudioso10 + bonusPeEstudioso40;
+
+  // Sanidade permanente perdida: igual a seu Intelecto por patamar aceito em Conhecimento Oculto
+  const perdaSanidadeEstudioso = useMemo(() => {
+    if (!temEstudioso10) return 0;
+    const patamares = [15, 30, 45, 60, 75, 90];
+    let perda = 0;
+    patamares.forEach(patamar => {
+      const temRitualPatamar = (rituaisHook.rituaisAprendidos || []).some(r => r.origem?.startsWith(`estudioso_${patamar}_`));
+      if (temRitualPatamar) {
+        const sanidadeGasta = Number(poderesExtras[`estudioso_sanidade_${patamar}`]) || atributosBaseComBonus.INT;
+        perda += Math.max(0, sanidadeGasta);
+      }
+    });
+    return perda;
+  }, [temEstudioso10, rituaisHook.rituaisAprendidos, poderesExtras, atributosBaseComBonus.INT]);
+
+  // Limpeza automática se a trilha ou versatilidade Estudioso Paranormal for removida/trocada
+  React.useEffect(() => {
+    const hasEstudioso = isTrilhaEstudioso || isVersatilidadeEstudioso;
+    if (!hasEstudioso) {
+      const temRitualEstudioso = (rituaisHook.rituaisAprendidos || []).some(r => r.origem?.startsWith('estudioso_'));
+      if (temRitualEstudioso) {
+        rituaisHook.atualizarRituaisAprendidos(prev => prev.filter(r => !r.origem?.startsWith('estudioso_')));
+      }
+      const chavesEstudioso = Object.keys(poderesExtras).filter(k => k.startsWith('estudioso_'));
+      if (chavesEstudioso.length > 0) {
+        setPoderesExtras(prev => {
+          const n = { ...prev };
+          chavesEstudioso.forEach(k => delete n[k]);
+          return n;
+        });
+      }
+    }
+  }, [isTrilhaEstudioso, isVersatilidadeEstudioso, rituaisHook.rituaisAprendidos, poderesExtras, rituaisHook.atualizarRituaisAprendidos, setPoderesExtras]);
+
   // Monstruoso: Morte 10% soma Força na vida máxima (Regra 71)
   const bonusPvMonstruoso = (temMonstruoso10 && isMonstruosoAtivo10 && monstruosoElemento === 'Morte') ? atributosBaseComBonus.FOR : 0;
 
@@ -1076,10 +1140,10 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     effectiveNex, 
     effectiveNivel, 
     atributosParaStatus, 
-    paranormalPenalty + perdaSanidadeAdepto, 
+    paranormalPenalty + perdaSanidadeAdepto + perdaSanidadeEstudioso, 
     regrasAutomaticasAtivas, 
     bonusVestimentas.pv + bonusMaldicoes.pv + bonusPvTrilha5 + bonusPvMonstruoso, 
-    bonusVestimentas.pe + bonusMaldicoes.pe + bonusPeTrilha19 + bonusPeTrilha32 + bonusPeMonstruoso, 
+    bonusVestimentas.pe + bonusMaldicoes.pe + bonusPeTrilha19 + bonusPeTrilha32 + bonusPeTrilha37 + bonusPeMonstruoso, 
     bonusPeTurnoTrilha14
   );
 
@@ -1414,6 +1478,11 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
         const periciaBonus = atr === 'VIG' ? 'Fortitude' : 'Reflexos';
         comb[periciaBonus] = (comb[periciaBonus] || 0) + 2;
       }
+    }
+
+    // Trilha 37 (Estudioso Paranormal) 65%: adiciona seu Intelecto em rolagens de Ocultismo
+    if (temEstudioso65) {
+      comb['Ocultismo'] = (comb['Ocultismo'] || 0) + (atributosBaseComBonus.INT || 0);
     }
 
     // Monstruoso (Trilhas 18, 45 e 47): +2 em Ocultismo caso já fosse treinado antes da trilha
@@ -1988,6 +2057,10 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     temAdepto40,
     temAdepto65,
     temAdepto99,
+    temEstudioso10,
+    temEstudioso40,
+    temEstudioso65,
+    temEstudioso99,
     temMataLeao10,
     temAcrobata10,
     temAcrobata40,
@@ -2077,7 +2150,9 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     temCriptologista10, temCriptologista40, temCriptologista65, temCriptologista99, selosPorInterludio, temDobroCriarSelo,
     temIlusionista10, temIlusionista40, temIlusionista65, temIlusionista99,
     temArtistaMarcialTrilha10, temArtistaMarcialTrilha40, temArtistaMarcialTrilha65, temArtistaMarcialTrilha99, temArtistaMarcialAprimorado,
-    temAdepto10, temAdepto40, temAdepto65, temAdepto99, temMataLeao10,
+    temAdepto10, temAdepto40, temAdepto65, temAdepto99,
+    temEstudioso10, temEstudioso40, temEstudioso65, temEstudioso99,
+    temMataLeao10,
     temAcrobata10, temAcrobata40, temAcrobata65, temAcrobata99,
     temVigilante10, temVigilante40, temVigilante65, temVigilante99,
     temViajanteDasSombras10, temViajanteDasSombras40, temViajanteDasSombras65, temViajanteDasSombras99,

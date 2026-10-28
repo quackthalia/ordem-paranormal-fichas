@@ -198,6 +198,7 @@ const AbasPanelInner: React.FC = () => {
     elementoRitual, setElementoRitual,
     status, trilhasHook, periciasHook, poderesExtras, setPoderesExtras,
     temAdepto10, temAdepto40, temAdepto65, temAdepto99,
+    temEstudioso10, temEstudioso40, temEstudioso65, temEstudioso99,
     temCriptologista10, temCriptologista40, temCriptologista65, temCriptologista99, selosPorInterludio, temDobroCriarSelo,
     temMonstruoso10, temMonstruoso40, temMonstruoso65, temMonstruoso75, temMonstruoso99, monstruosoElemento,
     isMonstruosoAtivo10, isMonstruosoAtivo40, isMonstruosoAtivo65, isMonstruosoAtivo75,
@@ -2777,6 +2778,73 @@ return (
             }
           }
 
+          // 2.10 Calcular slots de Estudioso Paranormal (Trilha 37)
+          const slotsEstudiosoPendentesList: { chave?: string, index: number, nex: number, maxCirculo: number, circuloFixo?: number, isOcultista: boolean, isEstudioso?: boolean, isRecusado?: boolean, labelDesc?: string }[] = [];
+          if (temEstudioso10) {
+            const estudiosoRecusados = (poderesExtras['estudioso_recusados'] || '').split(',').map(s => s.trim()).filter(Boolean);
+            const estudiosoExcluidos = (poderesExtras['estudioso_excluidos'] || '').split(',').map(s => s.trim()).filter(Boolean);
+            const isVersatilidade37 = trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 37;
+            const patamaresDisponiveis = isVersatilidade37 ? [60, 75, 90] : [15, 30, 45, 60, 75, 90];
+            const intTotal = atributos.INT || 1;
+
+            patamaresDisponiveis.forEach(patamar => {
+              if (effectiveNex >= patamar) {
+                const excluido = estudiosoExcluidos.includes(String(patamar));
+                const recusado = estudiosoRecusados.includes(String(patamar));
+                if (!excluido) {
+                  // Determina quantidade de slots para este patamar:
+                  // NEX 65%: Estudo Expandido -> aprende INT rituais (em vez de INT/2 arredondado para cima)
+                  const slotsQtd = temEstudioso65 ? Math.max(1, intTotal) : Math.max(1, Math.ceil(intTotal / 2));
+                  const nivelDoPatamar = calcularNivel(patamar);
+                  let maxC = 1;
+                  for (let c = 3; c >= 1; c--) {
+                    if (verificarAcessoCirculo(c, nivelDoPatamar, 'Especialista').atende) {
+                      maxC = c;
+                      break;
+                    }
+                  }
+
+                  for (let sIdx = 1; sIdx <= slotsQtd; sIdx++) {
+                    const chave = `estudioso_${patamar}_${sIdx}`;
+                    const jaAprendeu = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === chave);
+                    if (!jaAprendeu) {
+                      slotsEstudiosoPendentesList.push({
+                        chave,
+                        index: 5000 + (patamar * 10) + sIdx,
+                        nex: patamar,
+                        maxCirculo: maxC,
+                        isOcultista: false,
+                        isEstudioso: true,
+                        isRecusado: recusado,
+                        labelDesc: `Estudioso Paranormal (${regras['nex_experiencia'] ? `Nível ${calcularNivel(patamar)}` : `NEX ${patamar}%`}${slotsQtd > 1 ? ` - Ritual ${sIdx}/${slotsQtd}` : ''})`
+                      });
+                    }
+                  }
+                }
+              }
+            });
+
+            if (temEstudioso99) {
+              [1, 2].forEach(slotIdx => {
+                const chave99 = `estudioso_99_${slotIdx}`;
+                const jaAprendeu99 = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === chave99);
+                if (!jaAprendeu99) {
+                  slotsEstudiosoPendentesList.push({
+                    chave: chave99,
+                    index: 5990 + slotIdx,
+                    nex: 99,
+                    maxCirculo: 4,
+                    circuloFixo: 4,
+                    isOcultista: false,
+                    isEstudioso: true,
+                    isRecusado: false,
+                    labelDesc: `Saber Extraordinário (4º Círculo ${slotIdx}/2)`
+                  });
+                }
+              });
+            }
+          }
+
           // 3. Desbloqueio Cronológico por Círculo
           // Slots Trilha Servente (Trilha 43)
           const slotsServentePendentesList: any[] = [];
@@ -2885,7 +2953,7 @@ return (
             }
           }
 
-          const allRitualSlots = [...slotsPoderPendentesList, ...slotsOcultistaPendentesList, ...slotsOrigemPendentesList, ...slotsRegra61PendentesList, ...slotsRegra62PendentesList, ...slotsGraduadoPendentesList, ...slotsAdeptoPendentesList, ...slotsMonstruosoPendentesList, ...slotsServentePendentesList];
+          const allRitualSlots = [...slotsPoderPendentesList, ...slotsOcultistaPendentesList, ...slotsOrigemPendentesList, ...slotsRegra61PendentesList, ...slotsRegra62PendentesList, ...slotsGraduadoPendentesList, ...slotsAdeptoPendentesList, ...slotsEstudiosoPendentesList, ...slotsMonstruosoPendentesList, ...slotsServentePendentesList];
           const sortedSlots = allRitualSlots.sort((a, b) => {
              if (a.nex !== b.nex) return a.nex - b.nex;
              if (a.isOcultista && !b.isOcultista) return -1;
@@ -2901,7 +2969,7 @@ return (
              return subAbaRituais === 'grimorio' ? isGrimorio : !isGrimorio;
           });
           for (const slot of slotsParaSubAba) {
-             if ((slot as any).isAdepto || (slot as any).isMonstruoso || (slot as any).isMonstruosoOcult) {
+             if ((slot as any).isAdepto || (slot as any).isEstudioso || (slot as any).isMonstruoso || (slot as any).isMonstruosoOcult || (slot as any).isServente) {
                 visibleRitualSlots.push(slot);
              } else if (!circlesSeen.has(slot.maxCirculo)) {
                 visibleRitualSlots.push(slot);
@@ -3135,6 +3203,103 @@ return (
                                 </div>
                               </div>
                             );
+                        } else if ((slot as any).isEstudioso) {
+                            const chave = (slot as any).chave;
+                            const is99 = chave?.startsWith('estudioso_99');
+                            const nexSlot = (slot as any).nex;
+                            const isRecusado = (slot as any).isRecusado;
+
+                            if (isRecusado) {
+                              return (
+                                <div
+                                  key={`recusado_estudioso_${chave}_${idx}`}
+                                  className="flex w-full items-center justify-between rounded border border-zinc-800 bg-zinc-900/30 px-4 py-2.5 transition"
+                                >
+                                  <div className="flex flex-col items-start gap-0.5 text-left">
+                                    <span className="text-xs font-semibold text-zinc-400">Ritual Recusado</span>
+                                    <span className="text-[0.65rem] text-zinc-600">
+                                      Estudioso Paranormal ({regras['nex_experiencia'] ? `Nível ${calcularNivel(nexSlot)}` : `NEX ${nexSlot}%`})
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setPoderesExtras(prev => {
+                                          const current = (prev['estudioso_recusados'] || '').split(',').map(s => s.trim()).filter(Boolean);
+                                          const next = current.filter(p => p !== String(nexSlot));
+                                          return { ...prev, estudioso_recusados: next.join(',') };
+                                        });
+                                      }}
+                                      className="rounded border border-zinc-800 bg-zinc-900/50 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-zinc-400 hover:border-green-800 hover:text-green-400 transition"
+                                    >
+                                      Desfazer
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setPoderesExtras(prev => {
+                                          const curEx = (prev['estudioso_excluidos'] || '').split(',').map(s => s.trim()).filter(Boolean);
+                                          if (!curEx.includes(String(nexSlot))) curEx.push(String(nexSlot));
+                                          return { ...prev, estudioso_excluidos: curEx.join(',') };
+                                        });
+                                      }}
+                                      className="rounded border border-red-900/40 bg-red-950/20 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-red-400/80 hover:border-red-700 hover:text-red-300 transition"
+                                    >
+                                      Excluir
+                                    </button>
+                                  </div>
+                                </div>
+                              );
+                            }
+
+                            const labelSlot = (slot as any).labelDesc || `Estudioso Paranormal (${regras['nex_experiencia'] ? `Nível ${calcularNivel(nexSlot)}` : `NEX ${nexSlot}%`})`;
+
+                            return (
+                              <div
+                                key={`estudioso_${chave}_${idx}`}
+                                onClick={() => setEscolhendoRitualPlaceholder({
+                                  origem: chave,
+                                  nex: nexSlot,
+                                  maxCirculo: slot.maxCirculo,
+                                  circuloFixo: (slot as any).circuloFixo
+                                })}
+                                className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-yellow-600 border-l-4 bg-zinc-900/40 transition hover:border-yellow-600 hover:bg-zinc-900/80"
+                                style={{ borderLeftStyle: 'solid' }}
+                              >
+                                <div className="flex items-center justify-between gap-3 bg-zinc-800/40 px-4 py-3 transition group-hover:bg-zinc-800/60">
+                                  <div className="flex flex-col items-start gap-0.5 text-left">
+                                    <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">Escolher Ritual</span>
+                                    <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-400 group-hover:text-zinc-300">
+                                      {labelSlot}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    {!is99 && (
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setPoderesExtras(prev => {
+                                            const current = (prev['estudioso_recusados'] || '').split(',').map(s => s.trim()).filter(Boolean);
+                                            if (!current.includes(String(nexSlot))) {
+                                              current.push(String(nexSlot));
+                                            }
+                                            return { ...prev, estudioso_recusados: current.join(',') };
+                                          });
+                                        }}
+                                        className="rounded border border-zinc-700/80 bg-zinc-900/50 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-zinc-400 hover:border-red-900/60 hover:text-red-400 transition"
+                                      >
+                                        Recusar
+                                      </button>
+                                    )}
+                                    <span className="whitespace-nowrap rounded bg-yellow-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-yellow-400 transition group-hover:bg-yellow-900/60 group-hover:text-yellow-300">+ Adicionar</span>
+                                  </div>
+                                </div>
+                              </div>
+                            );
                         } else if ((slot as any).isServente) {
                           const chave = (slot as any).chave;
                           const elem = (slot as any).elementoFiltro;
@@ -3275,7 +3440,9 @@ return (
                           }).map(elemento => {
                             const ritualsOfElement = ritualsByElement[elemento];
                             const hasAntena = armasHook?.armasInventario?.some(a => a.arma.Nome_Item?.trim().toLowerCase() === 'a antena');
-                            const atrParaDT = temAdepto40
+                            const atrParaDT = temEstudioso40
+                              ? 'INT'
+                              : temAdepto40
                               ? (poderesExtras['adepto_atributo_40'] === 'AGI' ? 'AGI' : 'VIG')
                               : (regrasAutomaticasAtivas.has(116)
                               ? 'FOR'
@@ -3469,7 +3636,7 @@ return (
                                 )}
                                 <div className="flex flex-col gap-1 justify-center py-1">
                                   <div className="flex items-center gap-2">
-                                    <span className="text-sm font-bold text-zinc-100">{ritual.customNome || (ritual.learnedNome && ritual.learnedNome !== ritual.Nome_Ritual ? ritual.learnedNome : (ritual.Origem === 'trilha_conduite' ? `${ritual.Nome_Ritual} (Conduíte)` : (ritual.Origem === 'trilha_flagelador' ? `${ritual.Nome_Ritual} (Flagelador)` : (ritual.Origem === 'trilha_graduado' ? `${ritual.Nome_Ritual} (Graduado)` : (ritual.Origem === 'trilha_viajante_das_sombras' ? `${ritual.Nome_Ritual} (Viajante das Sombras)` : (ritual.Origem?.startsWith('servente_') ? `${ritual.Nome_Ritual} (Servente)` : (ritual.Origem?.startsWith('adepto_') ? `${ritual.Nome_Ritual} (Adepto)` : (ritual.Origem?.startsWith('trilha_monstruoso_99_') || ritual.Origem === 'monstruoso_99_conhecimento' || ritual.Origem?.startsWith('monstruoso_ocult_99_') ? `${ritual.Nome_Ritual} (Monstruoso)` : ritual.Nome_Ritual))))))))}</span>
+                                    <span className="text-sm font-bold text-zinc-100">{ritual.customNome || (ritual.learnedNome && ritual.learnedNome !== ritual.Nome_Ritual ? ritual.learnedNome : (ritual.Origem === 'trilha_conduite' ? `${ritual.Nome_Ritual} (Conduíte)` : (ritual.Origem === 'trilha_flagelador' ? `${ritual.Nome_Ritual} (Flagelador)` : (ritual.Origem === 'trilha_graduado' ? `${ritual.Nome_Ritual} (Graduado)` : (ritual.Origem === 'trilha_viajante_das_sombras' ? `${ritual.Nome_Ritual} (Viajante das Sombras)` : (ritual.Origem?.startsWith('servente_') ? `${ritual.Nome_Ritual} (Servente)` : (ritual.Origem?.startsWith('adepto_') ? `${ritual.Nome_Ritual} (Adepto)` : (ritual.Origem?.startsWith('estudioso_') ? `${ritual.Nome_Ritual} (Estudioso)` : (ritual.Origem?.startsWith('trilha_monstruoso_99_') || ritual.Origem === 'monstruoso_99_conhecimento' || ritual.Origem?.startsWith('monstruoso_ocult_99_') ? `${ritual.Nome_Ritual} (Monstruoso)` : ritual.Nome_Ritual)))))))))}</span>
                                     <span className="rounded bg-blue-950/30 px-1.5 py-0.5 text-[10px] font-bold text-blue-400 border border-blue-900/50">
                                       {pe} PE
                                     </span>

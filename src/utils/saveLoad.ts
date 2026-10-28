@@ -2,7 +2,8 @@ export function exportarFicha(rpg: any) {
   const data = {
     // Context State
     classe: rpg.classe,
-    nex: rpg.nex,
+    nex: rpg.rawNex ?? rpg.nex,
+    rawNex: rpg.rawNex ?? rpg.nex,
     atributos: rpg.atributos,
     bonusAtributos: rpg.bonusAtributos,
     defEquip: rpg.defEquip,
@@ -15,6 +16,7 @@ export function exportarFicha(rpg: any) {
     resistencias: rpg.resistencias,
     proficiencias: rpg.proficiencias,
     regrasAtivas: rpg.regrasAtivas,
+    regrasAtivasAtributos: rpg.regrasAtivasAtributos,
     skillCombatente1: rpg.skillCombatente1,
     skillCombatente2: rpg.skillCombatente2,
     deslocM: rpg.deslocM,
@@ -22,7 +24,8 @@ export function exportarFicha(rpg: any) {
     bonusDadosCondicionais: rpg.bonusDadosCondicionais,
     bonusDadosAtivos: rpg.bonusDadosAtivos,
     regras: rpg.regras,
-    nivel: rpg.nivel,
+    nivel: rpg.rawNivel ?? rpg.nivel,
+    rawNivel: rpg.rawNivel ?? rpg.nivel,
     versaoRitual: rpg.versaoRitual,
     elementoRitual: rpg.elementoRitual,
     afinidadeEscolhida: rpg.afinidadeEscolhida,
@@ -31,7 +34,9 @@ export function exportarFicha(rpg: any) {
     progressaoNexEditados: rpg.progressaoNexEditados,
     elementoRegra18: rpg.elementoRegra18,
     escolhaRegra53: rpg.escolhaRegra53,
-    nomeEditando: rpg.nomeEditando,
+    nomePersonagem: rpg.nomePersonagem || rpg.nomeEditando || '',
+    nomeJogador: rpg.nomeJogador || '',
+    nomeEditando: rpg.nomePersonagem || rpg.nomeEditando || '',
 
     // Status Hook
     status: {
@@ -57,26 +62,28 @@ export function exportarFicha(rpg: any) {
 
     // Outros Hooks
     periciasStatus: rpg.periciasHook.periciasStatus,
+    jaTinhaProfissao33: rpg.periciasHook.jaTinhaProfissao33,
+    avaliouRegra33: rpg.periciasHook.avaliouRegra33,
+    jaTinhaPericiaPoder: rpg.periciasHook.jaTinhaPericiaPoder,
+    avaliouPericiaPoder: rpg.periciasHook.avaliouPericiaPoder,
     profissoes: rpg.periciasHook.profissoes,
     poderesEscolhidos: rpg.poderesHook.poderesEscolhidos,
     origemSelecionada: rpg.origensHook.origemSelecionada,
-    poderOrigemEditado: rpg.origensHook.poderOrigemEditado,
     rituaisAprendidos: rpg.rituaisHook.rituaisAprendidos,
-    
-    // Inventario
+
+    // Inventario & Prestigio
+    prestigio: rpg.inventarioHook?.prestigio,
+    creditoOverride: rpg.inventarioHook?.creditoOverride,
+    limitesItensOverride: rpg.inventarioHook?.limitesItensOverride,
     armasInventario: rpg.armasHook.armasInventario,
     protecoesInventario: rpg.protecoesHook.protecoesInventario,
     municoesInventario: rpg.municoesHook.municoesInventario,
     itensInventario: rpg.itensHook.itensInventario,
     itensAmaldicoadosInventario: rpg.itensAmaldicoadosHook.itensAmaldicoadosInventario,
-    
-    // Modificacoes
-    modificacoesAtivas: rpg.modificacoesHook.modificacoesAtivas,
 
     // Trilhas
     trilhaSelecionada: rpg.trilhasHook.trilhaSelecionada,
     versatilidadeSelecionada: rpg.trilhasHook.versatilidadeSelecionada,
-    habilidadesTrilhaEditadas: rpg.trilhasHook.habilidadesTrilhaEditadas,
   };
 
   const json = JSON.stringify(data, null, 2);
@@ -98,8 +105,16 @@ export function importarFicha(event: React.ChangeEvent<HTMLInputElement>, rpg: a
     try {
       const data = JSON.parse(e.target?.result as string);
 
+      const temRegra83NoSave =
+        data.origemSelecionada?.Codigo_Regra === 83 ||
+        Object.values(data.poderesEscolhidos || {}).some((p: any) => p?.codigoRegra === 83);
+
       if (data.classe !== undefined) rpg.setClasse(data.classe);
-      if (data.nex !== undefined) rpg.setNex(data.nex);
+      if (data.rawNex !== undefined) {
+        rpg.setNex(data.rawNex);
+      } else if (data.nex !== undefined) {
+        rpg.setNex(temRegra83NoSave ? Math.max(0, data.nex - 5) : data.nex);
+      }
       if (data.atributos !== undefined) rpg.setAtributos(data.atributos);
       if (data.bonusAtributos !== undefined) rpg.setBonusAtributos(data.bonusAtributos);
       if (data.defEquip !== undefined) rpg.setDefEquip(data.defEquip);
@@ -112,13 +127,18 @@ export function importarFicha(event: React.ChangeEvent<HTMLInputElement>, rpg: a
       if (data.resistencias !== undefined) rpg.setResistencias(data.resistencias);
       if (data.proficiencias !== undefined) rpg.setProficiencias(data.proficiencias);
       if (data.regrasAtivas !== undefined) rpg.setRegrasAtivas(data.regrasAtivas);
+      if (data.regrasAtivasAtributos !== undefined) rpg.setRegrasAtivasAtributos?.(data.regrasAtivasAtributos);
       if (data.skillCombatente1 !== undefined) rpg.setSkillCombatente1(data.skillCombatente1);
       if (data.skillCombatente2 !== undefined) rpg.setSkillCombatente2(data.skillCombatente2);
       if (data.deslocM !== undefined) rpg.setDeslocM(data.deslocM);
       if (data.deslocQ !== undefined) rpg.setDeslocQ(data.deslocQ);
       if (data.bonusDadosCondicionais !== undefined) rpg.setBonusDadosCondicionais(data.bonusDadosCondicionais);
       if (data.bonusDadosAtivos !== undefined) rpg.setBonusDadosAtivos(data.bonusDadosAtivos);
-      if (data.nivel !== undefined) rpg.setNivel(data.nivel);
+      if (data.rawNivel !== undefined) {
+        rpg.setNivel(data.rawNivel);
+      } else if (data.nivel !== undefined) {
+        rpg.setNivel(temRegra83NoSave ? Math.max(1, data.nivel - 1) : data.nivel);
+      }
       if (data.versaoRitual !== undefined) rpg.setVersaoRitual(data.versaoRitual);
       if (data.elementoRitual !== undefined) rpg.setElementoRitual(data.elementoRitual);
       if (data.afinidadeEscolhida !== undefined) rpg.setAfinidadeEscolhida(data.afinidadeEscolhida);
@@ -127,7 +147,14 @@ export function importarFicha(event: React.ChangeEvent<HTMLInputElement>, rpg: a
       if (data.progressaoNexEditados !== undefined) rpg.setProgressaoNexEditados(data.progressaoNexEditados);
       if (data.elementoRegra18 !== undefined) rpg.setElementoRegra18(data.elementoRegra18);
       if (data.escolhaRegra53 !== undefined) rpg.setEscolhaRegra53(data.escolhaRegra53);
-      if (data.nomeEditando !== undefined) rpg.setNomeEditando(data.nomeEditando);
+      if (data.nomePersonagem !== undefined) {
+        rpg.setNomePersonagem?.(data.nomePersonagem);
+      } else if (data.nomeEditando !== undefined) {
+        rpg.setNomePersonagem?.(data.nomeEditando);
+      }
+      if (data.nomeJogador !== undefined) {
+        rpg.setNomeJogador?.(data.nomeJogador);
+      }
 
       if (data.regras !== undefined && rpg.setRegras) {
         rpg.setRegras(data.regras);
@@ -154,23 +181,31 @@ export function importarFicha(event: React.ChangeEvent<HTMLInputElement>, rpg: a
         if (data.status.peTempMax !== undefined) rpg.status.setPeTempMax(data.status.peTempMax);
       }
 
-      if (data.periciasStatus !== undefined) rpg.periciasHook.setPericiasStatus(data.periciasStatus);
-      if (data.profissoes !== undefined) rpg.periciasHook.setProfissoes(data.profissoes);
-      if (data.poderesEscolhidos !== undefined) rpg.poderesHook.setPoderesEscolhidos(data.poderesEscolhidos);
-      if (data.origemSelecionada !== undefined) rpg.origensHook.setOrigemSelecionada(data.origemSelecionada);
-      if (data.poderOrigemEditado !== undefined) rpg.origensHook.setPoderOrigemEditado(data.poderOrigemEditado);
-      if (data.rituaisAprendidos !== undefined) rpg.rituaisHook.setRituaisAprendidos(data.rituaisAprendidos);
-      
-      if (data.armasInventario !== undefined) rpg.armasHook.setArmasInventario(data.armasInventario);
-      if (data.protecoesInventario !== undefined) rpg.protecoesHook.setProtecoesInventario(data.protecoesInventario);
-      if (data.municoesInventario !== undefined) rpg.municoesHook.setMunicoesInventario(data.municoesInventario);
-      if (data.itensInventario !== undefined) rpg.itensHook.setItensInventario(data.itensInventario);
-      if (data.itensAmaldicoadosInventario !== undefined) rpg.itensAmaldicoadosHook.setItensAmaldicoadosInventario(data.itensAmaldicoadosInventario);
-      
-      if (data.modificacoesAtivas !== undefined) rpg.modificacoesHook.setModificacoesAtivas(data.modificacoesAtivas);
-      if (data.trilhaSelecionada !== undefined) rpg.trilhasHook.setTrilhaSelecionada(data.trilhaSelecionada);
-      if (data.versatilidadeSelecionada !== undefined) rpg.trilhasHook.setVersatilidadeSelecionada(data.versatilidadeSelecionada);
-      if (data.habilidadesTrilhaEditadas !== undefined) rpg.trilhasHook.setHabilidadesTrilhaEditadas(data.habilidadesTrilhaEditadas);
+      if (data.periciasStatus !== undefined) rpg.periciasHook.setPericiasStatus?.(data.periciasStatus);
+      if (data.jaTinhaProfissao33 !== undefined) rpg.periciasHook.setJaTinhaProfissao33?.(data.jaTinhaProfissao33);
+      if (data.avaliouRegra33 !== undefined) rpg.periciasHook.setAvaliouRegra33?.(data.avaliouRegra33);
+      if (data.jaTinhaPericiaPoder !== undefined) rpg.periciasHook.setJaTinhaPericiaPoder?.(data.jaTinhaPericiaPoder);
+      if (data.avaliouPericiaPoder !== undefined) rpg.periciasHook.setAvaliouPericiaPoder?.(data.avaliouPericiaPoder);
+      if (data.profissoes !== undefined) rpg.periciasHook.setProfissoes?.(data.profissoes);
+      if (data.poderesEscolhidos !== undefined) rpg.poderesHook.setPoderesEscolhidos?.(data.poderesEscolhidos);
+      if (data.origemSelecionada !== undefined) rpg.origensHook.setOrigemSelecionada?.(data.origemSelecionada);
+      if (data.rituaisAprendidos !== undefined) {
+        if (rpg.rituaisHook.setRituaisAprendidos) rpg.rituaisHook.setRituaisAprendidos(data.rituaisAprendidos);
+        else if (rpg.rituaisHook.atualizarRituaisAprendidos) rpg.rituaisHook.atualizarRituaisAprendidos(() => data.rituaisAprendidos);
+      }
+
+      if (data.prestigio !== undefined) rpg.inventarioHook?.setPrestigio?.(data.prestigio);
+      if (data.creditoOverride !== undefined) rpg.inventarioHook?.setCreditoOverride?.(data.creditoOverride);
+      if (data.limitesItensOverride !== undefined) rpg.inventarioHook?.setLimitesItensOverride?.(data.limitesItensOverride);
+
+      if (data.armasInventario !== undefined) rpg.armasHook.setArmasInventario?.(data.armasInventario);
+      if (data.protecoesInventario !== undefined) rpg.protecoesHook.setProtecoesInventario?.(data.protecoesInventario);
+      if (data.municoesInventario !== undefined) rpg.municoesHook.setMunicoesInventario?.(data.municoesInventario);
+      if (data.itensInventario !== undefined) rpg.itensHook.setItensInventario?.(data.itensInventario);
+      if (data.itensAmaldicoadosInventario !== undefined) rpg.itensAmaldicoadosHook.setItensAmaldicoadosInventario?.(data.itensAmaldicoadosInventario);
+
+      if (data.trilhaSelecionada !== undefined) rpg.trilhasHook.setTrilhaSelecionada?.(data.trilhaSelecionada);
+      if (data.versatilidadeSelecionada !== undefined) rpg.trilhasHook.setVersatilidadeSelecionada?.(data.versatilidadeSelecionada);
 
       alert('Ficha carregada com sucesso!');
     } catch (err) {

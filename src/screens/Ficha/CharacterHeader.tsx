@@ -1,14 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRPG } from '../../context/RPGContext';
 import { SaveLoadButtons } from '../../components/SaveLoadButtons';
 import { ModalMudarOrigem } from '../../components/ModalMudarOrigem';
 
-export const CharacterHeader: React.FC = () => {
+export const CharacterHeader: React.FC = React.memo(() => {
   const rpg = useRPG();
-  const { classe, origensHook } = rpg;
+  const { classe, origensHook, nomePersonagem, setNomePersonagem, nomeJogador, setNomeJogador } = rpg;
   const origemNome = origensHook.origemSelecionada?.Nome || '';
 
   const [modalOrigemAberto, setModalOrigemAberto] = useState(false);
+  const [localNomePersonagem, setLocalNomePersonagem] = useState(nomePersonagem || '');
+  const [localNomeJogador, setLocalNomeJogador] = useState(nomeJogador || '');
+
+  useEffect(() => {
+    setLocalNomePersonagem(nomePersonagem || '');
+  }, [nomePersonagem]);
+
+  useEffect(() => {
+    setLocalNomeJogador(nomeJogador || '');
+  }, [nomeJogador]);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (localNomePersonagem !== (nomePersonagem || '')) {
+        setNomePersonagem(localNomePersonagem);
+      }
+    }, 250);
+    return () => clearTimeout(t);
+  }, [localNomePersonagem, nomePersonagem, setNomePersonagem]);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (localNomeJogador !== (nomeJogador || '')) {
+        setNomeJogador(localNomeJogador);
+      }
+    }, 250);
+    return () => clearTimeout(t);
+  }, [localNomeJogador, nomeJogador, setNomeJogador]);
 
   return (
     <div className="flex w-full items-end gap-5 mb-4">
@@ -34,8 +62,9 @@ export const CharacterHeader: React.FC = () => {
             <input
               type="text"
               placeholder="Nome"
-              value={rpg.nomeEditando || ''}
-              onChange={(e) => rpg.setNomeEditando(e.target.value)}
+              value={localNomePersonagem}
+              onChange={(e) => setLocalNomePersonagem(e.target.value)}
+              onBlur={() => setNomePersonagem(localNomePersonagem)}
               className="flex-1 border-b border-zinc-200 bg-transparent py-0.5 text-sm font-bold text-zinc-100 outline-none transition focus:border-green-500"
             />
           </div>
@@ -67,6 +96,9 @@ export const CharacterHeader: React.FC = () => {
             <input
               type="text"
               placeholder="Seu Nome"
+              value={localNomeJogador}
+              onChange={(e) => setLocalNomeJogador(e.target.value)}
+              onBlur={() => setNomeJogador(localNomeJogador)}
               className="flex-1 border-b border-zinc-200 bg-transparent py-0.5 text-sm font-bold text-zinc-100 outline-none transition focus:border-green-500"
             />
           </div>
@@ -87,4 +119,4 @@ export const CharacterHeader: React.FC = () => {
       </div>
     </div>
   );
-};
+});

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '../services/supabase';
 import type { Arma, ArmaInventario, GrupoArma } from '../types';
 
@@ -394,7 +394,7 @@ export function useArmas(
     opcoesTrilhas?.vampiroOpcao40
   ]);
 
-  const adicionarArma = (arma: Arma) => {
+  const adicionarArma = useCallback((arma: Arma) => {
     const newId = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
     let mods = [] as number[];
     if (arma.Nome_Item === 'Fuzil Alheio') mods = [10, 11]; // Mira Laser, Mira Telescópica
@@ -402,9 +402,9 @@ export function useArmas(
       arma = { ...arma, 'Improvisada?': true };
     }
     setArmasInventario(prev => [...prev, { id: newId, arma, modificacoes: mods }]);
-  };
+  }, []);
 
-  const removerArma = (id: string) => {
+  const removerArma = useCallback((id: string) => {
     setArmasInventario(prev => {
       const itemToDelete = prev.find(item => item.id === id);
       if (itemToDelete?.arma.Nome_Item?.includes('Dupla Obsessiva')) {
@@ -418,18 +418,18 @@ export function useArmas(
       }
       return prev.filter(item => item.id !== id);
     });
-  };
+  }, []);
 
-  const reordenarArmas = (oldIndex: number, newIndex: number) => {
+  const reordenarArmas = useCallback((oldIndex: number, newIndex: number) => {
     setArmasInventario(prev => {
       const result = Array.from(prev);
       const [removed] = result.splice(oldIndex, 1);
       result.splice(newIndex, 0, removed);
       return result;
     });
-  };
+  }, []);
 
-  const acoplarMunicao = (idArma: string, idMunicao: string) => {
+  const acoplarMunicao = useCallback((idArma: string, idMunicao: string) => {
     setArmasInventario(prev => prev.map(item => {
       if (item.id === idArma) {
         return {
@@ -439,9 +439,9 @@ export function useArmas(
       }
       return item;
     }));
-  };
+  }, []);
 
-  const desacoplarMunicao = (idArma: string, idMunicao: string) => {
+  const desacoplarMunicao = useCallback((idArma: string, idMunicao: string) => {
     setArmasInventario(prev => prev.map(item => {
       if (item.id === idArma && item.municoesAcopladas) {
         return {
@@ -451,9 +451,9 @@ export function useArmas(
       }
       return item;
     }));
-  };
+  }, []);
 
-  const editarArma = (id: string, novosDados: Partial<Arma>, novasModificacoes?: number[], novasMaldicoes?: number[], novasMaldicoesElementos?: Record<number, string>) => {
+  const editarArma = useCallback((id: string, novosDados: Partial<Arma>, novasModificacoes?: number[], novasMaldicoes?: number[], novasMaldicoesElementos?: Record<number, string>) => {
     setArmasInventario(prev => prev.map(item => {
       if (item.id === id) {
         const ret: ArmaInventario = {
@@ -473,7 +473,7 @@ export function useArmas(
       }
       return item;
     }));
-  };
+  }, []);
 
   const cargaArmas = useMemo(() => {
     return armasInventario.reduce((acc, item) => {
@@ -500,7 +500,12 @@ export function useArmas(
     return counts;
   }, [armasInventario]);
 
-  return { armas, armasInventario, gruposArmas,    adicionarArma,
+  return useMemo(() => ({
+    armas,
+    armasInventario,
+    setArmasInventario,
+    gruposArmas,
+    adicionarArma,
     removerArma,
     reordenarArmas,
     acoplarMunicao,
@@ -508,5 +513,21 @@ export function useArmas(
     editarArma,
     cargaArmas,
     contagemPorCategoria,
-    loading, error };
+    loading,
+    error
+  }), [
+    armas,
+    armasInventario,
+    gruposArmas,
+    adicionarArma,
+    removerArma,
+    reordenarArmas,
+    acoplarMunicao,
+    desacoplarMunicao,
+    editarArma,
+    cargaArmas,
+    contagemPorCategoria,
+    loading,
+    error
+  ]);
 }

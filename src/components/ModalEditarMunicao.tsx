@@ -49,7 +49,7 @@ export function ModalEditarMunicao({
   
   const [modificacoes, setModificacoes] = useState<number[]>(initialMods);
   const [maldicoes, setMaldicoes] = useState<number[]>(initialMalds);
-  const [maldicoesElementos, setMaldicoesElementos] = useState<Record<number, string>>({});
+  const [maldicoesElementos, setMaldicoesElementos] = useState<Record<number, string>>(itemInventario.maldicoes_elementos || {});
 
   const temDiscreto = modificacoes.some(id => {
     const nome = modificacoesHook.modificacoes.find(m => m.Codigo_Modif === id)?.Nome_Modif.trim().toLowerCase();

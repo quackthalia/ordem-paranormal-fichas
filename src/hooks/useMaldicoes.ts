@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../services/supabase';
 import type { Maldicao } from '../types';
 
@@ -28,5 +28,5 @@ export function useMaldicoes() {
     };
   }, []);
 
-  return { maldicoes, loading, error };
+  return useMemo(() => ({ maldicoes, loading, error }), [maldicoes, loading, error]);
 }

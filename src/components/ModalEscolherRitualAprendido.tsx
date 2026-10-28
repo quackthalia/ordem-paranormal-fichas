@@ -191,9 +191,9 @@ export const ModalEscolherRitualAprendido: React.FC<Props> = ({
                     
                     return (
                       <>
-                        <span className={`text-[9px] font-bold \${c1}`}>{p1} <span className="text-zinc-400 font-normal lowercase">e</span></span>
-                        <span className={`text-[9px] font-bold \${c2}`}>{p2}</span>
-                        <span className={`text-[11px] font-black \${c2}`}>{ritual.Circulo_Ritual}</span>
+                        <span className={`text-[9px] font-bold ${c1}`}>{p1} <span className="text-zinc-400 font-normal lowercase">e</span></span>
+                        <span className={`text-[9px] font-bold ${c2}`}>{p2}</span>
+                        <span className={`text-[11px] font-black ${c2}`}>{ritual.Circulo_Ritual}</span>
                       </>
                     );
                   }
@@ -210,8 +210,8 @@ export const ModalEscolherRitualAprendido: React.FC<Props> = ({
                   
                   return (
                     <>
-                      <span className={`text-[9px] font-bold \${c1}`}>{elStr}</span>
-                      <span className={`text-[11px] font-black \${c1}`}>{ritual.Circulo_Ritual}</span>
+                      <span className={`text-[9px] font-bold ${c1}`}>{elStr}</span>
+                      <span className={`text-[11px] font-black ${c1}`}>{ritual.Circulo_Ritual}</span>
                     </>
                   );
                 })()}

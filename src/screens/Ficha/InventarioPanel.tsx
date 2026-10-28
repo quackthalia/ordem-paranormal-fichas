@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRPG } from '../../context/RPGContext';
 import type { Patente, LimiteCredito } from '../../hooks/useInventario';
 import { ModalArmas, formatarCritico } from './ModalArmas';
@@ -447,7 +447,7 @@ const getBadgeCloseClasses = (minv: any) => {
 
 
 
-export function InventarioPanel() {
+export const InventarioPanel = React.memo(function InventarioPanel() {
   const { maldicoesHook, bonusMaldicoes, inventarioHook, atributosFinais, regrasAutomaticasAtivas, armasHook, municoesHook, protecoesHook, itensHook, itensAmaldicoadosHook, toggleVestimentaGeral, status, modificacoesHook, proficienciasTotais, rituaisHook, poderesHook, poderesExtras, regras, nivel, trilhasHook, nex, maxExplosivosAutorais, temVigilante10 } = useRPG();
   const effectiveNex = regras["nex_experiencia"] ? nivel * 5 : nex;
   const isAniquilador = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 1;
@@ -534,10 +534,14 @@ export function InventarioPanel() {
     municoesHook?.municoesInventario.forEach(i => total += calcularEspacosFinais(i.municao['Espaços_Item'], i.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas.has(43)));
     protecoesHook?.protecoesInventario.forEach(i => total += calcularEspacosFinais(i.protecao.Espacos_Protecao, i.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas.has(43)));
     itensHook?.itensInventario.forEach(i => total += calcularEspacosFinais(i.item.Espacos_Itens, i.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas.has(43)));
+    itensAmaldicoadosHook?.itensAmaldicoadosInventario.forEach(i => {
+      total += Number(i.item.Espacos_Ama) || 0;
+    });
     return total;
-  }, [armasHook?.armasInventario, municoesHook?.municoesInventario, protecoesHook?.protecoesInventario, itensHook?.itensInventario, modificacoesHook.modificacoes]);
+  }, [armasHook?.armasInventario, municoesHook?.municoesInventario, protecoesHook?.protecoesInventario, itensHook?.itensInventario, itensAmaldicoadosHook?.itensAmaldicoadosInventario, modificacoesHook.modificacoes, regrasAutomaticasAtivas]);
   
-      const noInventario = [0, 0, 0, 0];
+  const noInventario = useMemo(() => {
+    const counts = [0, 0, 0, 0];
     
     const getCatIndex = (catStr: string) => {
       const c = catStr.trim().toUpperCase();
@@ -555,19 +559,19 @@ export function InventarioPanel() {
       if (a.arma.isDuplaObsessivaCompanion) return;
       const cat = calcularCategoriaFinal(a.arma.Categoria_Item, a.modificacoes, modsAll, a.arma.Codigo_Arma === 71 ? true : a.arma.Nome_Item, a.maldicoes, maldsAll, a.id === armaFavId ? descontoFavorita : 0);
       const idx = getCatIndex(cat);
-      if (idx !== -1) noInventario[idx]++;
+      if (idx !== -1) counts[idx]++;
     });
 
     municoesHook?.municoesInventario?.forEach(m => {
       const cat = calcularCategoriaFinal(m.municao.Categoria_Item, m.modificacoes, modsAll, false, m.maldicoes, maldsAll);
       const idx = getCatIndex(cat);
-      if (idx !== -1) noInventario[idx]++;
+      if (idx !== -1) counts[idx]++;
     });
 
     protecoesHook?.protecoesInventario?.forEach(p => {
       const cat = calcularCategoriaFinal(p.protecao.Categoria_Protecao, p.modificacoes, modsAll, false, p.maldicoes, maldsAll);
       const idx = getCatIndex(cat);
-      if (idx !== -1) noInventario[idx]++;
+      if (idx !== -1) counts[idx]++;
     });
 
     let contagemExplosivosAutorais = 0;
@@ -584,14 +588,30 @@ export function InventarioPanel() {
 
       const cat = calcularCategoriaFinal(i.item.Categoria_Item, i.modificacoes, modsAll, false, i.maldicoes, maldsAll, descontoItem);
       const idx = getCatIndex(cat);
-      if (idx !== -1) noInventario[idx]++;
+      if (idx !== -1) counts[idx]++;
     });
 
     itensAmaldicoadosHook?.itensAmaldicoadosInventario?.forEach(ia => {
       const cat = calcularCategoriaFinal(ia.item.Categoria_Ama, undefined, [], false, undefined, []);
       const idx = getCatIndex(cat);
-      if (idx !== -1) noInventario[idx]++;
+      if (idx !== -1) counts[idx]++;
     });
+
+    return counts;
+  }, [
+    armasHook?.armasInventario,
+    municoesHook?.municoesInventario,
+    protecoesHook?.protecoesInventario,
+    itensHook?.itensInventario,
+    itensAmaldicoadosHook?.itensAmaldicoadosInventario,
+    modificacoesHook?.modificacoes,
+    maldicoesHook?.maldicoes,
+    armaFavId,
+    descontoFavorita,
+    maxExplosivosAutorais,
+    temRemendao,
+    temVigilante10,
+  ]);
 
   useEffect(() => {
     (window as any)._inventarioPanelSetters = {
@@ -778,46 +798,59 @@ export function InventarioPanel() {
     }
   };
 
-  let armasExibidas = [...(armasHook?.armasInventario || [])].filter(a => a.id !== 'coronhada-virtual' && a.id !== 'ataque-desarmado-virtual' && a.id !== 'mordida-virtual' && a.id !== 'golpe-desarmado-acrobacia-virtual');
-  armasExibidas = armasExibidas.filter((item: ArmaInventario) => {
-    if (buscaItem && !item.arma.Nome_Item.toLowerCase().includes(buscaItem.toLowerCase())) return false;
-    return true;
-  });
+  const armasExibidas = useMemo(() => {
+    const base = (armasHook?.armasInventario || []).filter(a => a.id !== 'coronhada-virtual' && a.id !== 'ataque-desarmado-virtual' && a.id !== 'mordida-virtual' && a.id !== 'golpe-desarmado-acrobacia-virtual');
+    if (!buscaItem) return base;
+    const search = buscaItem.toLowerCase();
+    return base.filter((item: ArmaInventario) => item.arma.Nome_Item.toLowerCase().includes(search));
+  }, [armasHook?.armasInventario, buscaItem]);
   
-  const armasNormaisExibidas = armasExibidas.filter(i => !i.arma.isAmaldicoada);
-  const armasAmaldicoadasExibidas = armasExibidas.filter(i => i.arma.isAmaldicoada);
+  const armasNormaisExibidas = useMemo(() => armasExibidas.filter(i => !i.arma.isAmaldicoada), [armasExibidas]);
+  const armasAmaldicoadasExibidas = useMemo(() => armasExibidas.filter(i => i.arma.isAmaldicoada), [armasExibidas]);
   
 
-  const municoesSoltas = (municoesHook?.municoesInventario || []).filter(minv => {
-    // É solta se não estiver acoplada a nenhuma arma
-    const acoplada = armasHook?.armasInventario.some(a => a.municoesAcopladas?.includes(minv.id));
-    if (acoplada) return false;
-    if (buscaItem && !minv.municao.Nome_Item.toLowerCase().includes(buscaItem.toLowerCase())) return false;
-    return true;
-  });
+  const municoesSoltas = useMemo(() => {
+    const search = buscaItem ? buscaItem.toLowerCase() : '';
+    return (municoesHook?.municoesInventario || []).filter(minv => {
+      // É solta se não estiver acoplada a nenhuma arma
+      const acoplada = armasHook?.armasInventario.some(a => a.municoesAcopladas?.includes(minv.id));
+      if (acoplada) return false;
+      if (search && !minv.municao.Nome_Item.toLowerCase().includes(search)) return false;
+      return true;
+    });
+  }, [municoesHook?.municoesInventario, armasHook?.armasInventario, buscaItem]);
 
-  const municoesGeral = (municoesHook?.municoesInventario || []).filter(minv => {
-    if (buscaItem && !minv.municao.Nome_Item.toLowerCase().includes(buscaItem.toLowerCase())) return false;
-    return true;
-  });
+  const municoesGeral = useMemo(() => {
+    const list = municoesHook?.municoesInventario || [];
+    if (!buscaItem) return list;
+    const search = buscaItem.toLowerCase();
+    return list.filter(minv => minv.municao.Nome_Item.toLowerCase().includes(search));
+  }, [municoesHook?.municoesInventario, buscaItem]);
 
-  const protecoesGeral = (protecoesHook?.protecoesInventario || []).filter(pinv => {
-    if (buscaItem && !pinv.protecao.Nome_Protecao.toLowerCase().includes(buscaItem.toLowerCase())) return false;
-    return true;
-  });
+  const protecoesGeral = useMemo(() => {
+    const list = protecoesHook?.protecoesInventario || [];
+    if (!buscaItem) return list;
+    const search = buscaItem.toLowerCase();
+    return list.filter(pinv => pinv.protecao.Nome_Protecao.toLowerCase().includes(search));
+  }, [protecoesHook?.protecoesInventario, buscaItem]);
 
-  const itensAmaldicoadosGeral = (itensAmaldicoadosHook?.itensAmaldicoadosInventario || []).filter(iinv => {
-    if (buscaItem && !iinv.item.Nome_Ama.toLowerCase().includes(buscaItem.toLowerCase())) return false;
-    return true;
-  });
+  const itensAmaldicoadosGeral = useMemo(() => {
+    const list = itensAmaldicoadosHook?.itensAmaldicoadosInventario || [];
+    if (!buscaItem) return list;
+    const search = buscaItem.toLowerCase();
+    return list.filter(iinv => iinv.item.Nome_Ama.toLowerCase().includes(search));
+  }, [itensAmaldicoadosHook?.itensAmaldicoadosInventario, buscaItem]);
 
-  const itensGeral = (itensHook?.itensInventario || []).filter(iinv => {
-    if (buscaItem && !iinv.item.Nome_Item.toLowerCase().includes(buscaItem.toLowerCase())) return false;
-    if (categoriaFiltro === 'Itens Operacionais') {
-      if (iinv.item.Grupo_Item.trim() !== 'Itens Operacionais' && iinv.item.Grupo_Item.trim() !== 'Recursos') return false;
-    } else if (categoriaFiltro !== 'Geral' && iinv.item.Grupo_Item.trim() !== categoriaFiltro) return false;
-    return true;
-  });
+  const itensGeral = useMemo(() => {
+    const search = buscaItem ? buscaItem.toLowerCase() : '';
+    return (itensHook?.itensInventario || []).filter(iinv => {
+      if (search && !iinv.item.Nome_Item.toLowerCase().includes(search)) return false;
+      if (categoriaFiltro === 'Itens Operacionais') {
+        if (iinv.item.Grupo_Item.trim() !== 'Itens Operacionais' && iinv.item.Grupo_Item.trim() !== 'Recursos') return false;
+      } else if (categoriaFiltro !== 'Geral' && iinv.item.Grupo_Item.trim() !== categoriaFiltro) return false;
+      return true;
+    });
+  }, [itensHook?.itensInventario, buscaItem, categoriaFiltro]);
 
   return (
     <div className="flex flex-1 min-h-0 flex-col overflow-hidden gap-2 p-2 font-sans text-zinc-300 w-full">
@@ -1154,7 +1187,7 @@ export function InventarioPanel() {
                             setMunicaoTargetArmaId(item.id);
                             setMunicaoFiltroNome(item.arma.Nome_Item);
                             setMunicaoFiltroCategoria(item.arma.Categoria_Item);
-                            setModalUnificadoAberto(true);
+                            setModalMunicoesAberto(true);
                           }
                         }}
                       />
@@ -1346,7 +1379,7 @@ export function InventarioPanel() {
                                       setMunicaoTargetArmaId(item.id);
                                       setMunicaoFiltroNome(item.arma.Nome_Item);
                                       setMunicaoFiltroCategoria(item.arma.Categoria_Item);
-                                      setModalUnificadoAberto(true);
+                                      setModalMunicoesAberto(true);
                                     }
                                   }}
                                 />
@@ -1365,7 +1398,7 @@ export function InventarioPanel() {
                                   isExpanded={!!expandidos[item.id]}
                                   toggleExpandir={toggleExpandir}
                                   removerItem={(id) => {
-                                      const itemToRemove = itensAmaldicoadosHook?.itensAmaldicoados.find(i => i.id === id);
+                                      const itemToRemove = itensAmaldicoadosHook?.itensAmaldicoadosInventario.find(i => i.id === id);
                                       if (itemToRemove && itemToRemove.item.dedoDecepadoPoderId) {
                                         poderesHook.removerPoder(itemToRemove.item.dedoDecepadoPoderId);
                                       }
@@ -1541,19 +1574,21 @@ export function InventarioPanel() {
         />
       )}
 
-      <ModalUnificadoItens 
-        aberto={modalUnificadoAberto} 
-        onFechar={() => setModalUnificadoAberto(false)} 
-        defaultAba={categoriaFiltro} 
-      />
-      <ModalArmas aberto={modalArmasAberto} onFechar={() => setModalArmasAberto(false)} />
-      <ModalProtecoes aberto={modalProteçõesAberto} onFechar={() => setModalProtecoesAberto(false)} />
-      <ModalItens aberto={modalItensAberto} onFechar={() => setModalItensAberto(false)} grupoAba={abaItensAberta} />
-      <ModalItensAmaldicoados aberto={modalItensAmaldicoadosAberto} fechar={() => setModalItensAmaldicoadosAberto(false)} />
+      {modalUnificadoAberto && (
+        <ModalUnificadoItens 
+          aberto={modalUnificadoAberto} 
+          onFechar={() => setModalUnificadoAberto(false)} 
+          defaultAba={categoriaFiltro} 
+        />
+      )}
+      {modalArmasAberto && <ModalArmas aberto={modalArmasAberto} onFechar={() => setModalArmasAberto(false)} />}
+      {modalProteçõesAberto && <ModalProtecoes aberto={modalProteçõesAberto} onFechar={() => setModalProtecoesAberto(false)} />}
+      {modalItensAberto && <ModalItens aberto={modalItensAberto} onFechar={() => setModalItensAberto(false)} grupoAba={abaItensAberta} />}
+      {modalItensAmaldicoadosAberto && <ModalItensAmaldicoados aberto={modalItensAmaldicoadosAberto} fechar={() => setModalItensAmaldicoadosAberto(false)} />}
       {modalMunicoesAberto && (
         <ModalMunicoes
           aberto={modalMunicoesAberto}
-          fechar={() => setModalMunicoesAberto(false)}
+          onFechar={() => setModalMunicoesAberto(false)}
           armaFiltroNome={municaoFiltroNome}
           armaFiltroCategoria={municaoFiltroCategoria}
           onSelect={municao => {
@@ -1690,7 +1725,7 @@ export function InventarioPanel() {
 
     </div>
   );
-}
+});
 
 function SortableArmaItem({
   item,

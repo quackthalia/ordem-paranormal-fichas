@@ -137,6 +137,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
   };
 
   const listaFiltrada = useMemo(() => {
+    if (!isOpen) return [];
     if (abaPrincipal === 'paranormais') {
       let lista = [...poderesParanormais].filter(p => {
         if (subAbaElemento && p.Elemento?.toLowerCase() !== subAbaElemento.toLowerCase()) return false;
@@ -197,9 +198,10 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
         return true;
       })
       .sort((a, b) => a.Nome.localeCompare(b.Nome));
-  }, [abaPrincipal, subAbaClasse, subAbaElemento, poderesGerais, poderesParanormais, busca, filtroFonte]);
+  }, [isOpen, abaPrincipal, subAbaClasse, subAbaElemento, poderesGerais, poderesParanormais, busca, filtroFonte]);
 
   const trilhasFiltradas = useMemo(() => {
+    if (!isOpen) return [];
     return trilhas
       .filter(t => {
         const classeTrilha = (t.Classe_Trilha || '').toLowerCase();
@@ -235,7 +237,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
         return true;
       })
       .sort((a, b) => a.Nome_Trilha.localeCompare(b.Nome_Trilha));
-  }, [subAbaClasse, busca, trilhas, filtroFonte]);
+  }, [isOpen, subAbaClasse, busca, trilhas, filtroFonte]);
 
   if (!isOpen) return null;
 
@@ -620,6 +622,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                           return (
                             <button
                               key={elem}
+                              disabled={!valElem.atende}
                               title={valElem.motivo || ''}
                               onClick={(e) => { 
                                 e.stopPropagation(); 

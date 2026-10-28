@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { supabase } from "../services/supabase";
 
 export interface ProgressaoNexItem {
@@ -8,11 +8,18 @@ export interface ProgressaoNexItem {
   Elemento_Progrecao?: string | null;
 }
 
+let cachedProgressaoNex: ProgressaoNexItem[] | null = null;
+
 export function useProgressaoNex() {
-  const [itensProgressao, setItensProgressao] = useState<ProgressaoNexItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [itensProgressao, setItensProgressao] = useState<ProgressaoNexItem[]>(cachedProgressaoNex || []);
+  const [loading, setLoading] = useState(!cachedProgressaoNex);
 
   useEffect(() => {
+    if (cachedProgressaoNex) {
+      setItensProgressao(cachedProgressaoNex);
+      setLoading(false);
+      return;
+    }
     let cancelled = false;
     async function fetchProgressao() {
       try {
@@ -26,7 +33,8 @@ export function useProgressaoNex() {
         if (error) {
           console.error("Erro ao buscar Progressão NEX:", error);
         } else if (data) {
-          setItensProgressao(data as ProgressaoNexItem[]);
+          cachedProgressaoNex = data as ProgressaoNexItem[];
+          setItensProgressao(cachedProgressaoNex);
         }
       } catch (err) {
         if (!cancelled) console.error("Exceção ao buscar Progressão NEX:", err);
@@ -39,5 +47,5 @@ export function useProgressaoNex() {
     return () => { cancelled = true; };
   }, []);
 
-  return { itensProgressao, loading };
+  return useMemo(() => ({ itensProgressao, loading }), [itensProgressao, loading]);
 }

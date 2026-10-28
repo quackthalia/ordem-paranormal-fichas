@@ -5,6 +5,8 @@ import { calcularLimitesPericias } from '../utils/rpgRules';
 
 interface UsePericiasReturn {
   pericias: PericiasMap;
+  periciasStatus: PericiasMap;
+  setPericiasStatus: React.Dispatch<React.SetStateAction<PericiasMap>>;
   nomesPericias: Record<number, string>;
   loading: boolean;
   error: string | null;
@@ -14,6 +16,13 @@ interface UsePericiasReturn {
   periciasGratis: string[];
   regrasAtivas: boolean;
   jaTinhaProfissao33: boolean;
+  setJaTinhaProfissao33: React.Dispatch<React.SetStateAction<boolean>>;
+  avaliouRegra33: boolean;
+  setAvaliouRegra33: React.Dispatch<React.SetStateAction<boolean>>;
+  jaTinhaPericiaPoder: Record<string, boolean>;
+  setJaTinhaPericiaPoder: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+  avaliouPericiaPoder: Record<string, boolean>;
+  setAvaliouPericiaPoder: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
   debugRegra33: { avaliou: boolean, evalJaTinha: boolean };
   bonusRegra40: Record<string, number>;
   bonusVestimentas: Record<string, number>;
@@ -576,8 +585,10 @@ export function usePericias(
     return novas;
   }, [pericias, bonusRegra40, bonusVestimentas, bonusAtributoDinamico]);
 
-  return { 
+  return useMemo(() => ({ 
     pericias: periciasComBonus, 
+    periciasStatus: pericias,
+    setPericiasStatus: setPericias,
     nomesPericias, 
     loading, 
     error, 
@@ -587,11 +598,37 @@ export function usePericias(
     periciasGratis,
     regrasAtivas,
     jaTinhaProfissao33,
+    setJaTinhaProfissao33,
+    avaliouRegra33,
+    setAvaliouRegra33,
+    jaTinhaPericiaPoder,
+    setJaTinhaPericiaPoder,
+    avaliouPericiaPoder,
+    setAvaliouPericiaPoder,
     debugRegra33: { avaliou: avaliouRegra33, evalJaTinha: jaTinhaProfissao33 },
     bonusRegra40,
     bonusVestimentas: bonusVestimentas || {},
     bonusAtributoDinamico,
     profissoes,
     setProfissoes
-  };
+  }), [
+    periciasComBonus,
+    pericias,
+    nomesPericias,
+    loading,
+    error,
+    handleMudarPericia,
+    limites,
+    totais,
+    periciasGratis,
+    regrasAtivas,
+    jaTinhaProfissao33,
+    avaliouRegra33,
+    jaTinhaPericiaPoder,
+    avaliouPericiaPoder,
+    bonusRegra40,
+    bonusVestimentas,
+    bonusAtributoDinamico,
+    profissoes
+  ]);
 }

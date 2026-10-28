@@ -141,7 +141,7 @@ export function ModalEditarProtecao({ protecao, onClose, onSave }: ModalEditarPr
 
   function getEspacoNumber(val: string | number) {
     if (typeof val === 'number') return val;
-    const num = parseInt(val, 10);
+    const num = Number(String(val).replace(',', '.').replace(/[^0-9.-]+/g, ''));
     return isNaN(num) ? 0 : num;
   };
 

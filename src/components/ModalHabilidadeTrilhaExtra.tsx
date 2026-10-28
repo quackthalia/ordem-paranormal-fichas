@@ -40,7 +40,7 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
   trilhaIdIgnorar,
   tituloCustom,
 }) => {
-  const { regras } = useRPG();
+  const { regras, trilhasHook } = useRPG();
   const [trilhas, setTrilhas] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandidos, setExpandidos] = useState<string[]>([]);
@@ -55,6 +55,13 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
 
   useEffect(() => {
     if (!isOpen) return;
+    if (trilhasHook?.trilhas && trilhasHook.trilhas.length > 0) {
+      const ocultistaTrilhas = trilhasHook.trilhas.filter(t => t.Classe_Trilha === 'Ocultista');
+      const filtradas = trilhaIdIgnorar ? ocultistaTrilhas.filter(t => t.Codigo_Trilha !== trilhaIdIgnorar) : ocultistaTrilhas;
+      setTrilhas([...filtradas].sort((a, b) => a.Nome_Trilha.localeCompare(b.Nome_Trilha)));
+      setLoading(false);
+      return;
+    }
     async function fetchTrilhas() {
       setLoading(true);
       const { data } = await supabase
@@ -69,7 +76,7 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
       setLoading(false);
     }
     fetchTrilhas();
-  }, [isOpen, trilhaIdIgnorar]);
+  }, [isOpen, trilhaIdIgnorar, trilhasHook?.trilhas]);
 
   if (!isOpen) return null;
 

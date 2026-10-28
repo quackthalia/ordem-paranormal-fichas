@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 
 export type Patente = 'Recruta' | 'Operador' | 'Agente Especial' | 'Oficial de Operações' | 'Agente de Elite';
 export type LimiteCredito = 'Baixo' | 'Médio' | 'Alto' | 'Ilimitado';
@@ -20,17 +20,17 @@ const NIVEIS_CREDITO: LimiteCredito[] = ['Baixo', 'Médio', 'Alto', 'Ilimitado']
 export function useInventario(codigoRegra?: number | null, grauProfissao: number = 0): UseInventarioReturn {
   const [prestigio, setPrestigioState] = useState<number>(0);
   
-  const [patenteOverride, setPatenteOverride] = useState<Patente | null>(null);
+  const [, setPatenteOverride] = useState<Patente | null>(null);
   const [creditoOverride, setCreditoOverride] = useState<LimiteCredito | null>(null);
   const [limitesItensOverride, setLimitesItensOverride] = useState<[number, number, number, number] | null>(null);
 
   // Se alterar o prestígio, reseta os overrides para seguir a tabela natural
-  const setPrestigio = (val: number) => {
+  const setPrestigio = useCallback((val: number) => {
     setPrestigioState(val);
     setPatenteOverride(null);
     setCreditoOverride(null);
     setLimitesItensOverride(null);
-  };
+  }, []);
 
   const valoresBase = useMemo(() => {
     if (prestigio >= 200) return { p: 'Agente de Elite' as Patente, c: 'Ilimitado' as LimiteCredito, l: [3, 3, 3, 2] };
@@ -42,7 +42,7 @@ export function useInventario(codigoRegra?: number | null, grauProfissao: number
 
   const patente = valoresBase.p;
 
-  const setPatenteManual = (novaPatente: Patente) => {
+  const setPatenteManual = useCallback((novaPatente: Patente) => {
     switch (novaPatente) {
       case 'Recruta': setPrestigio(0); break;
       case 'Operador': setPrestigio(20); break;
@@ -50,7 +50,7 @@ export function useInventario(codigoRegra?: number | null, grauProfissao: number
       case 'Oficial de Operações': setPrestigio(100); break;
       case 'Agente de Elite': setPrestigio(200); break;
     }
-  };
+  }, [setPrestigio]);
   
   let credito = creditoOverride || valoresBase.c;
 
@@ -62,7 +62,7 @@ export function useInventario(codigoRegra?: number | null, grauProfissao: number
     }
   }
 
-    const limitesItens = React.useMemo(() => {
+  const limitesItens = React.useMemo(() => {
     if (limitesItensOverride) return limitesItensOverride as [number, number, number, number];
     const lims = [...valoresBase.l] as [number, number, number, number];
     if (grauProfissao >= 15) lims[2] += 1;
@@ -71,13 +71,13 @@ export function useInventario(codigoRegra?: number | null, grauProfissao: number
     return lims;
   }, [limitesItensOverride, valoresBase.l, grauProfissao]);
 
-  const setLimiteItemCategoria = (index: number, val: number) => {
+  const setLimiteItemCategoria = useCallback((index: number, val: number) => {
     const novosLimites = [...limitesItens] as [number, number, number, number];
     novosLimites[index] = val;
     setLimitesItensOverride(novosLimites);
-  };
+  }, [limitesItens]);
 
-  return {
+  return useMemo(() => ({
     prestigio,
     setPrestigio,
     patente,
@@ -87,5 +87,13 @@ export function useInventario(codigoRegra?: number | null, grauProfissao: number
     limitesItens,
     setLimitesItensOverride,
     setLimiteItemCategoria,
-  };
+  }), [
+    prestigio,
+    setPrestigio,
+    patente,
+    setPatenteManual,
+    credito,
+    limitesItens,
+    setLimiteItemCategoria,
+  ]);
 }

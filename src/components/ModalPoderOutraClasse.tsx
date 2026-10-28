@@ -114,28 +114,35 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
     setPoderes(filtrados);
   }, [isOpen, classe, poderesHook.listaPoderesUtilidade, abaAtiva, categoriaPermitida]);
 
+  const poderesFiltrados = useMemo(() => {
+    if (!isOpen) return [];
+    return poderes.filter(p => {
+      if (filtro && !p.Nome.toLowerCase().includes(filtro.toLowerCase())) return false;
+      if (filtroFonte !== 'Todas') {
+        const fonte = (p.Fonte || '').trim().toLowerCase();
+        if (filtroFonte === 'Homebrew') {
+          if (fonte !== 'homebrew' && fonte !== 'hb') return false;
+        } else if (filtroFonte === 'AS') {
+          if (fonte !== 'as' && fonte !== 'a.s.' && fonte !== 'a.s' && !fonte.includes('sobreviv') && !fonte.includes('arquivo') && !fonte.includes('aurora') && !fonte.includes('aniquila')) return false;
+        } else {
+          if (fonte !== filtroFonte.toLowerCase()) return false;
+        }
+      }
+      return true;
+    });
+  }, [isOpen, poderes, filtro, filtroFonte]);
+
+  const periciasDisponiveis = useMemo(() => {
+    if (!isOpen) return [];
+    return Object.entries(contextoPrereq.nomesPericias).map(([id, nome]) => ({ id: Number(id), nome })).sort((a, b) => a.nome.localeCompare(b.nome));
+  }, [isOpen, contextoPrereq.nomesPericias]);
+
   if (!isOpen) return null;
 
   let classesDisponiveis: string[] = [];
   if (classe === 'Especialista') classesDisponiveis = ['Combatente', 'Ocultista'];
   else if (classe === 'Combatente') classesDisponiveis = ['Especialista', 'Ocultista'];
   else if (classe === 'Ocultista') classesDisponiveis = ['Combatente', 'Especialista'];
-
-  const poderesFiltrados = poderes.filter(p => {
-    if (filtro && !p.Nome.toLowerCase().includes(filtro.toLowerCase())) return false;
-    if (filtroFonte !== 'Todas') {
-      const fonte = (p.Fonte || '').trim().toLowerCase();
-      if (filtroFonte === 'Homebrew') {
-        if (fonte !== 'homebrew' && fonte !== 'hb') return false;
-      } else if (filtroFonte === 'AS') {
-        if (fonte !== 'as' && fonte !== 'a.s.' && fonte !== 'a.s' && !fonte.includes('sobreviv') && !fonte.includes('arquivo') && !fonte.includes('aurora') && !fonte.includes('aniquila')) return false;
-      } else {
-        if (fonte !== filtroFonte.toLowerCase()) return false;
-      }
-    }
-    return true;
-  });
-  const periciasDisponiveis = Object.entries(contextoPrereq.nomesPericias).map(([id, nome]) => ({ id: Number(id), nome })).sort((a, b) => a.nome.localeCompare(b.nome));
 
 
   const renderPoder = (poder: any) => {

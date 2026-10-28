@@ -6,7 +6,7 @@ import { CustomSelect } from '../../components/CustomSelect';
 
 const NIVEL_OPTIONS = Array.from({ length: 20 }, (_, i) => i + 1);
 
-export const StatusPanel: React.FC = () => {
+export const StatusPanel: React.FC = React.memo(() => {
   const {
     status,
     nex,
@@ -103,7 +103,10 @@ export const StatusPanel: React.FC = () => {
             <div className="relative z-50 w-full">
               <CustomSelect
                 value={(NIVEL_OPTIONS.includes(nivel) ? nivel : Math.max(1, nivel)).toString()}
-                onChange={(val) => setNivel(Number(val))}
+                onChange={(val) => {
+                  const rawNivel = Math.max(1, Number(val) - (regrasAutomaticasAtivas.has(83) ? 1 : 0));
+                  setNivel(rawNivel);
+                }}
                 options={NIVEL_OPTIONS.map(n => ({ value: n.toString(), label: n.toString() }))}
                 wrapperClassName="w-20"
               />
@@ -354,7 +357,7 @@ export const StatusPanel: React.FC = () => {
       )}
     </div>
   );
-};
+});
 
 // ============================================================
 // COMPONENTE INTERNO: UMA BARRA DE STATUS (PV, SAN ou PE)

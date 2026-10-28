@@ -229,6 +229,7 @@ export function ModalTrilhas({
             const n = { ...prev };
             delete n.vampiro_ja_tinha_pericia;
             delete n.vampiro_arquetipo;
+            delete n.vampiro_opcao_10;
             delete n.vampiro_opcao_40;
             delete n.vampiro_opcao_65;
             delete n.vampiro_opcao_99;

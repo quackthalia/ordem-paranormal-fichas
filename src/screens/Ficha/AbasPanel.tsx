@@ -156,7 +156,7 @@ function obterValorVersao(
   return normal;
 }
 
-export const AbasPanel: React.FC = () => {
+const AbasPanelInner: React.FC = () => {
   const {
     abaDireita, setAbaDireita,
     atributos, atributosFinais, classe, nex,
@@ -305,6 +305,7 @@ export const AbasPanel: React.FC = () => {
   }, [regras['nex_experiencia'], poderesParanormaisMap, poderesHook.setPoderesEscolhidos]);
 
   const extrairKeyDoId = (id: string): number | string | null => {
+    if (id === 'extra_regra32' || id.startsWith('extra_')) return id;
     if (id.includes('_extra_')) {
       const match = id.match(/_(extra_.+)$/);
       if (match) return match[1];
@@ -619,7 +620,7 @@ export const AbasPanel: React.FC = () => {
           
           let elementoDoPoder = escolhido.elemento || pp?.Elemento;
           if (isAprenderRitual) {
-            const ra = rituaisHook.rituaisAprendidos?.find(r => r.origem === `poder_57_${nivel}`);
+            const ra = rituaisHook.rituaisAprendidos?.find(r => r.origem === `poder_57_${nivelPatamar}`);
             if (ra) {
               const rBase = rituaisHook.rituais.find(r => r.Codigo_Ritual === ra.codigo_ritual);
               const isLista = rBase?.Elemento_Ritual.toLowerCase() === 'lista' || rBase?.Elemento_Ritual.toLowerCase() === 'varia';
@@ -630,7 +631,7 @@ export const AbasPanel: React.FC = () => {
           let categoria: CategoriaHabilidade;
           if (pp) {
             categoria = 'paranormais';
-          } else if (escolhido.tipo?.toLowerCase() === 'geral') {
+          } else if (escolhido.categoria === 'gerais') {
             categoria = 'gerais';
           } else {
             categoria = 'utilidade';
@@ -682,7 +683,7 @@ export const AbasPanel: React.FC = () => {
           
           let elementoDoPoder = escolhido.elemento || pp?.Elemento;
           if (isAprenderRitual) {
-            const ra = rituaisHook.rituaisAprendidos?.find(r => r.origem === `poder_57_${nivel}`);
+            const ra = rituaisHook.rituaisAprendidos?.find(r => r.origem === `poder_57_${nivelPatamar}`);
             if (ra) {
               const rBase = rituaisHook.rituais.find(r => r.Codigo_Ritual === ra.codigo_ritual);
               const isLista = rBase?.Elemento_Ritual.toLowerCase() === 'lista' || rBase?.Elemento_Ritual.toLowerCase() === 'varia';
@@ -693,7 +694,7 @@ export const AbasPanel: React.FC = () => {
           let categoria: CategoriaHabilidade;
           if (pp) {
             categoria = 'paranormais';
-          } else if (escolhido.tipo?.toLowerCase() === 'geral') {
+          } else if (escolhido.categoria === 'gerais') {
             categoria = 'gerais';
           } else {
             categoria = 'combate';
@@ -754,7 +755,7 @@ export const AbasPanel: React.FC = () => {
         let categoria: CategoriaHabilidade;
         if (pp) {
           categoria = 'paranormais';
-        } else if (escolhido.tipo?.toLowerCase() === 'geral') {
+        } else if (escolhido.categoria === 'gerais') {
           categoria = 'gerais';
         } else {
           categoria = 'utilidade';
@@ -1067,6 +1068,8 @@ export const AbasPanel: React.FC = () => {
                                 } else if (hab.categoria === 'trilha') {
                                   if (hab.id === 'escolha_versatilidade') {
                                     setModalVersatilidadeAberto(true);
+                                  } else if (hab.id === 'escolha_possuido_trilha_65') {
+                                    setModalTrilhaPossuido65Aberto(true);
                                   } else {
                                     setModalTrilhasAberto(true);
                                   }
@@ -1849,8 +1852,8 @@ return (
                                              });
                                            }
                                          }
-                                         if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 48 || trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 49) {
-                                           if (trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 48 && trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 49) {
+                                         if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 48 || trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 49 || trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 50) {
+                                           if (trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 48 && trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 49 && trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 50) {
                                              setPoderesExtras(prev => {
                                                const n = { ...prev };
                                                delete n.vampiro_ja_tinha_pericia;
@@ -1927,8 +1930,8 @@ return (
                                              });
                                            }
                                          }
-                                         if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 48 || trilhasHook.trilhaSelecionada?.Codigo_Trilha === 49) {
-                                           if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha !== 48 && trilhasHook.versatilidadeSelecionada?.Codigo_Trilha !== 49) {
+                                         if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 48 || trilhasHook.trilhaSelecionada?.Codigo_Trilha === 49 || trilhasHook.trilhaSelecionada?.Codigo_Trilha === 50) {
+                                           if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha !== 48 && trilhasHook.versatilidadeSelecionada?.Codigo_Trilha !== 49 && trilhasHook.versatilidadeSelecionada?.Codigo_Trilha !== 50) {
                                              setPoderesExtras(prev => {
                                                const n = { ...prev };
                                                delete n.vampiro_ja_tinha_pericia;
@@ -2199,7 +2202,7 @@ return (
                                   </div>
                                 )}
 
-                                {(!hab.isSlotVazio && (hab.id.startsWith('escolha_nex_') || hab.id.startsWith('escolha_extra_') || hab.id === 'escolha_extra_possuido_trilha_65')) && (
+                                {(!hab.isSlotVazio && (hab.id.startsWith('escolha_nex_') || hab.id.startsWith('escolha_extra_') || hab.id === 'extra_regra32' || hab.id === 'escolha_extra_possuido_trilha_65')) && (
                                   <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-zinc-800/50">
                                     <button onClick={(e) => { e.stopPropagation(); const nivel = extrairKeyDoId(hab.id); if (nivel !== null) { setNexPoderEditando(nivel); setNomeEditando(hab.nome); setDescricaoEditando(hab.descricao); setAfinidadeEditando(hab.afinidade || ''); } }}
                                       className="text-xs px-3 py-1.5 rounded bg-zinc-900 border border-zinc-700 hover:border-yellow-700 hover:bg-yellow-900/20 text-zinc-300 hover:text-yellow-400 transition-colors"
@@ -2831,7 +2834,7 @@ return (
                             return (
                               <div
                               key={`vazio_poder_${chave}_${idx}`}
-                              onClick={() => setEscolhendoRitualPlaceholder({ origem: isOrigemSlot || isRegra61 || isRegra62 ? chave : `poder_57_${chave}`, nex: isOrigemSlot || isRegra61 || isRegra62 ? 0 : (isExtra ? nex : nivelNum) })}
+                              onClick={() => setEscolhendoRitualPlaceholder({ origem: isOrigemSlot || isRegra61 || isRegra62 ? chave : `poder_57_${chave}`, nex: isOrigemSlot || isRegra61 || isRegra62 ? 0 : (isExtra ? nex : nivelNum), ...(isOrigemSlot || isRegra61 || isRegra62 ? { maxCirculo: chave === 'regra_61_3' ? 3 : chave === 'regra_61_2' ? 2 : chave?.startsWith('regra_62_') ? (nex >= 55 ? 3 : nex >= 25 ? 2 : 1) : 1 } : {}) })}
                               className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-green-800 hover:bg-zinc-900/80"
                               style={{ borderLeftStyle: 'solid' }}
                             >
@@ -2910,7 +2913,7 @@ return (
                               );
                             });
                             const bonusDtEspecialista = temEspecialistaElemento ? 2 : 0;
-                            const baseDT = 10 + (atributosFinais[atrParaDT] || 0) + calcularNivel(nex) + (hasAntena ? 3 : 0) + (bonusMaldicoes?.bonusDT || 0) + bonusDtMonstruoso + bonusDtEspecialista;
+                            const baseDT = 10 + (atributosFinais[atrParaDT] || 0) + nivel + (hasAntena ? 3 : 0) + (bonusMaldicoes?.bonusDT || 0) + bonusDtMonstruoso + bonusDtEspecialista;
                             
                             return (
                               <div key={elemento} className="mt-2 mb-2 flex flex-col gap-2.5">
@@ -3358,10 +3361,6 @@ return (
 
         {abaDireita === 'regras' && (
           <div className="flex flex-col gap-3">
-                            <div className="bg-red-500 text-white p-2 text-xs">
-                              DEBUG RITUAIS: {rituaisHook.simbolosRituais?.size || 0} símbolos carregados.
-                              Exemplo de chave no mapa: {Array.from(rituaisHook.simbolosRituais?.keys() || [])[0]}
-                            </div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-500">Regras Opcionais</h4>
             <RegraCheckbox
               nome="nex_experiencia"
@@ -3455,7 +3454,9 @@ return (
                 circuloFixo={escolhendoRitualPlaceholder.circuloFixo}
                 elementoFiltro={escolhendoRitualPlaceholder.elementoFiltro}
                 limiteCirculo={
-                  (escolhendoRitualPlaceholder.maxCirculo || escolhendoRitualPlaceholder.nex) 
+                  escolhendoRitualPlaceholder.maxCirculo
+                    ? escolhendoRitualPlaceholder.maxCirculo
+                    : escolhendoRitualPlaceholder.nex 
                     ? (classe === 'Ocultista' 
                         ? (escolhendoRitualPlaceholder.nex >= 85 ? 4 : escolhendoRitualPlaceholder.nex >= 55 ? 3 : escolhendoRitualPlaceholder.nex >= 25 ? 2 : 1)
                         : (escolhendoRitualPlaceholder.nex >= 75 ? 3 : escolhendoRitualPlaceholder.nex >= 45 ? 2 : 1))
@@ -3749,6 +3750,7 @@ return (
           }}
         />
       )}
+      {modalExtraAberto && (
       <ModalPoderesExtra
         isOpen={modalExtraAberto}
         onClose={() => setModalExtraAberto(false)}
@@ -3760,15 +3762,20 @@ return (
           poderesHook.escolherPoderExtra(poder, elemento, nomePericia);
         }}
       />
+      )}
+      {modalPoderOutraClasseAberto && (
       <ModalPoderOutraClasse
         isOpen={modalPoderOutraClasseAberto}
         onClose={() => setModalPoderOutraClasseAberto(false)}
         categoriaPermitida={categoriaDiletante}
       />
+      )}
+      {modalPoderOutraOrigemAberto && (
       <ModalPoderOutraOrigem
         isOpen={modalPoderOutraOrigemAberto}
         onClose={() => setModalPoderOutraOrigemAberto(false)}
       />
+      )}
     </div>
   );
 };
@@ -3776,6 +3783,8 @@ return (
 // ============================================================
 // COMPONENTE INTERNO: CHECKBOX DE REGRA OPCIONAL
 // ============================================================
+export const AbasPanel = React.memo(AbasPanelInner);
+
 function RegraCheckbox({ nome, titulo, descricao }: { nome: string; titulo: string; descricao: string }) {
   const { regras, toggleRegra } = useRPG();
   const ativa = !!regras[nome];

@@ -78,6 +78,10 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
       setEscolhendoPericiaId(null);
       return;
     }
+    if (origensHook.origens && origensHook.origens.length > 0) {
+      setOrigens(origensHook.origens);
+      return;
+    }
     async function fetchOrigens() {
       const { data } = await supabase.from('Origens').select('*').order('Nome');
       if (data) {
@@ -85,7 +89,7 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
       }
     }
     fetchOrigens();
-  }, [isOpen]);
+  }, [isOpen, origensHook.origens]);
 
   if (!isOpen) return null;
 
@@ -306,7 +310,7 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
           onSelect={(ritualNome) => {
             const origem = origensFiltradas.find(o => o.Codigo_Origem === escolhendoRitualId);
             if (origem) {
-              poderesHook.escolherPoderExtra({ Id_Poder: -origem.Codigo_Origem, Codigo_Poder: -1, Nome: origem.Nome_Poder, Descricao: origem.Descricao_Poder, Fonte: origem.Fonte, Tipo: 'Geral', Codigo_Regra: origem.Codigo_Regra } as any, ritualNome, undefined, 'extra_regra32');
+              poderesHook.escolherPoderExtra({ Id_Poder: -origem.Codigo_Origem, Codigo_Poder: -1, Nome: origem.Nome_Poder, Descricao: origem.Descricao_Poder, Fonte: origem.Fonte, Tipo: 'Geral', Codigo_Regra: origem.Codigo_Regra } as any, undefined, undefined, 'extra_regra32', undefined, `${origem.Nome_Poder}: ${ritualNome}`);
             }
             setEscolhendoRitualId(null);
             onClose();

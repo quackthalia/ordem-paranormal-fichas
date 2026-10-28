@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useMemo } from 'react';
 
 const PALAVRAS = [
   "Abundância", "Ação", "Adaptabilidade", "Alegria", "Alinhamento", "Amor", "Ansiedade", "Apatia", "Apego", "Aplauso", 
@@ -50,7 +50,7 @@ const PALAVRAS_MORTE = [
 
 function textoParaBinario(texto: string) {
   return texto.split('').map(char => {
-    let bin = char.charCodeAt(0).toString(2).padStart(8, '0');
+    const bin = char.charCodeAt(0).toString(2).padStart(8, '0');
     // Injeta '1's artificiais nos zeros (25% de chance) pra equilibrar o visual da Matrix
     return bin.split('').map(b => (b === '0' && Math.random() < 0.25) ? '1' : b).join('');
   }).join('');
@@ -82,25 +82,15 @@ const Coluna = React.memo(({ altura, afinidade }: { altura: number, afinidade?: 
   const isSangue = afinidade === 'Sangue';
   const isMorte = afinidade === 'Morte';
   const isEnergia = afinidade === 'Energia';
-  const charBase = isConhecimento ? 'O' : '0'; 
+  const charBase = isConhecimento ? 'O' : '0';
 
-  // Guardamos o texto final como uma string. Se for morte, guardamos o HTML inteiro.
-  const [texto, setTexto] = React.useState<string>('');
-  
-  const [{ delay, duration }] = React.useState(() => ({
-    delay: (Math.random() * 10).toFixed(2),
-    duration: (Math.random() * 5 + 6).toFixed(2)
-  }));
-
-  useEffect(() => {
+  const { texto, delay, duration } = useMemo(() => {
     const gerarTexto = (conteudoStr: string) => {
       if (isMorte) {
         let html = '';
         for (let i = 0; i < altura; i++) {
           const char = conteudoStr[i] || charBase;
           const rand = Math.random();
-          // Aplica a animação pesada de rotação 3D em apenas ~15% dos caracteres
-          // Isso destrói o lag da placa de vídeo sem perder o aspecto caótico!
           if (rand < 0.05) {
             html += `<span class="flip-1">${char}</span>`;
           } else if (rand < 0.10) {
@@ -116,89 +106,61 @@ const Coluna = React.memo(({ altura, afinidade }: { altura: number, afinidade?: 
       return conteudoStr.split('').join('\n');
     };
 
-    setTexto(gerarTexto(charBase.repeat(altura)));
+    let listaMestre = PALAVRAS;
+    if (isSangue) listaMestre = PALAVRAS_SANGUE;
+    else if (isEnergia) listaMestre = PALAVRAS_ENERGIA;
+    else if (isMorte) listaMestre = PALAVRAS_MORTE;
 
-    const tempoDeEspera = Math.random() * 2000;
-    
-    let intervalo: NodeJS.Timeout;
-    let timeoutVisivel: NodeJS.Timeout;
-    
-    const iniciarCiclo = () => {
-      let listaMestre = PALAVRAS;
-      if (isSangue) listaMestre = PALAVRAS_SANGUE;
-      else if (isEnergia) listaMestre = PALAVRAS_ENERGIA;
-      else if (isMorte) listaMestre = PALAVRAS_MORTE;
-      
-      let conteudo = '';
-      if (isConhecimento) {
-        const palavra = listaMestre[Math.floor(Math.random() * listaMestre.length)];
-        conteudo = palavra.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toUpperCase();
-      } else {
-        const p1 = listaMestre[Math.floor(Math.random() * listaMestre.length)];
-        const p2 = listaMestre[Math.floor(Math.random() * listaMestre.length)];
-        const p3 = listaMestre[Math.floor(Math.random() * listaMestre.length)];
-        conteudo = textoParaBinario(p1 + p2 + p3);
-      }
-      
-      let stringFinal = conteudo;
-      while (stringFinal.length < altura) {
-        stringFinal += conteudo;
-      }
-      stringFinal = stringFinal.substring(0, altura);
+    let conteudo = '';
+    if (isConhecimento) {
+      const palavra = listaMestre[Math.floor(Math.random() * listaMestre.length)];
+      conteudo = palavra.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toUpperCase();
+    } else {
+      const p1 = listaMestre[Math.floor(Math.random() * listaMestre.length)];
+      const p2 = listaMestre[Math.floor(Math.random() * listaMestre.length)];
+      const p3 = listaMestre[Math.floor(Math.random() * listaMestre.length)];
+      conteudo = textoParaBinario(p1 + p2 + p3);
+    }
 
-      if (isSangue) {
-        let charsSujos = stringFinal.split('').map(c => {
-          const rand = Math.random();
-          if (rand < 0.12) return '|';
-          if (rand < 0.22) return 'v';
-          if (rand < 0.32) return '.';
-          if (c === '0' && rand < 0.5) return '1'; 
-          return c;
-        });
-        setTexto(gerarTexto(charsSujos.join('')));
-      } else if (isEnergia) {
-        // Modo Energia: insere glitches (símbolos e números errados) no meio do binário
-        let charsSujos = stringFinal.split('').map(c => {
-          const rand = Math.random();
-          if (rand < 0.02) return '#';
-          if (rand < 0.04) return 'X';
-          if (rand < 0.06) return '&';
-          if (rand < 0.08) return '%';
-          if (rand < 0.10) return '?';
-          if (c === '0' && rand < 0.4) return '1'; 
-          return c;
-        });
-        setTexto(gerarTexto(charsSujos.join('')));
-      } else {
-        setTexto(gerarTexto(stringFinal));
-      }
-      
-      const tempoVisivel = isConhecimento 
-        ? Math.random() * 10000 + 15000  
-        : Math.random() * 3000 + 2000;
+    let stringFinal = conteudo;
+    while (stringFinal.length < altura) {
+      stringFinal += conteudo;
+    }
+    stringFinal = stringFinal.substring(0, altura);
 
-      clearTimeout(timeoutVisivel);
-      timeoutVisivel = setTimeout(() => {
-        setTexto(gerarTexto(charBase.repeat(altura)));
-      }, tempoVisivel);
+    let textoProcessado: string;
+    if (isSangue) {
+      const charsSujos = stringFinal.split('').map(c => {
+        const rand = Math.random();
+        if (rand < 0.12) return '|';
+        if (rand < 0.22) return 'v';
+        if (rand < 0.32) return '.';
+        if (c === '0' && rand < 0.5) return '1';
+        return c;
+      });
+      textoProcessado = gerarTexto(charsSujos.join(''));
+    } else if (isEnergia) {
+      const charsSujos = stringFinal.split('').map(c => {
+        const rand = Math.random();
+        if (rand < 0.02) return '#';
+        if (rand < 0.04) return 'X';
+        if (rand < 0.06) return '&';
+        if (rand < 0.08) return '%';
+        if (rand < 0.10) return '?';
+        if (c === '0' && rand < 0.4) return '1';
+        return c;
+      });
+      textoProcessado = gerarTexto(charsSujos.join(''));
+    } else {
+      textoProcessado = gerarTexto(stringFinal);
+    }
+
+    return {
+      texto: textoProcessado,
+      delay: (Math.random() * 10).toFixed(2),
+      duration: (Math.random() * 5 + 6).toFixed(2)
     };
-
-    const timerInicial = setTimeout(() => {
-      iniciarCiclo();
-      
-      const tempoCiclo = isConhecimento 
-        ? Math.random() * 12000 + 18000 
-        : Math.random() * 4000 + 3000;
-
-      intervalo = setInterval(iniciarCiclo, tempoCiclo); 
-    }, tempoDeEspera);
-
-    return () => {
-      clearTimeout(timerInicial);
-      clearTimeout(timeoutVisivel);
-      if (intervalo) clearInterval(intervalo);
-    };
-  }, [altura, isConhecimento, isSangue, isMorte, charBase]);
+  }, [altura, isConhecimento, isSangue, isMorte, isEnergia, charBase]);
 
   let cssClasses = 'coluna';
   if (isConhecimento) cssClasses += ' coluna-conhecimento';
@@ -251,6 +213,7 @@ export const MatrixBackground = React.memo(({ afinidade }: { afinidade?: string 
           pointer-events: none;
           z-index: 0;
           overflow: hidden;
+          contain: strict;
         }
 
         /* TEMA: MORTE */
@@ -259,7 +222,7 @@ export const MatrixBackground = React.memo(({ afinidade }: { afinidade?: string 
         }
 
         #fundo-cascata.tema-morte .coluna {
-          background-image: linear-gradient(to bottom, #111111 0%, #333333 60%, #666666 85%, #999999 97%, #111111 100%);
+          color: #4a4a4a;
         }
 
         #fundo-cascata.tema-morte .coluna span {
@@ -280,29 +243,20 @@ export const MatrixBackground = React.memo(({ afinidade }: { afinidade?: string 
 
         /* TEMA: ENERGIA */
         #fundo-cascata.tema-energia .coluna {
-          background-image: linear-gradient(to bottom, 
-            #111111 0%, 
-            #111111 60%, 
-            #00fff2 70%, 
-            #c800ff 78%, 
-            #ff00c8 86%, 
-            #00ff40 94%, 
-            #0037ff 99%, 
-            #111111 100%
-          );
-          animation: luzCaindo var(--duracao) linear infinite, energiaFlicker 3s infinite;
+          color: #9b30ff;
+          animation: energiaFlicker var(--duracao) infinite;
         }
 
-        #fundo-cascata.tema-energia .bolinho:nth-child(2n) .coluna { animation: luzCaindo var(--duracao) linear infinite, energiaFlicker 4s infinite; }
-        #fundo-cascata.tema-energia .bolinho:nth-child(3n) .coluna { animation: luzCaindo var(--duracao) linear infinite, energiaFlicker 2.5s infinite; }
-        #fundo-cascata.tema-energia .bolinho:nth-child(5n) .coluna { animation: luzCaindo var(--duracao) linear infinite, energiaFlicker 5s infinite; }
+        #fundo-cascata.tema-energia .bolinho:nth-child(2n) .coluna { color: #00d9ff; animation-duration: 4s; }
+        #fundo-cascata.tema-energia .bolinho:nth-child(3n) .coluna { color: #ff00c8; animation-duration: 2.5s; }
+        #fundo-cascata.tema-energia .bolinho:nth-child(5n) .coluna { color: #00ff40; animation-duration: 5s; }
 
         @keyframes energiaFlicker {
-          0%, 94% { opacity: 1; transform: translateX(0); }
-          95% { opacity: 0.6; transform: translateX(-2px); }
-          97% { opacity: 0.9; transform: translateX(2px); }
-          99% { opacity: 0.5; transform: translateX(-1px); }
-          100% { opacity: 1; transform: translateX(0); }
+          0%, 94% { opacity: 0.75; transform: translate3d(0, 0, 0); }
+          95% { opacity: 0.4; transform: translate3d(-2px, 0, 0); }
+          97% { opacity: 0.85; transform: translate3d(2px, 0, 0); }
+          99% { opacity: 0.35; transform: translate3d(-1px, 0, 0); }
+          100% { opacity: 0.75; transform: translate3d(0, 0, 0); }
         }
 
         /* --- ESTILOS DA CHUVA (NORMAL, CONHECIMENTO E SANGUE) --- */
@@ -331,22 +285,16 @@ export const MatrixBackground = React.memo(({ afinidade }: { afinidade?: string 
           text-align: center;
           white-space: pre;
           overflow: hidden;
-          
-          color: transparent;
-          background-image: linear-gradient(to bottom, #333333 0%, #333333 60%, #444444 85%, #666666 97%, #333333 100%);
-          background-size: 100% 100vh; 
-          background-repeat: repeat-y;
-          
-          animation: luzCaindo var(--duracao) linear infinite;
+          color: #3d3d3d;
+          will-change: opacity;
+          animation: luzCaindo var(--duracao) ease-in-out infinite;
           animation-delay: var(--delay);
-          -webkit-background-clip: text;
-          background-clip: text;
         }
 
         /* TEMA: CONHECIMENTO (SIGILOS + DOURADO SUTIL) */
         #fundo-cascata .coluna.coluna-conhecimento {
           font-family: 'Sigilos', 'Courier New', monospace;
-          background-image: linear-gradient(to bottom, #2b271a 0%, #2b271a 60%, #4a431c 85%, #88742b 97%, #2b271a 100%);
+          color: #5c4e1e;
           font-size: 18px; 
         }
 
@@ -354,13 +302,13 @@ export const MatrixBackground = React.memo(({ afinidade }: { afinidade?: string 
         #fundo-cascata .coluna.coluna-sangue {
           font-weight: bold;
           line-height: 14px;
-          background-image: linear-gradient(to bottom, #2b0000 0%, #4a0000 60%, #990000 85%, #ff1a1a 97%, #2b0000 100%);
+          color: #7a0909;
           animation-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);
         }
 
         @keyframes luzCaindo {
-          0% { background-position: 0px -100vh; }
-          100% { background-position: 0px 0vh; }
+          0%, 100% { opacity: 0.35; }
+          50% { opacity: 0.9; }
         }
       `}</style>
       

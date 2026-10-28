@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '../services/supabase';
 import type { ItemAmaldicoado, ItemAmaldicoadoInventario } from '../types';
 import { calcularCategoriaFinal } from '../utils/rpgRules';
@@ -33,25 +33,25 @@ export function useItensAmaldicoados() {
     return () => { cancelled = true; };
   }, []);
 
-  const adicionarItem = (item: ItemAmaldicoado) => {
+  const adicionarItem = useCallback((item: ItemAmaldicoado) => {
     const newId = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
     setItensAmaldicoadosInventario(prev => [...prev, { id: newId, item }]);
-  };
+  }, []);
 
-  const removerItem = (id: string) => {
+  const removerItem = useCallback((id: string) => {
     setItensAmaldicoadosInventario(prev => prev.filter(i => i.id !== id));
-  };
+  }, []);
 
-  const reordenarItens = (oldIndex: number, newIndex: number) => {
+  const reordenarItens = useCallback((oldIndex: number, newIndex: number) => {
     setItensAmaldicoadosInventario(prev => {
       const result = Array.from(prev);
       const [removed] = result.splice(oldIndex, 1);
       result.splice(newIndex, 0, removed);
       return result;
     });
-  };
+  }, []);
 
-  const editarItem = (id: string, novosDados: Partial<ItemAmaldicoado>) => {
+  const editarItem = useCallback((id: string, novosDados: Partial<ItemAmaldicoado>) => {
     setItensAmaldicoadosInventario(prev => prev.map(item => {
       if (item.id === id) {
         return {
@@ -61,16 +61,16 @@ export function useItensAmaldicoados() {
       }
       return item;
     }));
-  };
+  }, []);
 
-  const toggleEquipadoSimples = (id: string, overrideValue?: boolean) => {
+  const toggleEquipadoSimples = useCallback((id: string, overrideValue?: boolean) => {
     setItensAmaldicoadosInventario(prev => prev.map(i => {
       if (i.id === id) {
         return { ...i, equipado: overrideValue !== undefined ? overrideValue : !i.equipado };
       }
       return i;
     }));
-  };
+  }, []);
 
   const contagemPorCategoria = useMemo(() => {
     const contagem = [0, 0, 0, 0];
@@ -85,10 +85,9 @@ export function useItensAmaldicoados() {
     return contagem;
   }, [itensAmaldicoadosInventario]);
 
-  return { 
+  return useMemo(() => ({ 
     itens, 
     armasAmaldicoadas,
-
     itensAmaldicoadosInventario,
     setItensAmaldicoadosInventario,
     adicionarItem, 
@@ -99,5 +98,17 @@ export function useItensAmaldicoados() {
     contagemPorCategoria,
     loading, 
     error 
-  };
+  }), [
+    itens,
+    armasAmaldicoadas,
+    itensAmaldicoadosInventario,
+    adicionarItem,
+    removerItem,
+    reordenarItens,
+    editarItem,
+    toggleEquipadoSimples,
+    contagemPorCategoria,
+    loading,
+    error
+  ]);
 }

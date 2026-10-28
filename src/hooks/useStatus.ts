@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import type { Atributos, ClasseRPG } from '../types';
 import { calcularStatusBase, calcularPD } from '../utils/rpgRules';
 
@@ -84,8 +84,6 @@ export function useStatus(
   const calcMaxSan = Math.max(0, baseStatus.sanMax - paranormalPenalty);
   const peTurno = baseStatus.peTurno + bonusPeTurno;
 
-  const peTurnoDT = regrasAtivas?.has(6) ? peTurno - 1 : peTurno;
-
   const calcMaxPd = Math.max(0, calcularPD(classe, atributos, nivel, regrasAtivas) - paranormalPenalty);
 
   // Efeito de sincronização (mesma lógica do original, mas sem -1)
@@ -139,7 +137,7 @@ export function useStatus(
   }, [calcMaxPv, calcMaxSan, calcMaxPe, calcMaxPd, classe]);
 
   const alterarStatus = useCallback(
-    (tipo: 'pv' | 'san' | 'pe' | 'pd', qtd: number) => {
+    (tipo: 'pv' | 'san' | 'pe' | 'pd' | 'pp', qtd: number) => {
       if (tipo === 'pv')
         setPvAtual(prev => Math.max(0, Math.min(pvMax, (prev ?? 0) + qtd)));
       if (tipo === 'san')
@@ -173,7 +171,7 @@ export function useStatus(
     prevCalc.current = { pv: 0, san: 0, pe: 0, pd: 0, init: false };
   }, []);
 
-  return {
+  return useMemo(() => ({
     pvAtual: pvAtual ?? 0,
     sanAtual: sanAtual ?? 0,
     peAtual: peAtual ?? 0,
@@ -213,5 +211,27 @@ export function useStatus(
     setPdTempAtual,
     setPdTempMax,
     resetarStatus,
-  };
+  }), [
+    pvAtual,
+    sanAtual,
+    peAtual,
+    pdAtual,
+    ppAtual,
+    pdMax,
+    pvMax,
+    sanMax,
+    peMax,
+    peTurno,
+    hasPvTemp,
+    hasPeTemp,
+    hasPdTemp,
+    pvTempAtual,
+    pvTempMax,
+    peTempAtual,
+    peTempMax,
+    pdTempAtual,
+    pdTempMax,
+    alterarStatus,
+    resetarStatus,
+  ]);
 }

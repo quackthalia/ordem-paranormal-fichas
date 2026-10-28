@@ -105,10 +105,8 @@ function normalizarPoderParanormal(item: Record<string, unknown>): PoderParanorm
 }
 
 export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
-  const [poderesClasse, setPoderesClasse] = useState<Poder[]>([]);
   const [listaPoderesUtilidade, setListaPoderesUtilidade] = useState<Poder[]>([]);
   const [poderesParanormais, setPoderesParanormais] = useState<PoderParanormal[]>([]);
-  const [poderClasse, setPoderClasse] = useState<Poder | null>(null);
   const [poderesEscolhidos, setPoderesEscolhidos] = useState<PoderesEscolhidos>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -116,25 +114,13 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
   useEffect(() => {
     let cancelled = false;
     async function carregar() {
-      if (!classe) { setPoderesClasse([]); return; }
-      setLoading(true); setError(null);
-      const { data, error: err } = await supabase.from('Poderes').select('*').eq('Classe', classe);
-      if (cancelled) return;
-      if (err) { console.error(err); setError(err.message); }
-      if (data) setPoderesClasse(data.map(normalizarPoder));
-      setLoading(false);
-    }
-    carregar();
-    return () => { cancelled = true; };
-  }, [classe]);
-
-  useEffect(() => {
-    let cancelled = false;
-    async function carregar() {
+      setLoading(true);
+      setError(null);
       const { data, error: err } = await supabase.from('Poderes').select('*');
       if (cancelled) return;
       if (err) { console.error(err); setError(err.message); }
       else if (data) setListaPoderesUtilidade(data.map(normalizarPoder));
+      setLoading(false);
     }
     carregar();
     return () => { cancelled = true; };
@@ -154,26 +140,20 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
     return () => { cancelled = true; };
   }, []);
 
-  useEffect(() => {
-    let cancelled = false;
-    async function carregar() {
-      if (!classe) { setPoderClasse(null); return; }
-      
-      let codigoPoder = 0;
-      if (classe === 'Combatente') codigoPoder = 179;
-      else if (classe === 'Especialista') codigoPoder = 181;
-      else if (classe === 'Ocultista') codigoPoder = 183;
-      
-      if (codigoPoder === 0) return;
+  const poderesClasse = useMemo(() => {
+    if (!classe) return [];
+    return listaPoderesUtilidade.filter(p => p.Classe === classe);
+  }, [listaPoderesUtilidade, classe]);
 
-      const { data, error: err } = await supabase.from('Poderes').select('*').eq('Codigo_Poder', codigoPoder).single();
-      if (cancelled) return;
-      if (err) { console.error(err); setError(err.message); }
-      else if (data) setPoderClasse(normalizarPoder(data));
-    }
-    carregar();
-    return () => { cancelled = true; };
-  }, [classe]);
+  const poderClasse = useMemo(() => {
+    if (!classe) return null;
+    let codigoPoder = 0;
+    if (classe === 'Combatente') codigoPoder = 179;
+    else if (classe === 'Especialista') codigoPoder = 181;
+    else if (classe === 'Ocultista') codigoPoder = 183;
+    if (codigoPoder === 0) return null;
+    return listaPoderesUtilidade.find(p => p.codigo_poder === codigoPoder) || null;
+  }, [listaPoderesUtilidade, classe]);
 
   const escolherPoder = useCallback((
     nex: number | string,
@@ -299,7 +279,7 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
     }));
   }, []);
 
-  return {
+  return useMemo(() => ({
     poderesClasse,
     listaPoderesUtilidade,
     poderesParanormais,
@@ -312,7 +292,19 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
     escolherPoderExtra,
     removerPoder,
     editarPoder,
-  };
+  }), [
+    poderesClasse,
+    listaPoderesUtilidade,
+    poderesParanormais,
+    poderesEscolhidos,
+    poderClasse,
+    loading,
+    error,
+    escolherPoder,
+    escolherPoderExtra,
+    removerPoder,
+    editarPoder,
+  ]);
 }
 
 
@@ -385,5 +377,5 @@ export function usePoderesFiltrados(
         return filterFn(p);
       })
       .sort((a, b) => a.Nome.localeCompare(b.Nome));
-  }, [listaPoderesUtilidade, poderesParanormais, abaModal, classe, poderesEscolhidos, intelecto]);
+  }, [listaPoderesUtilidade, poderesParanormais, abaModal, classe, poderesEscolhidos, intelecto, afinidadeEscolhida, afinidadeAtiva]);
 }

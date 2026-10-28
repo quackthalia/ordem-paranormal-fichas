@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../services/supabase';
 import type { Modificacao } from '../types';
 
@@ -27,15 +27,15 @@ export function useModificacoes() {
   }, []);
 
   // Helper function to find modifications by their IDs
-  const getModificacoesByIds = (ids?: number[]) => {
+  const getModificacoesByIds = useCallback((ids?: number[]) => {
     if (!ids || ids.length === 0) return [];
     return modificacoes.filter(m => ids.includes(m.Codigo_Modif));
-  };
+  }, [modificacoes]);
 
-  return {
+  return useMemo(() => ({
     modificacoes,
     loading,
     error,
     getModificacoesByIds
-  };
+  }), [modificacoes, loading, error, getModificacoesByIds]);
 }

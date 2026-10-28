@@ -88,7 +88,7 @@ export function useProtecoes(options?: { apenasEscudos?: boolean }) {
         return i;
       });
     });
-  }, []);
+  }, [options?.apenasEscudos]);
 
   const reordenarProtecoes = useCallback((oldIndex: number, newIndex: number) => {
     setProtecoesInventario(prev => {
@@ -120,7 +120,20 @@ export function useProtecoes(options?: { apenasEscudos?: boolean }) {
     return counts;
   }, [protecoesInventario]);
 
-  return {
+  return useMemo(() => ({
+    protecoes,
+    protecoesInventario,
+    setProtecoesInventario,
+    adicionarProtecao,
+    removerProtecao,
+    editarProtecao,
+    toggleEquipado,
+    reordenarProtecoes,
+    cargaProtecoes,
+    contagemPorCategoria,
+    loading,
+    error
+  }), [
     protecoes,
     protecoesInventario,
     adicionarProtecao,
@@ -132,5 +145,5 @@ export function useProtecoes(options?: { apenasEscudos?: boolean }) {
     contagemPorCategoria,
     loading,
     error
-  };
+  ]);
 }

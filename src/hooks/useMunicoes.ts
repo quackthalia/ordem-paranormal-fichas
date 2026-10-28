@@ -118,7 +118,7 @@ export function useMunicoes() {
     return counts;
   }, [municoesInventario]);
 
-  return {
+  return useMemo(() => ({
     municoes,
     municoesInventario,
     setMunicoesInventario,
@@ -131,5 +131,17 @@ export function useMunicoes() {
     getMunicoesCompativeis,
     loading,
     error,
-  };
+  }), [
+    municoes,
+    municoesInventario,
+    adicionarMunicao,
+    removerMunicao,
+    atualizarMunicao,
+    reordenarMunicoes,
+    cargaMunicoes,
+    contagemPorCategoria,
+    getMunicoesCompativeis,
+    loading,
+    error,
+  ]);
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '../services/supabase';
 import type { ItemGeral, ItemGeralInventario } from '../types';
 
@@ -26,26 +26,26 @@ export function useItens(maxVestimentas: number = 2) {
     return () => { cancelled = true; };
   }, []);
 
-  const adicionarItem = (item: ItemGeral, customModificacoes?: number[], customMaldicoes?: number[], customMaldicoesElementos?: Record<number, string>) => {
+  const adicionarItem = useCallback((item: ItemGeral, customModificacoes?: number[], customMaldicoes?: number[], customMaldicoesElementos?: Record<number, string>) => {
     const newId = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
     setItensInventario(prev => [...prev, { id: newId, item: item, modificacoes: customModificacoes || [], maldicoes: customMaldicoes, maldicoes_elementos: customMaldicoesElementos }]);
     return newId;
-  };
+  }, []);
 
-  const removerItem = (id: string) => {
+  const removerItem = useCallback((id: string) => {
     setItensInventario(prev => prev.filter(item => item.id !== id));
-  };
+  }, []);
 
-  const reordenarItens = (oldIndex: number, newIndex: number) => {
+  const reordenarItens = useCallback((oldIndex: number, newIndex: number) => {
     setItensInventario(prev => {
       const result = Array.from(prev);
       const [removed] = result.splice(oldIndex, 1);
       result.splice(newIndex, 0, removed);
       return result;
     });
-  };
+  }, []);
 
-  const editarItem = (id: string, novosDados: Partial<ItemGeral>, novasModificacoes?: number[], novasMaldicoes?: number[], novasMaldicoesElementos?: Record<number, string>) => {
+  const editarItem = useCallback((id: string, novosDados: Partial<ItemGeral>, novasModificacoes?: number[], novasMaldicoes?: number[], novasMaldicoesElementos?: Record<number, string>) => {
     setItensInventario(prev => prev.map(item => {
       if (item.id === id) {
         const ret: ItemGeralInventario = {
@@ -65,9 +65,9 @@ export function useItens(maxVestimentas: number = 2) {
       }
       return item;
     }));
-  };
+  }, []);
 
-  const toggleEquipado = (id: string) => {
+  const toggleEquipado = useCallback((id: string) => {
     setItensInventario(prev => {
       const alvo = prev.find(i => i.id === id);
       if (!alvo) return prev;
@@ -97,7 +97,7 @@ export function useItens(maxVestimentas: number = 2) {
 
       return prev.map(i => i.id === id ? { ...i, equipado: true } : i);
     });
-  };
+  }, [maxVestimentas]);
 
   const cargaItens = useMemo(() => {
     return itensInventario.reduce((acc, obj) => {
@@ -133,16 +133,16 @@ export function useItens(maxVestimentas: number = 2) {
     return contagem;
   }, [itensInventario]);
 
-  const toggleEquipadoSimples = (id: string, overrideValue?: boolean) => {
+  const toggleEquipadoSimples = useCallback((id: string, overrideValue?: boolean) => {
     setItensInventario(prev => prev.map(i => {
       if (i.id === id) {
         return { ...i, equipado: overrideValue !== undefined ? overrideValue : !i.equipado };
       }
       return i;
     }));
-  };
+  }, []);
 
-  return { 
+  return useMemo(() => ({ 
     itens, 
     itensInventario,
     setItensInventario,
@@ -157,5 +157,19 @@ export function useItens(maxVestimentas: number = 2) {
     gruposUnicos,
     loading, 
     error 
-  };
+  }), [
+    itens,
+    itensInventario,
+    adicionarItem,
+    removerItem,
+    reordenarItens,
+    editarItem,
+    toggleEquipado,
+    toggleEquipadoSimples,
+    cargaItens,
+    contagemPorCategoria,
+    gruposUnicos,
+    loading,
+    error
+  ]);
 }

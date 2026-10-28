@@ -443,11 +443,7 @@ export const FichaScreen: React.FC = () => {
   }, [trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, effectiveNex, nivel, regras, rituaisHook.rituais, rituaisHook.rituaisAprendidos, itensHook.itensInventario, poderesExtras, regrasAutomaticasAtivas]);
 
   const handleRefazer = () => {
-    status.resetarStatus();
-    setBonusAtributos({ FOR: 0, AGI: 0, INT: 0, PRE: 0, VIG: 0 });
-    setSkillCombatente1('');
-    setSkillCombatente2('');
-    setTelaAtual('atributos');
+    rpg.refazerPersonagem();
   };
 
   const afinidade = afinidadeAtiva ? afinidadeEscolhida : null;
@@ -502,7 +498,7 @@ export const FichaScreen: React.FC = () => {
 // ============================================================
 // COMPONENTE INTERNO: ATRIBUTOS NA FICHA
 // ============================================================
-function AtributosFicha() {
+const AtributosFicha = React.memo(function AtributosFicha() {
   const [opcoesAbertas, setOpcoesAbertas] = React.useState(false);
   const { 
     atributos, setAtributos, bonusAtributos, setBonusAtributos, bloquearLetras, atributosFinais, 
@@ -574,7 +570,10 @@ function AtributosFicha() {
                 type="number"
                 onKeyDown={bloquearLetras}
                 value={nex}
-                onChange={(e) => setNex(Math.max(0, Math.min(99, Number(e.target.value))))}
+                onChange={(e) => {
+                  const val = Math.max(0, Math.min(99, Number(e.target.value)));
+                  setNex(Math.max(0, val - (regrasAutomaticasAtivas.has(83) ? 5 : 0)));
+                }}
                 className="w-8 bg-transparent text-center text-sm font-bold text-zinc-100 outline-none"
               />
               <span className="text-sm font-bold text-zinc-500">%</span>
@@ -583,7 +582,10 @@ function AtributosFicha() {
             <div className="relative z-50 w-20">
               <CustomSelect
                 value={(NEX_OPTIONS.includes(nex) ? nex : Math.max(5, Math.ceil(nex / 5) * 5)).toString()}
-                onChange={(val) => setNex(Number(val))}
+                onChange={(val) => {
+                  const numVal = Number(val);
+                  setNex(Math.max(0, numVal - (regrasAutomaticasAtivas.has(83) ? 5 : 0)));
+                }}
                 options={NEX_OPTIONS.map(n => ({ value: n.toString(), label: n + '%' }))}
                 hideIcon={true}
                 wrapperClassName="w-full"
@@ -785,12 +787,12 @@ function AtributosFicha() {
       </div>
     </div>
   );
-}
+});
 
 // ============================================================
 // COMPONENTE INTERNO: DEFESA
 // ============================================================
-function DefesaPanel() {
+const DefesaPanel = React.memo(function DefesaPanel() {
   const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, defOutrosBonusVampiro, bloquearLetras, periciasHook, atributosFinais, regrasAutomaticasAtivas, protecoes, protecoesHook, totalDefesaProtecoes, bonusVestimentas, bonusMaldicoes, trilhasHook, status, regras, nivel, nex, bonusDefesaTrilha34, defOutrosBonusRegra72, defOutrosBonusRegra107 } = useRPG();
 
   const [bloqueio, setBloqueio] = React.useState(0);
@@ -816,7 +818,7 @@ function DefesaPanel() {
       const total = defesaTotal + pericias[nomeReflexos].treino + pericias[nomeReflexos].outros;
       setEsquiva(total);
     }
-  }, [periciasHook, atributosFinais, defesaTotal, regrasAutomaticasAtivas]);
+  }, [periciasHook.pericias, periciasHook.nomesPericias, atributosFinais, defesaTotal, regrasAutomaticasAtivas]);
 
   return (
     <div className="mt-8 flex flex-wrap items-center justify-between gap-5 rounded-lg border border-zinc-800 bg-zinc-900/60 p-5">
@@ -872,7 +874,7 @@ function DefesaPanel() {
                   const bonusTrilha5 = (temInquebravel && isMachucado) ? 5 : 0;
                   const bonusDefesa34 = bonusDefesaTrilha34 || 0;
                   const bonusVamp = defOutrosBonusVampiro || 0;
-                  setDefOutros(Math.max(0, valDigitado - defOutrosBonusRegra - bonusRegra21 - bonusRegra25 - bonusTrilha5 - bonusDefesa34 - bonusVamp - totalDefesaProtecoes));
+                  setDefOutros(Math.max(0, valDigitado - defOutrosBonusRegra - bonusRegra21 - bonusRegra25 - bonusTrilha5 - bonusDefesa34 - bonusVamp - totalDefesaProtecoes - (bonusVestimentas?.defesa || 0) - (bonusMaldicoes?.defesa || 0)));
                 }}
                 className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-green-600"
               />
@@ -906,12 +908,12 @@ function DefesaPanel() {
       </div>
     </div>
   );
-}
+});
 
 // ============================================================
 // COMPONENTE INTERNO: PROTEÇÕES, RESISTÊNCIAS, PROFICIÊNCIAS
 // ============================================================
-function ProtecoesPanel() {
+const ProtecoesPanel = React.memo(function ProtecoesPanel() {
   const {
     protecoes, setProtecoes,
     resistencias, setResistencias,
@@ -1220,7 +1222,7 @@ function ProtecoesPanel() {
       </div>
     </div>
   );
-}
+});
 
 // ============================================================
 // COMPONENTE INTERNO: BADGE (para Proteções, Resistências, etc.)

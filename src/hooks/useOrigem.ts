@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../services/supabase';
 import type { Origem, OrigemSelecionada, GrupoOrigem } from '../types';
 
@@ -128,7 +128,7 @@ export function useOrigem(): UseOrigemReturn {
     [nomesPericias]
   );
 
-  return {
+  return useMemo(() => ({
     origens,
     grupos,
     origemSelecionada,
@@ -139,5 +139,15 @@ export function useOrigem(): UseOrigemReturn {
     error,
     selecionarOrigem,
     nomePericia,
-  };
+  }), [
+    origens,
+    grupos,
+    origemSelecionada,
+    origensExpandidas,
+    toggleOrigemExpandida,
+    loading,
+    error,
+    selecionarOrigem,
+    nomePericia,
+  ]);
 }

@@ -124,8 +124,8 @@ interface ArmaCombateCardProps {
   maldicoesHook: any;
 }
 
-const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandida, toggleExpandir, modificacoesHook, maldicoesHook, onAddMunicao, municoesHook, itensHook, armasHook }) => {
-  const { atributosFinais, proficienciasTotais, regrasAutomaticasAtivas, status, regras, trilhasHook, poderesExtras, nivel, nex, danoDeMovimento, bonusMaldicoes, devorarIntCount } = useRPG();
+const ArmaCombateCard: React.FC<ArmaCombateCardProps> = React.memo(({ armaInv, estaExpandida, toggleExpandir, modificacoesHook, maldicoesHook, onAddMunicao, municoesHook, itensHook, armasHook }) => {
+  const { atributosFinais, proficienciasTotais, regrasAutomaticasAtivas, status, regras, trilhasHook, poderesExtras, nivel, nex, danoDeMovimento, bonusMaldicoes, devorarIntCount, temDobroPerito } = useRPG();
   const effectiveNex = regras['nex_experiencia'] ? (nivel * 5) : nex;
   const isAniquilador = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 1;
   const armaFavId = isAniquilador ? poderesExtras["aniquilador_arma_favorita"] : null;
@@ -766,7 +766,7 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = ({ armaInv, estaExpandid
         </Collapse>
       </div>
     );
-  };
+  });
 
 const getCorElementoMunicao = (elemento?: string) => {
   if (!elemento) return 'text-zinc-300';
@@ -779,7 +779,7 @@ const getCorElementoMunicao = (elemento?: string) => {
   return 'text-zinc-300';
 };
 
-export const CombatePanel: React.FC = () => {
+export const CombatePanel: React.FC = React.memo(() => {
   const [modalMunicoesAberto, setModalMunicoesAberto] = React.useState(false);
   const [municaoTargetArmaId, setMunicaoTargetArmaId] = React.useState<string | undefined>(undefined);
   const [municaoFiltroNome, setMunicaoFiltroNome] = React.useState<string | undefined>(undefined);
@@ -933,4 +933,4 @@ export const CombatePanel: React.FC = () => {
       )}
     </div>
   );
-};
+});

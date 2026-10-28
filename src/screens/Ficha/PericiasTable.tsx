@@ -24,14 +24,38 @@ const BORDA_TREINO: Record<number, string> = {
 
 
 
-const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setProfissoes, regrasAtivas, limites, totais, status }) => {
+const ProfissaoRow = React.memo(({ prof, idx, editingProfIndex, setEditingProfIndex, setProfissoes, regrasAtivas, limites, totais, nivel }) => {
   const [mounted, setMounted] = React.useState(false);
   const [closing, setClosing] = React.useState(false);
+  const [localNome, setLocalNome] = React.useState(prof.nome || '');
+  const [localOutros, setLocalOutros] = React.useState(prof.outros === 0 ? '' : String(prof.outros));
+
+  React.useEffect(() => {
+    setLocalNome(prof.nome || '');
+  }, [prof.nome]);
+
+  React.useEffect(() => {
+    setLocalOutros(prof.outros === 0 ? '' : String(prof.outros));
+  }, [prof.outros]);
   
   React.useEffect(() => {
     const t = setTimeout(() => setMounted(true), 10);
     return () => clearTimeout(t);
   }, []);
+
+  const commitNome = () => {
+    if (localNome !== prof.nome) {
+      setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, nome: localNome } : p));
+    }
+    setEditingProfIndex(null);
+  };
+
+  const commitOutros = (valStr: string) => {
+    const num = Number(valStr) || 0;
+    if (num !== prof.outros) {
+      setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, outros: num } : p));
+    }
+  };
 
   const handleRemove = () => {
     setClosing(true);
@@ -53,15 +77,15 @@ const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setPro
             return (editingProfIndex === idx || prof.nome === '') && !isTrilhaProf ? (
               <input
                 autoFocus
-                value={prof.nome}
-                onChange={e => setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, nome: e.target.value } : p))}
+                value={localNome}
+                onChange={e => setLocalNome(e.target.value)}
                 onKeyDown={e => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
-                    setEditingProfIndex(null);
+                    commitNome();
                   }
                 }}
-                onBlur={() => setEditingProfIndex(null)}
+                onBlur={commitNome}
                 placeholder="Nome da profissão..."
                 className="flex-1 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm text-zinc-100 outline-none focus:border-green-500"
               />
@@ -87,8 +111,8 @@ const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setPro
 
               if (regrasAtivas) {
                 if (isTrilhaProf && novoValor < 5) return;
-                if (novoValor === 10 && status.nivel < 7) return;
-                if (novoValor === 15 && status.nivel < 14) return;
+                if (novoValor === 10 && nivel < 3) return;
+                if (novoValor === 15 && nivel < 7) return;
                 
                 const currentTreino = prof.treino;
                 let simTreinadas = totais.totalTreinadasUsadas;
@@ -118,9 +142,15 @@ const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setPro
 
           <input
             type="number"
-            value={prof.outros === 0 ? '' : prof.outros}
+            value={localOutros}
             placeholder="0"
-            onChange={e => setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, outros: Number(e.target.value) || 0 } : p))}
+            onChange={e => setLocalOutros(e.target.value)}
+            onBlur={e => commitOutros(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                commitOutros((e.target as HTMLInputElement).value);
+              }
+            }}
             className={`w-11 border-b bg-transparent text-center font-bold outline-none ${COR_TREINO[prof.treino] ?? 'text-zinc-400'} ${BORDA_TREINO[prof.treino] ?? 'border-zinc-600'}`}
           />
           
@@ -133,15 +163,13 @@ const ProfissaoRow = ({ prof, idx, editingProfIndex, setEditingProfIndex, setPro
         </div>
     </div>
   );
-};
+});
 
 
-export const PericiasTable: React.FC = () => {
+export const PericiasTable: React.FC = React.memo(() => {
   const { 
-    status, periciasHook, regrasAtivas, setRegrasAtivas, regrasAutomaticasAtivas, protecoesHook,
+    periciasHook, regrasAtivas, setRegrasAtivas, regrasAutomaticasAtivas, protecoesHook,
     trilhasHook, nivel, nex, regras,
-    itensHook,
-    temMonstruoso10, isMonstruosoAtivo10, temMonstruosoEsp10, jaTinhaOcultismoMonstruoso,
     bloquearIntimidacaoVampiro
   } = useRPG();
   const { pericias, handleMudarPericia, limites, totais, profissoes, setProfissoes } = periciasHook;
@@ -176,49 +204,6 @@ export const PericiasTable: React.FC = () => {
     resultado = resultado.replace(/\n/g, '<br/>');
     return resultado;
   };
-
-  const bonusInventarioGlobal = React.useMemo(() => {
-    const mapa: Record<string, number> = {};
-    if (!itensHook?.itensInventario) return mapa;
-
-    itensHook.itensInventario.forEach(obj => {
-      const nomeItem = obj.item.Nome_Item.toLowerCase();
-      // Kits de perícia NÃO concedem bônus numérico na perícia (apenas removem a penalidade de -5 por falta de kit)
-      if (nomeItem.includes('kit de perícia') || nomeItem.includes('kit de pericia')) {
-        return;
-      }
-
-      const isVestimenta = nomeItem.includes('vestimenta');
-      const isAmuleto = nomeItem.includes('amuleto sagrado');
-      const isUtensilio = nomeItem.includes('utensílio') || nomeItem.includes('utensilio');
-      const equipado = obj.equipado;
-
-      const match = obj.item.Nome_Item.match(/\((.*?)\)/);
-      if (match) {
-        const periciasNoItem = match[1].split(',').map(s => s.trim().toLowerCase());
-        periciasNoItem.forEach(p => {
-          const nomeBase = p.replace('*', '');
-          const originalName = Object.keys(pericias).find(k => k.toLowerCase() === nomeBase);
-          if (originalName) {
-            let bonusDesteItem = p.includes('*') ? 5 : 2;
-            if ((isVestimenta || isAmuleto) && !equipado) {
-              bonusDesteItem = 0;
-            }
-            if (bonusDesteItem > 0) {
-              mapa[originalName] = (mapa[originalName] || 0) + bonusDesteItem;
-            }
-          }
-        });
-      }
-
-      if (isAmuleto && equipado) {
-        mapa['Religião'] = (mapa['Religião'] || 0) + 2;
-        mapa['Vontade'] = (mapa['Vontade'] || 0) + 2;
-      }
-    });
-
-    return mapa;
-  }, [itensHook?.itensInventario, pericias]);
 
   return (
     <div className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-6 flex flex-col h-full flex-1">
@@ -303,12 +288,10 @@ export const PericiasTable: React.FC = () => {
               const bonusTrilha4 = (nome === 'Iniciativa' && temOperacoesEspeciais) ? 5 : 0;
     const bonusTrilha7 = ((nome === 'Atletismo' || nome === 'Crime') && temGatuno) ? 5 : 0;
               
-              // Usa o memo otimizado para não recalcular a cada render
-              const bonusInventario = bonusInventarioGlobal[nome] || 0;
-              // Nota: dadosPericia.outros já inclui periciasHook.bonusVestimentas (maldições, itens amaldiçoados e trilhas) e bonusRegra40
+              // Nota: dadosPericia.outros já inclui periciasHook.bonusVestimentas (vestimentas, utensílios, amuleto sagrado, maldições, itens amaldiçoados e trilhas) e bonusRegra40
               const bonusMonstruoso10 = 0;
               const isPericiaBloqueada = nome === 'Intimidação' && bloquearIntimidacaoVampiro;
-              const totalBonus = dadosPericia.treino + dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10 + bonusInventario;
+              const totalBonus = dadosPericia.treino + dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10;
               const corTexto = isPericiaBloqueada ? '!text-zinc-600 line-through' : (COR_TREINO[dadosPericia.treino] ?? 'text-zinc-400');
               const corBorda = isPericiaBloqueada ? 'border-zinc-700 opacity-40' : (BORDA_TREINO[dadosPericia.treino] ?? 'border-zinc-600');
 
@@ -418,11 +401,11 @@ export const PericiasTable: React.FC = () => {
                     <input
                       type="number"
                       onKeyDown={bloquearLetras}
-                      value={(dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10 + bonusInventario) === 0 ? '' : (dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10 + bonusInventario)}
+                      value={(dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10) === 0 ? '' : (dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10)}
                       placeholder="0"
                       onChange={(e) => {
                         const bonusInternosHook = (periciasHook.bonusRegra40?.[nome] || 0) + (periciasHook.bonusVestimentas?.[nome] || 0) + (periciasHook.bonusAtributoDinamico?.[nome] || 0);
-                        handleMudarPericia(nome, 'outros', Math.max(0, Number(e.target.value) - bonusRegra8 - bonusRegra13 - bonusRegra25 - bonusTrilha4 - bonusTrilha7 - bonusMonstruoso10 - bonusInventario - bonusInternosHook));
+                        handleMudarPericia(nome, 'outros', Math.max(0, Number(e.target.value) - bonusRegra8 - bonusRegra13 - bonusRegra25 - bonusTrilha4 - bonusTrilha7 - bonusMonstruoso10 - bonusInternosHook));
                       }}
                       className={`w-11 border-b bg-transparent text-center font-bold outline-none ${corTexto} ${corBorda}`}
                     />
@@ -456,7 +439,7 @@ export const PericiasTable: React.FC = () => {
                                   regrasAtivas={regrasAtivas}
                                   limites={limites}
                                   totais={totais}
-                                  status={status}
+                                  nivel={nivel}
                                 />
                               ))}
 
@@ -517,4 +500,4 @@ export const PericiasTable: React.FC = () => {
       )}
     </div>
   );
-};
+});

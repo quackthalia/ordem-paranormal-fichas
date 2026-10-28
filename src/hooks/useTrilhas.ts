@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../services/supabase';
 import type { Trilha, TrilhaSelecionada } from '../types';
 
@@ -188,7 +188,7 @@ export function useTrilhas(): UseTrilhasReturn {
     [nomesPericias]
   );
 
-  return {
+  return useMemo(() => ({
     trilhas,
     trilhaSelecionada,
     setTrilhaSelecionada,
@@ -201,5 +201,16 @@ export function useTrilhas(): UseTrilhasReturn {
     selecionarTrilha,
     selecionarVersatilidade,
     nomePericia,
-  };
+  }), [
+    trilhas,
+    trilhaSelecionada,
+    versatilidadeSelecionada,
+    trilhasExpandidas,
+    toggleTrilhaExpandida,
+    loading,
+    error,
+    selecionarTrilha,
+    selecionarVersatilidade,
+    nomePericia,
+  ]);
 }

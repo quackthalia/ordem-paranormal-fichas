@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '../services/supabase';
 import type { Ritual } from '../types';
 
@@ -41,7 +41,8 @@ export function useRituais(): UseRituaisReturn & {
   aprenderRitual: (ritual: import('../types').RitualAprendido) => void;
   esquecerRitual: (origem: string) => void;
   editarRitual: (origem: string, customNome?: string, customDesc?: string, customProps?: import('../types').RitualAprendido['customProps']) => void;
-  atualizarRituaisAprendidos: (novos: import('../types').RitualAprendido[]) => void;
+  atualizarRituaisAprendidos: React.Dispatch<React.SetStateAction<import('../types').RitualAprendido[]>>;
+  setRituaisAprendidos: React.Dispatch<React.SetStateAction<import('../types').RitualAprendido[]>>;
   simbolosRituais: Map<number, Record<string, string>>;
   getSimboloUrl: (codigo: number, elemento?: string) => string;
 } {
@@ -53,13 +54,13 @@ export function useRituais(): UseRituaisReturn & {
   // 🔥 NOVO ESTADO: Rituais Aprendidos
   const [rituaisAprendidos, setRituaisAprendidos] = useState<import('../types').RitualAprendido[]>([]);
 
-  const simbolosRituais = new Map(simbolosRaw.map(s => [s.codigo, s.urls]));
-  const getSimboloUrl = (codigo: number, elemento?: string) => {
+  const simbolosRituais = useMemo(() => new Map(simbolosRaw.map(s => [s.codigo, s.urls])), [simbolosRaw]);
+  const getSimboloUrl = useCallback((codigo: number, elemento?: string) => {
     const urls = simbolosRituais.get(codigo);
     if (!urls) return '';
     if (elemento && urls[elemento.trim().toLowerCase()]) return urls[elemento.trim().toLowerCase()];
     return urls.default;
-  };
+  }, [simbolosRituais]);
 
   useEffect(() => {
     let cancelled = false;
@@ -116,15 +117,15 @@ export function useRituais(): UseRituaisReturn & {
     return () => { cancelled = true; };
   }, []);
 
-  const aprenderRitual = (ritual: import('../types').RitualAprendido) => {
+  const aprenderRitual = useCallback((ritual: import('../types').RitualAprendido) => {
     setRituaisAprendidos(prev => [...prev, ritual]);
-  };
+  }, []);
 
-  const esquecerRitual = (origem: string) => {
+  const esquecerRitual = useCallback((origem: string) => {
     setRituaisAprendidos(prev => prev.filter(r => r.origem !== origem));
-  };
+  }, []);
 
-  const editarRitual = (origem: string, customNome?: string, customDesc?: string, customProps?: import('../types').RitualAprendido['customProps']) => {
+  const editarRitual = useCallback((origem: string, customNome?: string, customDesc?: string, customProps?: import('../types').RitualAprendido['customProps']) => {
     setRituaisAprendidos(prev => prev.map(r => {
       if (r.origem === origem) {
         return {
@@ -136,7 +137,29 @@ export function useRituais(): UseRituaisReturn & {
       }
       return r;
     }));
-  };
+  }, []);
 
-  return { rituais, loading, error, rituaisAprendidos, aprenderRitual, esquecerRitual, editarRitual, atualizarRituaisAprendidos: setRituaisAprendidos, simbolosRituais, getSimboloUrl };
+  return useMemo(() => ({
+    rituais,
+    loading,
+    error,
+    rituaisAprendidos,
+    aprenderRitual,
+    esquecerRitual,
+    editarRitual,
+    atualizarRituaisAprendidos: setRituaisAprendidos,
+    setRituaisAprendidos,
+    simbolosRituais,
+    getSimboloUrl
+  }), [
+    rituais,
+    loading,
+    error,
+    rituaisAprendidos,
+    aprenderRitual,
+    esquecerRitual,
+    editarRitual,
+    simbolosRituais,
+    getSimboloUrl
+  ]);
 }

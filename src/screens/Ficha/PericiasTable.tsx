@@ -6,19 +6,19 @@ import { Collapse } from '../../components/Collapse';
 import { BonusCondicionaisPanel } from './BonusCondicionaisPanel';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Cores por grau de treino: destreinado → treinado → veterano → expert
+// Cores por grau de treino: destreinado (0) → treinado (5) → veterano (10) → expert (15)
 const COR_TREINO: Record<number, string> = {
   0: '!text-zinc-400',
   5: '!text-emerald-400',
-  10: '!text-amber-400',
-  15: '!text-green-400',
+  10: '!text-sky-400',
+  15: '!text-amber-400',
 };
 
 const BORDA_TREINO: Record<number, string> = {
   0: 'border-zinc-600',
   5: 'border-emerald-400',
-  10: 'border-amber-400',
-  15: 'border-green-400',
+  10: 'border-sky-400',
+  15: 'border-amber-400',
 };
 
 

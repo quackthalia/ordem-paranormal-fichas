@@ -1193,22 +1193,21 @@ const AbasPanelInner: React.FC = () => {
                                   />
                                   
                                   {t.Codigo_Trilha === 43 && (
-                                    <div className="mb-4 rounded-lg border border-zinc-700 bg-zinc-950/80 p-3.5 shadow-md flex flex-col gap-3">
-                                      <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+                                    <div className="mb-3 rounded-lg border border-zinc-800 bg-zinc-950/70 p-2.5 shadow flex flex-col gap-2">
+                                      <div className="flex items-center justify-between border-b border-zinc-800/80 pb-1.5">
                                         <div className="flex items-center gap-2">
-                                          <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                                          <span className="text-xs font-bold uppercase tracking-wider text-green-400">
-                                            Configuração da Trilha: Criatura Paranormal (Patrono)
+                                          <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+                                          <span className="text-[11px] font-bold uppercase tracking-wider text-green-400">
+                                            Patrono Paranormal
                                           </span>
                                         </div>
                                         {poderesExtras['servente_elemento_primario'] && (
-                                          <div className="flex items-center gap-1.5">
-                                            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Elementos:</span>
-                                            <span className={`rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${getBadgeElemento(poderesExtras['servente_elemento_primario'])}`}>
+                                          <div className="flex items-center gap-1">
+                                            <span className={`rounded px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wider ${getBadgeElemento(poderesExtras['servente_elemento_primario'])}`}>
                                               {poderesExtras['servente_elemento_primario']}
                                             </span>
                                             {poderesExtras['servente_elemento_secundario'] && (
-                                              <span className={`rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${getBadgeElemento(poderesExtras['servente_elemento_secundario'])}`}>
+                                              <span className={`rounded px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wider ${getBadgeElemento(poderesExtras['servente_elemento_secundario'])}`}>
                                                 {poderesExtras['servente_elemento_secundario']}
                                               </span>
                                             )}
@@ -1217,29 +1216,26 @@ const AbasPanelInner: React.FC = () => {
                                       </div>
 
                                       <div className="flex flex-col gap-1">
-                                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                                          Nome da Criatura Paranormal:
+                                        <label className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">
+                                          Nome da Criatura:
                                         </label>
                                         <input
                                           type="text"
-                                          placeholder="Ex: O Espreitador, Dama de Sangue, Ceifador..."
+                                          placeholder="Ex: O Espreitador, Dama de Sangue..."
                                           value={poderesExtras['servente_criatura_nome'] || ''}
                                           onChange={(e) => {
                                             const val = e.target.value;
                                             setPoderesExtras(prev => ({ ...prev, servente_criatura_nome: val }));
                                           }}
-                                          className="w-full rounded border border-zinc-700 bg-zinc-900/90 px-3 py-1.5 text-xs text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-green-600 transition shadow-inner"
+                                          className="w-full rounded border border-zinc-800 bg-zinc-900/90 px-2.5 py-1 text-xs text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-green-600 transition"
                                         />
                                       </div>
 
-                                      <div className="flex flex-col gap-1.5">
-                                        <div className="flex items-center justify-between">
-                                          <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                                            Elemento Primário da Criatura:
-                                          </label>
-                                          <span className="text-[9px] text-zinc-500 italic">(Gera 2 rituais de 1º círculo)</span>
-                                        </div>
-                                        <div className="flex flex-wrap gap-2 items-center">
+                                      <div className="flex flex-col gap-1">
+                                        <label className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">
+                                          Elemento Primário:
+                                        </label>
+                                        <div className="flex flex-wrap gap-1.5 items-center">
                                           {(['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo'] as const).map(elem => {
                                             const isPrimario = (poderesExtras['servente_elemento_primario'] || 'Sangue') === elem;
                                             const estilo = isPrimario ? CORES_ELEMENTOS_BOTOES[elem].ativo : CORES_ELEMENTOS_BOTOES[elem].inativo;
@@ -1254,7 +1250,7 @@ const AbasPanelInner: React.FC = () => {
                                                     return { ...prev, servente_elemento_primario: elem, servente_elemento_secundario: sec };
                                                   });
                                                 }}
-                                                className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${estilo}`}
+                                                className={`px-2 py-0.5 rounded text-[11px] font-bold uppercase border transition ${estilo}`}
                                               >
                                                 {elem}
                                               </button>
@@ -1263,21 +1259,18 @@ const AbasPanelInner: React.FC = () => {
                                         </div>
                                       </div>
 
-                                      <div className="flex flex-col gap-1.5">
-                                        <div className="flex items-center justify-between">
-                                          <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                                            Elemento Secundário (Opcional):
-                                          </label>
-                                          <span className="text-[9px] text-zinc-500 italic">(Caso a criatura tenha dois elementos)</span>
-                                        </div>
-                                        <div className="flex flex-wrap gap-2 items-center">
+                                      <div className="flex flex-col gap-1">
+                                        <label className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">
+                                          Elemento Secundário:
+                                        </label>
+                                        <div className="flex flex-wrap gap-1.5 items-center">
                                           <button
                                             type="button"
                                             onClick={(e) => {
                                               e.stopPropagation();
                                               setPoderesExtras(prev => ({ ...prev, servente_elemento_secundario: '' }));
                                             }}
-                                            className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${
+                                            className={`px-2 py-0.5 rounded text-[11px] font-bold uppercase border transition ${
                                               !poderesExtras['servente_elemento_secundario']
                                                 ? 'bg-zinc-800 border-zinc-500 text-zinc-100 font-bold'
                                                 : 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300'
@@ -1298,7 +1291,7 @@ const AbasPanelInner: React.FC = () => {
                                                   e.stopPropagation();
                                                   setPoderesExtras(prev => ({ ...prev, servente_elemento_secundario: elem }));
                                                 }}
-                                                className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${estilo}`}
+                                                className={`px-2 py-0.5 rounded text-[11px] font-bold uppercase border transition ${estilo}`}
                                               >
                                                 {elem}
                                               </button>
@@ -1941,27 +1934,27 @@ return (
                                               </div>
                                             )}
                                              {t.Codigo_Trilha === 43 && nexLvl === 10 && (
-                                                <div className="px-3 pb-3 pt-2 border-t border-zinc-800/80 flex flex-col gap-2.5" onClick={e => e.stopPropagation()}>
+                                                <div className="px-3 pb-3 pt-2 border-t border-zinc-800/80 flex flex-col gap-2" onClick={e => e.stopPropagation()}>
                                                   <div className="flex flex-col gap-1">
-                                                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                                                      Criatura Paranormal (Patrono):
+                                                    <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">
+                                                      Nome da Criatura:
                                                     </span>
                                                     <input
                                                       type="text"
-                                                      placeholder="Nome da criatura..."
+                                                      placeholder="Ex: O Espreitador, Dama de Sangue..."
                                                       value={poderesExtras['servente_criatura_nome'] || ''}
                                                       onChange={(e) => {
                                                         const val = e.target.value;
                                                         setPoderesExtras(prev => ({ ...prev, servente_criatura_nome: val }));
                                                       }}
-                                                      className="w-full rounded border border-zinc-700 bg-zinc-900/90 px-3 py-1.5 text-xs text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-green-600 transition shadow-inner"
+                                                      className="w-full rounded border border-zinc-800 bg-zinc-900/90 px-2.5 py-1 text-xs text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-green-600 transition"
                                                     />
                                                   </div>
-                                                  <div className="flex flex-col gap-1.5">
-                                                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                                                      Elemento Primário (Patrono):
+                                                  <div className="flex flex-col gap-1">
+                                                    <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">
+                                                      Elemento Primário:
                                                     </span>
-                                                    <div className="flex flex-wrap gap-2 items-center">
+                                                    <div className="flex flex-wrap gap-1.5 items-center">
                                                       {(['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo'] as const).map(elem => {
                                                         const isPrimario = (poderesExtras['servente_elemento_primario'] || 'Sangue') === elem;
                                                         const estilo = isPrimario ? CORES_ELEMENTOS_BOTOES[elem].ativo : CORES_ELEMENTOS_BOTOES[elem].inativo;
@@ -1976,7 +1969,7 @@ return (
                                                                 return { ...prev, servente_elemento_primario: elem, servente_elemento_secundario: sec };
                                                               });
                                                             }}
-                                                            className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${estilo}`}
+                                                            className={`px-2 py-0.5 rounded text-[11px] font-bold uppercase border transition ${estilo}`}
                                                           >
                                                             {elem}
                                                           </button>
@@ -1984,18 +1977,18 @@ return (
                                                       })}
                                                     </div>
                                                   </div>
-                                                  <div className="flex flex-col gap-1.5">
-                                                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                                                      Elemento Secundário (Opcional):
+                                                  <div className="flex flex-col gap-1">
+                                                    <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">
+                                                      Elemento Secundário:
                                                     </span>
-                                                    <div className="flex flex-wrap gap-2 items-center">
+                                                    <div className="flex flex-wrap gap-1.5 items-center">
                                                       <button
                                                         type="button"
                                                         onClick={(e) => {
                                                           e.stopPropagation();
                                                           setPoderesExtras(prev => ({ ...prev, servente_elemento_secundario: '' }));
                                                         }}
-                                                        className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${
+                                                        className={`px-2 py-0.5 rounded text-[11px] font-bold uppercase border transition ${
                                                           !poderesExtras['servente_elemento_secundario']
                                                             ? 'bg-zinc-800 border-zinc-500 text-zinc-100 font-bold'
                                                             : 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300'
@@ -2016,7 +2009,7 @@ return (
                                                               e.stopPropagation();
                                                               setPoderesExtras(prev => ({ ...prev, servente_elemento_secundario: elem }));
                                                             }}
-                                                            className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${estilo}`}
+                                                            className={`px-2 py-0.5 rounded text-[11px] font-bold uppercase border transition ${estilo}`}
                                                           >
                                                             {elem}
                                                           </button>

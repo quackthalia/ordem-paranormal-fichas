@@ -42,6 +42,29 @@ const CORES_ELEMENTOS: Record<string, string> = {
   lista: '#888888',
 };
 
+const CORES_ELEMENTOS_BOTOES: Record<string, { ativo: string; inativo: string }> = {
+  Sangue: {
+    ativo: 'bg-red-950/80 border-red-500 text-red-200 shadow-[0_0_8px_rgba(239,68,68,0.3)]',
+    inativo: 'bg-zinc-900/80 border-red-900/40 text-red-400/80 hover:border-red-600 hover:text-red-300'
+  },
+  Morte: {
+    ativo: 'bg-black border-zinc-400 text-white shadow-[0_0_8px_rgba(255,255,255,0.2)]',
+    inativo: 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200'
+  },
+  Conhecimento: {
+    ativo: 'bg-amber-950/80 border-amber-500 text-amber-200 shadow-[0_0_8px_rgba(245,158,11,0.3)]',
+    inativo: 'bg-zinc-900/80 border-amber-900/40 text-amber-400/80 hover:border-amber-600 hover:text-amber-300'
+  },
+  Energia: {
+    ativo: 'bg-purple-950/80 border-purple-500 text-purple-200 shadow-[0_0_8px_rgba(168,85,247,0.3)]',
+    inativo: 'bg-zinc-900/80 border-purple-900/40 text-purple-400/80 hover:border-purple-600 hover:text-purple-300'
+  },
+  Medo: {
+    ativo: 'bg-zinc-100 border-white text-zinc-950 font-black shadow-[0_0_10px_rgba(255,255,255,0.5)]',
+    inativo: 'bg-zinc-900/80 border-zinc-600 text-zinc-300 hover:border-zinc-400 hover:text-white'
+  }
+};
+
 function sanidadePorNivel(classe: string | null): number {
   switch (classe) {
     case 'Especialista': return 3;
@@ -1169,6 +1192,122 @@ const AbasPanelInner: React.FC = () => {
                                     dangerouslySetInnerHTML={{ __html: formatarDescricao(isVersatilidade ? `Em ${regras['nex_experiencia'] ? 'Nível 10' : 'NEX 50%'}, escolha entre receber um poder de ${classe.toLowerCase()} ou o primeiro poder de uma trilha de ${classe.toLowerCase()} que não a sua.<br/><br/>Trilha Escolhida: <strong>${t.Nome_Trilha}</strong>` : t.Descricao_Trilha) }}
                                   />
                                   
+                                  {t.Codigo_Trilha === 43 && (
+                                    <div className="mb-4 rounded-lg border border-zinc-700 bg-zinc-950/80 p-3.5 shadow-md flex flex-col gap-3">
+                                      <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+                                        <div className="flex items-center gap-2">
+                                          <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                                          <span className="text-xs font-bold uppercase tracking-wider text-green-400">
+                                            Configuração da Trilha: Criatura Paranormal (Patrono)
+                                          </span>
+                                        </div>
+                                        {poderesExtras['servente_elemento_primario'] && (
+                                          <div className="flex items-center gap-1.5">
+                                            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Elementos:</span>
+                                            <span className={`rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${getBadgeElemento(poderesExtras['servente_elemento_primario'])}`}>
+                                              {poderesExtras['servente_elemento_primario']}
+                                            </span>
+                                            {poderesExtras['servente_elemento_secundario'] && (
+                                              <span className={`rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${getBadgeElemento(poderesExtras['servente_elemento_secundario'])}`}>
+                                                {poderesExtras['servente_elemento_secundario']}
+                                              </span>
+                                            )}
+                                          </div>
+                                        )}
+                                      </div>
+
+                                      <div className="flex flex-col gap-1">
+                                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                                          Nome da Criatura Paranormal:
+                                        </label>
+                                        <input
+                                          type="text"
+                                          placeholder="Ex: O Espreitador, Dama de Sangue, Ceifador..."
+                                          value={poderesExtras['servente_criatura_nome'] || ''}
+                                          onChange={(e) => {
+                                            const val = e.target.value;
+                                            setPoderesExtras(prev => ({ ...prev, servente_criatura_nome: val }));
+                                          }}
+                                          className="w-full rounded border border-zinc-700 bg-zinc-900/90 px-3 py-1.5 text-xs text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-green-600 transition shadow-inner"
+                                        />
+                                      </div>
+
+                                      <div className="flex flex-col gap-1.5">
+                                        <div className="flex items-center justify-between">
+                                          <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                                            Elemento Primário da Criatura:
+                                          </label>
+                                          <span className="text-[9px] text-zinc-500 italic">(Gera 2 rituais de 1º círculo)</span>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2 items-center">
+                                          {(['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo'] as const).map(elem => {
+                                            const isPrimario = (poderesExtras['servente_elemento_primario'] || 'Sangue') === elem;
+                                            const estilo = isPrimario ? CORES_ELEMENTOS_BOTOES[elem].ativo : CORES_ELEMENTOS_BOTOES[elem].inativo;
+                                            return (
+                                              <button
+                                                key={elem}
+                                                type="button"
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  setPoderesExtras(prev => {
+                                                    const sec = prev['servente_elemento_secundario'] === elem ? '' : prev['servente_elemento_secundario'];
+                                                    return { ...prev, servente_elemento_primario: elem, servente_elemento_secundario: sec };
+                                                  });
+                                                }}
+                                                className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${estilo}`}
+                                              >
+                                                {elem}
+                                              </button>
+                                            );
+                                          })}
+                                        </div>
+                                      </div>
+
+                                      <div className="flex flex-col gap-1.5">
+                                        <div className="flex items-center justify-between">
+                                          <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                                            Elemento Secundário (Opcional):
+                                          </label>
+                                          <span className="text-[9px] text-zinc-500 italic">(Caso a criatura tenha dois elementos)</span>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2 items-center">
+                                          <button
+                                            type="button"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              setPoderesExtras(prev => ({ ...prev, servente_elemento_secundario: '' }));
+                                            }}
+                                            className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${
+                                              !poderesExtras['servente_elemento_secundario']
+                                                ? 'bg-zinc-800 border-zinc-500 text-zinc-100 font-bold'
+                                                : 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300'
+                                            }`}
+                                          >
+                                            Nenhum
+                                          </button>
+                                          {(['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo'] as const).map(elem => {
+                                            const primario = poderesExtras['servente_elemento_primario'] || 'Sangue';
+                                            if (elem === primario) return null;
+                                            const isSec = poderesExtras['servente_elemento_secundario'] === elem;
+                                            const estilo = isSec ? CORES_ELEMENTOS_BOTOES[elem].ativo : CORES_ELEMENTOS_BOTOES[elem].inativo;
+                                            return (
+                                              <button
+                                                key={elem}
+                                                type="button"
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  setPoderesExtras(prev => ({ ...prev, servente_elemento_secundario: elem }));
+                                                }}
+                                                className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${estilo}`}
+                                              >
+                                                {elem}
+                                              </button>
+                                            );
+                                          })}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
                                   <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-green-400 border-b border-zinc-800 pb-1">
                                     {isVersatilidade ? 'Poder da Trilha' : 'Habilidades da Trilha'}
                                   </h4>
@@ -1802,97 +1941,91 @@ return (
                                               </div>
                                             )}
                                              {t.Codigo_Trilha === 43 && nexLvl === 10 && (
-                                               <div className="px-3 pb-3 pt-2 border-t border-zinc-800/80 flex flex-col gap-2.5" onClick={e => e.stopPropagation()}>
-                                                 <div className="flex flex-col gap-1">
-                                                   <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                                                     Criatura Paranormal (Patrono):
-                                                   </span>
-                                                   <input
-                                                     type="text"
-                                                     placeholder="Nome da criatura..."
-                                                     value={poderesExtras['servente_criatura_nome'] || ''}
-                                                     onChange={(e) => {
-                                                       const val = e.target.value;
-                                                       setPoderesExtras(prev => ({ ...prev, servente_criatura_nome: val }));
-                                                     }}
-                                                     className="w-full rounded border border-zinc-700 bg-zinc-900/90 px-3 py-1.5 text-xs text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-green-600 transition"
-                                                   />
-                                                 </div>
-                                                 <div className="flex flex-col gap-1.5">
-                                                   <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                                                     Elemento Primário (Patrono):
-                                                   </span>
-                                                   <div className="flex flex-wrap gap-2 items-center">
-                                                     {(['Sangue', 'Morte', 'Conhecimento', 'Energia'] as const).map(elem => {
-                                                       const isPrimario = (poderesExtras['servente_elemento_primario'] || 'Sangue') === elem;
-                                                       return (
-                                                         <button
-                                                           key={elem}
-                                                           type="button"
-                                                           onClick={(e) => {
-                                                             e.stopPropagation();
-                                                             setPoderesExtras(prev => {
-                                                               const sec = prev['servente_elemento_secundario'] === elem ? '' : prev['servente_elemento_secundario'];
-                                                               return { ...prev, servente_elemento_primario: elem, servente_elemento_secundario: sec };
-                                                             });
-                                                           }}
-                                                           className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${
-                                                             isPrimario
-                                                               ? 'bg-green-950/70 border-green-500 text-green-300 shadow-sm'
-                                                               : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
-                                                           }`}
-                                                         >
-                                                           {elem}
-                                                         </button>
-                                                       );
-                                                     })}
-                                                   </div>
-                                                 </div>
-                                                 <div className="flex flex-col gap-1.5">
-                                                   <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                                                     Elemento Secundário (Opcional):
-                                                   </span>
-                                                   <div className="flex flex-wrap gap-2 items-center">
-                                                     <button
-                                                       type="button"
-                                                       onClick={(e) => {
-                                                         e.stopPropagation();
-                                                         setPoderesExtras(prev => ({ ...prev, servente_elemento_secundario: '' }));
-                                                       }}
-                                                       className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${
-                                                         !poderesExtras['servente_elemento_secundario']
-                                                           ? 'bg-zinc-800 border-zinc-600 text-zinc-200'
-                                                           : 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300'
-                                                       }`}
-                                                     >
-                                                       Nenhum
-                                                     </button>
-                                                     {(['Sangue', 'Morte', 'Conhecimento', 'Energia'] as const).map(elem => {
-                                                       const primario = poderesExtras['servente_elemento_primario'] || 'Sangue';
-                                                       if (elem === primario) return null;
-                                                       const isSec = poderesExtras['servente_elemento_secundario'] === elem;
-                                                       return (
-                                                         <button
-                                                           key={elem}
-                                                           type="button"
-                                                           onClick={(e) => {
-                                                             e.stopPropagation();
-                                                             setPoderesExtras(prev => ({ ...prev, servente_elemento_secundario: elem }));
-                                                           }}
-                                                           className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${
-                                                             isSec
-                                                               ? 'bg-green-950/70 border-green-500 text-green-300 shadow-sm'
-                                                               : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
-                                                           }`}
-                                                         >
-                                                           {elem}
-                                                         </button>
-                                                       );
-                                                     })}
-                                                   </div>
-                                                 </div>
-                                               </div>
-                                             )}
+                                                <div className="px-3 pb-3 pt-2 border-t border-zinc-800/80 flex flex-col gap-2.5" onClick={e => e.stopPropagation()}>
+                                                  <div className="flex flex-col gap-1">
+                                                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                                                      Criatura Paranormal (Patrono):
+                                                    </span>
+                                                    <input
+                                                      type="text"
+                                                      placeholder="Nome da criatura..."
+                                                      value={poderesExtras['servente_criatura_nome'] || ''}
+                                                      onChange={(e) => {
+                                                        const val = e.target.value;
+                                                        setPoderesExtras(prev => ({ ...prev, servente_criatura_nome: val }));
+                                                      }}
+                                                      className="w-full rounded border border-zinc-700 bg-zinc-900/90 px-3 py-1.5 text-xs text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-green-600 transition shadow-inner"
+                                                    />
+                                                  </div>
+                                                  <div className="flex flex-col gap-1.5">
+                                                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                                                      Elemento Primário (Patrono):
+                                                    </span>
+                                                    <div className="flex flex-wrap gap-2 items-center">
+                                                      {(['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo'] as const).map(elem => {
+                                                        const isPrimario = (poderesExtras['servente_elemento_primario'] || 'Sangue') === elem;
+                                                        const estilo = isPrimario ? CORES_ELEMENTOS_BOTOES[elem].ativo : CORES_ELEMENTOS_BOTOES[elem].inativo;
+                                                        return (
+                                                          <button
+                                                            key={elem}
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                              e.stopPropagation();
+                                                              setPoderesExtras(prev => {
+                                                                const sec = prev['servente_elemento_secundario'] === elem ? '' : prev['servente_elemento_secundario'];
+                                                                return { ...prev, servente_elemento_primario: elem, servente_elemento_secundario: sec };
+                                                              });
+                                                            }}
+                                                            className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${estilo}`}
+                                                          >
+                                                            {elem}
+                                                          </button>
+                                                        );
+                                                      })}
+                                                    </div>
+                                                  </div>
+                                                  <div className="flex flex-col gap-1.5">
+                                                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                                                      Elemento Secundário (Opcional):
+                                                    </span>
+                                                    <div className="flex flex-wrap gap-2 items-center">
+                                                      <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                          e.stopPropagation();
+                                                          setPoderesExtras(prev => ({ ...prev, servente_elemento_secundario: '' }));
+                                                        }}
+                                                        className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${
+                                                          !poderesExtras['servente_elemento_secundario']
+                                                            ? 'bg-zinc-800 border-zinc-500 text-zinc-100 font-bold'
+                                                            : 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300'
+                                                        }`}
+                                                      >
+                                                        Nenhum
+                                                      </button>
+                                                      {(['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo'] as const).map(elem => {
+                                                        const primario = poderesExtras['servente_elemento_primario'] || 'Sangue';
+                                                        if (elem === primario) return null;
+                                                        const isSec = poderesExtras['servente_elemento_secundario'] === elem;
+                                                        const estilo = isSec ? CORES_ELEMENTOS_BOTOES[elem].ativo : CORES_ELEMENTOS_BOTOES[elem].inativo;
+                                                        return (
+                                                          <button
+                                                            key={elem}
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                              e.stopPropagation();
+                                                              setPoderesExtras(prev => ({ ...prev, servente_elemento_secundario: elem }));
+                                                            }}
+                                                            className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${estilo}`}
+                                                          >
+                                                            {elem}
+                                                          </button>
+                                                        );
+                                                      })}
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              )}
                                          </Collapse>
                                       </div>
                                     );
@@ -2974,6 +3107,7 @@ return (
                           const chave = (slot as any).chave;
                           const elem = (slot as any).elementoFiltro;
                           const corBorder = elem === 'Sangue' ? 'border-l-red-600 hover:border-red-600' :
+                                            elem === 'Medo' ? 'border-l-zinc-200 hover:border-zinc-100' :
                                             elem === 'Morte' ? 'border-l-zinc-400 hover:border-zinc-400' :
                                             elem === 'Conhecimento' ? 'border-l-yellow-600 hover:border-yellow-600' :
                                             elem === 'Energia' ? 'border-l-purple-600 hover:border-purple-600' :

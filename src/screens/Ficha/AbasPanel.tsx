@@ -3266,13 +3266,13 @@ return (
                                   maxCirculo: slot.maxCirculo,
                                   circuloFixo: (slot as any).circuloFixo
                                 })}
-                                className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-yellow-600 border-l-4 bg-zinc-900/40 transition hover:border-yellow-600 hover:bg-zinc-900/80"
+                                className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-green-800 border-l-4 bg-zinc-900/40 transition hover:border-green-800 hover:bg-zinc-900/80"
                                 style={{ borderLeftStyle: 'solid' }}
                               >
                                 <div className="flex items-center justify-between gap-3 bg-zinc-800/40 px-4 py-3 transition group-hover:bg-zinc-800/60">
                                   <div className="flex flex-col items-start gap-0.5 text-left">
                                     <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">Escolher Ritual</span>
-                                    <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-400 group-hover:text-zinc-300">
+                                    <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-500 group-hover:text-zinc-400">
                                       {labelSlot}
                                     </span>
                                   </div>
@@ -3295,7 +3295,7 @@ return (
                                         Recusar
                                       </button>
                                     )}
-                                    <span className="whitespace-nowrap rounded bg-yellow-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-yellow-400 transition group-hover:bg-yellow-900/60 group-hover:text-yellow-300">+ Adicionar</span>
+                                    <span className="whitespace-nowrap rounded bg-green-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-green-400 transition group-hover:bg-green-900/60 group-hover:text-green-300">+ Adicionar</span>
                                   </div>
                                 </div>
                               </div>

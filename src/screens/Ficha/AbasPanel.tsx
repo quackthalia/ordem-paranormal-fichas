@@ -181,6 +181,7 @@ const AbasPanelInner: React.FC = () => {
     temMonstruosoEsp10, temMonstruosoEsp40, temMonstruosoEsp65, temMonstruosoEsp75, temMonstruosoEsp99, isMonstruosoEspAtivo,
     temMonstruosoOcult10, temMonstruosoOcult40, temMonstruosoOcult65, temMonstruosoOcult75, temMonstruosoOcult99, isMonstruosoOcultAtivo,
     temVampiro10, temVampiro40, temVampiro65, temVampiro99, vampiroArquetipo,
+    temServente10, temServente40, temServente65, temServente99, serventeElementoPrimario, serventeElementoSecundario,
   } = useRPG();
 
   const [escolhendoRitualPlaceholder, setEscolhendoRitualPlaceholder] = React.useState<{ origem: string, nex?: number, maxCirculo?: number, circuloFixo?: number, elementoFiltro?: string } | null>(null);

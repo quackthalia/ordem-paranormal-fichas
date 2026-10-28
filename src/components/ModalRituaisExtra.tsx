@@ -1,6 +1,6 @@
 import React, { useState, useMemo , useRef, useEffect} from 'react';
 import type { Ritual, ClasseRPG } from '../types';
-import { sortPorElementoENome } from '../utils/rpgRules';
+import { sortPorElementoENome, isRitualExclusivoTrilha99 } from '../utils/rpgRules';
 import { Collapse } from './Collapse';
 
 interface ModalRituaisExtraProps {
@@ -83,8 +83,8 @@ export const ModalRituaisExtra: React.FC<ModalRituaisExtraProps> = ({
   // Filtragem
   const listaFiltrada = useMemo(() => {
     return rituais.filter(r => {
-      // Regra 1: Banidos ou já aprendidos
-      if (BANNED_RITUAIS.includes(r.Codigo_Ritual)) return false;
+      // Regra 1: Banidos, exclusivos de trilhas 99% ou já aprendidos
+      if (BANNED_RITUAIS.includes(r.Codigo_Ritual) || isRitualExclusivoTrilha99(r.Codigo_Ritual) || isRitualExclusivoTrilha99(r.Nome_Ritual)) return false;
       
       
       // Regra 3: Elemento Selecionado

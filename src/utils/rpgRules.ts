@@ -1,5 +1,33 @@
 import type { Atributos, ClasseRPG, LimiteCirculos } from '../types';
 
+/** Rituais exclusivos de Trilhas no NEX 99% que não podem ser aprendidos por nenhum outro meio */
+export const RITUAIS_EXCLUSIVOS_TRILHA_99_IDS = [
+  10, // Canalizar o Medo (Conduíte 99%)
+  17, // Conhecendo o Medo (Graduado 99%)
+  49, // Lâmina do Medo (Lâmina Paranormal 99%)
+  53, // Medo Tangível (Flagelador 99%)
+  64, // Presença do Medo (Intuitivo 99%)
+  116 // Controlar as Sombras (Viajante das Sombras 99%)
+];
+
+export const RITUAIS_EXCLUSIVOS_TRILHA_99_NOMES = [
+  'canalizar o medo',
+  'conhecendo o medo',
+  'lâmina do medo',
+  'medo tangível',
+  'presença do medo',
+  'controlar as sombras',
+  'viajante das sombras'
+];
+
+export function isRitualExclusivoTrilha99(codigoOuNome: number | string): boolean {
+  if (typeof codigoOuNome === 'number') {
+    return RITUAIS_EXCLUSIVOS_TRILHA_99_IDS.includes(codigoOuNome);
+  }
+  const lower = String(codigoOuNome || '').trim().toLowerCase();
+  return RITUAIS_EXCLUSIVOS_TRILHA_99_NOMES.some(n => lower === n || lower.includes(n));
+}
+
 export const CORES_ELEMENTOS: Record<string, string> = {
   sangue: '#991b1b',
   morte: '#18181b', // or gray/zinc

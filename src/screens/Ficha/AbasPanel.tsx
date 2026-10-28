@@ -952,6 +952,37 @@ const AbasPanelInner: React.FC = () => {
         }
       }
 
+      
+      // --- TRILHA SERVENTE 65% (Poder Paranormal do Elemento Primário) ---
+      if (temServente65) {
+        const extraKey = 'extra_servente_65';
+        const usouServente65 = poderesEscolhidos[extraKey];
+        const elemFiltro = serventeElementoPrimario || 'Sangue';
+        if (usouServente65) {
+          lista.push({
+            id: `escolha_${extraKey}`,
+            nome: usouServente65.nome,
+            descricao: usouServente65.descricao,
+            tipo: `Servente (65% - ${elemFiltro})`,
+            categoria: 'paranormais',
+            fonte: usouServente65.fonte,
+            preRequisitos: usouServente65.preRequisitos,
+            elemento: usouServente65.elemento || elemFiltro,
+            afinidade: usouServente65.afinidade
+          });
+        } else {
+          lista.push({
+            id: `escolha_${extraKey}`,
+            nome: `Escolher Poder Paranormal (${elemFiltro})`,
+            descricao: `Sua trilha Servente concede em 65% um poder paranormal do elemento primário da sua criatura (${elemFiltro}).`,
+            tipo: `Servente (65% - ${elemFiltro})`,
+            isSlotVazio: true,
+            nexDoSlot: 0,
+            categoria: 'paranormais'
+          });
+        }
+      }
+
       if (regrasAutomaticasAtivas.has(39)) {
         const extraKey = 'extra_regra39';
         const usouRegra39 = poderesEscolhidos[extraKey];
@@ -1121,6 +1152,10 @@ const AbasPanelInner: React.FC = () => {
                                   setTipoModalPoderes('utilidade');
                                   setAbaModalPoderes('classe');
                                   setNexModalAberto('extra_monstruoso_ocult_40');
+                                } else if (hab.id === 'escolha_extra_servente_65') {
+                                  setTipoModalPoderes('utilidade');
+                                  setAbaModalPoderes('paranormais');
+                                  setNexModalAberto('extra_servente_65');
                                 } else if (hab.id === 'escolha_extra_regra39') {
                                   setNexModalAberto('extra_regra39');
                                 } else {
@@ -2062,11 +2097,15 @@ return (
                                          if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 43) {
                                             if (trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 43) {
                                               rituaisHook.atualizarRituaisAprendidos(prev => prev.filter(r => !r.origem?.startsWith('servente_')));
+                                               poderesHook.removerPoder('extra_servente_65');
+                                               poderesHook.removerPoder('extra_servente_65');
                                               setPoderesExtras(prev => {
                                                 const n = { ...prev };
                                                 delete n.servente_criatura_nome;
                                                 delete n.servente_elemento_primario;
                                                 delete n.servente_elemento_secundario;
+                                                 delete n.extra_servente_65;
+                                                 delete n.extra_servente_65;
                                                 return n;
                                               });
                                             }

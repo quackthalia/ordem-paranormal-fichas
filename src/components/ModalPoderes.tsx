@@ -422,7 +422,10 @@ export const ModalPoderes: React.FC = () => {
   const listaFiltrada = useMemo(() => {
     let filtrada = listaFiltradaBase.filter((poder: any) => {
       if (abaModalPoderes === 'paranormais') {
-        if (subAbaElemento) {
+        if (nexModalAberto === 'extra_servente_65') {
+          const elemFiltro = serventeElementoPrimario || 'Sangue';
+          if (poder.Elemento?.toLowerCase() !== elemFiltro.toLowerCase()) return false;
+        } else if (subAbaElemento) {
           if (poder.Elemento?.toLowerCase() !== subAbaElemento.toLowerCase()) return false;
         }
       }
@@ -471,7 +474,7 @@ export const ModalPoderes: React.FC = () => {
         ['gerais', 'Poderes Gerais'],
       ];
     }
-    if ((nexModalAberto !== null && typeof nexModalAberto === 'number' && nexModalAberto > 1000) || nexModalAberto === 'extra_regra1' || (typeof nexModalAberto === 'string' && nexModalAberto.startsWith('extra_dedo_decepado'))) {
+    if ((nexModalAberto !== null && typeof nexModalAberto === 'number' && nexModalAberto > 1000) || nexModalAberto === 'extra_regra1' || nexModalAberto === 'extra_servente_65' || (typeof nexModalAberto === 'string' && nexModalAberto.startsWith('extra_dedo_decepado'))) {
       return [['paranormais', 'Poderes Paranormais']];
     }
 
@@ -625,7 +628,7 @@ export const ModalPoderes: React.FC = () => {
         <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-display text-lg uppercase tracking-wide text-zinc-100 m-0">
-              ESCOLHER PODER — <span className="text-green-500">{typeof nexModalAberto === 'string' ? (nexModalAberto.startsWith('extra_dedo_decepado') ? 'DEDO DECEPADO' : nexModalAberto === 'extra_monstruoso_ocult_40' ? 'MONSTRUOSO 40%' : 'PODER EXTRA') : (regras['nex_experiencia'] ? `NÍVEL ${calcularNivel((nexModalAberto as number) > 1000 ? (nexModalAberto as number) - 1000 : (nexModalAberto as number))}` : `NEX ${nexModalAberto && (nexModalAberto as number) > 1000 ? (nexModalAberto as number) - 1000 : nexModalAberto}%`)}</span>
+              ESCOLHER PODER — <span className="text-green-500">{typeof nexModalAberto === 'string' ? (nexModalAberto.startsWith('extra_dedo_decepado') ? 'DEDO DECEPADO' : nexModalAberto === 'extra_monstruoso_ocult_40' ? 'MONSTRUOSO 40%' : nexModalAberto === 'extra_servente_65' ? `SERVENTE 65% (${serventeElementoPrimario || 'SANGUE'})` : 'PODER EXTRA') : (regras['nex_experiencia'] ? `NÍVEL ${calcularNivel((nexModalAberto as number) > 1000 ? (nexModalAberto as number) - 1000 : (nexModalAberto as number))}` : `NEX ${nexModalAberto && (nexModalAberto as number) > 1000 ? (nexModalAberto as number) - 1000 : nexModalAberto}%`)}</span>
             </h3>
             <button
               onClick={() => setNexModalAberto(null)}
@@ -692,7 +695,7 @@ export const ModalPoderes: React.FC = () => {
           </div>
         )}
 
-        {abaModalPoderes === 'paranormais' && (
+        {abaModalPoderes === 'paranormais' && nexModalAberto !== 'extra_servente_65' && (
           <div className="flex flex-wrap items-center gap-2 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
             <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Elementos:</span>
             <button

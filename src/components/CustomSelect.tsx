@@ -9,11 +9,12 @@ interface CustomSelectProps {
   wrapperClassName?: string;
   placeholder?: string;
   hideIcon?: boolean;
+  align?: 'left' | 'center' | 'right';
   /** Renderiza a lista no document.body (evita ser cortada por containers com overflow-hidden) */
   portal?: boolean;
 }
 
-export function CustomSelect({ value, onChange, options, className = '', wrapperClassName = 'w-full', placeholder, hideIcon = false, portal = false }: CustomSelectProps) {
+export function CustomSelect({ value, onChange, options, className = '', wrapperClassName = 'w-full', placeholder, hideIcon = false, align, portal = false }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -67,8 +68,12 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
 
   const selectedOption = normalizedOptions.find(opt => opt.value === value);
 
+  const isCentered = align === 'center' || (!align && (hideIcon || className.includes('text-center')));
+  const isRight = align === 'right' || (!align && className.includes('text-right'));
+  const textAlignment = isCentered ? 'text-center' : isRight ? 'text-right' : 'text-left';
+
   const lista = (
-    <ul className="max-h-60 overflow-auto custom-scrollbar py-1 text-sm text-zinc-300">
+    <ul className={`max-h-60 overflow-auto custom-scrollbar py-1 text-sm text-zinc-300 ${textAlignment}`}>
       {normalizedOptions.map((opt) => (
         <li
           key={opt.value}
@@ -94,7 +99,7 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
             value === opt.value ? 'bg-green-900/30 font-bold text-green-400' : ''
           }`}
         >
-          <div className="flex flex-col">
+          <div className={`flex flex-col ${isCentered ? 'items-center' : isRight ? 'items-end' : 'items-start'}`}>
             <span className="block truncate">{opt.label}</span>
             {opt.subtitle && (
               <span className="text-[10px] mt-0.5 whitespace-normal leading-tight text-red-400/80">
@@ -108,11 +113,11 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
   );
 
   return (
-    <div className={`relative text-left ${wrapperClassName}`} ref={containerRef}>
+    <div className={`relative ${textAlignment} ${wrapperClassName}`} ref={containerRef}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex w-full items-center ${hideIcon ? 'justify-center' : 'justify-between text-left'} rounded border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-sm text-zinc-100 outline-none hover:border-zinc-500 focus:border-green-600 transition ${className}`}
+        className={`flex w-full items-center ${hideIcon ? 'justify-center' : 'justify-between'} ${textAlignment} rounded border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-sm text-zinc-100 outline-none hover:border-zinc-500 focus:border-green-600 transition ${className}`}
       >
         <span className="block truncate">
           {selectedOption ? selectedOption.label : placeholder || 'Selecione...'}

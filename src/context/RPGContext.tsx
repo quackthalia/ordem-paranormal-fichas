@@ -194,6 +194,12 @@ interface RPGContextType {
   temViajanteDasSombras40: boolean;
   temViajanteDasSombras65: boolean;
   temViajanteDasSombras99: boolean;
+  temServente10: boolean;
+  temServente40: boolean;
+  temServente65: boolean;
+  temServente99: boolean;
+  serventeElementoPrimario: string;
+  serventeElementoSecundario: string;
   temMonstruoso10: boolean;
   temMonstruoso40: boolean;
   temMonstruoso65: boolean;
@@ -583,6 +589,28 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const temViajanteDasSombras40 = isTrilhaViajanteDasSombras && (regras['nex_experiencia'] ? effectiveNivel >= 8 : effectiveNex >= 40);
   const temViajanteDasSombras65 = isTrilhaViajanteDasSombras && (regras['nex_experiencia'] ? effectiveNivel >= 13 : effectiveNex >= 65);
   const temViajanteDasSombras99 = isTrilhaViajanteDasSombras && (regras['nex_experiencia'] ? effectiveNivel >= 20 : effectiveNex >= 99);
+
+  const isTrilhaServente = Boolean(
+    trilhasHook.trilhaSelecionada && (
+      Number(trilhasHook.trilhaSelecionada.Codigo_Trilha) === 43 ||
+      Number((trilhasHook.trilhaSelecionada as any)?.codigo_trilha) === 43 ||
+      String(trilhasHook.trilhaSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('servente')
+    )
+  );
+  const isVersatilidadeServente = Boolean(
+    trilhasHook.versatilidadeSelecionada && (
+      Number(trilhasHook.versatilidadeSelecionada.Codigo_Trilha) === 43 ||
+      Number((trilhasHook.versatilidadeSelecionada as any)?.codigo_trilha) === 43 ||
+      String(trilhasHook.versatilidadeSelecionada.Nome_Trilha || '').trim().toLowerCase().includes('servente')
+    )
+  );
+  const temServente10 = (isTrilhaServente && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10)) || (isVersatilidadeServente && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
+  const temServente40 = isTrilhaServente && (regras['nex_experiencia'] ? effectiveNivel >= 8 : effectiveNex >= 40);
+  const temServente65 = isTrilhaServente && (regras['nex_experiencia'] ? effectiveNivel >= 13 : effectiveNex >= 65);
+  const temServente99 = isTrilhaServente && (regras['nex_experiencia'] ? effectiveNivel >= 20 : effectiveNex >= 99);
+
+  const serventeElementoPrimario = poderesExtras['servente_elemento_primario'] || 'Sangue';
+  const serventeElementoSecundario = poderesExtras['servente_elemento_secundario'] || '';
 
   const isTrilhaMonstruoso = Boolean(
     trilhasHook.trilhaSelecionada && (
@@ -1973,6 +2001,12 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     temViajanteDasSombras40,
     temViajanteDasSombras65,
     temViajanteDasSombras99,
+    temServente10,
+    temServente40,
+    temServente65,
+    temServente99,
+    serventeElementoPrimario,
+    serventeElementoSecundario,
     temMonstruoso10,
     temMonstruoso40,
     temMonstruoso65,
@@ -2047,6 +2081,7 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     temAcrobata10, temAcrobata40, temAcrobata65, temAcrobata99,
     temVigilante10, temVigilante40, temVigilante65, temVigilante99,
     temViajanteDasSombras10, temViajanteDasSombras40, temViajanteDasSombras65, temViajanteDasSombras99,
+    temServente10, temServente40, temServente65, temServente99, serventeElementoPrimario, serventeElementoSecundario,
     temMonstruoso10, temMonstruoso40, temMonstruoso65, temMonstruoso75, temMonstruoso99,
     isMonstruosoAtivo10, isMonstruosoAtivo40, isMonstruosoAtivo65, isMonstruosoAtivo75,
     temMonstruosoEsp10, temMonstruosoEsp40, temMonstruosoEsp65, temMonstruosoEsp75, temMonstruosoEsp99, isMonstruosoEspAtivo,

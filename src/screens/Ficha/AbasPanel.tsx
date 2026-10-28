@@ -1800,6 +1800,98 @@ return (
                                                 </div>
                                               </div>
                                             )}
+                                             {t.Codigo_Trilha === 43 && nexLvl === 10 && (
+                                               <div className="px-3 pb-3 pt-2 border-t border-zinc-800/80 flex flex-col gap-2.5" onClick={e => e.stopPropagation()}>
+                                                 <div className="flex flex-col gap-1">
+                                                   <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                                                     Criatura Paranormal (Patrono):
+                                                   </span>
+                                                   <input
+                                                     type="text"
+                                                     placeholder="Nome da criatura..."
+                                                     value={poderesExtras['servente_criatura_nome'] || ''}
+                                                     onChange={(e) => {
+                                                       const val = e.target.value;
+                                                       setPoderesExtras(prev => ({ ...prev, servente_criatura_nome: val }));
+                                                     }}
+                                                     className="w-full rounded border border-zinc-700 bg-zinc-900/90 px-3 py-1.5 text-xs text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-green-600 transition"
+                                                   />
+                                                 </div>
+                                                 <div className="flex flex-col gap-1.5">
+                                                   <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                                                     Elemento Primário (Patrono):
+                                                   </span>
+                                                   <div className="flex flex-wrap gap-2 items-center">
+                                                     {(['Sangue', 'Morte', 'Conhecimento', 'Energia'] as const).map(elem => {
+                                                       const isPrimario = (poderesExtras['servente_elemento_primario'] || 'Sangue') === elem;
+                                                       return (
+                                                         <button
+                                                           key={elem}
+                                                           type="button"
+                                                           onClick={(e) => {
+                                                             e.stopPropagation();
+                                                             setPoderesExtras(prev => {
+                                                               const sec = prev['servente_elemento_secundario'] === elem ? '' : prev['servente_elemento_secundario'];
+                                                               return { ...prev, servente_elemento_primario: elem, servente_elemento_secundario: sec };
+                                                             });
+                                                           }}
+                                                           className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${
+                                                             isPrimario
+                                                               ? 'bg-green-950/70 border-green-500 text-green-300 shadow-sm'
+                                                               : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                                                           }`}
+                                                         >
+                                                           {elem}
+                                                         </button>
+                                                       );
+                                                     })}
+                                                   </div>
+                                                 </div>
+                                                 <div className="flex flex-col gap-1.5">
+                                                   <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                                                     Elemento Secundário (Opcional):
+                                                   </span>
+                                                   <div className="flex flex-wrap gap-2 items-center">
+                                                     <button
+                                                       type="button"
+                                                       onClick={(e) => {
+                                                         e.stopPropagation();
+                                                         setPoderesExtras(prev => ({ ...prev, servente_elemento_secundario: '' }));
+                                                       }}
+                                                       className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${
+                                                         !poderesExtras['servente_elemento_secundario']
+                                                           ? 'bg-zinc-800 border-zinc-600 text-zinc-200'
+                                                           : 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300'
+                                                       }`}
+                                                     >
+                                                       Nenhum
+                                                     </button>
+                                                     {(['Sangue', 'Morte', 'Conhecimento', 'Energia'] as const).map(elem => {
+                                                       const primario = poderesExtras['servente_elemento_primario'] || 'Sangue';
+                                                       if (elem === primario) return null;
+                                                       const isSec = poderesExtras['servente_elemento_secundario'] === elem;
+                                                       return (
+                                                         <button
+                                                           key={elem}
+                                                           type="button"
+                                                           onClick={(e) => {
+                                                             e.stopPropagation();
+                                                             setPoderesExtras(prev => ({ ...prev, servente_elemento_secundario: elem }));
+                                                           }}
+                                                           className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${
+                                                             isSec
+                                                               ? 'bg-green-950/70 border-green-500 text-green-300 shadow-sm'
+                                                               : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                                                           }`}
+                                                         >
+                                                           {elem}
+                                                         </button>
+                                                       );
+                                                     })}
+                                                   </div>
+                                                 </div>
+                                               </div>
+                                             )}
                                          </Collapse>
                                       </div>
                                     );
@@ -1840,7 +1932,19 @@ return (
                                              return n;
                                            });
                                          }
-                                         if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 32) {
+                                         if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 43) {
+                                            if (trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 43) {
+                                              rituaisHook.atualizarRituaisAprendidos(prev => prev.filter(r => !r.origem?.startsWith('servente_')));
+                                              setPoderesExtras(prev => {
+                                                const n = { ...prev };
+                                                delete n.servente_criatura_nome;
+                                                delete n.servente_elemento_primario;
+                                                delete n.servente_elemento_secundario;
+                                                return n;
+                                              });
+                                            }
+                                          }
+                                          if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 32) {
                                            if (trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 32) {
                                              rituaisHook.atualizarRituaisAprendidos(prev => prev.filter(r => !r.origem?.startsWith('adepto_')));
                                              setPoderesExtras(prev => {
@@ -1918,7 +2022,19 @@ return (
                                              return n;
                                            });
                                          }
-                                         if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 32) {
+                                         if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 43) {
+                                            if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha !== 43) {
+                                              rituaisHook.atualizarRituaisAprendidos(prev => prev.filter(r => !r.origem?.startsWith('servente_')));
+                                              setPoderesExtras(prev => {
+                                                const n = { ...prev };
+                                                delete n.servente_criatura_nome;
+                                                delete n.servente_elemento_primario;
+                                                delete n.servente_elemento_secundario;
+                                                return n;
+                                              });
+                                            }
+                                          }
+                                          if (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 32) {
                                            if (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha !== 32) {
                                              rituaisHook.atualizarRituaisAprendidos(prev => prev.filter(r => !r.origem?.startsWith('adepto_')));
                                              setPoderesExtras(prev => {
@@ -2496,6 +2612,82 @@ return (
           }
 
           // 3. Desbloqueio Cronológico por Círculo
+          // Slots Trilha Servente (Trilha 43)
+          const slotsServentePendentesList: any[] = [];
+          if (temServente10) {
+            // 10%: Dois slots de 1° círculo do elemento primário da criatura
+            [1, 2].forEach(slotIdx => {
+              const chave = `servente_10_${slotIdx}`;
+              const jaAprendeu = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === chave);
+              if (!jaAprendeu) {
+                slotsServentePendentesList.push({
+                  chave,
+                  index: 4010 + slotIdx,
+                  nex: 10,
+                  circuloFixo: 1,
+                  maxCirculo: 1,
+                  isOcultista: false,
+                  isServente: true,
+                  elementoFiltro: serventeElementoPrimario,
+                  labelDesc: `Ato de Devoção (1º Círculo - ${serventeElementoPrimario})`
+                });
+              }
+            });
+
+            // 40%: Mais um slot de ritual de qualquer círculo conhecido
+            if (temServente40) {
+              const chave = 'servente_40';
+              const jaAprendeu = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === chave);
+              if (!jaAprendeu) {
+                const maxC = effectiveNex >= 85 ? 4 : (effectiveNex >= 55 ? 3 : 2);
+                slotsServentePendentesList.push({
+                  chave,
+                  index: 4040,
+                  nex: 40,
+                  maxCirculo: maxC,
+                  isOcultista: false,
+                  isServente: true,
+                  labelDesc: `Ajuda Macabra (Até ${maxC}º Círculo)`
+                });
+              }
+            }
+
+            // 65%: Mais um slot de ritual de qualquer círculo conhecido
+            if (temServente65) {
+              const chave = 'servente_65';
+              const jaAprendeu = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === chave);
+              if (!jaAprendeu) {
+                const maxC = effectiveNex >= 85 ? 4 : 3;
+                slotsServentePendentesList.push({
+                  chave,
+                  index: 4065,
+                  nex: 65,
+                  maxCirculo: maxC,
+                  isOcultista: false,
+                  isServente: true,
+                  labelDesc: `Poder Compartilhado (Até ${maxC}º Círculo)`
+                });
+              }
+            }
+
+            // 99%: Mais um slot de ritual de qualquer círculo conhecido
+            if (temServente99) {
+              const chave = 'servente_99';
+              const jaAprendeu = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === chave);
+              if (!jaAprendeu) {
+                slotsServentePendentesList.push({
+                  chave,
+                  index: 4099,
+                  nex: 99,
+                  maxCirculo: 4,
+                  isOcultista: false,
+                  isServente: true,
+                  labelDesc: 'Encarnação Terrível (Até 4º Círculo)'
+                });
+              }
+            }
+          }
+
           const slotsMonstruosoPendentesList: any[] = [];
           if (temMonstruoso99 && monstruosoElemento === 'Conhecimento') {
             const chaveMonstruoso = 'monstruoso_99_conhecimento';
@@ -2527,7 +2719,7 @@ return (
             }
           }
 
-          const allRitualSlots = [...slotsPoderPendentesList, ...slotsOcultistaPendentesList, ...slotsOrigemPendentesList, ...slotsRegra61PendentesList, ...slotsRegra62PendentesList, ...slotsGraduadoPendentesList, ...slotsAdeptoPendentesList, ...slotsMonstruosoPendentesList];
+          const allRitualSlots = [...slotsPoderPendentesList, ...slotsOcultistaPendentesList, ...slotsOrigemPendentesList, ...slotsRegra61PendentesList, ...slotsRegra62PendentesList, ...slotsGraduadoPendentesList, ...slotsAdeptoPendentesList, ...slotsMonstruosoPendentesList, ...slotsServentePendentesList];
           const sortedSlots = allRitualSlots.sort((a, b) => {
              if (a.nex !== b.nex) return a.nex - b.nex;
              if (a.isOcultista && !b.isOcultista) return -1;
@@ -2777,6 +2969,38 @@ return (
                                 </div>
                               </div>
                             );
+                        } else if ((slot as any).isServente) {
+                          const chave = (slot as any).chave;
+                          const elem = (slot as any).elementoFiltro;
+                          const corBorder = elem === 'Sangue' ? 'border-l-red-600 hover:border-red-600' :
+                                            elem === 'Morte' ? 'border-l-zinc-400 hover:border-zinc-400' :
+                                            elem === 'Conhecimento' ? 'border-l-yellow-600 hover:border-yellow-600' :
+                                            elem === 'Energia' ? 'border-l-purple-600 hover:border-purple-600' :
+                                            'border-l-green-600 hover:border-green-600';
+                          return (
+                            <div
+                              key={`servente_${chave}_${idx}`}
+                              onClick={() => setEscolhendoRitualPlaceholder({
+                                origem: chave,
+                                nex: slot.nex,
+                                circuloFixo: (slot as any).circuloFixo,
+                                maxCirculo: slot.maxCirculo,
+                                elementoFiltro: elem
+                              })}
+                              className={`group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 ${corBorder} border-l-4 bg-zinc-900/40 transition hover:bg-zinc-900/80`}
+                              style={{ borderLeftStyle: 'solid' }}
+                            >
+                              <div className="flex items-center justify-between gap-3 bg-zinc-800/40 px-4 py-3 transition group-hover:bg-zinc-800/60">
+                                <div className="flex flex-col items-start gap-0.5 text-left">
+                                  <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">Escolher Ritual</span>
+                                  <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-400">
+                                    Servente - {(slot as any).labelDesc || 'Ritual'}
+                                  </span>
+                                </div>
+                                <span className="whitespace-nowrap rounded bg-green-900/40 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-green-400 transition group-hover:bg-green-900/60 group-hover:text-green-300">+ Adicionar</span>
+                              </div>
+                            </div>
+                          );
                         } else if ((slot as any).isMonstruosoOcult) {
                           const chave = (slot as any).chave;
                           const elem = (slot as any).elementoFiltro || monstruosoElemento;
@@ -3078,7 +3302,7 @@ return (
                                 )}
                                 <div className="flex flex-col gap-1 justify-center py-1">
                                   <div className="flex items-center gap-2">
-                                    <span className="text-sm font-bold text-zinc-100">{ritual.customNome || (ritual.learnedNome && ritual.learnedNome !== ritual.Nome_Ritual ? ritual.learnedNome : (ritual.Origem === 'trilha_conduite' ? `${ritual.Nome_Ritual} (Conduíte)` : (ritual.Origem === 'trilha_flagelador' ? `${ritual.Nome_Ritual} (Flagelador)` : (ritual.Origem === 'trilha_graduado' ? `${ritual.Nome_Ritual} (Graduado)` : (ritual.Origem === 'trilha_viajante_das_sombras' ? `${ritual.Nome_Ritual} (Viajante das Sombras)` : (ritual.Origem?.startsWith('adepto_') ? `${ritual.Nome_Ritual} (Adepto)` : (ritual.Origem?.startsWith('trilha_monstruoso_99_') || ritual.Origem === 'monstruoso_99_conhecimento' || ritual.Origem?.startsWith('monstruoso_ocult_99_') ? `${ritual.Nome_Ritual} (Monstruoso)` : ritual.Nome_Ritual)))))))}</span>
+                                    <span className="text-sm font-bold text-zinc-100">{ritual.customNome || (ritual.learnedNome && ritual.learnedNome !== ritual.Nome_Ritual ? ritual.learnedNome : (ritual.Origem === 'trilha_conduite' ? `${ritual.Nome_Ritual} (Conduíte)` : (ritual.Origem === 'trilha_flagelador' ? `${ritual.Nome_Ritual} (Flagelador)` : (ritual.Origem === 'trilha_graduado' ? `${ritual.Nome_Ritual} (Graduado)` : (ritual.Origem === 'trilha_viajante_das_sombras' ? `${ritual.Nome_Ritual} (Viajante das Sombras)` : (ritual.Origem?.startsWith('servente_') ? `${ritual.Nome_Ritual} (Servente)` : (ritual.Origem?.startsWith('adepto_') ? `${ritual.Nome_Ritual} (Adepto)` : (ritual.Origem?.startsWith('trilha_monstruoso_99_') || ritual.Origem === 'monstruoso_99_conhecimento' || ritual.Origem?.startsWith('monstruoso_ocult_99_') ? `${ritual.Nome_Ritual} (Monstruoso)` : ritual.Nome_Ritual))))))))}</span>
                                     <span className="rounded bg-blue-950/30 px-1.5 py-0.5 text-[10px] font-bold text-blue-400 border border-blue-900/50">
                                       {pe} PE
                                     </span>

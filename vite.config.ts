@@ -106,4 +106,7 @@ function agentesLocalStoragePlugin(): Plugin {
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss(), agentesLocalStoragePlugin()],
+  resolve: {
+    dedupe: ['react', 'react-dom'],
+  },
 })

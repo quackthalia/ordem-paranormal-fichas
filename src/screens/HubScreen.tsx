@@ -319,9 +319,19 @@ export const HubScreen: React.FC = () => {
                 Foto do Personagem
               </label>
               <div className="flex items-center gap-3">
-                <div className="h-16 w-16 shrink-0 overflow-hidden rounded border border-zinc-700 bg-zinc-950 flex items-center justify-center">
+                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded border border-zinc-700 bg-zinc-950 flex items-center justify-center">
                   {editFoto ? (
-                    <img src={editFoto} alt="Preview" className="h-full w-full object-cover" />
+                    <>
+                      <img src={editFoto} alt="Preview" className="h-full w-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => setEditFoto('')}
+                        title="Remover foto"
+                        className="absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/80 text-[10px] font-bold text-zinc-300 transition hover:bg-black hover:text-white cursor-pointer"
+                      >
+                        ✕
+                      </button>
+                    </>
                   ) : (
                     <span className="text-xs text-zinc-600">Sem foto</span>
                   )}
@@ -335,15 +345,6 @@ export const HubScreen: React.FC = () => {
                     >
                       Escolher Imagem
                     </button>
-                    {editFoto && (
-                      <button
-                        type="button"
-                        onClick={() => setEditFoto('')}
-                        className="rounded bg-red-950/60 px-3 py-1.5 text-xs font-bold text-red-400 hover:bg-red-900/60 transition cursor-pointer"
-                      >
-                        Remover
-                      </button>
-                    )}
                   </div>
                   <input
                     type="text"

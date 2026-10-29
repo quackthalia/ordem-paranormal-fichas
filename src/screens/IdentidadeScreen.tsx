@@ -148,10 +148,10 @@ export const IdentidadeScreen: React.FC = () => {
 
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className={`group relative flex h-72 w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border-2 transition ${
+                className={`group relative flex h-72 w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border transition ${
                   temFoto
-                    ? 'border-green-800/80 bg-zinc-900/40 shadow-xl hover:border-green-500'
-                    : 'border-dashed border-zinc-700 bg-zinc-900/30 hover:border-green-600 hover:bg-zinc-900/60'
+                    ? 'border-zinc-800 bg-zinc-900/40 hover:border-zinc-600'
+                    : 'border-dashed border-zinc-700 bg-zinc-900/30 hover:border-zinc-500 hover:bg-zinc-900/60'
                 }`}
               >
                 {temFoto ? (
@@ -161,7 +161,18 @@ export const IdentidadeScreen: React.FC = () => {
                       alt="Foto do Personagem"
                       className="h-full w-full object-cover transition duration-200 group-hover:scale-105 group-hover:opacity-40"
                     />
-                    <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 transition group-hover:opacity-100">
+                    <button
+                      type="button"
+                      onClick={e => {
+                        e.stopPropagation();
+                        setFotoPersonagem('');
+                      }}
+                      title="Remover foto"
+                      className="absolute top-2.5 right-2.5 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-black/75 text-xs font-bold text-zinc-300 transition hover:bg-black hover:text-white cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                    <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center opacity-0 transition group-hover:opacity-100">
                       <span className="rounded-md bg-zinc-900/90 px-4 py-2 text-xs font-bold uppercase tracking-wider text-zinc-100 border border-zinc-700">
                         Trocar Foto
                       </span>
@@ -169,12 +180,12 @@ export const IdentidadeScreen: React.FC = () => {
                   </>
                 ) : (
                   <div className="flex flex-col items-center justify-center gap-3 px-6 text-center">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-full border border-zinc-800 bg-zinc-900 text-zinc-500 transition group-hover:border-green-800 group-hover:text-green-400">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full border border-zinc-800 bg-zinc-900 text-zinc-500 transition group-hover:border-zinc-600 group-hover:text-zinc-300">
                       <svg className="h-8 w-8" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
                       </svg>
                     </div>
-                    <span className="text-xs font-bold uppercase tracking-wider text-zinc-300 group-hover:text-green-400 transition">
+                    <span className="text-xs font-bold uppercase tracking-wider text-zinc-300 group-hover:text-zinc-100 transition">
                       Selecionar Imagem
                     </span>
                     <span className="text-xs text-zinc-500">
@@ -191,16 +202,6 @@ export const IdentidadeScreen: React.FC = () => {
                 onChange={e => setFotoPersonagem(e.target.value)}
                 className="w-full border-b border-zinc-700 bg-transparent py-2 text-xs text-zinc-200 placeholder-zinc-600 outline-none transition focus:border-green-500"
               />
-
-              {temFoto && (
-                <button
-                  type="button"
-                  onClick={() => setFotoPersonagem('')}
-                  className="w-full rounded-md border border-red-900/50 bg-red-950/30 py-2 text-xs font-bold uppercase tracking-wider text-red-400 transition hover:bg-red-900/50 cursor-pointer"
-                >
-                  Remover Foto
-                </button>
-              )}
 
               <input
                 ref={fileInputRef}

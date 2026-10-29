@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRPG } from '../context/RPGContext';
 import type { AgenteSalvo } from '../types';
-import { exportarFicha } from '../utils/saveLoad';
+import { exportarFicha, salvarAgenteLocal, gerarIdAgente, formatarDataRegistro } from '../utils/saveLoad';
 
 export const HubScreen: React.FC = () => {
   const rpg = useRPG();
@@ -11,17 +11,46 @@ export const HubScreen: React.FC = () => {
     abrirAgenteDoHub,
     excluirAgenteDoHub,
     duplicarAgenteDoHub,
+    recarregarAgentes,
   } = rpg;
 
   const [busca, setBusca] = useState('');
   const [menuAbertoId, setMenuAbertoId] = useState<string | null>(null);
   const [confirmandoExclusaoId, setConfirmandoExclusaoId] = useState<string | null>(null);
+  const fileImportRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const fecharMenuFora = () => setMenuAbertoId(null);
     window.addEventListener('click', fecharMenuFora);
     return () => window.removeEventListener('click', fecharMenuFora);
   }, []);
+
+  const handleImportarJson = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+
+      if (!data || typeof data !== 'object') {
+        throw new Error('Arquivo JSON inválido.');
+      }
+
+      if (!data.id) data.id = gerarIdAgente();
+      if (!data.criadoEm) data.criadoEm = new Date().toISOString();
+      if (!data.dataRegistro) data.dataRegistro = formatarDataRegistro(new Date(data.criadoEm));
+
+      await salvarAgenteLocal(data);
+      await recarregarAgentes?.();
+    } catch (err) {
+      alert('Erro ao importar ficha: ' + String(err));
+    } finally {
+      if (fileImportRef.current) {
+        fileImportRef.current.value = '';
+      }
+    }
+  };
 
   const agentesFiltrados = agentesSalvos.filter(a => {
     if (!busca.trim()) return true;
@@ -34,8 +63,21 @@ export const HubScreen: React.FC = () => {
 
   return (
     <div className="mx-auto w-full max-w-6xl py-4">
-      {/* TOP BAR — Botão Novo Agente à direita */}
+      {/* TOP BAR — Botões Importar JSON e Novo Agente */}
       <div className="mb-8 flex items-center justify-end gap-3">
+        <input
+          ref={fileImportRef}
+          type="file"
+          accept=".json"
+          onChange={handleImportarJson}
+          className="hidden"
+        />
+        <button
+          onClick={() => fileImportRef.current?.click()}
+          className="rounded border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-sm font-bold text-zinc-200 transition hover:bg-zinc-700 cursor-pointer"
+        >
+          Importar JSON
+        </button>
         <button
           onClick={iniciarNovoAgente}
           className="rounded bg-green-700 px-5 py-2.5 text-sm font-bold text-zinc-100 shadow-md transition hover:bg-green-600 cursor-pointer"

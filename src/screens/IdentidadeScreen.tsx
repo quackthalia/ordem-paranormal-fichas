@@ -110,7 +110,7 @@ export const IdentidadeScreen: React.FC = () => {
 
             {/* RESUMO PADRONIZADO */}
             <div className="mt-2 flex flex-col gap-5 pt-6 border-t border-zinc-800/80">
-              <div className="flex items-center justify-between border-b border-zinc-800/50 pb-3">
+              <div className="flex flex-col gap-1 border-b border-zinc-800/50 pb-4">
                 <span className="text-sm font-bold uppercase tracking-wider text-zinc-200">
                   NEX Inicial
                 </span>

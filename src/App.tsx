@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react';
 import { RPGProvider, useRPG } from './context/RPGContext';
 import { HubScreen } from './screens/HubScreen';
 import { AtributosScreen } from './screens/AtributosScreen';
@@ -40,8 +41,12 @@ function AppContent() {
 
   const isFicha = telaAtual === 'ficha';
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [telaAtual]);
+
   return (
-    <div className={`min-h-screen w-full bg-zinc-950 overflow-x-hidden ${isFicha ? '' : 'p-4 md:p-6'}`}>
+    <div className={`min-h-screen w-full bg-zinc-950 overflow-x-hidden ${isFicha ? '' : 'p-3 md:p-5'}`}>
       <Rotas />
     </div>
   );

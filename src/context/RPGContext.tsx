@@ -7,7 +7,17 @@ import type {
   AbaDireita,
   AbaModalPoderes,
   VersaoRitual,
+  AgenteSalvo,
 } from '../types';
+import {
+  serializarFicha,
+  aplicarFichaNoContexto,
+  listarAgentesLocais,
+  salvarAgenteLocal,
+  excluirAgenteLocal,
+  gerarIdAgente,
+  formatarDataRegistro,
+} from '../utils/saveLoad';
 import { usePoderes } from '../hooks/usePoderes';
 import { usePericias } from '../hooks/usePericias';
 import { useStatus } from '../hooks/useStatus';
@@ -254,6 +264,30 @@ interface RPGContextType {
   atributosFinais: Atributos;
   ppMax: number;
   ppTurno: number;
+  agenteId: string | null;
+  setAgenteId: React.Dispatch<React.SetStateAction<string | null>>;
+  agenteCriadoEm: string | null;
+  setAgenteCriadoEm: React.Dispatch<React.SetStateAction<string | null>>;
+  agenteDataRegistro: string | null;
+  setAgenteDataRegistro: React.Dispatch<React.SetStateAction<string | null>>;
+  fotoPersonagem: string;
+  setFotoPersonagem: React.Dispatch<React.SetStateAction<string>>;
+  agentesSalvos: AgenteSalvo[];
+  recarregarAgentes: () => Promise<void>;
+  iniciarNovoAgente: () => void;
+  finalizarCriacaoAgente: (dadosIdentidade?: {
+    nomePersonagem?: string;
+    nomeJogador?: string;
+    fotoPersonagem?: string;
+  }) => Promise<void>;
+  abrirAgenteDoHub: (agente: AgenteSalvo) => void;
+  voltarParaHub: () => Promise<void>;
+  excluirAgenteDoHub: (id: string) => Promise<void>;
+  duplicarAgenteDoHub: (agente: AgenteSalvo) => Promise<void>;
+  atualizarIdentidadeAgenteNoHub: (
+    id: string,
+    dados: { nomePersonagem: string; nomeJogador: string; fotoPersonagem: string }
+  ) => Promise<void>;
 }
 
 const RPGContext = createContext<RPGContextType | null>(null);
@@ -262,7 +296,12 @@ const RPGContext = createContext<RPGContextType | null>(null);
 // PROVIDER
 // ============================================================
 export function RPGProvider({ children }: { children: React.ReactNode }) {
-  const [telaAtual, setTelaAtual] = useState<Tela>('atributos');
+  const [telaAtual, setTelaAtual] = useState<Tela>('hub');
+  const [agenteId, setAgenteId] = useState<string | null>(null);
+  const [agenteCriadoEm, setAgenteCriadoEm] = useState<string | null>(null);
+  const [agenteDataRegistro, setAgenteDataRegistro] = useState<string | null>(null);
+  const [fotoPersonagem, setFotoPersonagem] = useState<string>('');
+  const [agentesSalvos, setAgentesSalvos] = useState<AgenteSalvo[]>([]);
   const [classe, setClasse] = useState<ClasseRPG>(null);
   const [nex, setNex] = useState(5);
   const [abaDireita, setAbaDireita] = useState<AbaDireita>('combate');
@@ -1904,7 +1943,11 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     }
   }, []);
 
-  const refazerPersonagem = useCallback(() => {
+  const limparEstadoPersonagem = useCallback(() => {
+    setAgenteId(null);
+    setAgenteCriadoEm(null);
+    setAgenteDataRegistro(null);
+    setFotoPersonagem('');
     setAtributos({ FOR: 1, AGI: 1, INT: 1, PRE: 1, VIG: 1 });
     setBonusAtributos({ FOR: 0, AGI: 0, INT: 0, PRE: 0, VIG: 0 });
     setSkillCombatente1('');
@@ -1912,6 +1955,9 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     setClasse(null);
     setNex(5);
     setNivel(1);
+    setRegras({});
+    setRegrasAtivas(true);
+    setRegrasAtivasAtributos(true);
     setDefEquip(0);
     setDefOutros(0);
     setBloqueioData({ base: 0, bonusVig: false });
@@ -1938,6 +1984,7 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     setNomeEditando('');
     setDescricaoEditando('');
     setAfinidadeEditando('');
+    setAbaDireita('combate');
     origensHook.setOrigemSelecionada(null);
     trilhasHook.setTrilhaSelecionada(null);
     trilhasHook.setVersatilidadeSelecionada(null);
@@ -1948,12 +1995,11 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     municoesHook.setMunicoesInventario([]);
     itensHook.setItensInventario([]);
     itensAmaldicoadosHook.setItensAmaldicoadosInventario([]);
-    periciasHook.setProfissoes([]);
+    periciasHook.resetarPericias();
     inventarioHook.setPrestigio(0);
     inventarioHook.setCreditoOverride(null);
     inventarioHook.setLimitesItensOverride(null);
     status.resetarStatus();
-    setTelaAtual('atributos');
   }, [
     origensHook,
     trilhasHook,
@@ -1968,6 +2014,326 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     inventarioHook,
     status
   ]);
+
+  const refazerPersonagem = useCallback(() => {
+    limparEstadoPersonagem();
+    setTelaAtual('atributos');
+  }, [limparEstadoPersonagem]);
+
+  const iniciarNovoAgente = useCallback(() => {
+    limparEstadoPersonagem();
+    setTelaAtual('atributos');
+  }, [limparEstadoPersonagem]);
+
+  const recarregarAgentes = useCallback(async () => {
+    const lista = await listarAgentesLocais();
+    setAgentesSalvos(lista);
+  }, []);
+
+  useEffect(() => {
+    recarregarAgentes();
+  }, [recarregarAgentes]);
+
+  const obterSnapshotContexto = useCallback(() => ({
+    agenteId,
+    agenteCriadoEm,
+    agenteDataRegistro,
+    classe,
+    nex: effectiveNex,
+    rawNex: nex,
+    atributos,
+    bonusAtributos,
+    defEquip,
+    defOutros,
+    bloqueioData,
+    protecoes,
+    sentidos,
+    imunidades,
+    vulnerabilidades,
+    resistencias,
+    proficiencias,
+    regrasAtivas,
+    regrasAtivasAtributos,
+    skillCombatente1,
+    skillCombatente2,
+    deslocM,
+    deslocQ,
+    bonusDadosCondicionais,
+    bonusDadosAtivos,
+    regras,
+    nivel: effectiveNivel,
+    rawNivel: nivel,
+    versaoRitual,
+    elementoRitual,
+    afinidadeEscolhida,
+    poderesExtras,
+    progressaoNexRecusados,
+    progressaoNexEditados,
+    elementoRegra18,
+    escolhaRegra53,
+    nomePersonagem,
+    nomeJogador,
+    fotoPersonagem,
+    nomeEditando,
+    status,
+    periciasHook,
+    poderesHook,
+    origensHook,
+    rituaisHook,
+    inventarioHook,
+    armasHook,
+    protecoesHook,
+    municoesHook,
+    itensHook,
+    itensAmaldicoadosHook,
+    trilhasHook,
+  }), [
+    agenteId,
+    agenteCriadoEm,
+    agenteDataRegistro,
+    classe,
+    effectiveNex,
+    nex,
+    atributos,
+    bonusAtributos,
+    defEquip,
+    defOutros,
+    bloqueioData,
+    protecoes,
+    sentidos,
+    imunidades,
+    vulnerabilidades,
+    resistencias,
+    proficiencias,
+    regrasAtivas,
+    regrasAtivasAtributos,
+    skillCombatente1,
+    skillCombatente2,
+    deslocM,
+    deslocQ,
+    bonusDadosCondicionais,
+    bonusDadosAtivos,
+    regras,
+    effectiveNivel,
+    nivel,
+    versaoRitual,
+    elementoRitual,
+    afinidadeEscolhida,
+    poderesExtras,
+    progressaoNexRecusados,
+    progressaoNexEditados,
+    elementoRegra18,
+    escolhaRegra53,
+    nomePersonagem,
+    nomeJogador,
+    fotoPersonagem,
+    nomeEditando,
+    status,
+    periciasHook,
+    poderesHook,
+    origensHook,
+    rituaisHook,
+    inventarioHook,
+    armasHook,
+    protecoesHook,
+    municoesHook,
+    itensHook,
+    itensAmaldicoadosHook,
+    trilhasHook,
+  ]);
+
+  const finalizarCriacaoAgente = useCallback(async (dadosIdentidade?: {
+    nomePersonagem?: string;
+    nomeJogador?: string;
+    fotoPersonagem?: string;
+  }) => {
+    const novoId = agenteId || gerarIdAgente();
+    const criadoEm = agenteCriadoEm || new Date().toISOString();
+    const dataRegistro = agenteDataRegistro || formatarDataRegistro();
+
+    const finalNome = dadosIdentidade?.nomePersonagem !== undefined ? dadosIdentidade.nomePersonagem.trim() : nomePersonagem.trim();
+    const finalJogador = dadosIdentidade?.nomeJogador !== undefined ? dadosIdentidade.nomeJogador.trim() : nomeJogador.trim();
+    const finalFoto = dadosIdentidade?.fotoPersonagem !== undefined ? dadosIdentidade.fotoPersonagem : fotoPersonagem;
+
+    setAgenteId(novoId);
+    setAgenteCriadoEm(criadoEm);
+    setAgenteDataRegistro(dataRegistro);
+    setNomePersonagem(finalNome);
+    setNomeEditando(finalNome);
+    setNomeJogador(finalJogador);
+    setFotoPersonagem(finalFoto);
+
+    const fichaSerializada = serializarFicha(obterSnapshotContexto(), {
+      id: novoId,
+      criadoEm,
+      dataRegistro,
+      nomePersonagem: finalNome,
+      nomeJogador: finalJogador,
+      fotoPersonagem: finalFoto,
+    });
+
+    await salvarAgenteLocal(fichaSerializada);
+    await recarregarAgentes();
+    setTelaAtual('ficha');
+  }, [
+    agenteId,
+    agenteCriadoEm,
+    agenteDataRegistro,
+    nomePersonagem,
+    nomeJogador,
+    fotoPersonagem,
+    obterSnapshotContexto,
+    recarregarAgentes,
+  ]);
+
+  // Auto-save quando estiver na ficha e possuir um agenteId ativo
+  useEffect(() => {
+    if (telaAtual !== 'ficha' || !agenteId) return;
+
+    const timer = setTimeout(async () => {
+      const ficha = serializarFicha(obterSnapshotContexto());
+      await salvarAgenteLocal(ficha);
+      setAgentesSalvos(prev => {
+        const idx = prev.findIndex(a => a.id === ficha.id);
+        if (idx >= 0) {
+          const next = [...prev];
+          next[idx] = ficha;
+          return next;
+        }
+        return [ficha, ...prev];
+      });
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [telaAtual, agenteId, obterSnapshotContexto]);
+
+  const abrirAgenteDoHub = useCallback((agente: AgenteSalvo) => {
+    limparEstadoPersonagem();
+    aplicarFichaNoContexto(agente, {
+      setAgenteId,
+      setAgenteCriadoEm,
+      setAgenteDataRegistro,
+      setClasse,
+      setNex,
+      setAtributos,
+      setBonusAtributos,
+      setDefEquip,
+      setDefOutros,
+      setBloqueioData,
+      setProtecoes,
+      setSentidos,
+      setImunidades,
+      setVulnerabilidades,
+      setResistencias,
+      setProficiencias,
+      setRegrasAtivas,
+      setRegrasAtivasAtributos,
+      setSkillCombatente1,
+      setSkillCombatente2,
+      setDeslocM,
+      setDeslocQ,
+      setBonusDadosCondicionais,
+      setBonusDadosAtivos,
+      setNivel,
+      setVersaoRitual,
+      setElementoRitual,
+      setAfinidadeEscolhida,
+      setPoderesExtras,
+      setProgressaoNexRecusados,
+      setProgressaoNexEditados,
+      setElementoRegra18,
+      setEscolhaRegra53,
+      setNomePersonagem,
+      setNomeEditando,
+      setNomeJogador,
+      setFotoPersonagem,
+      setRegras,
+      status,
+      periciasHook,
+      poderesHook,
+      origensHook,
+      rituaisHook,
+      inventarioHook,
+      armasHook,
+      protecoesHook,
+      municoesHook,
+      itensHook,
+      itensAmaldicoadosHook,
+      trilhasHook,
+    });
+    setTelaAtual('ficha');
+  }, [
+    limparEstadoPersonagem,
+    status,
+    periciasHook,
+    poderesHook,
+    origensHook,
+    rituaisHook,
+    inventarioHook,
+    armasHook,
+    protecoesHook,
+    municoesHook,
+    itensHook,
+    itensAmaldicoadosHook,
+    trilhasHook,
+  ]);
+
+  const voltarParaHub = useCallback(async () => {
+    if (telaAtual === 'ficha' && agenteId) {
+      const ficha = serializarFicha(obterSnapshotContexto());
+      await salvarAgenteLocal(ficha);
+    }
+    await recarregarAgentes();
+    setTelaAtual('hub');
+  }, [telaAtual, agenteId, obterSnapshotContexto, recarregarAgentes]);
+
+  const excluirAgenteDoHub = useCallback(async (id: string) => {
+    await excluirAgenteLocal(id);
+    if (agenteId === id) {
+      setAgenteId(null);
+    }
+    await recarregarAgentes();
+  }, [agenteId, recarregarAgentes]);
+
+  const duplicarAgenteDoHub = useCallback(async (agente: AgenteSalvo) => {
+    const novoId = gerarIdAgente();
+    const agoraIso = new Date().toISOString();
+    const copia: AgenteSalvo = {
+      ...agente,
+      id: novoId,
+      criadoEm: agoraIso,
+      atualizadoEm: agoraIso,
+      dataRegistro: formatarDataRegistro(),
+      nomePersonagem: `${agente.nomePersonagem || 'Agente'} (Cópia)`,
+      nomeEditando: `${agente.nomePersonagem || 'Agente'} (Cópia)`,
+    };
+    await salvarAgenteLocal(copia);
+    await recarregarAgentes();
+  }, [recarregarAgentes]);
+
+  const atualizarIdentidadeAgenteNoHub = useCallback(async (
+    id: string,
+    dados: { nomePersonagem: string; nomeJogador: string; fotoPersonagem: string }
+  ) => {
+    const alvo = agentesSalvos.find(a => a.id === id);
+    if (!alvo) return;
+    const atualizado: AgenteSalvo = {
+      ...alvo,
+      nomePersonagem: dados.nomePersonagem,
+      nomeEditando: dados.nomePersonagem,
+      nomeJogador: dados.nomeJogador,
+      fotoPersonagem: dados.fotoPersonagem,
+      atualizadoEm: new Date().toISOString(),
+    };
+    await salvarAgenteLocal(atualizado);
+    if (agenteId === id) {
+      setNomePersonagem(dados.nomePersonagem);
+      setNomeEditando(dados.nomePersonagem);
+      setNomeJogador(dados.nomeJogador);
+      setFotoPersonagem(dados.fotoPersonagem);
+    }
+    await recarregarAgentes();
+  }, [agentesSalvos, agenteId, recarregarAgentes]);
 
   // ============================================================
   // VALUE DO CONTEXTO
@@ -2128,7 +2494,24 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     atributosFinais,
     bonusTrilhasAtributos,
     ppMax,
-    ppTurno
+    ppTurno,
+    agenteId,
+    setAgenteId,
+    agenteCriadoEm,
+    setAgenteCriadoEm,
+    agenteDataRegistro,
+    setAgenteDataRegistro,
+    fotoPersonagem,
+    setFotoPersonagem,
+    agentesSalvos,
+    recarregarAgentes,
+    iniciarNovoAgente,
+    finalizarCriacaoAgente,
+    abrirAgenteDoHub,
+    voltarParaHub,
+    excluirAgenteDoHub,
+    duplicarAgenteDoHub,
+    atualizarIdentidadeAgenteNoHub,
   }), [
     telaAtual, classe, effectiveNex, nex, nomePersonagem, nomeJogador,
     atributos, bonusAtributos, pontosRestantes, alterarAtributo,
@@ -2167,7 +2550,10 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     devorarIntCount, necrosarForCount, inexistirAgiCount, queimarVigCount,
     maxDevorarInt, maxNecrosarFor, maxInexistirAgi, maxQueimarVig,
     bonusDeslocTrilha34, bonusDeslocTotal, deslocamentoTotalM, danoDeMovimento, bonusDefesaTrilha34,
-    escolhaRegra53, atributosFinais, bonusTrilhasAtributos, ppMax, ppTurno
+    escolhaRegra53, atributosFinais, bonusTrilhasAtributos, ppMax, ppTurno,
+    agenteId, agenteCriadoEm, agenteDataRegistro, fotoPersonagem, agentesSalvos,
+    recarregarAgentes, iniciarNovoAgente, finalizarCriacaoAgente, abrirAgenteDoHub,
+    voltarParaHub, excluirAgenteDoHub, duplicarAgenteDoHub, atualizarIdentidadeAgenteNoHub
   ]);
 
   return <RPGContext.Provider value={value}>{children}</RPGContext.Provider>;

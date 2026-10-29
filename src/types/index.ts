@@ -2,7 +2,7 @@
 // TIPOS GLOBAIS — TUDO TIPADO
 // ============================================================
 
-export type Tela = 'atributos' | 'origens' | 'classe' | 'ficha';
+export type Tela = 'hub' | 'atributos' | 'origens' | 'classe' | 'identidade' | 'ficha';
 
 export type ClasseRPG = 'Combatente' | 'Especialista' | 'Ocultista' | null;
 
@@ -384,4 +384,21 @@ export interface GrupoArma {
   Codigo_Grupo: number;
   RD_Grupo?: number | string | null;
   PV_Grupo?: number | string | null;
+}
+
+export interface AgenteSalvo {
+  id: string;
+  criadoEm: string;
+  atualizadoEm: string;
+  dataRegistro: string;
+  nomePersonagem: string;
+  nomeJogador: string;
+  fotoPersonagem: string;
+  classe: ClasseRPG;
+  nex: number;
+  rawNex: number;
+  nivel: number;
+  rawNivel: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
 }

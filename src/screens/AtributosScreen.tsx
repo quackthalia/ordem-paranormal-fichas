@@ -119,12 +119,21 @@ export const AtributosScreen: React.FC = () => {
         </div>
         </div>
 
-      <button
-        onClick={() => setTelaAtual('origens')}
-        className="mt-12 rounded-md bg-green-700 px-8 py-3 text-lg font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-green-600"
-      >
-        Avançar para Origens ➔
-      </button>
+      <div className="mt-12 flex flex-wrap items-center justify-between gap-4">
+        <button
+          onClick={() => setTelaAtual('hub')}
+          className="rounded-md border border-zinc-700 bg-zinc-800 px-6 py-3 font-bold text-zinc-300 transition hover:bg-zinc-700 cursor-pointer"
+        >
+          ◀ Voltar ao Hub
+        </button>
+
+        <button
+          onClick={() => setTelaAtual('origens')}
+          className="rounded-md bg-green-700 px-8 py-3 text-lg font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-green-600 cursor-pointer"
+        >
+          Avançar para Origens ➔
+        </button>
+      </div>
     </div>
   );
 };

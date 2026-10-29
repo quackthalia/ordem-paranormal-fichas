@@ -29,6 +29,8 @@ interface UsePericiasReturn {
   bonusAtributoDinamico: Record<string, number>;
   profissoes: { nome: string; treino: number; outros: number }[];
   setProfissoes: React.Dispatch<React.SetStateAction<{ nome: string; treino: number; outros: number }[]>>;
+  resetarPericias: () => void;
+  marcarPericiasCarregadas: () => void;
 }
 
 export function usePericias(
@@ -294,9 +296,41 @@ export function usePericias(
   const gratisRef = useRef<string[]>([]);
   const veteranasRef = useRef<string[]>([]);
   const expertsRef = useRef<string[]>([]);
+  const justLoadedPericiasRef = useRef(false);
+
+  const resetarPericias = useCallback(() => {
+    gratisRef.current = [];
+    veteranasRef.current = [];
+    expertsRef.current = [];
+    justLoadedPericiasRef.current = false;
+    setJaTinhaProfissao33(false);
+    setAvaliouRegra33(false);
+    setJaTinhaPericiaPoder({});
+    setAvaliouPericiaPoder({});
+    setProfissoes([]);
+    setPericias(prev => {
+      const limpo: PericiasMap = {};
+      Object.entries(prev).forEach(([nome, p]) => {
+        limpo[nome] = { ...p, treino: 0, outros: 0 };
+      });
+      return limpo;
+    });
+  }, []);
+
+  const marcarPericiasCarregadas = useCallback(() => {
+    justLoadedPericiasRef.current = true;
+  }, []);
 
   useEffect(() => {
     if (Object.keys(pericias).length === 0) return; // Aguarda carregar
+
+    if (justLoadedPericiasRef.current) {
+      justLoadedPericiasRef.current = false;
+      gratisRef.current = periciasGratis;
+      veteranasRef.current = veteranasGratis;
+      expertsRef.current = expertsGratis;
+      return;
+    }
 
     const velhasGratis = gratisRef.current;
     const velhasVeteranas = veteranasRef.current;
@@ -610,7 +644,9 @@ export function usePericias(
     bonusVestimentas: bonusVestimentas || {},
     bonusAtributoDinamico,
     profissoes,
-    setProfissoes
+    setProfissoes,
+    resetarPericias,
+    marcarPericiasCarregadas
   }), [
     periciasComBonus,
     pericias,
@@ -629,6 +665,8 @@ export function usePericias(
     bonusRegra40,
     bonusVestimentas,
     bonusAtributoDinamico,
-    profissoes
+    profissoes,
+    resetarPericias,
+    marcarPericiasCarregadas
   ]);
 }

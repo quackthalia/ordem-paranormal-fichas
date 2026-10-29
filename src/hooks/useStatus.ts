@@ -42,6 +42,7 @@ interface UseStatusReturn {
   setPdTempAtual: React.Dispatch<React.SetStateAction<number>>;
   setPdTempMax: React.Dispatch<React.SetStateAction<number>>;
   resetarStatus: () => void;
+  marcarStatusCarregado: () => void;
 }
 
 export function useStatus(
@@ -77,6 +78,7 @@ export function useStatus(
   const [pdTempMax, setPdTempMax] = useState(0);
 
   const prevCalc = useRef({ pv: 0, san: 0, pe: 0, pd: 0, init: false });
+  const justLoadedRef = useRef(false);
 
   const baseStatus = calcularStatusBase(classe, atributos, nivel, regrasAtivas);
   const calcMaxPv = baseStatus.pvMax + bonusPv;
@@ -89,6 +91,12 @@ export function useStatus(
   // Efeito de sincronização (mesma lógica do original, mas sem -1)
   useEffect(() => {
     if (!classe) return;
+
+    if (justLoadedRef.current) {
+      justLoadedRef.current = false;
+      prevCalc.current = { pv: calcMaxPv, san: calcMaxSan, pe: calcMaxPe, pd: calcMaxPd, init: true };
+      return;
+    }
 
     if (!prevCalc.current.init) {
       setPvMax(calcMaxPv);
@@ -169,6 +177,12 @@ export function useStatus(
     setPdTempAtual(0);
     setPdTempMax(0);
     prevCalc.current = { pv: 0, san: 0, pe: 0, pd: 0, init: false };
+    justLoadedRef.current = false;
+  }, []);
+
+  const marcarStatusCarregado = useCallback(() => {
+    justLoadedRef.current = true;
+    prevCalc.current.init = true;
   }, []);
 
   return useMemo(() => ({
@@ -211,6 +225,7 @@ export function useStatus(
     setPdTempAtual,
     setPdTempMax,
     resetarStatus,
+    marcarStatusCarregado,
   }), [
     pvAtual,
     sanAtual,
@@ -233,5 +248,6 @@ export function useStatus(
     pdTempMax,
     alterarStatus,
     resetarStatus,
+    marcarStatusCarregado,
   ]);
 }

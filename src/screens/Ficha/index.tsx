@@ -482,12 +482,20 @@ export const FichaScreen: React.FC = () => {
         </div>
       </div>
 
-      <button
-        onClick={handleRefazer}
-        className="mt-12 w-full rounded-md border border-zinc-800 bg-zinc-900 p-3.5 font-bold uppercase tracking-wider text-zinc-400 transition hover:border-green-900 hover:text-green-500"
-      >
-        Refazer Personagem
-      </button>
+      <div className="mt-12 flex flex-col sm:flex-row gap-4">
+        <button
+          onClick={() => rpg.voltarParaHub()}
+          className="flex-1 rounded-md border border-green-900/60 bg-zinc-900 p-3.5 font-bold uppercase tracking-wider text-green-400 transition hover:border-green-600 hover:bg-green-950/30 cursor-pointer"
+        >
+          ◀ Voltar para o Hub de Agentes
+        </button>
+        <button
+          onClick={handleRefazer}
+          className="flex-1 rounded-md border border-zinc-800 bg-zinc-900 p-3.5 font-bold uppercase tracking-wider text-zinc-400 transition hover:border-green-900 hover:text-green-500 cursor-pointer"
+        >
+          Refazer Personagem
+        </button>
+      </div>
 
       {(nexModalAberto !== null || nexPoderEditando !== null) && <ModalPoderes />}
       </div>

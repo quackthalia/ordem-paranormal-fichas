@@ -46,7 +46,7 @@ function AppContent() {
   }, [telaAtual]);
 
   return (
-    <div className={`min-h-screen w-full bg-zinc-950 overflow-x-hidden ${isFicha ? '' : 'p-3 md:p-5'}`}>
+    <div className={`min-h-screen w-full bg-zinc-950 overflow-x-hidden ${isFicha ? '' : 'p-4 md:p-6'}`}>
       <Rotas />
     </div>
   );

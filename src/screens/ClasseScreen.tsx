@@ -30,301 +30,290 @@ export const ClasseScreen: React.FC = () => {
 
   return (
     <div className="mx-auto w-full max-w-6xl">
-      {/* Header Compacto com Botão Voltar integrado */}
-      <header className="mb-4">
-        <div className="relative flex items-center justify-center">
-          <button
-            type="button"
-            onClick={() => setTelaAtual('origens')}
-            className="absolute left-0 inline-flex items-center gap-1.5 rounded-md border border-zinc-700 bg-zinc-800/80 px-3.5 py-1.5 text-xs font-bold text-zinc-300 transition hover:bg-zinc-700 cursor-pointer"
-          >
-            ← Voltar
-          </button>
-          <div className="text-center">
-            <h1 className="font-display text-2xl uppercase tracking-wide text-zinc-100">
-              Escolha sua Classe
-            </h1>
-            <p className="text-xs uppercase tracking-widest text-green-500 font-bold">
-              Passo 3 — Seu papel na Ordem
-            </p>
-          </div>
-        </div>
-        <p className="mt-1 text-center text-xs text-zinc-400">
-          Sua classe define seu treinamento na Ordem, seus atributos vitais e seu papel na equipe de investigadores.
+      <header className="mb-10 flex flex-col items-center text-center">
+        <h1 className="font-display mb-2 text-3xl uppercase tracking-wide text-zinc-100">
+          Escolha sua Classe
+        </h1>
+        <p className="mb-6 text-sm uppercase tracking-widest text-green-500 font-bold">
+          Passo 3 — Seu papel na Ordem
         </p>
+        <div className="w-full max-w-3xl text-sm leading-relaxed text-zinc-400 space-y-4">
+          <p>Sua classe indica o treinamento que você recebeu na Ordem para enfrentar os perigos do Outro Lado. Em termos de jogo, é a sua característica mais importante, pois define o que você faz e qual é o seu papel no grupo de investigadores.</p><p>Ordem Paranormal RPG contém três classes, que representam os principais arquétipos de heróis em histórias de terror e suspense:</p>
+        </div>
+        <div className="mt-8 h-px w-full max-w-5xl bg-zinc-800/80"></div>
       </header>
 
-      {/* Grid das 3 Classes */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-4 items-stretch">
-        {/* COMBATENTE */}
-        <div className="flex flex-col justify-between rounded-xl border border-green-900/60 bg-zinc-900/60 p-4 transition hover:border-green-700">
-          <div>
-            <h2 className="font-display mb-1 text-center text-lg uppercase tracking-wide text-green-500">
-              Combatente
-            </h2>
-            <p className="text-xs leading-snug text-zinc-400 text-center mb-3 h-9 flex items-center justify-center">
-              Treinado para combater diretamente com todo tipo de armas, força e bravura para encarar os perigos de frente.
+      <div className="flex flex-col items-stretch gap-5 lg:grid lg:grid-cols-3 lg:gap-5">
+        {/* COMBATENTE — Sangue */}
+        <div className="flex flex-1 flex-col rounded-xl border border-green-900/60 bg-zinc-900/60 p-6 transition hover:border-green-700 lg:grid lg:grid-rows-[auto_1fr_auto_auto]">
+          <h2 className="font-display mb-3 text-center text-xl uppercase tracking-wide text-green-500">
+            Combatente
+          </h2>
+          <div className="mb-5 flex flex-col justify-start">
+            <p className="text-sm leading-relaxed text-zinc-400 text-center">
+              Treinado para lutar com todo tipo de armas, e com a força e a coragem para encarar os perigos de frente, É o tipo de agente que prefere abordagens mais diretas e costuma atirar primeiro e perguntar depois.
             </p>
+          </div>
 
-            {/* Características */}
-            <div className="mb-3 flex flex-col gap-2 rounded-lg border border-zinc-800 bg-zinc-950/70 p-3 text-xs">
-              <h3 className="font-display text-[11px] font-bold uppercase tracking-wider text-green-400 border-b border-zinc-800/80 pb-1 text-center">
-                Características
-              </h3>
+          {/* CARACTERÍSTICAS TÉCNICAS */}
+          <div className="mb-5 flex flex-col gap-3 rounded-lg border border-zinc-800 bg-zinc-950/70 p-4 text-xs">
+            <h3 className="font-display text-xs font-bold uppercase tracking-wider text-green-400 border-b border-zinc-800/80 pb-1.5 text-center">
+              Características
+            </h3>
 
-              <div className="flex items-center justify-between border-b border-zinc-800/50 pb-1.5 text-zinc-200">
-                <span className="font-semibold text-[11px]">PONTOS DE VIDA</span>
-                <span className="text-right">
-                  <span className="font-mono font-bold text-green-400">20 + VIG</span>
-                  <span className="text-[10px] text-zinc-400 ml-1.5 font-mono">(+4/NEX)</span>
-                </span>
+            {/* PV */}
+            <div className="border-b border-zinc-800/50 pb-2">
+              <div className="flex items-center justify-between font-bold text-zinc-200">
+                <span>PONTOS DE VIDA INICIAIS</span>
+                <span className="text-green-400 font-mono">20 + VIGOR</span>
               </div>
-
-              <div className="flex items-center justify-between border-b border-zinc-800/50 pb-1.5 text-zinc-200">
-                <span className="font-semibold text-[11px]">PONTOS DE ESFORÇO</span>
-                <span className="text-right">
-                  <span className="font-mono font-bold text-green-400">2 + PRE</span>
-                  <span className="text-[10px] text-zinc-400 ml-1.5 font-mono">(+2/NEX)</span>
-                </span>
+              <div className="flex items-center justify-between text-[11px] text-zinc-400 mt-0.5">
+                <span>A cada novo nível de exposição</span>
+                <span className="font-mono text-zinc-300">4 PV (+Vig)</span>
               </div>
+            </div>
 
-              <div className="flex items-center justify-between border-b border-zinc-800/50 pb-1.5 text-zinc-200">
-                <span className="font-semibold text-[11px]">SANIDADE</span>
-                <span className="text-right">
-                  <span className="font-mono font-bold text-green-400">12</span>
-                  <span className="text-[10px] text-zinc-400 ml-1.5 font-mono">(+3/NEX)</span>
-                </span>
+            {/* PE */}
+            <div className="border-b border-zinc-800/50 pb-2">
+              <div className="flex items-center justify-between font-bold text-zinc-200">
+                <span>PONTOS DE ESFORÇO INICIAIS</span>
+                <span className="text-green-400 font-mono">2 + PRESENÇA</span>
               </div>
+              <div className="flex items-center justify-between text-[11px] text-zinc-400 mt-0.5">
+                <span>A cada novo nível de exposição</span>
+                <span className="font-mono text-zinc-300">2 PE (+Pre)</span>
+              </div>
+            </div>
 
-              <div className="border-b border-zinc-800/50 pb-1.5">
-                <span className="block font-semibold text-zinc-300 text-[11px]">PERÍCIAS TREINADAS</span>
-                <p className="text-[11px] leading-tight text-zinc-400 mt-0.5">
-                  Luta ou Pontaria, Fortitude ou Reflexos, mais 1 + Int à escolha.
-                </p>
+            {/* SAN */}
+            <div className="border-b border-zinc-800/50 pb-2">
+              <div className="flex items-center justify-between font-bold text-zinc-200">
+                <span>SANIDADE INICIAL</span>
+                <span className="text-green-400 font-mono">12</span>
               </div>
+              <div className="flex items-center justify-between text-[11px] text-zinc-400 mt-0.5">
+                <span>A cada novo nível de exposição</span>
+                <span className="font-mono text-zinc-300">3 SAN</span>
+              </div>
+            </div>
 
-              <div>
-                <span className="block font-semibold text-zinc-300 text-[11px]">PROFICIÊNCIAS</span>
-                <p className="text-[11px] leading-tight text-zinc-400 mt-0.5">
-                  Armas simples, táticas e proteções leves.
-                </p>
-              </div>
+            {/* PERÍCIAS */}
+            <div className="border-b border-zinc-800/50 pb-2">
+              <span className="block font-bold text-zinc-200 mb-1">PERÍCIAS TREINADAS</span>
+              <p className="text-[11px] leading-relaxed text-zinc-400">
+                Luta ou Pontaria (uma das duas) e Fortitude ou Reflexos (uma das duas), mais uma quantidade de perícias à sua escolha igual a 1 + Intelecto.
+              </p>
+            </div>
+
+            {/* PROFICIÊNCIAS */}
+            <div>
+              <span className="block font-bold text-zinc-200 mb-1">PROFICIÊNCIAS</span>
+              <p className="text-[11px] leading-relaxed text-zinc-400">
+                Armas simples, táticas e proteções leves.
+              </p>
             </div>
           </div>
 
-          <div>
-            {/* Escolhas do Combatente */}
-            <div className="flex flex-col gap-1.5 rounded-lg border border-zinc-800 bg-zinc-950/80 p-2 text-xs mb-3">
-              <div className="flex items-center justify-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => setSkillCombatente1('Luta')}
-                  className={`flex-1 py-1 rounded text-xs font-semibold border transition cursor-pointer ${
-                    skillCombatente1 === 'Luta'
-                      ? 'border-green-600 bg-green-950/50 text-green-300'
-                      : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:text-zinc-200'
-                  }`}
-                >
-                  Luta
-                </button>
-                <span className="text-zinc-600 text-[10px]">ou</span>
-                <button
-                  type="button"
-                  onClick={() => setSkillCombatente1('Pontaria')}
-                  className={`flex-1 py-1 rounded text-xs font-semibold border transition cursor-pointer ${
-                    skillCombatente1 === 'Pontaria'
-                      ? 'border-green-600 bg-green-950/50 text-green-300'
-                      : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:text-zinc-200'
-                  }`}
-                >
-                  Pontaria
-                </button>
+          <div className="mt-auto flex flex-col gap-3">
+            <div className="flex flex-col justify-center gap-3 rounded-lg border border-zinc-800 bg-zinc-950/80 p-4 text-sm">
+              <div className="flex items-center justify-center gap-3">
+                <label className="flex cursor-pointer items-center gap-1.5">
+                  <input type="radio" name="c1" className="accent-green-600" checked={skillCombatente1 === 'Luta'} onChange={() => setSkillCombatente1('Luta')} /> Luta
+                </label>
+                <span className="text-zinc-600">ou</span>
+                <label className="flex cursor-pointer items-center gap-1.5">
+                  <input type="radio" name="c1" className="accent-green-600" checked={skillCombatente1 === 'Pontaria'} onChange={() => setSkillCombatente1('Pontaria')} /> Pontaria
+                </label>
               </div>
-              <div className="flex items-center justify-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => setSkillCombatente2('Fortitude')}
-                  className={`flex-1 py-1 rounded text-xs font-semibold border transition cursor-pointer ${
-                    skillCombatente2 === 'Fortitude'
-                      ? 'border-green-600 bg-green-950/50 text-green-300'
-                      : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:text-zinc-200'
-                  }`}
-                >
-                  Fortitude
-                </button>
-                <span className="text-zinc-600 text-[10px]">ou</span>
-                <button
-                  type="button"
-                  onClick={() => setSkillCombatente2('Reflexos')}
-                  className={`flex-1 py-1 rounded text-xs font-semibold border transition cursor-pointer ${
-                    skillCombatente2 === 'Reflexos'
-                      ? 'border-green-600 bg-green-950/50 text-green-300'
-                      : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:text-zinc-200'
-                  }`}
-                >
-                  Reflexos
-                </button>
+              <div className="flex items-center justify-center gap-3">
+                <label className="flex cursor-pointer items-center gap-1.5">
+                  <input type="radio" name="c2" className="accent-green-600" checked={skillCombatente2 === 'Fortitude'} onChange={() => setSkillCombatente2('Fortitude')} /> Fortitude
+                </label>
+                <span className="text-zinc-600">ou</span>
+                <label className="flex cursor-pointer items-center gap-1.5">
+                  <input type="radio" name="c2" className="accent-green-600" checked={skillCombatente2 === 'Reflexos'} onChange={() => setSkillCombatente2('Reflexos')} /> Reflexos
+                </label>
               </div>
             </div>
 
             <button
-              type="button"
               onClick={() => escolherClasse('Combatente')}
               disabled={!combatentePronto}
-              className="w-full rounded-lg bg-green-800 py-2.5 px-3 font-bold uppercase tracking-wider text-xs text-zinc-100 transition hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-600 cursor-pointer"
+              className="w-full rounded-lg bg-green-800 p-3.5 font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-600"
             >
               {combatentePronto ? 'Selecionar Combatente' : 'Escolha as perícias'}
             </button>
           </div>
         </div>
 
-        {/* ESPECIALISTA */}
-        <div className="flex flex-col justify-between rounded-xl border border-green-900/60 bg-zinc-900/60 p-4 transition hover:border-green-700">
-          <div>
-            <h2 className="font-display mb-1 text-center text-lg uppercase tracking-wide text-green-500">
-              Especialista
-            </h2>
-            <p className="text-xs leading-snug text-zinc-400 text-center mb-3 h-9 flex items-center justify-center">
-              Confia na esperteza, raciocínio rápido, conhecimento técnico e lábia para investigar e enfrentar o paranormal.
+        {/* ESPECIALISTA — Conhecimento */}
+        <div className="flex flex-1 flex-col rounded-xl border border-green-900/60 bg-zinc-900/60 p-6 transition hover:border-green-700 lg:grid lg:grid-rows-[auto_1fr_auto_auto]">
+          <h2 className="font-display mb-3 text-center text-xl uppercase tracking-wide text-green-500">
+            Especialista
+          </h2>
+          <div className="mb-5 flex flex-col justify-start">
+            <p className="text-sm leading-relaxed text-zinc-400 text-center">
+              Um agente que confia mais em esperteza do que em força bruta. Um especialista se vale de conhecimento técnico, raciocínio rápido ou mesmo lábia para resolver mistérios e enfrentar o paranormal.
             </p>
+          </div>
 
-            {/* Características */}
-            <div className="mb-3 flex flex-col gap-2 rounded-lg border border-zinc-800 bg-zinc-950/70 p-3 text-xs">
-              <h3 className="font-display text-[11px] font-bold uppercase tracking-wider text-green-400 border-b border-zinc-800/80 pb-1 text-center">
-                Características
-              </h3>
+          {/* CARACTERÍSTICAS TÉCNICAS */}
+          <div className="mb-5 flex flex-col gap-3 rounded-lg border border-zinc-800 bg-zinc-950/70 p-4 text-xs">
+            <h3 className="font-display text-xs font-bold uppercase tracking-wider text-green-400 border-b border-zinc-800/80 pb-1.5 text-center">
+              Características
+            </h3>
 
-              <div className="flex items-center justify-between border-b border-zinc-800/50 pb-1.5 text-zinc-200">
-                <span className="font-semibold text-[11px]">PONTOS DE VIDA</span>
-                <span className="text-right">
-                  <span className="font-mono font-bold text-green-400">16 + VIG</span>
-                  <span className="text-[10px] text-zinc-400 ml-1.5 font-mono">(+3/NEX)</span>
-                </span>
+            {/* PV */}
+            <div className="border-b border-zinc-800/50 pb-2">
+              <div className="flex items-center justify-between font-bold text-zinc-200">
+                <span>PONTOS DE VIDA INICIAIS</span>
+                <span className="text-green-400 font-mono">16 + VIGOR</span>
               </div>
-
-              <div className="flex items-center justify-between border-b border-zinc-800/50 pb-1.5 text-zinc-200">
-                <span className="font-semibold text-[11px]">PONTOS DE ESFORÇO</span>
-                <span className="text-right">
-                  <span className="font-mono font-bold text-green-400">3 + PRE</span>
-                  <span className="text-[10px] text-zinc-400 ml-1.5 font-mono">(+3/NEX)</span>
-                </span>
+              <div className="flex items-center justify-between text-[11px] text-zinc-400 mt-0.5">
+                <span>A cada novo nível de exposição</span>
+                <span className="font-mono text-zinc-300">3 PV (+Vig)</span>
               </div>
+            </div>
 
-              <div className="flex items-center justify-between border-b border-zinc-800/50 pb-1.5 text-zinc-200">
-                <span className="font-semibold text-[11px]">SANIDADE</span>
-                <span className="text-right">
-                  <span className="font-mono font-bold text-green-400">16</span>
-                  <span className="text-[10px] text-zinc-400 ml-1.5 font-mono">(+4/NEX)</span>
-                </span>
+            {/* PE */}
+            <div className="border-b border-zinc-800/50 pb-2">
+              <div className="flex items-center justify-between font-bold text-zinc-200">
+                <span>PONTOS DE ESFORÇO INICIAIS</span>
+                <span className="text-green-400 font-mono">3 + PRESENÇA</span>
               </div>
+              <div className="flex items-center justify-between text-[11px] text-zinc-400 mt-0.5">
+                <span>A cada novo nível de exposição</span>
+                <span className="font-mono text-zinc-300">3 PE (+Pre)</span>
+              </div>
+            </div>
 
-              <div className="border-b border-zinc-800/50 pb-1.5">
-                <span className="block font-semibold text-zinc-300 text-[11px]">PERÍCIAS TREINADAS</span>
-                <p className="text-[11px] leading-tight text-zinc-400 mt-0.5">
-                  7 + Intelecto à sua escolha.
-                </p>
+            {/* SAN */}
+            <div className="border-b border-zinc-800/50 pb-2">
+              <div className="flex items-center justify-between font-bold text-zinc-200">
+                <span>SANIDADE INICIAL</span>
+                <span className="text-green-400 font-mono">16</span>
               </div>
+              <div className="flex items-center justify-between text-[11px] text-zinc-400 mt-0.5">
+                <span>A cada novo nível de exposição</span>
+                <span className="font-mono text-zinc-300">4 SAN</span>
+              </div>
+            </div>
 
-              <div>
-                <span className="block font-semibold text-zinc-300 text-[11px]">PROFICIÊNCIAS</span>
-                <p className="text-[11px] leading-tight text-zinc-400 mt-0.5">
-                  Armas simples e proteções leves.
-                </p>
-              </div>
+            {/* PERÍCIAS */}
+            <div className="border-b border-zinc-800/50 pb-2">
+              <span className="block font-bold text-zinc-200 mb-1">PERÍCIAS TREINADAS</span>
+              <p className="text-[11px] leading-relaxed text-zinc-400">
+                Uma quantidade de perícias à sua escolha igual a 7 + Intelecto.
+              </p>
+            </div>
+
+            {/* PROFICIÊNCIAS */}
+            <div>
+              <span className="block font-bold text-zinc-200 mb-1">PROFICIÊNCIAS</span>
+              <p className="text-[11px] leading-relaxed text-zinc-400">
+                Armas simples e proteções leves.
+              </p>
             </div>
           </div>
 
-          <div>
-            <div className="flex flex-col justify-center rounded-lg border border-zinc-800/60 bg-zinc-950/40 p-2 text-xs mb-3 text-center min-h-[58px]">
-              <span className="text-zinc-300 font-semibold text-[11px]">Versatilidade Técnica</span>
-              <span className="text-[10px] text-zinc-400 mt-0.5">
-                Maior número de perícias treinadas do jogo, adaptável a qualquer situação.
-              </span>
-            </div>
-
+          <div className="mt-auto flex flex-col gap-3">
             <button
-              type="button"
               onClick={() => escolherClasse('Especialista')}
-              className="w-full rounded-lg bg-green-800 py-2.5 px-3 font-bold uppercase tracking-wider text-xs text-zinc-100 transition hover:bg-green-700 cursor-pointer"
+              className="w-full rounded-lg bg-green-800 p-3.5 font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-green-700"
             >
               Selecionar Especialista
             </button>
           </div>
         </div>
 
-        {/* OCULTISTA */}
-        <div className="flex flex-col justify-between rounded-xl border border-green-900/60 bg-zinc-900/60 p-4 transition hover:border-green-700">
-          <div>
-            <h2 className="font-display mb-1 text-center text-lg uppercase tracking-wide text-green-500">
-              Ocultista
-            </h2>
-            <p className="text-xs leading-snug text-zinc-400 text-center mb-3 h-9 flex items-center justify-center">
-              Estuda e domina os mistérios do Outro Lado para combater o paranormal usando rituais e poder mental.
+        {/* OCULTISTA — Medo */}
+        <div className="flex flex-1 flex-col rounded-xl border border-green-900/60 bg-zinc-900/60 p-6 transition hover:border-green-700 lg:grid lg:grid-rows-[auto_1fr_auto_auto]">
+          <h2 className="font-display mb-3 text-center text-xl uppercase tracking-wide text-green-500">
+            Ocultista
+          </h2>
+          <div className="mb-5 flex flex-col justify-start">
+            <p className="text-sm leading-relaxed text-zinc-400 text-center">
+              O Outro Lado é misterioso, perigoso e, de certa forma, cativante. Muitos estudiosos das entidades se perdem em seus reinos obscuros em busca de poder, mas existem aqueles que visam compreender e dominar os mistérios paranormais para combater o próprio Outro Lado.
             </p>
+          </div>
 
-            {/* Características */}
-            <div className="mb-3 flex flex-col gap-2 rounded-lg border border-zinc-800 bg-zinc-950/70 p-3 text-xs">
-              <h3 className="font-display text-[11px] font-bold uppercase tracking-wider text-green-400 border-b border-zinc-800/80 pb-1 text-center">
-                Características
-              </h3>
+          {/* CARACTERÍSTICAS TÉCNICAS */}
+          <div className="mb-5 flex flex-col gap-3 rounded-lg border border-zinc-800 bg-zinc-950/70 p-4 text-xs">
+            <h3 className="font-display text-xs font-bold uppercase tracking-wider text-green-400 border-b border-zinc-800/80 pb-1.5 text-center">
+              Características
+            </h3>
 
-              <div className="flex items-center justify-between border-b border-zinc-800/50 pb-1.5 text-zinc-200">
-                <span className="font-semibold text-[11px]">PONTOS DE VIDA</span>
-                <span className="text-right">
-                  <span className="font-mono font-bold text-green-400">12 + VIG</span>
-                  <span className="text-[10px] text-zinc-400 ml-1.5 font-mono">(+2/NEX)</span>
-                </span>
+            {/* PV */}
+            <div className="border-b border-zinc-800/50 pb-2">
+              <div className="flex items-center justify-between font-bold text-zinc-200">
+                <span>PONTOS DE VIDA INICIAIS</span>
+                <span className="text-green-400 font-mono">12 + VIGOR</span>
               </div>
-
-              <div className="flex items-center justify-between border-b border-zinc-800/50 pb-1.5 text-zinc-200">
-                <span className="font-semibold text-[11px]">PONTOS DE ESFORÇO</span>
-                <span className="text-right">
-                  <span className="font-mono font-bold text-green-400">4 + PRE</span>
-                  <span className="text-[10px] text-zinc-400 ml-1.5 font-mono">(+4/NEX)</span>
-                </span>
+              <div className="flex items-center justify-between text-[11px] text-zinc-400 mt-0.5">
+                <span>A cada novo nível de exposição</span>
+                <span className="font-mono text-zinc-300">2 PV (+Vig)</span>
               </div>
+            </div>
 
-              <div className="flex items-center justify-between border-b border-zinc-800/50 pb-1.5 text-zinc-200">
-                <span className="font-semibold text-[11px]">SANIDADE</span>
-                <span className="text-right">
-                  <span className="font-mono font-bold text-green-400">20</span>
-                  <span className="text-[10px] text-zinc-400 ml-1.5 font-mono">(+5/NEX)</span>
-                </span>
+            {/* PE */}
+            <div className="border-b border-zinc-800/50 pb-2">
+              <div className="flex items-center justify-between font-bold text-zinc-200">
+                <span>PONTOS DE ESFORÇO INICIAIS</span>
+                <span className="text-green-400 font-mono">4 + PRESENÇA</span>
               </div>
+              <div className="flex items-center justify-between text-[11px] text-zinc-400 mt-0.5">
+                <span>A cada novo nível de exposição</span>
+                <span className="font-mono text-zinc-300">4 PE (+Pre)</span>
+              </div>
+            </div>
 
-              <div className="border-b border-zinc-800/50 pb-1.5">
-                <span className="block font-semibold text-zinc-300 text-[11px]">PERÍCIAS TREINADAS</span>
-                <p className="text-[11px] leading-tight text-zinc-400 mt-0.5">
-                  Ocultismo e Vontade, mais 3 + Int à escolha.
-                </p>
+            {/* SAN */}
+            <div className="border-b border-zinc-800/50 pb-2">
+              <div className="flex items-center justify-between font-bold text-zinc-200">
+                <span>SANIDADE INICIAL</span>
+                <span className="text-green-400 font-mono">20</span>
               </div>
+              <div className="flex items-center justify-between text-[11px] text-zinc-400 mt-0.5">
+                <span>A cada novo nível de exposição</span>
+                <span className="font-mono text-zinc-300">5 SAN</span>
+              </div>
+            </div>
 
-              <div>
-                <span className="block font-semibold text-zinc-300 text-[11px]">PROFICIÊNCIAS</span>
-                <p className="text-[11px] leading-tight text-zinc-400 mt-0.5">
-                  Armas simples.
-                </p>
-              </div>
+            {/* PERÍCIAS */}
+            <div className="border-b border-zinc-800/50 pb-2">
+              <span className="block font-bold text-zinc-200 mb-1">PERÍCIAS TREINADAS</span>
+              <p className="text-[11px] leading-relaxed text-zinc-400">
+                Ocultismo e Vontade, mais uma quantidade de perícias à sua escolha igual a 3 + Intelecto.
+              </p>
+            </div>
+
+            {/* PROFICIÊNCIAS */}
+            <div>
+              <span className="block font-bold text-zinc-200 mb-1">PROFICIÊNCIAS</span>
+              <p className="text-[11px] leading-relaxed text-zinc-400">
+                Armas simples.
+              </p>
             </div>
           </div>
 
-          <div>
-            <div className="flex flex-col justify-center rounded-lg border border-zinc-800/60 bg-zinc-950/40 p-2 text-xs mb-3 text-center min-h-[58px]">
-              <span className="text-zinc-300 font-semibold text-[11px]">Canalizador de Rituais</span>
-              <span className="text-[10px] text-zinc-400 mt-0.5">
-                Maior Sanidade e PE iniciais para aprender e conjurar rituais paranormais.
-              </span>
-            </div>
-
+          <div className="mt-auto flex flex-col gap-3">
             <button
-              type="button"
               onClick={() => escolherClasse('Ocultista')}
-              className="w-full rounded-lg bg-green-800 py-2.5 px-3 font-bold uppercase tracking-wider text-xs text-zinc-100 transition hover:bg-green-700 cursor-pointer"
+              className="w-full rounded-lg bg-green-800 p-3.5 font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-green-700"
             >
               Selecionar Ocultista
             </button>
           </div>
         </div>
+      </div>
+
+      <div className="mt-8">
+        <button
+          onClick={() => setTelaAtual('origens')}
+          className="rounded-md border border-zinc-700 bg-zinc-800 px-6 py-3 font-bold text-zinc-300 transition hover:bg-zinc-700 cursor-pointer"
+        >
+          Voltar
+        </button>
       </div>
     </div>
   );

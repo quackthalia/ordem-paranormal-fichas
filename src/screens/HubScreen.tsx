@@ -84,7 +84,7 @@ export const HubScreen: React.FC = () => {
       {/* CONTADOR DE AGENTES */}
       <div className="mb-4 flex items-center justify-between">
         <h1 className="text-xl font-bold text-zinc-100 tracking-wide">
-          Agentes: {agentesSalvos.length}/15
+          Agentes: {agentesSalvos.length}
         </h1>
       </div>
 

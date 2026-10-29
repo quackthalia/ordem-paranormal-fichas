@@ -209,9 +209,6 @@ export const ClasseScreen: React.FC = () => {
           </div>
 
           <div className="mt-auto flex flex-col gap-3">
-            <div className="flex min-h-[46px] items-center justify-center rounded-lg border border-zinc-800 bg-zinc-950/80 p-3">
-              <p className="text-xs text-zinc-500 italic">Nenhuma perícia padrão (7 + INT livres)</p>
-            </div>
             <button
               onClick={() => escolherClasse('Especialista')}
               className="w-full rounded-lg bg-green-800 p-3.5 font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-green-700"
@@ -290,13 +287,6 @@ export const ClasseScreen: React.FC = () => {
           </div>
 
           <div className="mt-auto flex flex-col gap-3">
-            <div className="flex min-h-[46px] items-center justify-center rounded-lg border border-zinc-800 bg-zinc-950/80 p-3 text-sm">
-              <div className="flex items-center justify-center gap-3">
-                <span className="font-semibold text-zinc-300">Vontade</span>
-                <span className="text-zinc-600">&</span>
-                <span className="font-semibold text-zinc-300">Ocultismo</span>
-              </div>
-            </div>
             <button
               onClick={() => escolherClasse('Ocultista')}
               className="w-full rounded-lg bg-green-800 p-3.5 font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-green-700"

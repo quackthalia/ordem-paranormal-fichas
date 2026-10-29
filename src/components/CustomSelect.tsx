@@ -73,7 +73,11 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
   const textAlignment = isCentered ? 'text-center' : isRight ? 'text-right' : 'text-left';
 
   const lista = (
-    <ul className={`max-h-60 overflow-auto custom-scrollbar py-1 text-sm text-zinc-300 ${textAlignment}`}>
+    <ul 
+      className={`max-h-60 overflow-y-auto py-1 text-sm text-zinc-300 ${textAlignment} ${
+        isCentered ? '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden' : 'custom-scrollbar'
+      }`}
+    >
       {normalizedOptions.map((opt) => (
         <li
           key={opt.value}
@@ -91,7 +95,7 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
             onChange(opt.value);
             setIsOpen(false);
           }}
-          className={`relative py-2 px-1 transition-colors ${
+          className={`relative py-1.5 px-0 transition-colors ${
             opt.disabled
               ? 'opacity-60 cursor-not-allowed bg-zinc-900/50 text-zinc-500'
               : 'cursor-pointer select-none hover:bg-green-600/20 hover:text-green-400'
@@ -99,8 +103,8 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
             value === opt.value ? 'bg-green-900/30 font-bold text-green-400' : ''
           }`}
         >
-          <div className={`w-full flex flex-col justify-center ${isCentered ? 'items-center text-center' : isRight ? 'items-end text-right' : 'items-start text-left'}`}>
-            <span className={`block w-full truncate ${isCentered ? 'text-center' : isRight ? 'text-right' : 'text-left'}`}>{opt.label}</span>
+          <div className={`w-full flex flex-col justify-center items-center text-center`}>
+            <span className="block w-full text-center truncate">{opt.label}</span>
             {opt.subtitle && (
               <span className="text-[10px] mt-0.5 whitespace-normal leading-tight text-red-400/80">
                 {opt.subtitle}

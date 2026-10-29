@@ -3927,8 +3927,8 @@ return (
             />
               <RegraCheckbox
                 nome="media_dano"
-                titulo="Cálculo de Média de Dano"
-                descricao="Exibe uma seção retrátil nos blocos de ataque com a média matemática do dano causado pelas armas no combate."
+                titulo="Média de Dano"
+                descricao="Quando um ataque acertar (ou quando qualquer efeito que cause dano for usado), não faça rolagens de dano. Em vez disso, calcule previamente o dano médio do ataque e considere que cada acerto causa esse dano."
               />
             <RegraCheckbox
               nome="sem_sanidade"

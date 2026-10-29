@@ -63,7 +63,7 @@ export const IdentidadeScreen: React.FC = () => {
         </p>
         <div className="w-full max-w-3xl text-sm leading-relaxed text-zinc-400 space-y-4">
           <p>
-            Defina o nome e a foto do seu investigador para registrar sua ficha na Ordem.
+            Insira as informações básicas de seu personagem—seu nome, idade, aparência, um resumo de sua história de vida, etc.— e então, finalize para registrar sua ficha.
           </p>
         </div>
         <div className="mt-8 h-px w-full max-w-5xl bg-zinc-800/80"></div>

@@ -2,7 +2,7 @@
 
 /* ============================================================
    TEMA — Ordem Paranormal Fichas
-   Preto/zinco + vermelho sangue. Fonte de máquina de escrever
+   Preto/zinco + verde. Fonte de máquina de escrever
    nos títulos, no clima de "Enigma do Medo".
    ============================================================ */
 @theme {
@@ -44,7 +44,7 @@ button {
 }
 
 ::selection {
-  background: rgb(185 28 28 / 0.45);
+  background: rgb(22 163 74 / 0.45);
 }
 
 :focus,

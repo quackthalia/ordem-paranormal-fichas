@@ -10,6 +10,13 @@ function agentesLocalStoragePlugin(): Plugin {
   return {
     name: 'agentes-local-storage',
     configureServer(server) {
+      // Impede que o watcher do Vite recarregue a página quando arquivos .json em ./agentes forem salvos
+      server.watcher.unwatch([
+        agentesDir,
+        path.join(agentesDir, '**'),
+        '**/agentes/**',
+      ])
+
       server.middlewares.use('/api/agentes', (req, res) => {
         try {
           if (!fs.existsSync(agentesDir)) {
@@ -58,7 +65,26 @@ function agentesLocalStoragePlugin(): Plugin {
                 }
                 const safeId = String(data.id).replace(/[^a-zA-Z0-9_-]/g, '')
                 const filePath = path.join(agentesDir, `${safeId}.json`)
-                fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8')
+
+                // Evita escrita desnecessária no disco se nada mudou além de atualizadoEm
+                let deveEscrever = true
+                if (fs.existsSync(filePath)) {
+                  try {
+                    const atualRaw = fs.readFileSync(filePath, 'utf-8')
+                    const atualObj = JSON.parse(atualRaw)
+                    const aLimpo = JSON.stringify({ ...atualObj, atualizadoEm: '' })
+                    const bLimpo = JSON.stringify({ ...data, atualizadoEm: '' })
+                    if (aLimpo === bLimpo) {
+                      deveEscrever = false
+                    }
+                  } catch {
+                    deveEscrever = true
+                  }
+                }
+
+                if (deveEscrever) {
+                  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8')
+                }
 
                 res.statusCode = 200
                 res.setHeader('Content-Type', 'application/json')
@@ -108,5 +134,10 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), agentesLocalStoragePlugin()],
   resolve: {
     dedupe: ['react', 'react-dom'],
+  },
+  server: {
+    watch: {
+      ignored: ['**/agentes/**'],
+    },
   },
 })

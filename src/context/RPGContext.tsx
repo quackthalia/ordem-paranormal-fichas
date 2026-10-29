@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import type {
   Tela,
   ClasseRPG,
@@ -2015,12 +2015,26 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     status
   ]);
 
+  const ultimoSaveHashRef = useRef<string>('');
+  const ignorarProximoAutoSaveRef = useRef<boolean>(false);
+  const restaurouSessaoRef = useRef<boolean>(false);
+
   const refazerPersonagem = useCallback(() => {
+    try {
+      sessionStorage.removeItem('ordem_paranormal_agente_ativo');
+    } catch {
+      // ignora
+    }
     limparEstadoPersonagem();
     setTelaAtual('atributos');
   }, [limparEstadoPersonagem]);
 
   const iniciarNovoAgente = useCallback(() => {
+    try {
+      sessionStorage.removeItem('ordem_paranormal_agente_ativo');
+    } catch {
+      // ignora
+    }
     limparEstadoPersonagem();
     setTelaAtual('atributos');
   }, [limparEstadoPersonagem]);
@@ -2172,6 +2186,14 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
       fotoPersonagem: finalFoto,
     });
 
+    ultimoSaveHashRef.current = JSON.stringify({ ...fichaSerializada, atualizadoEm: '' });
+    ignorarProximoAutoSaveRef.current = true;
+    try {
+      sessionStorage.setItem('ordem_paranormal_agente_ativo', novoId);
+    } catch {
+      // ignora
+    }
+
     await salvarAgenteLocal(fichaSerializada);
     await recarregarAgentes();
     setTelaAtual('ficha');
@@ -2192,6 +2214,19 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
 
     const timer = setTimeout(async () => {
       const ficha = serializarFicha(obterSnapshotContexto());
+      const hashAtual = JSON.stringify({ ...ficha, atualizadoEm: '' });
+
+      if (ignorarProximoAutoSaveRef.current) {
+        ignorarProximoAutoSaveRef.current = false;
+        ultimoSaveHashRef.current = hashAtual;
+        return;
+      }
+
+      if (hashAtual === ultimoSaveHashRef.current) {
+        return;
+      }
+
+      ultimoSaveHashRef.current = hashAtual;
       await salvarAgenteLocal(ficha);
       setAgentesSalvos(prev => {
         const idx = prev.findIndex(a => a.id === ficha.id);
@@ -2208,6 +2243,13 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
   }, [telaAtual, agenteId, obterSnapshotContexto]);
 
   const abrirAgenteDoHub = useCallback((agente: AgenteSalvo) => {
+    ignorarProximoAutoSaveRef.current = true;
+    ultimoSaveHashRef.current = JSON.stringify({ ...agente, atualizadoEm: '' });
+    try {
+      sessionStorage.setItem('ordem_paranormal_agente_ativo', agente.id);
+    } catch {
+      // ignora
+    }
     limparEstadoPersonagem();
     aplicarFichaNoContexto(agente, {
       setAgenteId,
@@ -2278,10 +2320,36 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     trilhasHook,
   ]);
 
+  // Restaura ficha ativa caso a página sofra reload involuntário
+  useEffect(() => {
+    if (restaurouSessaoRef.current || agentesSalvos.length === 0) return;
+    restaurouSessaoRef.current = true;
+    try {
+      const idAtivo = sessionStorage.getItem('ordem_paranormal_agente_ativo');
+      if (idAtivo && telaAtual === 'hub') {
+        const encontrado = agentesSalvos.find(a => a.id === idAtivo);
+        if (encontrado) {
+          abrirAgenteDoHub(encontrado);
+        }
+      }
+    } catch {
+      // ignora
+    }
+  }, [agentesSalvos, telaAtual, abrirAgenteDoHub]);
+
   const voltarParaHub = useCallback(async () => {
+    try {
+      sessionStorage.removeItem('ordem_paranormal_agente_ativo');
+    } catch {
+      // ignora
+    }
     if (telaAtual === 'ficha' && agenteId) {
       const ficha = serializarFicha(obterSnapshotContexto());
-      await salvarAgenteLocal(ficha);
+      const hashAtual = JSON.stringify({ ...ficha, atualizadoEm: '' });
+      if (hashAtual !== ultimoSaveHashRef.current) {
+        ultimoSaveHashRef.current = hashAtual;
+        await salvarAgenteLocal(ficha);
+      }
     }
     await recarregarAgentes();
     setTelaAtual('hub');

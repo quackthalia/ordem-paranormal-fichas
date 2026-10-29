@@ -47,10 +47,9 @@ button {
   background: rgb(185 28 28 / 0.45);
 }
 
+:focus,
 :focus-visible {
-  outline: 2px solid #b91c1c;
-  outline-offset: 2px;
-  border-radius: 2px;
+  outline: none;
 }
 
 /* Scrollbar discreta */
@@ -106,4 +105,3 @@ button {
 .animate-dropdown-up {
   animation: dropdownFadeInUp 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-

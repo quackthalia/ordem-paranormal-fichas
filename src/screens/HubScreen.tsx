@@ -190,9 +190,9 @@ export const HubScreen: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => abrirModalEdicao(agente)}
-                          className="flex w-full items-center gap-2 px-3.5 py-2 text-left text-zinc-200 hover:bg-zinc-800 cursor-pointer"
+                          className="flex w-full items-center px-3.5 py-2 text-left text-zinc-200 hover:bg-zinc-800 cursor-pointer"
                         >
-                          <span>✏️</span> Editar Dados
+                          Editar Dados
                         </button>
                         <button
                           type="button"
@@ -200,9 +200,9 @@ export const HubScreen: React.FC = () => {
                             duplicarAgenteDoHub(agente);
                             setMenuAbertoId(null);
                           }}
-                          className="flex w-full items-center gap-2 px-3.5 py-2 text-left text-zinc-200 hover:bg-zinc-800 cursor-pointer"
+                          className="flex w-full items-center px-3.5 py-2 text-left text-zinc-200 hover:bg-zinc-800 cursor-pointer"
                         >
-                          <span>📋</span> Duplicar Agente
+                          Duplicar Agente
                         </button>
                         <button
                           type="button"
@@ -210,9 +210,9 @@ export const HubScreen: React.FC = () => {
                             exportarFicha(rpg, agente);
                             setMenuAbertoId(null);
                           }}
-                          className="flex w-full items-center gap-2 px-3.5 py-2 text-left text-zinc-200 hover:bg-zinc-800 cursor-pointer"
+                          className="flex w-full items-center px-3.5 py-2 text-left text-zinc-200 hover:bg-zinc-800 cursor-pointer"
                         >
-                          <span>⬇️</span> Exportar JSON
+                          Exportar JSON
                         </button>
                         <div className="my-1 border-t border-zinc-800" />
                         {confirmandoExclusaoId === agente.id ? (
@@ -223,17 +223,17 @@ export const HubScreen: React.FC = () => {
                               setConfirmandoExclusaoId(null);
                               setMenuAbertoId(null);
                             }}
-                            className="flex w-full items-center gap-2 bg-red-950/60 px-3.5 py-2 text-left font-bold text-red-400 hover:bg-red-900/60 cursor-pointer"
+                            className="flex w-full items-center bg-red-950/60 px-3.5 py-2 text-left font-bold text-red-400 hover:bg-red-900/60 cursor-pointer"
                           >
-                            <span>⚠️</span> Confirmar Exclusão
+                            Confirmar Exclusão
                           </button>
                         ) : (
                           <button
                             type="button"
                             onClick={() => setConfirmandoExclusaoId(agente.id)}
-                            className="flex w-full items-center gap-2 px-3.5 py-2 text-left text-red-400 hover:bg-zinc-800 cursor-pointer"
+                            className="flex w-full items-center px-3.5 py-2 text-left text-red-400 hover:bg-zinc-800 cursor-pointer"
                           >
-                            <span>🗑️</span> Excluir Agente
+                            Excluir Agente
                           </button>
                         )}
                       </div>

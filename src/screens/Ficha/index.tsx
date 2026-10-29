@@ -487,7 +487,7 @@ export const FichaScreen: React.FC = () => {
           onClick={() => rpg.voltarParaHub()}
           className="flex-1 rounded-md border border-green-900/60 bg-zinc-900 p-3.5 font-bold uppercase tracking-wider text-green-400 transition hover:border-green-600 hover:bg-green-950/30 cursor-pointer"
         >
-          ◀ Voltar para o Hub de Agentes
+          Voltar para o Hub de Agentes
         </button>
         <button
           onClick={handleRefazer}

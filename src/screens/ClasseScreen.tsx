@@ -308,7 +308,7 @@ export const ClasseScreen: React.FC = () => {
           onClick={() => setTelaAtual('origens')}
           className="rounded-md border border-zinc-700 bg-zinc-800 px-6 py-3 font-bold text-zinc-300 transition hover:bg-zinc-700 cursor-pointer"
         >
-          ◀ Voltar
+          Voltar
         </button>
       </div>
     </div>

@@ -24,7 +24,7 @@ export const SaveLoadButtons: React.FC = () => {
         className="flex items-center gap-1.5 rounded border border-green-800/80 bg-zinc-900 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-green-400 transition hover:bg-green-950/50 hover:text-green-300 cursor-pointer"
         title="Voltar para o Hub Principal de Agentes"
       >
-        <span>◀ Meus Agentes</span>
+        <span>Meus Agentes</span>
       </button>
 
       <button
@@ -32,7 +32,7 @@ export const SaveLoadButtons: React.FC = () => {
         className="flex items-center gap-2 rounded bg-green-700/80 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-green-100 transition hover:bg-green-600 cursor-pointer"
         title="Baixar Ficha como Arquivo JSON"
       >
-        <span>⬇️ Salvar</span>
+        <span>Salvar</span>
       </button>
 
       <button
@@ -40,7 +40,7 @@ export const SaveLoadButtons: React.FC = () => {
         className="flex items-center gap-2 rounded bg-zinc-800 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-zinc-300 transition hover:bg-zinc-700 cursor-pointer"
         title="Importar Ficha de um Arquivo JSON"
       >
-        <span>⬆️ Carregar</span>
+        <span>Carregar</span>
       </button>
 
       <input

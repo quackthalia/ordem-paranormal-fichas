@@ -1183,7 +1183,8 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     regrasAutomaticasAtivas, 
     bonusVestimentas.pv + bonusMaldicoes.pv + bonusPvTrilha5 + bonusPvMonstruoso, 
     bonusVestimentas.pe + bonusMaldicoes.pe + bonusPeTrilha19 + bonusPeTrilha32 + bonusPeTrilha37 + bonusPeMonstruoso, 
-    bonusPeTurnoTrilha14
+    bonusPeTurnoTrilha14,
+    Boolean(maldicoesHook.loading || rituaisHook.loading)
   );
 
   
@@ -1281,19 +1282,19 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     }
     if (origensHook.origemSelecionada) {
       const { nome_p1, nome_p2, nome_pesp, Codigo_Per_Regra, escolhaRegra6 } = origensHook.origemSelecionada;
-      if (nome_p1) gratis.push(nome_p1);
+      if (nome_p1 && nome_p1 !== 'null') gratis.push(nome_p1);
 
       if (Codigo_Per_Regra === 1) {
         // Regra 1: Apenas a per�cia 1
       } else if (Codigo_Per_Regra === 6) {
         // Regra 6: Per�cia 1 + escolha
-        if (escolhaRegra6 === 'p2' && nome_p2) gratis.push(nome_p2);
-        else if (escolhaRegra6 === 'pesp' && nome_pesp) gratis.push(nome_pesp);
+        if (escolhaRegra6 === 'p2' && nome_p2 && nome_p2 !== 'null') gratis.push(nome_p2);
+        else if (escolhaRegra6 === 'pesp' && nome_pesp && nome_pesp !== 'null') gratis.push(nome_pesp);
       } else if (Codigo_Per_Regra === 7) {
         // Regra 7 n�o adiciona treino b�sico aqui
       } else {
         // Padr�o: Per�cia 1 + Per�cia 2
-        if (nome_p2) gratis.push(nome_p2);
+        if (nome_p2 && nome_p2 !== 'null') gratis.push(nome_p2);
       }
     }
     return gratis;
@@ -1773,8 +1774,12 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
               profissaoGranadeiroRef.current = { nome: pName, concedeuTreino: true };
               return prev;
             }
+            if ((exists as any).bonusGranadeiro) {
+              profissaoGranadeiroRef.current = { nome: pName, concedeuTreino: false };
+              return prev;
+            }
             profissaoGranadeiroRef.current = { nome: pName, concedeuTreino: false };
-            return prev.map(p => (p.nome || '').toLowerCase() === pName.toLowerCase() ? { ...p, outros: (p.outros || 0) + 5 } : p);
+            return prev.map(p => (p.nome || '').toLowerCase() === pName.toLowerCase() ? { ...p, outros: (p.outros || 0) + 5, bonusGranadeiro: true } as any : p);
           } else {
             profissaoGranadeiroRef.current = { nome: pName, concedeuTreino: true };
             return [...prev, { nome: pName, treino: 5, outros: 0, origem: 'granadeiro' } as any];
@@ -1788,7 +1793,13 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
           if (old.concedeuTreino) {
             return prev.filter(p => !((p.nome || '').toLowerCase() === old.nome.toLowerCase() && (p as any).origem === 'granadeiro'));
           } else {
-            return prev.map(p => (p.nome || '').toLowerCase() === old.nome.toLowerCase() ? { ...p, outros: Math.max(0, (p.outros || 0) - 5) } : p);
+            return prev.map(p => {
+              if ((p.nome || '').toLowerCase() === old.nome.toLowerCase()) {
+                const { bonusGranadeiro: _bg, ...rest } = p as any;
+                return { ...rest, outros: Math.max(0, (p.outros || 0) - 5) };
+              }
+              return p;
+            });
           }
         });
         profissaoGranadeiroRef.current = null;
@@ -1812,7 +1823,13 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
             if (old.concedeuTreino) {
               return prev.filter(p => !((p.nome || '').toLowerCase() === old.nome.toLowerCase() && (p as any).origem === 'trilha65'));
             } else {
-              return prev.map(p => (p.nome || '').toLowerCase() === old.nome.toLowerCase() ? { ...p, outros: Math.max(0, (p.outros || 0) - 5) } : p);
+              return prev.map(p => {
+                if ((p.nome || '').toLowerCase() === old.nome.toLowerCase()) {
+                  const { bonusTrilha65: _bt, ...rest } = p as any;
+                  return { ...rest, outros: Math.max(0, (p.outros || 0) - 5) };
+                }
+                return p;
+              });
             }
           });
         }
@@ -1821,9 +1838,17 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
         periciasHook.setProfissoes(prev => {
           const exists = prev.find(p => (p.nome || '').toLowerCase() === pName.toLowerCase());
           if (exists) {
+            if ((exists as any).origem === 'trilha65') {
+              profissaoTrilha65Ref.current = { nome: pName, concedeuTreino: true };
+              return prev;
+            }
+            if ((exists as any).bonusTrilha65) {
+              profissaoTrilha65Ref.current = { nome: pName, concedeuTreino: false };
+              return prev;
+            }
             // Se já for treinado em uma dessas perícias, recebe +5 nela
             profissaoTrilha65Ref.current = { nome: pName, concedeuTreino: false };
-            return prev.map(p => (p.nome || '').toLowerCase() === pName.toLowerCase() ? { ...p, outros: (p.outros || 0) + 5 } : p);
+            return prev.map(p => (p.nome || '').toLowerCase() === pName.toLowerCase() ? { ...p, outros: (p.outros || 0) + 5, bonusTrilha65: true } as any : p);
           } else {
             // Não tem: recebe treinamento
             profissaoTrilha65Ref.current = { nome: pName, concedeuTreino: true };
@@ -1838,7 +1863,13 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
           if (old.concedeuTreino) {
             return prev.filter(p => !((p.nome || '').toLowerCase() === old.nome.toLowerCase() && (p as any).origem === 'trilha65'));
           } else {
-            return prev.map(p => (p.nome || '').toLowerCase() === old.nome.toLowerCase() ? { ...p, outros: Math.max(0, (p.outros || 0) - 5) } : p);
+            return prev.map(p => {
+              if ((p.nome || '').toLowerCase() === old.nome.toLowerCase()) {
+                const { bonusTrilha65: _bt, ...rest } = p as any;
+                return { ...rest, outros: Math.max(0, (p.outros || 0) - 5) };
+              }
+              return p;
+            });
           }
         });
         profissaoTrilha65Ref.current = null;
@@ -1989,6 +2020,10 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     trilhasHook.setTrilhaSelecionada(null);
     trilhasHook.setVersatilidadeSelecionada(null);
     poderesHook.setPoderesEscolhidos({});
+    rituaisAprendidosRef.current = [];
+    profissaoTrilhaRef.current = null;
+    profissaoGranadeiroRef.current = null;
+    profissaoTrilha65Ref.current = null;
     rituaisHook.setRituaisAprendidos([]);
     armasHook.setArmasInventario([]);
     protecoesHook.setProtecoesInventario([]);
@@ -2251,6 +2286,7 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
       // ignora
     }
     limparEstadoPersonagem();
+    rituaisAprendidosRef.current = Array.isArray(agente.rituaisAprendidos) ? agente.rituaisAprendidos : [];
     aplicarFichaNoContexto(agente, {
       setAgenteId,
       setAgenteCriadoEm,

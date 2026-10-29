@@ -109,8 +109,12 @@ export function useOrigem(): UseOrigemReturn {
 
   const selecionarOrigem = useCallback(
     (origem: Origem, escolhaRegra6?: 'p2' | 'pesp', elemento_escolhido?: string) => {
-      const nomeP1 = nomesPericias[origem.Pericia_Treinada_1] || String(origem.Pericia_Treinada_1);
-      const nomeP2 = nomesPericias[origem.Pericia_Treinada_2] || String(origem.Pericia_Treinada_2);
+      const nomeP1 = origem.Pericia_Treinada_1 !== null && origem.Pericia_Treinada_1 !== undefined
+        ? (nomesPericias[origem.Pericia_Treinada_1] || String(origem.Pericia_Treinada_1))
+        : null;
+      const nomeP2 = origem.Pericia_Treinada_2 !== null && origem.Pericia_Treinada_2 !== undefined
+        ? (nomesPericias[origem.Pericia_Treinada_2] || String(origem.Pericia_Treinada_2))
+        : null;
       let nomePEsp = null;
       if (origem.Pericia_Treinada_Especial) {
         nomePEsp = nomesPericias[origem.Pericia_Treinada_Especial as any] || String(origem.Pericia_Treinada_Especial);

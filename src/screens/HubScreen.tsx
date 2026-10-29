@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRPG } from '../context/RPGContext';
 import type { AgenteSalvo } from '../types';
-import { exportarFicha, salvarAgenteLocal, gerarIdAgente, formatarDataRegistro } from '../utils/saveLoad';
+import { exportarFicha, salvarAgenteLocal, normalizarFichaImportada } from '../utils/saveLoad';
 
 export const HubScreen: React.FC = () => {
   const rpg = useRPG();
@@ -31,20 +31,13 @@ export const HubScreen: React.FC = () => {
 
     try {
       const text = await file.text();
-      const data = JSON.parse(text);
-
-      if (!data || typeof data !== 'object') {
-        throw new Error('Arquivo JSON inválido.');
-      }
-
-      if (!data.id) data.id = gerarIdAgente();
-      if (!data.criadoEm) data.criadoEm = new Date().toISOString();
-      if (!data.dataRegistro) data.dataRegistro = formatarDataRegistro(new Date(data.criadoEm));
+      const parsed = JSON.parse(text);
+      const data = normalizarFichaImportada(parsed);
 
       await salvarAgenteLocal(data);
       await recarregarAgentes?.();
     } catch (err) {
-      alert('Erro ao importar ficha: ' + String(err));
+      alert('Erro ao importar ficha: ' + (err instanceof Error ? err.message : String(err)));
     } finally {
       if (fileImportRef.current) {
         fileImportRef.current.value = '';

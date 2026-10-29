@@ -9,8 +9,10 @@ export interface UseInventarioReturn {
   patente: Patente;
   setPatenteManual: (val: Patente) => void;
   credito: LimiteCredito;
+  creditoOverride: LimiteCredito | null;
   setCreditoOverride: (val: LimiteCredito | null) => void;
   limitesItens: [number, number, number, number];
+  limitesItensOverride: [number, number, number, number] | null;
   setLimitesItensOverride: (val: [number, number, number, number] | null) => void;
   setLimiteItemCategoria: (index: number, val: number) => void;
 }
@@ -83,8 +85,10 @@ export function useInventario(codigoRegra?: number | null, grauProfissao: number
     patente,
     setPatenteManual,
     credito,
+    creditoOverride,
     setCreditoOverride,
     limitesItens,
+    limitesItensOverride,
     setLimitesItensOverride,
     setLimiteItemCategoria,
   }), [
@@ -93,7 +97,9 @@ export function useInventario(codigoRegra?: number | null, grauProfissao: number
     patente,
     setPatenteManual,
     credito,
+    creditoOverride,
     limitesItens,
+    limitesItensOverride,
     setLimiteItemCategoria,
   ]);
 }

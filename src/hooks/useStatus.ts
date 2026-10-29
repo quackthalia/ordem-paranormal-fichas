@@ -54,7 +54,8 @@ export function useStatus(
   regrasAtivas?: Set<number>,
   bonusPv: number = 0,
   bonusPe: number = 0,
-  bonusPeTurno: number = 0
+  bonusPeTurno: number = 0,
+  carregandoDependencias: boolean = false
 ): UseStatusReturn {
   // Estados com null = "não inicializado" (melhor que -1)
   const [pvAtual, setPvAtual] = useState<number | null>(null);
@@ -79,6 +80,7 @@ export function useStatus(
 
   const prevCalc = useRef({ pv: 0, san: 0, pe: 0, pd: 0, init: false });
   const justLoadedRef = useRef(false);
+  const [loadStatusVersion, setLoadStatusVersion] = useState(0);
 
   const baseStatus = calcularStatusBase(classe, atributos, nivel, regrasAtivas);
   const calcMaxPv = baseStatus.pvMax + bonusPv;
@@ -90,7 +92,7 @@ export function useStatus(
 
   // Efeito de sincronização (mesma lógica do original, mas sem -1)
   useEffect(() => {
-    if (!classe) return;
+    if (!classe || carregandoDependencias) return;
 
     if (justLoadedRef.current) {
       justLoadedRef.current = false;
@@ -142,7 +144,7 @@ export function useStatus(
 
       prevCalc.current = { pv: calcMaxPv, san: calcMaxSan, pe: calcMaxPe, pd: calcMaxPd, init: true };
     }
-  }, [calcMaxPv, calcMaxSan, calcMaxPe, calcMaxPd, classe]);
+  }, [calcMaxPv, calcMaxSan, calcMaxPe, calcMaxPd, classe, carregandoDependencias, loadStatusVersion]);
 
   const alterarStatus = useCallback(
     (tipo: 'pv' | 'san' | 'pe' | 'pd' | 'pp', qtd: number) => {
@@ -163,6 +165,7 @@ export function useStatus(
     setSanAtual(null);
     setPeAtual(null);
     setPdAtual(null);
+    setPpAtual(null);
     setPvMax(0);
     setSanMax(0);
     setPeMax(0);
@@ -183,6 +186,7 @@ export function useStatus(
   const marcarStatusCarregado = useCallback(() => {
     justLoadedRef.current = true;
     prevCalc.current.init = true;
+    setLoadStatusVersion(v => v + 1);
   }, []);
 
   return useMemo(() => ({

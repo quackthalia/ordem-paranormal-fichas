@@ -235,7 +235,7 @@ export function aplicarFichaNoContexto(data: any, rpg: any) {
 
   if (data.periciasStatus !== undefined && Object.keys(data.periciasStatus).length > 0) {
     rpg.periciasHook.marcarPericiasCarregadas?.();
-    rpg.periciasHook.setPericiasStatus?.(data.periciasStatus);
+    rpg.periciasHook.setPericiasStatus?.((prev: any) => ({ ...prev, ...data.periciasStatus }));
   }
   rpg.periciasHook.setJaTinhaProfissao33?.(data.jaTinhaProfissao33 ?? false);
   rpg.periciasHook.setAvaliouRegra33?.(data.avaliouRegra33 ?? false);
@@ -267,6 +267,54 @@ export function aplicarFichaNoContexto(data: any, rpg: any) {
   rpg.trilhasHook.setVersatilidadeSelecionada?.(data.versatilidadeSelecionada ?? null);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function normalizarFichaImportada(raw: any): AgenteSalvo {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+    throw new Error('O arquivo selecionado não é um JSON de ficha válido.');
+  }
+
+  const temCamposFicha =
+    'classe' in raw ||
+    'atributos' in raw ||
+    'status' in raw ||
+    'periciasStatus' in raw ||
+    'nomePersonagem' in raw ||
+    'nex' in raw;
+
+  if (!temCamposFicha) {
+    throw new Error('O arquivo JSON não parece ser uma ficha de Ordem Paranormal.');
+  }
+
+  const agoraIso = new Date().toISOString();
+  const id = typeof raw.id === 'string' && raw.id.trim() ? raw.id.trim() : gerarIdAgente();
+  const criadoEm = typeof raw.criadoEm === 'string' && raw.criadoEm ? raw.criadoEm : agoraIso;
+  const dataRegistro =
+    typeof raw.dataRegistro === 'string' && raw.dataRegistro
+      ? raw.dataRegistro
+      : formatarDataRegistro(new Date(criadoEm));
+
+  const nomePersonagem = String(raw.nomePersonagem ?? raw.nomeEditando ?? '');
+  const nomeJogador = String(raw.nomeJogador ?? '');
+  const fotoPersonagem = String(raw.fotoPersonagem ?? '');
+
+  return {
+    ...raw,
+    id,
+    criadoEm,
+    atualizadoEm: agoraIso,
+    dataRegistro,
+    nomePersonagem,
+    nomeEditando: nomePersonagem,
+    nomeJogador,
+    fotoPersonagem,
+    classe: raw.classe ?? null,
+    nex: typeof raw.nex === 'number' ? raw.nex : (typeof raw.rawNex === 'number' ? raw.rawNex : 5),
+    rawNex: typeof raw.rawNex === 'number' ? raw.rawNex : (typeof raw.nex === 'number' ? raw.nex : 5),
+    nivel: typeof raw.nivel === 'number' ? raw.nivel : (typeof raw.rawNivel === 'number' ? raw.rawNivel : 1),
+    rawNivel: typeof raw.rawNivel === 'number' ? raw.rawNivel : (typeof raw.nivel === 'number' ? raw.nivel : 1),
+  };
+}
+
 // ============================================================
 // ARMAZENAMENTO LOCAL (PASTA ./agentes + FALLBACK LOCALSTORAGE)
 // ============================================================
@@ -291,11 +339,27 @@ function salvarCacheLocal(agentes: AgenteSalvo[]) {
 }
 
 export async function listarAgentesLocais(): Promise<AgenteSalvo[]> {
+  const cache = lerCacheLocal();
   try {
     const resp = await fetch('/api/agentes');
-    if (resp.ok) {
+    const contentType = resp.headers.get('content-type') || '';
+    if (resp.ok && contentType.includes('application/json')) {
       const lista = await resp.json();
       if (Array.isArray(lista)) {
+        if (lista.length === 0 && cache.length > 0) {
+          for (const ag of cache) {
+            try {
+              await fetch('/api/agentes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(ag),
+              });
+            } catch {
+              // ignora
+            }
+          }
+          return cache;
+        }
         salvarCacheLocal(lista);
         return lista;
       }
@@ -303,7 +367,7 @@ export async function listarAgentesLocais(): Promise<AgenteSalvo[]> {
   } catch {
     // Fallback para cache local caso fora do servidor de dev
   }
-  return lerCacheLocal();
+  return cache;
 }
 
 export async function salvarAgenteLocal(agente: AgenteSalvo): Promise<void> {
@@ -350,17 +414,21 @@ export async function excluirAgenteLocal(id: string): Promise<void> {
 export function exportarFicha(rpg: any, dadosDiretos?: AgenteSalvo) {
   const data = dadosDiretos || serializarFicha(rpg);
   const json = JSON.stringify(data, null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
+  const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
   const slugNome = (data.nomePersonagem || 'agente')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .replace(/[^a-z0-9_-]+/g, '_')
     .replace(/^_|_$/g, '');
   a.download = `ficha_${slugNome || 'ordem_paranormal'}.json`;
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -371,16 +439,19 @@ export function importarFicha(event: React.ChangeEvent<HTMLInputElement>, rpg: a
   const reader = new FileReader();
   reader.onload = async (e) => {
     try {
-      const data = JSON.parse(e.target?.result as string);
-      if (!data.id) data.id = gerarIdAgente();
-      if (!data.criadoEm) data.criadoEm = new Date().toISOString();
-      if (!data.dataRegistro) data.dataRegistro = formatarDataRegistro();
+      const parsed = JSON.parse(e.target?.result as string);
+      const data = normalizarFichaImportada(parsed);
 
-      aplicarFichaNoContexto(data, rpg);
       await salvarAgenteLocal(data);
       await rpg.recarregarAgentes?.();
+
+      if (rpg.abrirAgenteDoHub) {
+        rpg.abrirAgenteDoHub(data);
+      } else {
+        aplicarFichaNoContexto(data, rpg);
+      }
     } catch (err) {
-      alert('Erro ao carregar o arquivo da ficha. ' + String(err));
+      alert('Erro ao carregar o arquivo da ficha: ' + (err instanceof Error ? err.message : String(err)));
     }
   };
   reader.readAsText(file);

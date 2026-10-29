@@ -282,7 +282,24 @@ export function usePericias(
           mapaNomes[p.Codigo_Pericia] = p.Nome_Pericia;
         });
 
-        setPericias(objetoPericias);
+        setPericias(prev => {
+          if (Object.keys(prev).length === 0) return objetoPericias;
+          const merged: PericiasMap = { ...objetoPericias };
+          Object.entries(prev).forEach(([nome, pSalva]) => {
+            if (merged[nome]) {
+              merged[nome] = {
+                ...merged[nome],
+                ...pSalva,
+                id: merged[nome].id,
+                kit: merged[nome].kit,
+                descricao: merged[nome].descricao,
+              };
+            } else {
+              merged[nome] = pSalva;
+            }
+          });
+          return merged;
+        });
         setNomesPericias(mapaNomes);
       }
 
@@ -297,6 +314,7 @@ export function usePericias(
   const veteranasRef = useRef<string[]>([]);
   const expertsRef = useRef<string[]>([]);
   const justLoadedPericiasRef = useRef(false);
+  const [loadPericiasVersion, setLoadPericiasVersion] = useState(0);
 
   const resetarPericias = useCallback(() => {
     gratisRef.current = [];
@@ -319,10 +337,13 @@ export function usePericias(
 
   const marcarPericiasCarregadas = useCallback(() => {
     justLoadedPericiasRef.current = true;
+    setLoadPericiasVersion(v => v + 1);
   }, []);
 
   useEffect(() => {
     if (Object.keys(pericias).length === 0) return; // Aguarda carregar
+    const precisaNomesBanco = todosPoderesComRegra.some(p => [40, 41, 44, 45].includes(p.codigoRegra) && p.periciaPoder);
+    if (precisaNomesBanco && Object.keys(nomesPericias).length === 0) return;
 
     if (justLoadedPericiasRef.current) {
       justLoadedPericiasRef.current = false;
@@ -404,7 +425,7 @@ export function usePericias(
 
       return mudou ? novo : prev;
     });
-  }, [periciasGratis, veteranasGratis, expertsGratis, pericias]);
+  }, [periciasGratis, veteranasGratis, expertsGratis, pericias, nomesPericias, todosPoderesComRegra, loadPericiasVersion]);
 
   const limites = useMemo(() => {
     const lim = calcularLimitesPericias(classe, nivel, atributos);

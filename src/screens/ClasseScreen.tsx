@@ -39,13 +39,13 @@ export const ClasseScreen: React.FC = () => {
         <div className="mt-8 h-px w-full max-w-5xl bg-zinc-800/80"></div>
       </header>
 
-      <div className="flex flex-col items-stretch gap-5 lg:flex-row">
+      <div className="flex flex-col items-stretch gap-5 lg:grid lg:grid-cols-3">
         {/* COMBATENTE — Sangue */}
-        <div className="flex flex-1 flex-col rounded-xl border border-green-900/60 bg-zinc-900/60 p-6 transition hover:border-green-700">
+        <div className="flex flex-col rounded-xl border border-green-900/60 bg-zinc-900/60 p-6 transition hover:border-green-700">
           <h2 className="font-display mb-3 text-center text-xl uppercase tracking-wide text-green-500">
             Combatente
           </h2>
-          <div className="mb-5 flex min-h-[5.5rem] items-center justify-center">
+          <div className="flex-1 flex flex-col justify-start mb-5">
             <p className="text-sm leading-relaxed text-zinc-400 text-center">
               Treinado para lutar com todo tipo de armas, e com a força e a coragem para encarar os perigos de frente, É o tipo de agente que prefere abordagens mais diretas e costuma atirar primeiro e perguntar depois.
             </p>
@@ -143,11 +143,11 @@ export const ClasseScreen: React.FC = () => {
         </div>
 
         {/* ESPECIALISTA — Conhecimento */}
-        <div className="flex flex-1 flex-col rounded-xl border border-green-900/60 bg-zinc-900/60 p-6 transition hover:border-green-700">
+        <div className="flex flex-col rounded-xl border border-green-900/60 bg-zinc-900/60 p-6 transition hover:border-green-700">
           <h2 className="font-display mb-3 text-center text-xl uppercase tracking-wide text-green-500">
             Especialista
           </h2>
-          <div className="mb-5 flex min-h-[5.5rem] items-center justify-center">
+          <div className="flex-1 flex flex-col justify-start mb-5">
             <p className="text-sm leading-relaxed text-zinc-400 text-center">
               Um agente que confia mais em esperteza do que em força bruta. Um especialista se vale de conhecimento técnico, raciocínio rápido ou mesmo lábia para resolver mistérios e enfrentar o paranormal.
             </p>
@@ -223,11 +223,11 @@ export const ClasseScreen: React.FC = () => {
         </div>
 
         {/* OCULTISTA — Medo */}
-        <div className="flex flex-1 flex-col rounded-xl border border-green-900/60 bg-zinc-900/60 p-6 transition hover:border-green-700">
+        <div className="flex flex-col rounded-xl border border-green-900/60 bg-zinc-900/60 p-6 transition hover:border-green-700">
           <h2 className="font-display mb-3 text-center text-xl uppercase tracking-wide text-green-500">
             Ocultista
           </h2>
-          <div className="mb-5 flex min-h-[5.5rem] items-center justify-center">
+          <div className="flex-1 flex flex-col justify-start mb-5">
             <p className="text-sm leading-relaxed text-zinc-400 text-center">
               O Outro Lado é misterioso, perigoso e, de certa forma, cativante. Muitos estudiosos das entidades se perdem em seus reinos obscuros em busca de poder, mas existem aqueles que visam compreender e dominar os mistérios paranormais para combater o próprio Outro Lado.
             </p>

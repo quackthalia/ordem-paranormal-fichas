@@ -45,11 +45,11 @@ export const ClasseScreen: React.FC = () => {
 
       <div className="flex flex-col items-stretch gap-5 lg:grid lg:grid-cols-3 lg:gap-5">
         {/* COMBATENTE — Sangue */}
-        <div className="flex flex-1 flex-col rounded-xl border border-green-900/60 bg-zinc-900/60 p-6 transition hover:border-green-700 lg:grid lg:grid-rows-[auto_1fr_auto_auto]">
+        <div className="flex flex-1 flex-col rounded-xl border border-green-900/60 bg-zinc-900/60 p-6 transition hover:border-green-700">
           <h2 className="font-display mb-3 text-center text-xl uppercase tracking-wide text-green-500">
             Combatente
           </h2>
-          <div className="mb-5 flex flex-col justify-start">
+          <div className="mb-5 flex min-h-[8.5rem] items-center justify-center">
             <p className="text-sm leading-relaxed text-zinc-400 text-center">
               Treinado para lutar com todo tipo de armas, e com a força e a coragem para encarar os perigos de frente, É o tipo de agente que prefere abordagens mais diretas e costuma atirar primeiro e perguntar depois.
             </p>
@@ -98,7 +98,7 @@ export const ClasseScreen: React.FC = () => {
             </div>
 
             {/* PERÍCIAS */}
-            <div className="border-b border-zinc-800/50 pb-2">
+            <div className="min-h-[4.75rem] border-b border-zinc-800/50 pb-2">
               <span className="block font-bold text-zinc-200 mb-1">PERÍCIAS TREINADAS</span>
               <p className="text-[11px] leading-relaxed text-zinc-400">
                 Luta ou Pontaria (uma das duas) e Fortitude ou Reflexos (uma das duas), mais uma quantidade de perícias à sua escolha igual a 1 + Intelecto.
@@ -106,7 +106,7 @@ export const ClasseScreen: React.FC = () => {
             </div>
 
             {/* PROFICIÊNCIAS */}
-            <div>
+            <div className="min-h-[2.5rem]">
               <span className="block font-bold text-zinc-200 mb-1">PROFICIÊNCIAS</span>
               <p className="text-[11px] leading-relaxed text-zinc-400">
                 Armas simples, táticas e proteções leves.
@@ -139,7 +139,7 @@ export const ClasseScreen: React.FC = () => {
             <button
               onClick={() => escolherClasse('Combatente')}
               disabled={!combatentePronto}
-              className="w-full rounded-lg bg-green-800 p-3.5 font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-600"
+              className="w-full rounded-lg bg-green-800 p-3.5 font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-600 cursor-pointer"
             >
               {combatentePronto ? 'Selecionar Combatente' : 'Escolha as perícias'}
             </button>
@@ -147,11 +147,11 @@ export const ClasseScreen: React.FC = () => {
         </div>
 
         {/* ESPECIALISTA — Conhecimento */}
-        <div className="flex flex-1 flex-col rounded-xl border border-green-900/60 bg-zinc-900/60 p-6 transition hover:border-green-700 lg:grid lg:grid-rows-[auto_1fr_auto_auto]">
+        <div className="flex flex-1 flex-col rounded-xl border border-green-900/60 bg-zinc-900/60 p-6 transition hover:border-green-700">
           <h2 className="font-display mb-3 text-center text-xl uppercase tracking-wide text-green-500">
             Especialista
           </h2>
-          <div className="mb-5 flex flex-col justify-start">
+          <div className="mb-5 flex min-h-[8.5rem] items-center justify-center">
             <p className="text-sm leading-relaxed text-zinc-400 text-center">
               Um agente que confia mais em esperteza do que em força bruta. Um especialista se vale de conhecimento técnico, raciocínio rápido ou mesmo lábia para resolver mistérios e enfrentar o paranormal.
             </p>
@@ -200,7 +200,7 @@ export const ClasseScreen: React.FC = () => {
             </div>
 
             {/* PERÍCIAS */}
-            <div className="border-b border-zinc-800/50 pb-2">
+            <div className="min-h-[4.75rem] border-b border-zinc-800/50 pb-2">
               <span className="block font-bold text-zinc-200 mb-1">PERÍCIAS TREINADAS</span>
               <p className="text-[11px] leading-relaxed text-zinc-400">
                 Uma quantidade de perícias à sua escolha igual a 7 + Intelecto.
@@ -208,7 +208,7 @@ export const ClasseScreen: React.FC = () => {
             </div>
 
             {/* PROFICIÊNCIAS */}
-            <div>
+            <div className="min-h-[2.5rem]">
               <span className="block font-bold text-zinc-200 mb-1">PROFICIÊNCIAS</span>
               <p className="text-[11px] leading-relaxed text-zinc-400">
                 Armas simples e proteções leves.
@@ -219,7 +219,7 @@ export const ClasseScreen: React.FC = () => {
           <div className="mt-auto flex flex-col gap-3">
             <button
               onClick={() => escolherClasse('Especialista')}
-              className="w-full rounded-lg bg-green-800 p-3.5 font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-green-700"
+              className="w-full rounded-lg bg-green-800 p-3.5 font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-green-700 cursor-pointer"
             >
               Selecionar Especialista
             </button>
@@ -227,11 +227,11 @@ export const ClasseScreen: React.FC = () => {
         </div>
 
         {/* OCULTISTA — Medo */}
-        <div className="flex flex-1 flex-col rounded-xl border border-green-900/60 bg-zinc-900/60 p-6 transition hover:border-green-700 lg:grid lg:grid-rows-[auto_1fr_auto_auto]">
+        <div className="flex flex-1 flex-col rounded-xl border border-green-900/60 bg-zinc-900/60 p-6 transition hover:border-green-700">
           <h2 className="font-display mb-3 text-center text-xl uppercase tracking-wide text-green-500">
             Ocultista
           </h2>
-          <div className="mb-5 flex flex-col justify-start">
+          <div className="mb-5 flex min-h-[8.5rem] items-center justify-center">
             <p className="text-sm leading-relaxed text-zinc-400 text-center">
               O Outro Lado é misterioso, perigoso e, de certa forma, cativante. Muitos estudiosos das entidades se perdem em seus reinos obscuros em busca de poder, mas existem aqueles que visam compreender e dominar os mistérios paranormais para combater o próprio Outro Lado.
             </p>
@@ -280,7 +280,7 @@ export const ClasseScreen: React.FC = () => {
             </div>
 
             {/* PERÍCIAS */}
-            <div className="border-b border-zinc-800/50 pb-2">
+            <div className="min-h-[4.75rem] border-b border-zinc-800/50 pb-2">
               <span className="block font-bold text-zinc-200 mb-1">PERÍCIAS TREINADAS</span>
               <p className="text-[11px] leading-relaxed text-zinc-400">
                 Ocultismo e Vontade, mais uma quantidade de perícias à sua escolha igual a 3 + Intelecto.
@@ -288,7 +288,7 @@ export const ClasseScreen: React.FC = () => {
             </div>
 
             {/* PROFICIÊNCIAS */}
-            <div>
+            <div className="min-h-[2.5rem]">
               <span className="block font-bold text-zinc-200 mb-1">PROFICIÊNCIAS</span>
               <p className="text-[11px] leading-relaxed text-zinc-400">
                 Armas simples.
@@ -299,7 +299,7 @@ export const ClasseScreen: React.FC = () => {
           <div className="mt-auto flex flex-col gap-3">
             <button
               onClick={() => escolherClasse('Ocultista')}
-              className="w-full rounded-lg bg-green-800 p-3.5 font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-green-700"
+              className="w-full rounded-lg bg-green-800 p-3.5 font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-green-700 cursor-pointer"
             >
               Selecionar Ocultista
             </button>

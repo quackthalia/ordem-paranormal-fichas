@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRPG } from '../context/RPGContext';
 import type { AgenteSalvo } from '../types';
-import { exportarFicha, comprimirImagemParaAvatar } from '../utils/saveLoad';
+import { exportarFicha } from '../utils/saveLoad';
 
 export const HubScreen: React.FC = () => {
   const rpg = useRPG();
@@ -11,17 +11,11 @@ export const HubScreen: React.FC = () => {
     abrirAgenteDoHub,
     excluirAgenteDoHub,
     duplicarAgenteDoHub,
-    atualizarIdentidadeAgenteNoHub,
   } = rpg;
 
   const [busca, setBusca] = useState('');
   const [menuAbertoId, setMenuAbertoId] = useState<string | null>(null);
   const [confirmandoExclusaoId, setConfirmandoExclusaoId] = useState<string | null>(null);
-  const [agenteEditando, setAgenteEditando] = useState<AgenteSalvo | null>(null);
-  const [editNome, setEditNome] = useState('');
-  const [editJogador, setEditJogador] = useState('');
-  const [editFoto, setEditFoto] = useState('');
-  const fileEditRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const fecharMenuFora = () => setMenuAbertoId(null);
@@ -37,37 +31,6 @@ export const HubScreen: React.FC = () => {
     const jogador = (a.nomeJogador || '').toLowerCase();
     return nome.includes(termo) || classe.includes(termo) || jogador.includes(termo);
   });
-
-  const abrirModalEdicao = (agente: AgenteSalvo) => {
-    setAgenteEditando(agente);
-    setEditNome(agente.nomePersonagem || '');
-    setEditJogador(agente.nomeJogador || '');
-    setEditFoto(agente.fotoPersonagem || '');
-    setMenuAbertoId(null);
-  };
-
-  const salvarEdicaoRapida = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!agenteEditando) return;
-    await atualizarIdentidadeAgenteNoHub(agenteEditando.id, {
-      nomePersonagem: editNome.trim(),
-      nomeJogador: editJogador.trim(),
-      fotoPersonagem: editFoto.trim(),
-    });
-    setAgenteEditando(null);
-  };
-
-  const handleUploadFotoModal = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    try {
-      const dataUrl = await comprimirImagemParaAvatar(file);
-      setEditFoto(dataUrl);
-    } catch {
-      // ignora falha
-    }
-    if (fileEditRef.current) fileEditRef.current.value = '';
-  };
 
   return (
     <div className="mx-auto w-full max-w-6xl py-4">
@@ -189,13 +152,6 @@ export const HubScreen: React.FC = () => {
                       >
                         <button
                           type="button"
-                          onClick={() => abrirModalEdicao(agente)}
-                          className="flex w-full items-center px-3.5 py-2 text-left text-zinc-200 hover:bg-zinc-800 cursor-pointer"
-                        >
-                          Editar Dados
-                        </button>
-                        <button
-                          type="button"
                           onClick={() => {
                             duplicarAgenteDoHub(agente);
                             setMenuAbertoId(null);
@@ -270,116 +226,6 @@ export const HubScreen: React.FC = () => {
               </div>
             );
           })}
-        </div>
-      )}
-
-      {/* MODAL DE EDIÇÃO RÁPIDA DE DADOS DO AGENTE */}
-      {agenteEditando && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4"
-          onClick={() => setAgenteEditando(null)}
-        >
-          <form
-            onClick={e => e.stopPropagation()}
-            onSubmit={salvarEdicaoRapida}
-            className="w-full max-w-md rounded-xl border border-zinc-800 bg-zinc-900 p-6 shadow-2xl"
-          >
-            <h3 className="font-display mb-4 text-lg uppercase tracking-wide text-green-400">
-              Editar Identidade do Agente
-            </h3>
-
-            <div className="mb-4 flex flex-col gap-1.5">
-              <label className="text-xs font-bold uppercase tracking-wider text-zinc-400">
-                Nome do Personagem
-              </label>
-              <input
-                type="text"
-                value={editNome}
-                onChange={e => setEditNome(e.target.value)}
-                placeholder="Nome do Agente"
-                className="rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-green-600"
-              />
-            </div>
-
-            <div className="mb-4 flex flex-col gap-1.5">
-              <label className="text-xs font-bold uppercase tracking-wider text-zinc-400">
-                Nome do Jogador
-              </label>
-              <input
-                type="text"
-                value={editJogador}
-                onChange={e => setEditJogador(e.target.value)}
-                placeholder="Seu Nome"
-                className="rounded border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-green-600"
-              />
-            </div>
-
-            <div className="mb-6 flex flex-col gap-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-zinc-400">
-                Foto do Personagem
-              </label>
-              <div className="flex items-center gap-3">
-                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded border border-zinc-700 bg-zinc-950 flex items-center justify-center">
-                  {editFoto ? (
-                    <>
-                      <img src={editFoto} alt="Preview" className="h-full w-full object-cover" />
-                      <button
-                        type="button"
-                        onClick={() => setEditFoto('')}
-                        title="Remover foto"
-                        className="absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/80 text-[10px] font-bold text-zinc-300 transition hover:bg-black hover:text-white cursor-pointer"
-                      >
-                        ✕
-                      </button>
-                    </>
-                  ) : (
-                    <span className="text-xs text-zinc-600">Sem foto</span>
-                  )}
-                </div>
-                <div className="flex flex-1 flex-col gap-2">
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => fileEditRef.current?.click()}
-                      className="rounded bg-zinc-800 px-3 py-1.5 text-xs font-bold text-zinc-200 hover:bg-zinc-700 transition cursor-pointer"
-                    >
-                      Escolher Imagem
-                    </button>
-                  </div>
-                  <input
-                    type="text"
-                    value={editFoto.startsWith('data:') ? '' : editFoto}
-                    onChange={e => setEditFoto(e.target.value)}
-                    placeholder="Ou cole a URL da imagem..."
-                    className="rounded border border-zinc-700 bg-zinc-950 px-2.5 py-1.5 text-xs text-zinc-200 outline-none focus:border-green-600"
-                  />
-                  <input
-                    ref={fileEditRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleUploadFotoModal}
-                    className="hidden"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => setAgenteEditando(null)}
-                className="rounded border border-zinc-700 bg-zinc-800 px-4 py-2 text-xs font-bold text-zinc-300 hover:bg-zinc-700 cursor-pointer"
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                className="rounded bg-green-700 px-4 py-2 text-xs font-bold text-zinc-100 hover:bg-green-600 cursor-pointer"
-              >
-                Salvar Alterações
-              </button>
-            </div>
-          </form>
         </div>
       )}
     </div>

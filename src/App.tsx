@@ -49,7 +49,7 @@ function AppContent() {
   return (
     <div className="min-h-screen w-full bg-zinc-950 flex flex-col">
       <TopNavbar />
-      <div key={telaAtual} className={`animate-screen-fade flex-1 w-full overflow-x-hidden ${isFicha ? '' : 'p-4 md:p-6'}`}>
+      <div key={telaAtual} className={`animate-screen-fade flex-1 w-full ${isFicha ? '' : 'p-4 md:p-6'}`}>
         <Rotas />
       </div>
     </div>

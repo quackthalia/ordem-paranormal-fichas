@@ -445,7 +445,7 @@ export const FichaScreen: React.FC = () => {
   const afinidade = afinidadeAtiva ? afinidadeEscolhida : null;
 
   return (
-    <div className="relative w-full min-h-screen flex flex-col">
+    <div className="relative w-full min-h-screen flex flex-col overflow-x-clip">
       <MatrixBackground afinidade={afinidade} />
       <div className="relative z-10 mx-auto flex w-full max-w-[1600px] flex-col p-4 md:p-6">
         <div className="flex w-full justify-between gap-6 xl:gap-10">

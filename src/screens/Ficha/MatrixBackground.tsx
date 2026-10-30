@@ -204,9 +204,8 @@ export const MatrixBackground = React.memo(({ afinidade }: { afinidade?: string 
         #fundo-cascata {
           position: absolute; 
           top: 0;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 100vw;
+          left: 0;
+          width: 100%;
           height: 100%; 
           -webkit-user-select: none;
           user-select: none;
@@ -218,7 +217,7 @@ export const MatrixBackground = React.memo(({ afinidade }: { afinidade?: string 
 
         /* TEMA: MORTE */
         #fundo-cascata.tema-morte {
-          transform: translateX(-50%) rotate(180deg);
+          transform: rotate(180deg);
         }
 
         #fundo-cascata.tema-morte .coluna {

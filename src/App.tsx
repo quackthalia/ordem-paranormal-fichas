@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { RPGProvider, useRPG } from './context/RPGContext';
+import { TopNavbar } from './components/TopNavbar';
 import { HubScreen } from './screens/HubScreen';
 import { AtributosScreen } from './screens/AtributosScreen';
 import { OrigensScreen } from './screens/OrigensScreen';
@@ -46,8 +47,11 @@ function AppContent() {
   }, [telaAtual]);
 
   return (
-    <div key={telaAtual} className={`animate-screen-fade min-h-screen w-full bg-zinc-950 overflow-x-hidden ${isFicha ? '' : 'p-4 md:p-6'}`}>
-      <Rotas />
+    <div className="min-h-screen w-full bg-zinc-950 flex flex-col">
+      <TopNavbar />
+      <div key={telaAtual} className={`animate-screen-fade flex-1 w-full overflow-x-hidden ${isFicha ? '' : 'p-4 md:p-6'}`}>
+        <Rotas />
+      </div>
     </div>
   );
 }

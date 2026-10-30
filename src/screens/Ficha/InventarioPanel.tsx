@@ -2516,8 +2516,8 @@ function SortableProtecaoItem({
     <div
       ref={isOverlay ? undefined : setNodeRef}
       style={style}
-      className={`rounded border border-l-4 border-l-blue-700 transition-colors ${
-        isOverlay ? 'border-blue-500 bg-zinc-900 shadow-2xl scale-[1.02] opacity-90 cursor-grabbing' :
+      className={`rounded border border-l-4 border-l-green-700 transition-colors ${
+        isOverlay ? 'border-green-500 bg-zinc-900 shadow-2xl scale-[1.02] opacity-90 cursor-grabbing' :
         isDragging ? 'border-zinc-800 bg-zinc-950/60 opacity-40' : 'border-zinc-800 bg-zinc-950/60 hover:bg-zinc-900/60'
       }`}
     >
@@ -2540,7 +2540,7 @@ function SortableProtecaoItem({
           <div className="flex flex-col gap-1 flex-1 min-w-0 justify-center">
             <span className="font-bold text-sm text-zinc-100 truncate leading-none mt-0.5">{protecao.Nome_Protecao}</span>
             <div className="flex items-center gap-4 text-xs text-zinc-300 mt-0.5">
-              <span><span className="font-bold text-blue-400">Defesa</span> {
+              <span><span className="font-bold text-green-400">Defesa</span> {
                 (() => {
                   const extraDefMod = modsAtuais.some(m => m?.Nome_Modif?.trim().toLowerCase() === 'reforçada') ? 2 : 0;
                   const extraDefMald = maldicoesAtuais.reduce((acc, m) => {
@@ -2618,9 +2618,9 @@ function SortableProtecaoItem({
 
         <div className="border-t border-zinc-800 px-3 py-3 text-xs flex flex-col gap-2 bg-zinc-950/80">
           <div className="flex flex-col gap-1 text-xs text-zinc-300">
-            <span><span className="text-blue-400 font-bold">Proficiência:</span> {protecao.Proficiencia}</span>
-            <span><span className="text-blue-400 font-bold">Categoria:</span> {calcularCategoriaFinal(protecao.Categoria_Protecao, item.modificacoes, modificacoesHook.modificacoes, false, item.maldicoes, maldicoesHook?.maldicoes)}</span>
-            <span><span className="text-blue-400 font-bold">Espaços:</span> {calcularEspacosFinais(protecao.Espacos_Protecao, item.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas.has(43))}</span>
+            <span><span className="text-green-400 font-bold">Proficiência:</span> {protecao.Proficiencia}</span>
+            <span><span className="text-green-400 font-bold">Categoria:</span> {calcularCategoriaFinal(protecao.Categoria_Protecao, item.modificacoes, modificacoesHook.modificacoes, false, item.maldicoes, maldicoesHook?.maldicoes)}</span>
+            <span><span className="text-green-400 font-bold">Espaços:</span> {calcularEspacosFinais(protecao.Espacos_Protecao, item.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas.has(43))}</span>
 
               {((Array.isArray(item.maldicoes) ? item.maldicoes : []).length > 0) && (
               <div className="mt-3">

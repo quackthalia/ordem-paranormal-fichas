@@ -32,3 +32,11 @@ dist-ssr
 # Agentes locais salvos (fichas pessoais nunca enviadas ao Git)
 agentes/*.json
 !agentes/.gitkeep
+
+# Pastas e arquivos temporários de scratch / testes
+scratch/
+*.tmp
+*.temp
+
+# Backups
+*.bak

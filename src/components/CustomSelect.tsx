@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface CustomSelectProps {
   value: string;
@@ -19,7 +20,7 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [pos, setPos] = useState<{ top: number; left: number; width: number; openUp: boolean } | null>(null);
+  const [pos, setPos] = useState<{ top?: number; bottom?: number; left: number; width: number; openUp: boolean } | null>(null);
 
   // Fecha o dropdown se clicar fora
   useEffect(() => {
@@ -31,8 +32,6 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
     }
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      setPos(null);
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -49,7 +48,8 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
       const espacoAbaixo = window.innerHeight - rect.bottom;
       const openUp = espacoAbaixo < alturaMax && rect.top > espacoAbaixo;
       setPos({
-        top: openUp ? rect.top - 4 : rect.bottom + 4,
+        top: openUp ? undefined : rect.bottom + 4,
+        bottom: openUp ? window.innerHeight - rect.top + 4 : undefined,
         left: rect.left,
         width: rect.width,
         openUp,
@@ -145,34 +145,69 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
       </button>
 
       {portal ? (
-        /* Dropdown em portal (fixo na tela), renderizado somente quando aberto com animação keyframe imediata */
-        isOpen && pos && createPortal(
-          <div
-            ref={dropdownRef}
-            style={{
-              position: 'fixed',
-              left: pos.left,
-              top: pos.top,
-              width: pos.width,
-              transformOrigin: pos.openUp ? 'bottom' : 'top',
-            }}
-            className={`z-[1000] overflow-hidden rounded-lg border border-zinc-700/80 bg-zinc-900/95 backdrop-blur-md shadow-2xl shadow-black ${
-              pos.openUp ? 'animate-dropdown-up' : 'animate-dropdown-down'
-            }`}
-          >
-            {lista}
-          </div>,
+        typeof document !== 'undefined' &&
+        createPortal(
+          <AnimatePresence>
+            {isOpen && pos && (
+              <motion.div
+                key="custom-select-portal-menu"
+                ref={dropdownRef}
+                initial={{ opacity: 0, y: pos.openUp ? 6 : -6, scale: 0.98 }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                  scale: 1,
+                  transition: { duration: 0.18, ease: [0.16, 1, 0.3, 1] },
+                }}
+                exit={{
+                  opacity: 0,
+                  y: pos.openUp ? 4 : -4,
+                  scale: 0.98,
+                  pointerEvents: 'none',
+                  transition: { duration: 0.14, ease: 'easeIn' },
+                }}
+                style={{
+                  position: 'fixed',
+                  left: pos.left,
+                  top: pos.top,
+                  bottom: pos.bottom,
+                  width: pos.width,
+                  transformOrigin: pos.openUp ? 'bottom center' : 'top center',
+                }}
+                className="z-[1000] overflow-hidden rounded-lg border border-zinc-700/80 bg-zinc-900/95 backdrop-blur-md shadow-2xl shadow-black"
+              >
+                {lista}
+              </motion.div>
+            )}
+          </AnimatePresence>,
           document.body
         )
       ) : (
-        /* Dropdown com animação normal */
-        <div 
-          className={`absolute z-[100] mt-1.5 ${hideIcon ? 'w-full left-0' : 'w-full'} overflow-hidden rounded-lg border border-zinc-700/80 bg-zinc-900/95 backdrop-blur-md shadow-2xl shadow-black transition-all duration-300 ease-out origin-top ${
-            isOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-[0.98] -translate-y-1 pointer-events-none'
-          }`}
-        >
-          {lista}
-        </div>
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              key="custom-select-inline-menu"
+              initial={{ opacity: 0, y: -6, scale: 0.98 }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                transition: { duration: 0.18, ease: [0.16, 1, 0.3, 1] },
+              }}
+              exit={{
+                opacity: 0,
+                y: -4,
+                scale: 0.98,
+                pointerEvents: 'none',
+                transition: { duration: 0.14, ease: 'easeIn' },
+              }}
+              style={{ transformOrigin: 'top center' }}
+              className={`absolute z-[100] mt-1.5 ${hideIcon ? 'w-full left-0' : 'w-full'} overflow-hidden rounded-lg border border-zinc-700/80 bg-zinc-900/95 backdrop-blur-md shadow-2xl shadow-black`}
+            >
+              {lista}
+            </motion.div>
+          )}
+        </AnimatePresence>
       )}
     </div>
   );

@@ -551,10 +551,10 @@ const AtributosFicha = React.memo(function AtributosFicha() {
   return (
     <div className="mb-6 mt-6 flex flex-col items-center w-full relative">
       <div className="w-full flex justify-between items-start z-10 px-2 md:px-4 mb-4 relative min-h-[40px]">
-        <div className="flex items-center gap-1.5 bg-zinc-900/80 border border-zinc-800 px-3 py-1.5 rounded-lg shadow-lg shadow-black/20">
+        <div className="h-9 flex items-center gap-1.5 bg-zinc-900/80 border border-zinc-800 px-3 rounded-lg shadow-lg shadow-black/20">
           <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">NEX:</span>
           {regras['nex_experiencia'] ? (
-            <div className="flex items-center w-16">
+            <div className="flex items-center justify-center w-16 h-full">
               <input
                 type="number"
                 onKeyDown={bloquearLetras}
@@ -568,7 +568,7 @@ const AtributosFicha = React.memo(function AtributosFicha() {
               <span className="text-sm font-bold text-zinc-400">%</span>
             </div>
           ) : (
-            <div className="relative z-50 w-20">
+            <div className="relative z-50 w-16 h-full flex items-center justify-center">
               <CustomSelect
                 value={(NEX_OPTIONS.includes(nex) ? nex : Math.max(5, Math.ceil(nex / 5) * 5)).toString()}
                 onChange={(val) => {
@@ -577,8 +577,9 @@ const AtributosFicha = React.memo(function AtributosFicha() {
                 }}
                 options={NEX_OPTIONS.map(n => ({ value: n.toString(), label: n + '%' }))}
                 hideIcon={true}
-                wrapperClassName="w-full"
-                className="w-full bg-transparent border-none text-center text-sm font-bold text-white hover:text-green-400 p-0 focus:ring-0 cursor-pointer"
+                unstyled={true}
+                wrapperClassName="w-full h-full flex items-center justify-center"
+                className="w-full h-full text-center text-sm font-bold text-white hover:text-green-400 cursor-pointer"
               />
             </div>
           )}
@@ -587,7 +588,7 @@ const AtributosFicha = React.memo(function AtributosFicha() {
         <div className="flex flex-col items-end gap-1.5 absolute right-2 md:right-4 top-0 z-50">
           <button 
             onClick={() => setOpcoesAbertas(!opcoesAbertas)}
-            className={`text-zinc-500 hover:text-zinc-300 transition-all flex items-center gap-1.5 bg-zinc-900/80 border border-zinc-800 px-3 py-1.5 rounded-lg shadow-lg shadow-black/20 ${opcoesAbertas ? 'text-green-500' : ''}`}
+            className={`h-9 text-zinc-500 hover:text-zinc-300 transition-all flex items-center gap-1.5 bg-zinc-900/80 border border-zinc-800 px-3 rounded-lg shadow-lg shadow-black/20 ${opcoesAbertas ? 'text-green-500' : ''}`}
             title="Opções de Atributos"
           >
             <span className="text-[10px] font-bold uppercase tracking-wider">Regras</span>

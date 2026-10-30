@@ -12,9 +12,10 @@ interface CustomSelectProps {
   align?: 'left' | 'center' | 'right';
   /** Renderiza a lista no document.body (evita ser cortada por containers com overflow-hidden) */
   portal?: boolean;
+  unstyled?: boolean;
 }
 
-export function CustomSelect({ value, onChange, options, className = '', wrapperClassName = 'w-full', placeholder, hideIcon = false, align, portal = false }: CustomSelectProps) {
+export function CustomSelect({ value, onChange, options, className = '', wrapperClassName = 'w-full', placeholder, hideIcon = false, align, portal = false, unstyled = false }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -124,7 +125,10 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex w-full items-center ${hideIcon ? 'justify-center' : 'justify-between'} ${textAlignment} rounded border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-sm text-zinc-100 outline-none hover:border-zinc-500 focus:border-green-600 transition ${className}`}
+        className={unstyled 
+          ? `flex w-full items-center ${hideIcon ? 'justify-center' : 'justify-between'} ${textAlignment} text-sm text-zinc-100 outline-none transition ${className}`
+          : `flex w-full items-center ${hideIcon ? 'justify-center' : 'justify-between'} ${textAlignment} rounded border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-sm text-zinc-100 outline-none hover:border-zinc-500 focus:border-green-600 transition ${className}`
+        }
       >
         <span className="block truncate">
           {selectedOption ? selectedOption.label : placeholder || 'Selecione...'}

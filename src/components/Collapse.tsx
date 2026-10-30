@@ -14,8 +14,8 @@ export function Collapse({
   children, 
   className = '', 
   previewHeight,
-  duration = '0.35s',
-  timingFunction = 'cubic-bezier(0.4, 0, 0.2, 1)'
+  duration = '0.4s',
+  timingFunction = 'cubic-bezier(0.16, 1, 0.3, 1)'
 }: CollapseProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState<number>(0);
@@ -23,7 +23,7 @@ export function Collapse({
 
   useEffect(() => {
     if (isOpen) {
-      const timer = setTimeout(() => setIsFullyOpen(true), 400);
+      const timer = setTimeout(() => setIsFullyOpen(true), 420);
       return () => clearTimeout(timer);
     } else {
       setIsFullyOpen(false);
@@ -52,7 +52,7 @@ export function Collapse({
         maxHeight: isOpen ? `${height}px` : (previewHeight !== undefined ? previewHeight : '0px'),
         opacity: (isOpen || previewHeight !== undefined) ? 1 : 0,
         overflow: (isFullyOpen && isOpen) ? 'visible' : 'hidden',
-        transition: (isFullyOpen && isOpen) ? `max-height 0.01s linear, opacity ${duration} ${timingFunction}` : `max-height ${duration} ${timingFunction}, opacity ${duration} ${timingFunction}`,
+        transition: `max-height ${duration} ${timingFunction}, opacity ${duration} ease-out`,
         willChange: 'max-height, opacity'
       }}
     >

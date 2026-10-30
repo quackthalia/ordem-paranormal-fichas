@@ -78,41 +78,44 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
         isCentered ? '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden' : 'custom-scrollbar'
       }`}
     >
-      {normalizedOptions.map((opt) => (
-        <li
-          key={opt.value}
-          onClick={(e) => {
-            if (opt.disabled) {
-              e.stopPropagation();
-              return;
-            }
-            onChange(opt.value);
-            setIsOpen(false);
-          }}
-          onPointerDown={(e) => {
-            if (opt.disabled) return;
-            e.preventDefault();
-            onChange(opt.value);
-            setIsOpen(false);
-          }}
-          className={`relative py-1.5 px-0 transition-colors ${
-            opt.disabled
-              ? 'opacity-60 cursor-not-allowed bg-zinc-900/50 text-zinc-500'
-              : 'cursor-pointer select-none hover:bg-green-600/20 hover:text-green-400'
-          } ${
-            value === opt.value ? 'bg-green-900/30 font-bold text-green-400' : ''
-          }`}
-        >
-          <div className={`w-full flex flex-col justify-center items-center text-center`}>
-            <span className="block w-full text-center truncate">{opt.label}</span>
-            {opt.subtitle && (
-              <span className="text-[10px] mt-0.5 whitespace-normal leading-tight text-red-400/80">
-                {opt.subtitle}
-              </span>
-            )}
-          </div>
-        </li>
-      ))}
+      {normalizedOptions.map((opt) => {
+        const isSelected = value === opt.value;
+        return (
+          <li
+            key={opt.value}
+            onClick={(e) => {
+              if (opt.disabled) {
+                e.stopPropagation();
+                return;
+              }
+              onChange(opt.value);
+              setIsOpen(false);
+            }}
+            onPointerDown={(e) => {
+              if (opt.disabled) return;
+              e.preventDefault();
+              onChange(opt.value);
+              setIsOpen(false);
+            }}
+            className={`relative px-3 py-2 text-xs md:text-sm transition-colors ${
+              opt.disabled
+                ? 'opacity-50 cursor-not-allowed bg-zinc-900/50 text-zinc-500'
+                : isSelected
+                  ? 'bg-zinc-800 text-white font-bold border-l-2 border-green-500'
+                  : 'cursor-pointer select-none text-zinc-300 hover:bg-zinc-800/80 hover:text-white'
+            }`}
+          >
+            <div className={`w-full flex flex-col ${isCentered ? 'justify-center items-center text-center' : isRight ? 'justify-end items-end text-right' : 'justify-start items-start text-left'}`}>
+              <span className={`block w-full truncate ${isCentered ? 'text-center' : isRight ? 'text-right' : 'text-left'}`}>{opt.label}</span>
+              {opt.subtitle && (
+                <span className="text-[10px] mt-0.5 whitespace-normal leading-tight text-red-400/80">
+                  {opt.subtitle}
+                </span>
+              )}
+            </div>
+          </li>
+        );
+      })}
     </ul>
   );
 
@@ -158,8 +161,8 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
       ) : (
         /* Dropdown com animação normal */
         <div 
-          className={`absolute z-[100] mt-1 ${hideIcon ? 'w-full left-0' : 'w-full'} overflow-hidden rounded-md border border-zinc-700 bg-zinc-900 shadow-xl shadow-black transition-all duration-200 origin-top ${
-            isOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
+          className={`absolute z-[100] mt-1.5 ${hideIcon ? 'w-full left-0' : 'w-full'} overflow-hidden rounded-lg border border-zinc-700/80 bg-zinc-900/95 backdrop-blur-md shadow-2xl shadow-black transition-all duration-300 ease-out origin-top ${
+            isOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-[0.98] -translate-y-1 pointer-events-none'
           }`}
         >
           {lista}

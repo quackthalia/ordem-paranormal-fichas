@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRPG } from '../../context/RPGContext';
-import { ModalMudarOrigem } from '../../components/ModalMudarOrigem';
 import { comprimirImagemParaAvatar } from '../../utils/saveLoad';
 
 export const CharacterHeader: React.FC = React.memo(() => {
@@ -17,7 +16,6 @@ export const CharacterHeader: React.FC = React.memo(() => {
   } = rpg;
   const origemNome = origensHook.origemSelecionada?.Nome || '';
 
-  const [modalOrigemAberto, setModalOrigemAberto] = useState(false);
   const [localNomePersonagem, setLocalNomePersonagem] = useState(nomePersonagem || '');
   const [localNomeJogador, setLocalNomeJogador] = useState(nomeJogador || '');
   const avatarInputRef = useRef<HTMLInputElement>(null);
@@ -64,8 +62,6 @@ export const CharacterHeader: React.FC = React.memo(() => {
 
   return (
     <div className="flex w-full items-end gap-5 mb-4">
-      {modalOrigemAberto && <ModalMudarOrigem onClose={() => setModalOrigemAberto(false)} />}
-
       {/* Avatar do Personagem (clicável para trocar foto) */}
       <div
         onClick={() => avatarInputRef.current?.click()}
@@ -115,7 +111,7 @@ export const CharacterHeader: React.FC = React.memo(() => {
             />
           </div>
           {/* Origem */}
-          <div className="flex items-end relative">
+          <div className="flex items-end">
             <span className="w-24 text-[0.6rem] font-bold uppercase tracking-widest text-zinc-400 shrink-0 pb-1">
               Origem
             </span>
@@ -124,15 +120,8 @@ export const CharacterHeader: React.FC = React.memo(() => {
               type="text"
               defaultValue={origemNome}
               placeholder="Sua Origem"
-              className="flex-1 border-b border-zinc-700 bg-transparent py-0.5 text-sm font-bold text-white outline-none transition focus:border-green-500 pr-8"
+              className="flex-1 border-b border-zinc-700 bg-transparent py-0.5 text-sm font-bold text-white outline-none transition focus:border-green-500"
             />
-            <button
-              onClick={() => setModalOrigemAberto(true)}
-              className="absolute right-0 bottom-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 hover:border-zinc-500 rounded px-2 py-0.5 text-xs transition cursor-pointer"
-              title="Mudar Origem (Teste)"
-            >
-              Trocar
-            </button>
           </div>
         </div>
 

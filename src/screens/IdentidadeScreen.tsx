@@ -221,7 +221,7 @@ export const IdentidadeScreen: React.FC = () => {
           <button
             type="button"
             onClick={() => setTelaAtual('classe')}
-            className="rounded-md border border-zinc-700 bg-zinc-800 px-6 py-3 font-bold text-zinc-300 transition hover:bg-zinc-700 cursor-pointer"
+            className="rounded-md border border-zinc-700 bg-zinc-800 px-6 py-3 font-bold text-zinc-300 transition-all duration-200 hover:bg-zinc-700 hover:border-zinc-600 hover:-translate-x-0.5 active:translate-x-0 active:scale-95 cursor-pointer"
           >
             Voltar
           </button>
@@ -229,7 +229,7 @@ export const IdentidadeScreen: React.FC = () => {
           <button
             type="submit"
             disabled={salvando}
-            className="rounded-lg bg-green-800 px-8 py-3.5 font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-green-700 disabled:opacity-50 cursor-pointer"
+            className="rounded-lg bg-green-800 px-8 py-3.5 font-bold uppercase tracking-wider text-zinc-100 shadow transition-all duration-200 hover:bg-green-700 hover:shadow-lg hover:shadow-green-950/30 active:scale-[0.98] disabled:opacity-50 cursor-pointer"
           >
             {salvando ? 'Salvando...' : 'Finalizar e Abrir Ficha'}
           </button>

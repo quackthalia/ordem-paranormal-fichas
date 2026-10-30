@@ -122,14 +122,14 @@ export const AtributosScreen: React.FC = () => {
       <div className="mt-12 flex flex-wrap items-center justify-between gap-4">
         <button
           onClick={() => setTelaAtual('hub')}
-          className="rounded-md border border-zinc-700 bg-zinc-800 px-6 py-3 font-bold text-zinc-300 transition hover:bg-zinc-700 cursor-pointer"
+          className="rounded-md border border-zinc-700 bg-zinc-800 px-6 py-3 font-bold text-zinc-300 transition-all duration-200 hover:bg-zinc-700 hover:border-zinc-600 hover:-translate-x-0.5 active:translate-x-0 active:scale-95 cursor-pointer"
         >
           Voltar ao Hub
         </button>
 
         <button
           onClick={() => setTelaAtual('origens')}
-          className="rounded-md bg-green-700 px-8 py-3 text-lg font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-green-600 cursor-pointer"
+          className="rounded-md bg-green-700 px-8 py-3 text-lg font-bold uppercase tracking-wider text-zinc-100 shadow transition-all duration-200 hover:bg-green-600 hover:shadow-lg hover:shadow-green-950/30 hover:translate-x-0.5 active:translate-x-0 active:scale-[0.98] cursor-pointer"
         >
           Avançar para Origens
         </button>

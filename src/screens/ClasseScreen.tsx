@@ -45,7 +45,7 @@ export const ClasseScreen: React.FC = () => {
 
       <div className="flex flex-col items-stretch gap-5 lg:grid lg:grid-cols-3 lg:gap-5">
         {/* COMBATENTE — Sangue */}
-        <div className="flex flex-1 flex-col rounded-xl border border-green-900/60 bg-zinc-900/60 p-6 transition hover:border-green-700">
+        <div className="flex flex-1 flex-col rounded-xl border border-green-900/60 bg-zinc-900/60 p-6 transition-all duration-300 hover:border-green-600 hover:bg-zinc-900/80 hover:-translate-y-1 hover:shadow-xl hover:shadow-green-950/20">
           <h2 className="font-display mb-3 text-center text-xl uppercase tracking-wide text-green-500">
             Combatente
           </h2>
@@ -117,21 +117,21 @@ export const ClasseScreen: React.FC = () => {
           <div className="mt-auto flex flex-col gap-3">
             <div className="flex flex-col justify-center gap-3 rounded-lg border border-zinc-800 bg-zinc-950/80 p-4 text-sm">
               <div className="flex items-center justify-center gap-3">
-                <label className="flex cursor-pointer items-center gap-1.5">
-                  <input type="radio" name="c1" className="accent-green-600" checked={skillCombatente1 === 'Luta'} onChange={() => setSkillCombatente1('Luta')} /> Luta
+                <label className="flex cursor-pointer items-center gap-1.5 transition-colors duration-150 hover:text-green-300">
+                  <input type="radio" name="c1" className="accent-green-600 transition-transform duration-150 active:scale-90" checked={skillCombatente1 === 'Luta'} onChange={() => setSkillCombatente1('Luta')} /> Luta
                 </label>
                 <span className="text-zinc-600">ou</span>
-                <label className="flex cursor-pointer items-center gap-1.5">
-                  <input type="radio" name="c1" className="accent-green-600" checked={skillCombatente1 === 'Pontaria'} onChange={() => setSkillCombatente1('Pontaria')} /> Pontaria
+                <label className="flex cursor-pointer items-center gap-1.5 transition-colors duration-150 hover:text-green-300">
+                  <input type="radio" name="c1" className="accent-green-600 transition-transform duration-150 active:scale-90" checked={skillCombatente1 === 'Pontaria'} onChange={() => setSkillCombatente1('Pontaria')} /> Pontaria
                 </label>
               </div>
               <div className="flex items-center justify-center gap-3">
-                <label className="flex cursor-pointer items-center gap-1.5">
-                  <input type="radio" name="c2" className="accent-green-600" checked={skillCombatente2 === 'Fortitude'} onChange={() => setSkillCombatente2('Fortitude')} /> Fortitude
+                <label className="flex cursor-pointer items-center gap-1.5 transition-colors duration-150 hover:text-green-300">
+                  <input type="radio" name="c2" className="accent-green-600 transition-transform duration-150 active:scale-90" checked={skillCombatente2 === 'Fortitude'} onChange={() => setSkillCombatente2('Fortitude')} /> Fortitude
                 </label>
                 <span className="text-zinc-600">ou</span>
-                <label className="flex cursor-pointer items-center gap-1.5">
-                  <input type="radio" name="c2" className="accent-green-600" checked={skillCombatente2 === 'Reflexos'} onChange={() => setSkillCombatente2('Reflexos')} /> Reflexos
+                <label className="flex cursor-pointer items-center gap-1.5 transition-colors duration-150 hover:text-green-300">
+                  <input type="radio" name="c2" className="accent-green-600 transition-transform duration-150 active:scale-90" checked={skillCombatente2 === 'Reflexos'} onChange={() => setSkillCombatente2('Reflexos')} /> Reflexos
                 </label>
               </div>
             </div>
@@ -139,7 +139,7 @@ export const ClasseScreen: React.FC = () => {
             <button
               onClick={() => escolherClasse('Combatente')}
               disabled={!combatentePronto}
-              className="w-full rounded-lg bg-green-800 p-3.5 font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-600 cursor-pointer"
+              className="w-full rounded-lg bg-green-800 p-3.5 font-bold uppercase tracking-wider text-zinc-100 transition-all duration-200 hover:bg-green-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-600 cursor-pointer"
             >
               {combatentePronto ? 'Selecionar Combatente' : 'Escolha as perícias'}
             </button>
@@ -147,7 +147,7 @@ export const ClasseScreen: React.FC = () => {
         </div>
 
         {/* ESPECIALISTA — Conhecimento */}
-        <div className="flex flex-1 flex-col rounded-xl border border-green-900/60 bg-zinc-900/60 p-6 transition hover:border-green-700">
+        <div className="flex flex-1 flex-col rounded-xl border border-green-900/60 bg-zinc-900/60 p-6 transition-all duration-300 hover:border-green-600 hover:bg-zinc-900/80 hover:-translate-y-1 hover:shadow-xl hover:shadow-green-950/20">
           <h2 className="font-display mb-3 text-center text-xl uppercase tracking-wide text-green-500">
             Especialista
           </h2>
@@ -219,7 +219,7 @@ export const ClasseScreen: React.FC = () => {
           <div className="mt-auto flex flex-col gap-3">
             <button
               onClick={() => escolherClasse('Especialista')}
-              className="w-full rounded-lg bg-green-800 p-3.5 font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-green-700 cursor-pointer"
+              className="w-full rounded-lg bg-green-800 p-3.5 font-bold uppercase tracking-wider text-zinc-100 transition-all duration-200 hover:bg-green-700 active:scale-[0.98] cursor-pointer"
             >
               Selecionar Especialista
             </button>
@@ -227,7 +227,7 @@ export const ClasseScreen: React.FC = () => {
         </div>
 
         {/* OCULTISTA — Medo */}
-        <div className="flex flex-1 flex-col rounded-xl border border-green-900/60 bg-zinc-900/60 p-6 transition hover:border-green-700">
+        <div className="flex flex-1 flex-col rounded-xl border border-green-900/60 bg-zinc-900/60 p-6 transition-all duration-300 hover:border-green-600 hover:bg-zinc-900/80 hover:-translate-y-1 hover:shadow-xl hover:shadow-green-950/20">
           <h2 className="font-display mb-3 text-center text-xl uppercase tracking-wide text-green-500">
             Ocultista
           </h2>
@@ -299,7 +299,7 @@ export const ClasseScreen: React.FC = () => {
           <div className="mt-auto flex flex-col gap-3">
             <button
               onClick={() => escolherClasse('Ocultista')}
-              className="w-full rounded-lg bg-green-800 p-3.5 font-bold uppercase tracking-wider text-zinc-100 transition hover:bg-green-700 cursor-pointer"
+              className="w-full rounded-lg bg-green-800 p-3.5 font-bold uppercase tracking-wider text-zinc-100 transition-all duration-200 hover:bg-green-700 active:scale-[0.98] cursor-pointer"
             >
               Selecionar Ocultista
             </button>
@@ -310,7 +310,7 @@ export const ClasseScreen: React.FC = () => {
       <div className="mt-8">
         <button
           onClick={() => setTelaAtual('origens')}
-          className="rounded-md border border-zinc-700 bg-zinc-800 px-6 py-3 font-bold text-zinc-300 transition hover:bg-zinc-700 cursor-pointer"
+          className="rounded-md border border-zinc-700 bg-zinc-800 px-6 py-3 font-bold text-zinc-300 transition-all duration-200 hover:bg-zinc-700 hover:border-zinc-600 hover:-translate-x-0.5 active:translate-x-0 active:scale-95 cursor-pointer"
         >
           Voltar
         </button>

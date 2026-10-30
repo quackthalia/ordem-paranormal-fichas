@@ -67,13 +67,13 @@ export const HubScreen: React.FC = () => {
         />
         <button
           onClick={() => fileImportRef.current?.click()}
-          className="rounded border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-sm font-bold text-zinc-200 transition hover:bg-zinc-700 cursor-pointer"
+          className="rounded border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-sm font-bold text-zinc-200 transition-all duration-200 hover:bg-zinc-700 hover:border-zinc-600 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] cursor-pointer"
         >
           Importar JSON
         </button>
         <button
           onClick={iniciarNovoAgente}
-          className="rounded bg-green-700 px-5 py-2.5 text-sm font-bold text-zinc-100 shadow-md transition hover:bg-green-600 cursor-pointer"
+          className="rounded bg-green-700 px-5 py-2.5 text-sm font-bold text-zinc-100 shadow-md transition-all duration-200 hover:bg-green-600 hover:shadow-green-950/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] cursor-pointer"
         >
           Novo Agente
         </button>
@@ -129,7 +129,7 @@ export const HubScreen: React.FC = () => {
           </p>
           <button
             onClick={iniciarNovoAgente}
-            className="rounded bg-green-700 px-6 py-2.5 text-sm font-bold text-zinc-100 shadow transition hover:bg-green-600 cursor-pointer"
+            className="rounded bg-green-700 px-6 py-2.5 text-sm font-bold text-zinc-100 shadow transition-all duration-200 hover:bg-green-600 hover:shadow-green-950/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] cursor-pointer"
           >
             + Criar Primeiro Agente
           </button>
@@ -147,7 +147,7 @@ export const HubScreen: React.FC = () => {
             return (
               <div
                 key={agente.id}
-                className="relative flex min-h-[168px] overflow-visible rounded-md border border-zinc-800/80 bg-zinc-900/80 shadow-lg transition hover:border-zinc-700"
+                className="relative flex min-h-[168px] overflow-visible rounded-md border border-zinc-800/80 bg-zinc-900/80 shadow-lg transition-all duration-200 hover:border-zinc-700 hover:shadow-xl hover:-translate-y-0.5"
               >
                 {/* FOTO DO PERSONAGEM (se houver) */}
                 {temFoto && (
@@ -155,7 +155,7 @@ export const HubScreen: React.FC = () => {
                     <img
                       src={agente.fotoPersonagem}
                       alt={agente.nomePersonagem || 'Agente'}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
                     />
                   </div>
                 )}
@@ -171,10 +171,16 @@ export const HubScreen: React.FC = () => {
                         setConfirmandoExclusaoId(null);
                         setMenuAbertoId(menuAberto ? null : agente.id);
                       }}
-                      className="rounded p-1 text-zinc-200 transition hover:bg-zinc-800 hover:text-green-400 cursor-pointer"
+                      className="group rounded p-1 text-zinc-400 transition-colors duration-200 hover:bg-zinc-800 hover:text-green-400 cursor-pointer"
                       title="Opções do Agente"
                     >
-                      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                      <svg
+                        className={`h-4 w-4 transition-transform duration-300 ease-out ${
+                          menuAberto ? 'rotate-90 text-green-400' : 'group-hover:rotate-45'
+                        }`}
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
                         <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" />
                       </svg>
                     </button>
@@ -183,7 +189,7 @@ export const HubScreen: React.FC = () => {
                     {menuAberto && (
                       <div
                         onClick={e => e.stopPropagation()}
-                        className="absolute right-0 mt-1 w-44 rounded-md border border-zinc-700 bg-zinc-900 py-1.5 shadow-2xl z-30 text-xs"
+                        className="animate-dropdown-down origin-top-right absolute right-0 mt-1 w-44 rounded-md border border-zinc-700 bg-zinc-900 py-1.5 shadow-2xl z-30 text-xs"
                       >
                         <button
                           type="button"
@@ -191,7 +197,7 @@ export const HubScreen: React.FC = () => {
                             duplicarAgenteDoHub(agente);
                             setMenuAbertoId(null);
                           }}
-                          className="flex w-full items-center px-3.5 py-2 text-left text-zinc-200 hover:bg-zinc-800 cursor-pointer"
+                          className="flex w-full items-center px-3.5 py-2 text-left text-zinc-200 transition-colors duration-150 hover:bg-zinc-800 hover:text-green-400 cursor-pointer"
                         >
                           Duplicar Agente
                         </button>
@@ -201,7 +207,7 @@ export const HubScreen: React.FC = () => {
                             exportarFicha(rpg, agente);
                             setMenuAbertoId(null);
                           }}
-                          className="flex w-full items-center px-3.5 py-2 text-left text-zinc-200 hover:bg-zinc-800 cursor-pointer"
+                          className="flex w-full items-center px-3.5 py-2 text-left text-zinc-200 transition-colors duration-150 hover:bg-zinc-800 hover:text-green-400 cursor-pointer"
                         >
                           Exportar JSON
                         </button>
@@ -214,7 +220,7 @@ export const HubScreen: React.FC = () => {
                               setConfirmandoExclusaoId(null);
                               setMenuAbertoId(null);
                             }}
-                            className="flex w-full items-center bg-red-950/60 px-3.5 py-2 text-left font-bold text-red-400 hover:bg-red-900/60 cursor-pointer"
+                            className="flex w-full items-center bg-red-950/60 px-3.5 py-2 text-left font-bold text-red-400 transition-colors duration-150 hover:bg-red-900/60 cursor-pointer"
                           >
                             Confirmar Exclusão
                           </button>
@@ -222,7 +228,7 @@ export const HubScreen: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => setConfirmandoExclusaoId(agente.id)}
-                            className="flex w-full items-center px-3.5 py-2 text-left text-red-400 hover:bg-zinc-800 cursor-pointer"
+                            className="flex w-full items-center px-3.5 py-2 text-left text-red-400 transition-colors duration-150 hover:bg-zinc-800 cursor-pointer"
                           >
                             Excluir Agente
                           </button>
@@ -252,7 +258,7 @@ export const HubScreen: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => abrirAgenteDoHub(agente)}
-                      className="rounded bg-green-700 px-3.5 py-1.5 text-xs font-bold text-zinc-100 shadow transition hover:bg-green-600 cursor-pointer"
+                      className="rounded bg-green-700 px-3.5 py-1.5 text-xs font-bold text-zinc-100 shadow transition-all duration-150 hover:bg-green-600 active:scale-95 cursor-pointer"
                     >
                       Acessar Ficha
                     </button>

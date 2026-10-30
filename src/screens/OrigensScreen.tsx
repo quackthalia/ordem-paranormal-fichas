@@ -244,7 +244,7 @@ export const OrigensScreen: React.FC = () => {
 
       <button
         onClick={() => setTelaAtual('atributos')}
-        className="rounded-md border border-zinc-700 bg-zinc-800 px-6 py-3 font-bold text-zinc-300 transition hover:bg-zinc-700"
+        className="rounded-md border border-zinc-700 bg-zinc-800 px-6 py-3 font-bold text-zinc-300 transition-all duration-200 hover:bg-zinc-700 hover:border-zinc-600 hover:-translate-x-0.5 active:translate-x-0 active:scale-95 cursor-pointer"
       >
         Voltar
       </button>

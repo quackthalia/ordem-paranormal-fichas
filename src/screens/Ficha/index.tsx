@@ -561,7 +561,7 @@ const AtributosFicha = React.memo(function AtributosFicha() {
                 }
               }
             }}
-            className={`relative z-0 w-16 bg-transparent text-center text-[2rem] font-black outline-none ${isGreen ? 'text-green-500' : 'text-zinc-100'}`}
+            className={`relative z-0 w-16 bg-transparent text-center text-[2rem] font-black outline-none ${isGreen ? 'text-green-500' : 'text-white'}`}
           />
       </div>
     );
@@ -571,7 +571,7 @@ const AtributosFicha = React.memo(function AtributosFicha() {
     <div className="mb-6 mt-6 flex flex-col items-center w-full relative">
       <div className="w-full flex justify-between items-start z-10 px-2 md:px-4 mb-4 relative min-h-[40px]">
         <div className="flex items-center gap-1.5 bg-zinc-900/80 border border-zinc-800 px-3 py-1.5 rounded-lg shadow-lg shadow-black/20">
-          <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">NEX:</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">NEX:</span>
           {regras['nex_experiencia'] ? (
             <div className="flex items-center w-16">
               <input
@@ -582,9 +582,9 @@ const AtributosFicha = React.memo(function AtributosFicha() {
                   const val = Math.max(0, Math.min(99, Number(e.target.value)));
                   setNex(Math.max(0, val - (regrasAutomaticasAtivas.has(83) ? 5 : 0)));
                 }}
-                className="w-8 bg-transparent text-center text-sm font-bold text-zinc-100 outline-none"
+                className="w-8 bg-transparent text-center text-sm font-bold text-white outline-none"
               />
-              <span className="text-sm font-bold text-zinc-500">%</span>
+              <span className="text-sm font-bold text-zinc-400">%</span>
             </div>
           ) : (
             <div className="relative z-50 w-20">
@@ -597,7 +597,7 @@ const AtributosFicha = React.memo(function AtributosFicha() {
                 options={NEX_OPTIONS.map(n => ({ value: n.toString(), label: n + '%' }))}
                 hideIcon={true}
                 wrapperClassName="w-full"
-                className="w-full bg-transparent border-none text-center text-sm font-bold text-zinc-100 hover:text-green-400 p-0 focus:ring-0 cursor-pointer"
+                className="w-full bg-transparent border-none text-center text-sm font-bold text-white hover:text-green-400 p-0 focus:ring-0 cursor-pointer"
               />
             </div>
           )}
@@ -831,11 +831,11 @@ const DefesaPanel = React.memo(function DefesaPanel() {
   return (
     <div className="mt-8 flex flex-wrap items-center justify-between gap-5 rounded-lg border border-zinc-800 bg-zinc-900/60 p-5">
       <div className="flex items-center gap-4">
-        <div className="flex h-14 w-14 items-center justify-center rounded-lg border-2 border-zinc-200 text-2xl font-bold">
+        <div className="flex h-14 w-14 items-center justify-center rounded-lg border-2 border-zinc-200 text-2xl font-bold text-white">
           {defesaTotal}
         </div>
         <div>
-          <div className="text-xs font-bold uppercase tracking-wider text-zinc-500">Defesa</div>
+          <div className="text-xs font-bold uppercase tracking-wider text-zinc-400">Defesa</div>
           <div className="mt-0.5 flex items-center gap-1.5 text-sm text-zinc-300">
             = 10 + AGI +
             <div className="relative flex flex-col items-center">
@@ -846,7 +846,7 @@ const DefesaPanel = React.memo(function DefesaPanel() {
                 placeholder="0"
                 title="Defesa de equipamento"
                 onChange={e => setDefEquip(Math.max(0, Number(e.target.value)))}
-                className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-green-600"
+                className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-white outline-none focus:border-green-600"
               />
               <span className="absolute top-full text-[9px] uppercase tracking-wider text-zinc-500 mt-0.5">Equip.</span>
             </div>
@@ -884,7 +884,7 @@ const DefesaPanel = React.memo(function DefesaPanel() {
                   const bonusVamp = defOutrosBonusVampiro || 0;
                   setDefOutros(Math.max(0, valDigitado - defOutrosBonusRegra - bonusRegra21 - bonusRegra25 - bonusTrilha5 - bonusDefesa34 - bonusVamp - totalDefesaProtecoes - (bonusVestimentas?.defesa || 0) - (bonusMaldicoes?.defesa || 0)));
                 }}
-                className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-zinc-100 outline-none focus:border-green-600"
+                className="w-10 border-b border-zinc-600 bg-transparent text-center font-bold text-white outline-none focus:border-green-600"
               />
               <span className="absolute top-full text-[9px] uppercase tracking-wider text-zinc-500 mt-0.5">Outros</span>
             </div>
@@ -893,25 +893,25 @@ const DefesaPanel = React.memo(function DefesaPanel() {
       </div>
 
       <div className="flex flex-col items-center">
-        <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Bloqueio</span>
+        <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">Bloqueio</span>
         <input
           type="number"
           onKeyDown={bloquearLetras}
           value={bloqueio || ''}
           placeholder="0"
           onChange={e => { bloqueioOverride.current = true; setBloqueio(Math.max(0, Number(e.target.value))); }}
-          className="mt-1 w-12 border-b border-zinc-600 bg-transparent text-center text-lg font-bold text-zinc-100 outline-none focus:border-green-600"
+          className="mt-1 w-12 border-b border-zinc-600 bg-transparent text-center text-lg font-bold text-white outline-none focus:border-green-600"
         />
       </div>
       <div className="flex flex-col items-center">
-        <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Esquiva</span>
+        <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">Esquiva</span>
         <input
           type="number"
           onKeyDown={bloquearLetras}
           value={esquiva || ''}
           placeholder="0"
           onChange={e => { esquivaOverride.current = true; setEsquiva(Math.max(0, Number(e.target.value))); }}
-          className="mt-1 w-12 border-b border-zinc-600 bg-transparent text-center text-lg font-bold text-zinc-100 outline-none focus:border-green-600"
+          className="mt-1 w-12 border-b border-zinc-600 bg-transparent text-center text-lg font-bold text-white outline-none focus:border-green-600"
         />
       </div>
     </div>
@@ -1251,7 +1251,7 @@ function BadgeBlock({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2.5">
-        <span className="min-w-36 text-xs font-bold uppercase tracking-wider text-zinc-500">{titulo}</span>
+        <span className="min-w-36 text-xs font-bold uppercase tracking-wider text-zinc-400">{titulo}</span>
         <input
           type="text"
           value={inputValue}
@@ -1263,7 +1263,7 @@ function BadgeBlock({
               setInputValue('');
             }
           }}
-          className="flex-1 border-b border-zinc-800 bg-transparent py-1 text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700"
+          className="flex-1 border-b border-zinc-800 bg-transparent py-1 text-white outline-none placeholder:text-zinc-600 focus:border-green-700"
         />
       </div>
       {(itens.length > 0 || itensExtras.length > 0) && (() => {

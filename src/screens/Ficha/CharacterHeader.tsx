@@ -111,7 +111,7 @@ export const CharacterHeader: React.FC = React.memo(() => {
               value={localNomePersonagem}
               onChange={e => setLocalNomePersonagem(e.target.value)}
               onBlur={() => setNomePersonagem(localNomePersonagem)}
-              className="flex-1 border-b border-zinc-200 bg-transparent py-0.5 text-sm font-bold text-zinc-100 outline-none transition focus:border-green-500"
+              className="flex-1 border-b border-zinc-700 bg-transparent py-0.5 text-sm font-bold text-white outline-none transition focus:border-green-500"
             />
           </div>
           {/* Origem */}
@@ -124,11 +124,11 @@ export const CharacterHeader: React.FC = React.memo(() => {
               type="text"
               defaultValue={origemNome}
               placeholder="Sua Origem"
-              className="flex-1 border-b border-zinc-200 bg-transparent py-0.5 text-sm font-bold text-zinc-100 outline-none transition focus:border-green-500 pr-8"
+              className="flex-1 border-b border-zinc-700 bg-transparent py-0.5 text-sm font-bold text-white outline-none transition focus:border-green-500 pr-8"
             />
             <button
               onClick={() => setModalOrigemAberto(true)}
-              className="absolute right-0 bottom-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-600 rounded px-2 py-0.5 text-xs transition"
+              className="absolute right-0 bottom-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 hover:border-zinc-500 rounded px-2 py-0.5 text-xs transition cursor-pointer"
               title="Mudar Origem (Teste)"
             >
               Trocar
@@ -149,7 +149,7 @@ export const CharacterHeader: React.FC = React.memo(() => {
               value={localNomeJogador}
               onChange={e => setLocalNomeJogador(e.target.value)}
               onBlur={() => setNomeJogador(localNomeJogador)}
-              className="flex-1 border-b border-zinc-200 bg-transparent py-0.5 text-sm font-bold text-zinc-100 outline-none transition focus:border-green-500"
+              className="flex-1 border-b border-zinc-700 bg-transparent py-0.5 text-sm font-bold text-white outline-none transition focus:border-green-500"
             />
           </div>
           {/* Classe */}
@@ -162,7 +162,7 @@ export const CharacterHeader: React.FC = React.memo(() => {
               type="text"
               defaultValue={classe || ''}
               placeholder="Sua Classe"
-              className="flex-1 border-b border-zinc-200 bg-transparent py-0.5 text-sm font-bold text-zinc-100 outline-none transition focus:border-green-500"
+              className="flex-1 border-b border-zinc-700 bg-transparent py-0.5 text-sm font-bold text-white outline-none transition focus:border-green-500"
             />
           </div>
         </div>

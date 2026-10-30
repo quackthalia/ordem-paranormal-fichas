@@ -111,16 +111,16 @@ export const StatusPanel: React.FC = React.memo(() => {
                 wrapperClassName="w-20"
               />
             </div>
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Nível</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">Nível</span>
           </div>
         )}
 
         {/* PE/TURNO */}
         <div className="flex flex-col items-center gap-1.5">
-          <div className="flex h-9 min-w-[3.5rem] items-center justify-center rounded border border-zinc-600 px-3 text-base font-bold text-zinc-100">
+          <div className="flex h-9 min-w-[3.5rem] items-center justify-center rounded border border-zinc-700 bg-zinc-900/60 px-3 text-base font-bold text-white">
             {peTurno}
           </div>
-          <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">PE/Turno</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">PE/Turno</span>
         </div>
 
         {ppMax > 0 && (
@@ -128,7 +128,7 @@ export const StatusPanel: React.FC = React.memo(() => {
             <div className="flex h-9 min-w-[3.5rem] items-center justify-center rounded border border-teal-600 px-3 text-base font-bold text-teal-400 bg-teal-950/20">
               {ppTurno}
             </div>
-            <span className="text-xs font-bold uppercase tracking-wider text-teal-600/80">PP/Turno</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-teal-400">PP/Turno</span>
           </div>
         )}
 
@@ -174,13 +174,13 @@ export const StatusPanel: React.FC = React.memo(() => {
                 </ul>
               </div>
             </div>
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Afinidade</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">Afinidade</span>
           </div>
         )}
 
         {/* DESLOCAMENTO */}
         <div className="flex flex-col items-center gap-1.5">
-          <div className="flex h-9 items-center justify-center rounded border border-zinc-600 px-2.5 text-base font-bold text-zinc-100">
+          <div className="flex h-9 items-center justify-center rounded border border-zinc-700 bg-zinc-900/60 px-2.5 text-base font-bold text-white">
             <input
               type="number"
               value={deslocamentoTotalM}
@@ -190,7 +190,7 @@ export const StatusPanel: React.FC = React.memo(() => {
                 setDeslocM(m);
                 setDeslocQ(Math.floor(m / 1.5));
               }}
-              className="w-9 bg-transparent text-center font-bold text-zinc-100 outline-none"
+              className="w-9 bg-transparent text-center font-bold text-white outline-none"
             />
             <span className="text-sm text-zinc-400">m /</span>
             <input
@@ -203,11 +203,11 @@ export const StatusPanel: React.FC = React.memo(() => {
                 setDeslocQ(q);
                 setDeslocM(q * 1.5);
               }}
-              className="w-9 bg-transparent text-center font-bold text-zinc-100 outline-none"
+              className="w-9 bg-transparent text-center font-bold text-white outline-none"
             />
             <span className="text-sm text-zinc-400">q</span>
           </div>
-          <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Deslocamento</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">Deslocamento</span>
         </div>
       </div>
 
@@ -418,9 +418,9 @@ function BarraStatus({
     <div>
       {/* CABEÇALHO */}
       <div className="mb-1.5 flex items-center justify-between">
-        <span className="ml-1 text-sm font-bold uppercase tracking-wider text-zinc-400">{titulo}</span>
+        <span className="ml-1 text-sm font-bold uppercase tracking-wider text-white">{titulo}</span>
         {setHasTemp && (
-          <label className="flex cursor-pointer items-center gap-1.5 text-xs text-zinc-500 transition hover:text-zinc-300">
+          <label className="flex cursor-pointer items-center gap-1.5 text-xs text-zinc-400 transition hover:text-zinc-200">
             <input
               type="checkbox"
               className="accent-green-600"
@@ -474,9 +474,9 @@ function BarraStatus({
             </button>
 
             {/* Valor Atual / Max (0/94) */}
-            <div className="flex items-center gap-1 font-bold text-lg text-zinc-100 select-none">
+            <div className="flex items-center gap-1 font-bold text-lg text-white select-none">
               <span>0</span>
-              <span className="text-lg text-zinc-500 font-normal">/</span>
+              <span className="text-lg text-zinc-400 font-normal">/</span>
               <span>{valorMax}</span>
             </div>
           </div>
@@ -499,16 +499,16 @@ function BarraStatus({
                 onKeyDown={bloquearLetras}
                 value={valorAtual}
                 onChange={(e) => setValorAtual(Math.max(0, Math.min(valorMax, Number(e.target.value))))}
-                className="w-9 bg-transparent text-center text-lg font-bold text-zinc-100 outline-none"
+                className="w-9 bg-transparent text-center text-lg font-bold text-white outline-none"
                 title={`Editar ${titulo} Atual`}
               />
-              <span className="text-lg text-zinc-500">/</span>
+              <span className="text-lg text-zinc-400">/</span>
               <input
                 type="number"
                 onKeyDown={bloquearLetras}
                 value={valorMax}
                 onChange={(e) => setValorMax(Math.max(1, Number(e.target.value)))}
-                className="w-11 bg-transparent text-center text-lg font-bold text-zinc-100 outline-none"
+                className="w-11 bg-transparent text-center text-lg font-bold text-white outline-none"
                 title={`Editar ${titulo} Máxima`}
               />
             </div>
@@ -536,15 +536,15 @@ function BarraStatus({
                   onKeyDown={bloquearLetras}
                   value={tempAtual}
                   onChange={(e) => setTempAtual(Math.max(0, Number(e.target.value)))}
-                  className="w-8 bg-transparent text-center font-bold text-zinc-100 outline-none shrink-0"
+                  className="w-8 bg-transparent text-center font-bold text-white outline-none shrink-0"
                 />
-                <span className="text-zinc-500 shrink-0">/</span>
+                <span className="text-zinc-400 shrink-0">/</span>
                 <input
                   type="number"
                   onKeyDown={bloquearLetras}
                   value={tempMax}
                   onChange={(e) => setTempMax(Math.max(0, Number(e.target.value)))}
-                  className="w-8 bg-transparent text-center font-bold text-zinc-100 outline-none shrink-0"
+                  className="w-8 bg-transparent text-center font-bold text-white outline-none shrink-0"
                 />
               </div>
             </div>

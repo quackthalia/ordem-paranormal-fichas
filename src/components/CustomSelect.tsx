@@ -150,7 +150,7 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
               width: pos.width,
               transformOrigin: pos.openUp ? 'bottom' : 'top',
             }}
-            className={`z-[1000] overflow-hidden rounded-md border border-zinc-700 bg-zinc-900 shadow-xl shadow-black ${
+            className={`z-[1000] overflow-hidden rounded-lg border border-zinc-700/80 bg-zinc-900/95 backdrop-blur-md shadow-2xl shadow-black ${
               pos.openUp ? 'animate-dropdown-up' : 'animate-dropdown-down'
             }`}
           >

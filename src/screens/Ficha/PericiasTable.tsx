@@ -8,14 +8,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 // Cores por grau de treino: destreinado (0) → treinado (5) → veterano (10) → expert (15)
 const COR_TREINO: Record<number, string> = {
-  0: '!text-zinc-400',
+  0: '!text-white',
   5: '!text-emerald-400',
   10: '!text-sky-400',
   15: '!text-amber-400',
 };
 
 const BORDA_TREINO: Record<number, string> = {
-  0: 'border-zinc-600',
+  0: 'border-zinc-500',
   5: 'border-emerald-400',
   10: 'border-sky-400',
   15: 'border-amber-400',
@@ -91,7 +91,7 @@ const ProfissaoRow = React.memo(({ prof, idx, editingProfIndex, setEditingProfIn
               />
             ) : (
               <span 
-                className={`flex-1 px-2 py-1 text-sm font-normal truncate ${COR_TREINO[prof.treino] ?? 'text-zinc-300'} ${!isTrilhaProf ? 'cursor-pointer hover:opacity-75 transition-opacity' : ''}`}
+                className={`flex-1 px-2 py-1 text-sm font-normal truncate ${COR_TREINO[prof.treino] ?? 'text-white'} ${!isTrilhaProf ? 'cursor-pointer hover:opacity-75 transition-opacity' : ''}`}
                 onClick={() => !isTrilhaProf && setEditingProfIndex(idx)}
               >
                 {prof.nome}
@@ -99,7 +99,7 @@ const ProfissaoRow = React.memo(({ prof, idx, editingProfIndex, setEditingProfIn
             );
           })()}
           
-          <span className={`w-14 text-center font-bold text-sm ${COR_TREINO[prof.treino] ?? 'text-zinc-400'}`}>
+          <span className={`w-14 text-center font-bold text-sm ${COR_TREINO[prof.treino] ?? 'text-white'}`}>
             ( {prof.treino + (prof.outros || 0)} )
           </span>
 
@@ -208,7 +208,7 @@ export const PericiasTable: React.FC = React.memo(() => {
   return (
     <div className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-6 flex flex-col h-full flex-1">
       <div className="flex items-center justify-between mb-2 border-b border-zinc-800 pb-1">
-        <h3 className="font-display text-lg uppercase tracking-[0.2em] text-zinc-300 ml-4 flex-1 text-center">
+        <h3 className="font-display text-lg uppercase tracking-[0.2em] text-white ml-4 flex-1 text-center">
           Perícias
         </h3>
         <button
@@ -268,9 +268,9 @@ export const PericiasTable: React.FC = React.memo(() => {
 
       {/* TABELA */}
       <div className="w-full flex-1">
-        <table className="w-full border-collapse text-zinc-100">
+        <table className="w-full border-collapse text-white">
           <thead>
-            <tr className="border-b border-zinc-700 text-xs uppercase tracking-wider text-zinc-500">
+            <tr className="border-b border-zinc-700 text-xs uppercase tracking-wider text-zinc-400">
               <th className="px-2 py-1.5 text-left">Perícia</th>
               <th className="px-2 py-1.5">Dados</th>
               <th className="px-2 py-1.5">Bônus</th>
@@ -292,7 +292,7 @@ export const PericiasTable: React.FC = React.memo(() => {
               const bonusMonstruoso10 = 0;
               const isPericiaBloqueada = nome === 'Intimidação' && bloquearIntimidacaoVampiro;
               const totalBonus = dadosPericia.treino + dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10;
-              const corTexto = isPericiaBloqueada ? '!text-zinc-600 line-through' : (COR_TREINO[dadosPericia.treino] ?? 'text-zinc-400');
+              const corTexto = isPericiaBloqueada ? '!text-zinc-600 line-through' : (COR_TREINO[dadosPericia.treino] ?? 'text-white');
               const corBorda = isPericiaBloqueada ? 'border-zinc-700 opacity-40' : (BORDA_TREINO[dadosPericia.treino] ?? 'border-zinc-600');
 
               return (

@@ -6,8 +6,17 @@ interface CollapseProps {
   children: ReactNode;
   className?: string;
   previewHeight?: string | number;
-  duration?: string;
+  duration?: string | number;
   timingFunction?: string;
+}
+
+function parseDurationSeconds(d?: string | number, fallback = 0.48): number {
+  if (typeof d === 'number') return d;
+  if (!d) return fallback;
+  const num = parseFloat(d);
+  if (isNaN(num)) return fallback;
+  if (typeof d === 'string' && d.includes('ms')) return num / 1000;
+  return num;
 }
 
 export function Collapse({ 
@@ -15,9 +24,11 @@ export function Collapse({
   children, 
   className = '', 
   previewHeight,
-  duration = '0.35s',
-  timingFunction = 'cubic-bezier(0.16, 1, 0.3, 1)'
+  duration = '0.48s',
+  timingFunction = 'cubic-bezier(0.4, 0, 0.2, 1)'
 }: CollapseProps) {
+  const dSec = parseDurationSeconds(duration, 0.48);
+
   // Se tiver previewHeight (ex: textos parciais de armas/habilidades com botão "ler mais"), usa preview
   if (previewHeight !== undefined) {
     return (
@@ -25,7 +36,7 @@ export function Collapse({
         isOpen={isOpen} 
         previewHeight={previewHeight} 
         className={className} 
-        duration={duration} 
+        duration={typeof duration === 'number' ? `${duration}s` : duration} 
         timingFunction={timingFunction}
       >
         {children}
@@ -33,7 +44,7 @@ export function Collapse({
     );
   }
 
-  // Para painéis completos como Filtros: slide suave + fade sem cortar o texto em fatias
+  // Animação suave e fluida
   return (
     <AnimatePresence initial={false}>
       {isOpen && (
@@ -43,8 +54,8 @@ export function Collapse({
             height: 'auto', 
             opacity: 1,
             transition: {
-              height: { duration: 0.35, ease: [0.16, 1, 0.3, 1] },
-              opacity: { duration: 0.28, ease: 'easeOut' }
+              height: { duration: dSec, ease: [0.4, 0, 0.2, 1] },
+              opacity: { duration: dSec * 0.85, ease: 'easeOut' }
             },
             transitionEnd: { overflow: 'visible' }
           }}
@@ -53,18 +64,18 @@ export function Collapse({
             opacity: 0,
             overflow: 'hidden',
             transition: {
-              height: { duration: 0.25, ease: [0.16, 1, 0.3, 1] },
-              opacity: { duration: 0.18, ease: 'easeIn' }
+              height: { duration: dSec * 0.75, ease: [0.4, 0, 0.2, 1] },
+              opacity: { duration: dSec * 0.5, ease: 'easeIn' }
             }
           }}
           className={className}
           style={{ overflow: 'hidden' }}
         >
           <motion.div
-            initial={{ y: -10, opacity: 0 }}
+            initial={{ y: -6, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -10, opacity: 0 }}
-            transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+            exit={{ y: -6, opacity: 0 }}
+            transition={{ duration: dSec * 0.9, ease: [0.4, 0, 0.2, 1] }}
           >
             {children}
           </motion.div>
@@ -79,21 +90,22 @@ function CollapsePreview({
   children,
   className = '',
   previewHeight,
-  duration = '0.35s',
-  timingFunction = 'cubic-bezier(0.16, 1, 0.3, 1)'
+  duration = '0.48s',
+  timingFunction = 'cubic-bezier(0.4, 0, 0.2, 1)'
 }: CollapseProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState<number>(0);
   const [isFullyOpen, setIsFullyOpen] = useState(isOpen);
+  const dSec = parseDurationSeconds(duration, 0.48);
 
   useEffect(() => {
     if (isOpen) {
-      const timer = setTimeout(() => setIsFullyOpen(true), 380);
+      const timer = setTimeout(() => setIsFullyOpen(true), Math.round(dSec * 1000 + 30));
       return () => clearTimeout(timer);
     } else {
       setIsFullyOpen(false);
     }
-  }, [isOpen]);
+  }, [isOpen, dSec]);
 
   useEffect(() => {
     if (!contentRef.current) return;

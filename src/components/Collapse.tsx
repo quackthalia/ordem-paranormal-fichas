@@ -28,6 +28,16 @@ export function Collapse({
   timingFunction = 'cubic-bezier(0.4, 0, 0.2, 1)'
 }: CollapseProps) {
   const dSec = parseDurationSeconds(duration, 0.48);
+  const [isFullyOpen, setIsFullyOpen] = useState(isOpen);
+
+  useEffect(() => {
+    if (isOpen) {
+      const timer = setTimeout(() => setIsFullyOpen(true), Math.round(dSec * 1000 + 40));
+      return () => clearTimeout(timer);
+    } else {
+      setIsFullyOpen(false);
+    }
+  }, [isOpen, dSec]);
 
   // Se tiver previewHeight (ex: textos parciais de armas/habilidades com botão "ler mais"), usa preview
   if (previewHeight !== undefined) {
@@ -56,29 +66,23 @@ export function Collapse({
             transition: {
               height: { duration: dSec, ease: [0.4, 0, 0.2, 1] },
               opacity: { duration: dSec * 0.85, ease: 'easeOut' }
-            },
-            transitionEnd: { overflow: 'visible' }
+            }
           }}
           exit={{ 
             height: 0, 
             opacity: 0,
-            overflow: 'hidden',
             transition: {
               height: { duration: dSec * 0.75, ease: [0.4, 0, 0.2, 1] },
               opacity: { duration: dSec * 0.5, ease: 'easeIn' }
             }
           }}
-          className={className}
-          style={{ overflow: 'hidden' }}
+          onAnimationComplete={() => {
+            if (isOpen) setIsFullyOpen(true);
+          }}
+          className={`relative ${className}`}
+          style={{ overflow: isFullyOpen ? 'visible' : 'hidden' }}
         >
-          <motion.div
-            initial={{ y: -6, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -6, opacity: 0 }}
-            transition={{ duration: dSec * 0.9, ease: [0.4, 0, 0.2, 1] }}
-          >
-            {children}
-          </motion.div>
+          {children}
         </motion.div>
       )}
     </AnimatePresence>

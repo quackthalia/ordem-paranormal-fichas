@@ -442,10 +442,6 @@ export const FichaScreen: React.FC = () => {
     }
   }, [trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, effectiveNex, nivel, regras, rituaisHook.rituais, rituaisHook.rituaisAprendidos, itensHook.itensInventario, poderesExtras, regrasAutomaticasAtivas]);
 
-  const handleRefazer = () => {
-    rpg.refazerPersonagem();
-  };
-
   const afinidade = afinidadeAtiva ? afinidadeEscolhida : null;
 
   return (
@@ -480,21 +476,6 @@ export const FichaScreen: React.FC = () => {
             <AbasPanel />
           </div>
         </div>
-      </div>
-
-      <div className="mt-12 flex flex-col sm:flex-row gap-4">
-        <button
-          onClick={() => rpg.voltarParaHub()}
-          className="flex-1 rounded-md border border-zinc-800 bg-zinc-900 p-3.5 font-bold uppercase tracking-wider text-zinc-300 transition hover:border-zinc-700 hover:text-zinc-100 cursor-pointer"
-        >
-          Voltar para o Hub de Agentes
-        </button>
-        <button
-          onClick={handleRefazer}
-          className="flex-1 rounded-md border border-zinc-800 bg-zinc-900 p-3.5 font-bold uppercase tracking-wider text-zinc-400 transition hover:border-zinc-700 hover:text-zinc-200 cursor-pointer"
-        >
-          Refazer Personagem
-        </button>
       </div>
 
       {(nexModalAberto !== null || nexPoderEditando !== null) && <ModalPoderes />}

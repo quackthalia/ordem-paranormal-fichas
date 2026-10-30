@@ -125,7 +125,7 @@ export const HubScreen: React.FC = () => {
             Nenhum agente registrado ainda
           </p>
           <p className="mb-6 max-w-md text-sm text-zinc-500">
-            Clique em &ldquo;Novo Agente&rdquo; para iniciar o passo a passo de criação e registrar seu primeiro investigador na Ordem.
+            Clique em &ldquo;Novo Agente&rdquo; para iniciar o passo a passo de criação e registrar seu primeiro agente na Ordem.
           </p>
           <button
             onClick={iniciarNovoAgente}

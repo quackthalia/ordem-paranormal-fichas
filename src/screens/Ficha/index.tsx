@@ -452,7 +452,21 @@ export const FichaScreen: React.FC = () => {
     <div className="relative w-full min-h-screen flex flex-col">
       <MatrixBackground afinidade={afinidade} />
       <div className="relative z-10 mx-auto flex w-full max-w-[1600px] flex-col p-4 md:p-6">
-      <div className="flex w-full justify-between gap-6 xl:gap-10">
+        {/* Barra superior de navegação */}
+        <div className="mb-3 flex items-center justify-between">
+          <button
+            onClick={() => rpg.voltarParaHub()}
+            className="inline-flex items-center gap-2 rounded-md border border-zinc-800 bg-zinc-900/90 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-zinc-300 shadow-sm transition-all duration-200 hover:border-zinc-700 hover:bg-zinc-800 hover:text-green-400 hover:-translate-x-0.5 active:scale-95 cursor-pointer"
+            title="Voltar para a seleção de agentes"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            <span>Meus Agentes</span>
+          </button>
+        </div>
+
+        <div className="flex w-full justify-between gap-6 xl:gap-10">
         
         {/* BLOCO ESQUERDO: Header + (Atributos e Perícias) */}
         <div className="flex flex-[2_2_66%] flex-col gap-6">

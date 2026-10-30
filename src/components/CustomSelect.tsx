@@ -15,7 +15,7 @@ interface CustomSelectProps {
   unstyled?: boolean;
 }
 
-export function CustomSelect({ value, onChange, options, className = '', wrapperClassName = 'w-full', placeholder, hideIcon = false, align, portal = false, unstyled = false }: CustomSelectProps) {
+export function CustomSelect({ value, onChange, options, className = '', wrapperClassName = 'w-full', placeholder, hideIcon = false, align, portal = true, unstyled = false }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -31,6 +31,8 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
     }
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      setPos(null);
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);

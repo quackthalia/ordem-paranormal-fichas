@@ -28,16 +28,6 @@ export function Collapse({
   timingFunction = 'cubic-bezier(0.4, 0, 0.2, 1)'
 }: CollapseProps) {
   const dSec = parseDurationSeconds(duration, 0.48);
-  const [isFullyOpen, setIsFullyOpen] = useState(isOpen);
-
-  useEffect(() => {
-    if (isOpen) {
-      const timer = setTimeout(() => setIsFullyOpen(true), Math.round(dSec * 1000 + 40));
-      return () => clearTimeout(timer);
-    } else {
-      setIsFullyOpen(false);
-    }
-  }, [isOpen, dSec]);
 
   // Se tiver previewHeight (ex: textos parciais de armas/habilidades com botão "ler mais"), usa preview
   if (previewHeight !== undefined) {
@@ -54,7 +44,7 @@ export function Collapse({
     );
   }
 
-  // Animação suave e fluida
+  // Animação suave e fluida estritamente contida (overflow hidden constante para evitar sobreposição de elementos)
   return (
     <AnimatePresence initial={false}>
       {isOpen && (
@@ -76,11 +66,8 @@ export function Collapse({
               opacity: { duration: dSec * 0.5, ease: 'easeIn' }
             }
           }}
-          onAnimationComplete={() => {
-            if (isOpen) setIsFullyOpen(true);
-          }}
-          className={`relative ${className}`}
-          style={{ overflow: isFullyOpen ? 'visible' : 'hidden' }}
+          className={`overflow-hidden ${className}`}
+          style={{ overflow: 'hidden' }}
         >
           {children}
         </motion.div>

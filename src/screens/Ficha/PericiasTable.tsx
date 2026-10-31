@@ -87,11 +87,11 @@ const ProfissaoRow = React.memo(({ prof, idx, editingProfIndex, setEditingProfIn
                 }}
                 onBlur={commitNome}
                 placeholder="Nome da profissão..."
-                className="flex-1 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm text-zinc-100 outline-none focus:border-green-500"
+                className="flex-1 rounded border border-zinc-700 bg-zinc-900 px-1.5 2xl:px-2 py-0.5 2xl:py-1 text-xs 2xl:text-sm text-zinc-100 outline-none focus:border-green-500 min-w-0"
               />
             ) : (
               <span 
-                className={`flex-1 px-2 py-1 text-sm font-normal truncate ${COR_TREINO[prof.treino] ?? 'text-white'} ${!isTrilhaProf ? 'cursor-pointer hover:opacity-75 transition-opacity' : ''}`}
+                className={`flex-1 px-1.5 2xl:px-2 py-0.5 2xl:py-1 text-xs 2xl:text-sm font-normal truncate min-w-0 ${COR_TREINO[prof.treino] ?? 'text-white'} ${!isTrilhaProf ? 'cursor-pointer hover:opacity-75 transition-opacity' : ''}`}
                 onClick={() => !isTrilhaProf && setEditingProfIndex(idx)}
               >
                 {prof.nome}
@@ -99,7 +99,7 @@ const ProfissaoRow = React.memo(({ prof, idx, editingProfIndex, setEditingProfIn
             );
           })()}
           
-          <span className={`w-14 text-center font-bold text-sm ${COR_TREINO[prof.treino] ?? 'text-white'}`}>
+          <span className={`w-10 2xl:w-14 text-center font-bold text-xs 2xl:text-sm shrink-0 ${COR_TREINO[prof.treino] ?? 'text-white'}`}>
             ( {prof.treino + (prof.outros || 0)} )
           </span>
 
@@ -135,8 +135,8 @@ const ProfissaoRow = React.memo(({ prof, idx, editingProfIndex, setEditingProfIn
               setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, treino: novoValor } : p));
             }}
             options={[{value:'0',label:'0'},{value:'5',label:'5'},{value:'10',label:'10'},{value:'15',label:'15'}]}
-            wrapperClassName="w-14"
-            className={`cursor-pointer border-b bg-transparent text-center font-bold outline-none !px-0 py-0.5 ${COR_TREINO[prof.treino] ?? 'text-zinc-400'} ${BORDA_TREINO[prof.treino] ?? 'border-zinc-600'}`}
+            wrapperClassName="w-8 2xl:w-14 shrink-0"
+            className={`cursor-pointer border-b bg-transparent text-center font-bold outline-none !px-0 py-0.5 text-xs 2xl:text-sm ${COR_TREINO[prof.treino] ?? 'text-zinc-400'} ${BORDA_TREINO[prof.treino] ?? 'border-zinc-600'}`}
             hideIcon={true}
           />
 
@@ -151,7 +151,7 @@ const ProfissaoRow = React.memo(({ prof, idx, editingProfIndex, setEditingProfIn
                 commitOutros((e.target as HTMLInputElement).value);
               }
             }}
-            className={`w-11 border-b bg-transparent text-center font-bold outline-none ${COR_TREINO[prof.treino] ?? 'text-zinc-400'} ${BORDA_TREINO[prof.treino] ?? 'border-zinc-600'}`}
+            className={`w-7 2xl:w-11 border-b bg-transparent text-center font-bold outline-none text-xs 2xl:text-sm shrink-0 ${COR_TREINO[prof.treino] ?? 'text-zinc-400'} ${BORDA_TREINO[prof.treino] ?? 'border-zinc-600'}`}
           />
           
           {!((prof as any).origem === 'trilha' || (prof as any).origem === 'trilha65') && (
@@ -206,14 +206,14 @@ export const PericiasTable: React.FC = React.memo(() => {
   };
 
   return (
-    <div className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-6 flex flex-col h-full flex-1">
+    <div className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-2.5 xl:p-4 2xl:p-6 flex flex-col h-full flex-1 min-w-0">
       <div className="flex items-center justify-between mb-2 border-b border-zinc-800 pb-1">
-        <h3 className="font-display text-lg uppercase tracking-[0.2em] text-white ml-4 flex-1 text-center">
+        <h3 className="font-display text-base 2xl:text-lg uppercase tracking-[0.2em] text-white ml-2 2xl:ml-4 flex-1 text-center">
           Perícias
         </h3>
         <button
           onClick={() => setMostrarBonus(!mostrarBonus)}
-          className={`rounded transition text-lg ${mostrarBonus ? 'bg-green-900/50 text-green-400 border-green-800/50 shadow-[0_0_10px_rgba(34,197,94,0.2)]' : 'bg-zinc-800/50 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700/50'} border border-zinc-700/50 flex items-center justify-center w-9 h-9 overflow-hidden`}
+          className={`rounded transition text-base 2xl:text-lg ${mostrarBonus ? 'bg-green-900/50 text-green-400 border-green-800/50 shadow-[0_0_10px_rgba(34,197,94,0.2)]' : 'bg-zinc-800/50 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700/50'} border border-zinc-700/50 flex items-center justify-center w-7 h-7 2xl:w-9 2xl:h-9 overflow-hidden shrink-0`}
           title="Modificadores de Dados"
         >
           <img 
@@ -267,15 +267,15 @@ export const PericiasTable: React.FC = React.memo(() => {
       </Collapse>
 
       {/* TABELA */}
-      <div className="w-full flex-1">
+      <div className="w-full flex-1 min-w-0">
         <table className="w-full border-collapse text-white">
           <thead>
-            <tr className="border-b border-zinc-700 text-xs uppercase tracking-wider text-zinc-400">
-              <th className="px-2 py-1.5 text-left">Perícia</th>
-              <th className="px-2 py-1.5">Dados</th>
-              <th className="px-2 py-1.5">Bônus</th>
-              <th className="px-2 py-1.5">Treino</th>
-              <th className="px-2 py-1.5">Outros</th>
+            <tr className="border-b border-zinc-700 text-[11px] 2xl:text-xs uppercase tracking-wider text-zinc-400">
+              <th className="px-1 2xl:px-2 py-1 2xl:py-1.5 text-left">Perícia</th>
+              <th className="px-0.5 2xl:px-2 py-1 2xl:py-1.5 text-center">Dados</th>
+              <th className="px-0.5 2xl:px-2 py-1 2xl:py-1.5 text-center">Bônus</th>
+              <th className="px-0.5 2xl:px-2 py-1 2xl:py-1.5 text-center">Treino</th>
+              <th className="px-0.5 2xl:px-2 py-1 2xl:py-1.5 text-center">Outros</th>
             </tr>
           </thead>
           <tbody>
@@ -298,8 +298,8 @@ export const PericiasTable: React.FC = React.memo(() => {
               return (
                 <React.Fragment key={nome}>
                 <tr className={`border-b border-zinc-800/70 transition hover:bg-zinc-800/30 ${isPericiaBloqueada ? 'opacity-60 bg-red-950/10' : ''}`}>
-                  <td className={`px-2 py-1.5 font-bold text-sm ${corTexto}`}>
-                    <div className="flex items-center gap-1">
+                  <td className={`px-1 2xl:px-2 py-1 2xl:py-1.5 font-bold text-xs 2xl:text-sm ${corTexto}`}>
+                    <div className="flex items-center gap-1 min-w-0">
                       {nome === 'Profissão' && dadosPericia.treino >= 5 && (
                         <button
                           onClick={() => {
@@ -307,32 +307,32 @@ export const PericiasTable: React.FC = React.memo(() => {
                             if (el) el.style.overflow = 'hidden';
                             setProfissaoExpandida(!profissaoExpandida);
                           }}
-                          className="text-zinc-500 hover:text-green-400 transition transform"
+                          className="text-zinc-500 hover:text-green-400 transition transform shrink-0"
                           title="Expandir profissões"
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={profissaoExpandida ? "rotate-180" : ""}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={profissaoExpandida ? "rotate-180" : ""}>
                             <polyline points="6 9 12 15 18 9"></polyline>
                           </svg>
                         </button>
                       )}
                       <span 
-                        className={`cursor-pointer transition ${isPericiaBloqueada ? 'cursor-not-allowed hover:text-red-400' : 'hover:underline hover:text-green-400'}`}
+                        className={`cursor-pointer transition truncate ${isPericiaBloqueada ? 'cursor-not-allowed hover:text-red-400' : 'hover:underline hover:text-green-400'}`}
                         onClick={() => setPericiaAberta({ nome: isPericiaBloqueada ? `${nome} (Bloqueada)` : nome, descricao: isPericiaBloqueada ? 'Esta perícia foi bloqueada pela trilha Vontade Vampírica (Inocência aparente te torna incapaz de usar Intimidação).' : (dadosPericia.descricao || 'Sem descrição..') })}
                         title={isPericiaBloqueada ? 'Incapaz de usar Intimidação (Vontade Vampírica)' : undefined}
                       >
                         {nome}
                       </span>
                       {isPericiaBloqueada && (
-                        <span className="ml-1 text-[9px] uppercase px-1 py-0.5 rounded bg-red-950/80 border border-red-800/50 text-red-400 font-bold no-underline">
+                        <span className="ml-0.5 text-[8px] 2xl:text-[9px] uppercase px-1 py-0.5 rounded bg-red-950/80 border border-red-800/50 text-red-400 font-bold no-underline shrink-0">
                           Bloqueada
                         </span>
                       )}
                       {dadosPericia.kit && (
-                        <div className="group relative flex items-center">
+                        <div className="group relative flex items-center shrink-0">
                           <img 
                             src="/kit-icon.png" 
                             alt="Requer Kit" 
-                            className="h-6 w-auto cursor-help opacity-75 transition group-hover:opacity-100 object-contain"
+                            className="h-4.5 2xl:h-6 w-auto cursor-help opacity-75 transition group-hover:opacity-100 object-contain"
                           />
                           <div className="pointer-events-none absolute left-full top-1/2 z-50 ml-2 w-56 -translate-y-1/2 opacity-0 transition-all duration-200 group-hover:opacity-100">
                             <div className="rounded-md border border-zinc-700 bg-zinc-900/95 p-3 text-xs leading-relaxed text-zinc-400 shadow-2xl backdrop-blur-md">
@@ -350,7 +350,7 @@ export const PericiasTable: React.FC = React.memo(() => {
                     </div>
                   </td>
 
-                  <td className={`px-2 py-1.5 text-center text-sm ${corTexto}`}>
+                  <td className={`px-0.5 2xl:px-2 py-1 2xl:py-1.5 text-center text-xs 2xl:text-sm ${corTexto}`}>
                     <div className="flex items-center justify-center gap-0.5">
                       <span>(</span>
                       <CustomSelect
@@ -358,8 +358,8 @@ export const PericiasTable: React.FC = React.memo(() => {
                         onChange={(val) =>
                           handleMudarPericia(nome, 'atributo', val as AtributoKey)
                         }
-                        wrapperClassName="w-[4.5rem]"
-                        className={`cursor-pointer appearance-none border-none bg-transparent text-center font-bold outline-none !px-0 ${corTexto}`}
+                        wrapperClassName="w-12 2xl:w-[4.5rem]"
+                        className={`cursor-pointer appearance-none border-none bg-transparent text-center font-bold outline-none !px-0 text-xs 2xl:text-sm ${corTexto}`}
                         hideIcon={true}
                         options={[
                           { value: 'FOR', label: 'FOR' },
@@ -373,19 +373,19 @@ export const PericiasTable: React.FC = React.memo(() => {
                     </div>
                   </td>
 
-                  <td className={`px-2 py-1.5 text-center font-bold ${corTexto}`}>
+                  <td className={`px-0.5 2xl:px-2 py-1 2xl:py-1.5 text-center font-bold text-xs 2xl:text-sm whitespace-nowrap ${corTexto}`}>
                     ( {totalBonus} )
                   </td>
 
-                  <td className="px-2 py-1.5 text-center">
+                  <td className="px-0.5 2xl:px-2 py-1 2xl:py-1.5 text-center">
                     <div className="flex justify-center">
                       <CustomSelect
                         value={String(dadosPericia.treino)}
                         onChange={(val) =>
                           handleMudarPericia(nome, 'treino', Number(val))
                         }
-                        wrapperClassName="w-14"
-                        className={`cursor-pointer appearance-none border-b bg-transparent text-center font-bold outline-none !px-0 py-0.5 ${corTexto} ${corBorda}`}
+                        wrapperClassName="w-8 2xl:w-14"
+                        className={`cursor-pointer appearance-none border-b bg-transparent text-center font-bold outline-none !px-0 py-0.5 text-xs 2xl:text-sm ${corTexto} ${corBorda}`}
                         hideIcon={true}
                         options={[
                           { value: '0', label: '0' },
@@ -397,7 +397,7 @@ export const PericiasTable: React.FC = React.memo(() => {
                     </div>
                   </td>
 
-                  <td className="px-2 py-1.5 text-center">
+                  <td className="px-0.5 2xl:px-2 py-1 2xl:py-1.5 text-center">
                     <input
                       type="number"
                       onKeyDown={bloquearLetras}
@@ -407,7 +407,7 @@ export const PericiasTable: React.FC = React.memo(() => {
                         const bonusInternosHook = (periciasHook.bonusRegra40?.[nome] || 0) + (periciasHook.bonusVestimentas?.[nome] || 0) + (periciasHook.bonusAtributoDinamico?.[nome] || 0);
                         handleMudarPericia(nome, 'outros', Math.max(0, Number(e.target.value) - bonusRegra8 - bonusRegra13 - bonusRegra25 - bonusTrilha4 - bonusTrilha7 - bonusMonstruoso10 - bonusInternosHook));
                       }}
-                      className={`w-11 border-b bg-transparent text-center font-bold outline-none ${corTexto} ${corBorda}`}
+                      className={`w-7 2xl:w-11 border-b bg-transparent text-center font-bold outline-none text-xs 2xl:text-sm ${corTexto} ${corBorda}`}
                     />
                   </td>
                 </tr>

@@ -167,9 +167,9 @@ export function ModalEditarItem({
       });
     }
 
-    const isGrimorio = Number(item.item.Codigo_Item) === 9999 || 
-      (item.item.Nome_Item || '').toLowerCase().includes('grimório') || 
-      (item.item.Nome_Item || '').toLowerCase().includes('grimorio') || 
+    const isGrimorio = Number(item.Codigo_Item) === 9999 || 
+      (item.Nome_Item || '').toLowerCase().includes('grimório') || 
+      (item.Nome_Item || '').toLowerCase().includes('grimorio') || 
       nome.toLowerCase().includes('grimório') || 
       nome.toLowerCase().includes('grimorio');
 
@@ -263,9 +263,9 @@ export function ModalEditarItem({
   };
 
   const getOpcoesModificacoes = () => {
-    const isGrimorio = Number(item.item.Codigo_Item) === 9999 || 
-      (item.item.Nome_Item || '').toLowerCase().includes('grimório') || 
-      (item.item.Nome_Item || '').toLowerCase().includes('grimorio') || 
+    const isGrimorio = Number(item.Codigo_Item) === 9999 || 
+      (item.Nome_Item || '').toLowerCase().includes('grimório') || 
+      (item.Nome_Item || '').toLowerCase().includes('grimorio') || 
       nome.toLowerCase().includes('grimório') || 
       nome.toLowerCase().includes('grimorio');
 

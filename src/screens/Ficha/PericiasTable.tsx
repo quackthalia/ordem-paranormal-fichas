@@ -99,7 +99,7 @@ const ProfissaoRow = React.memo(({ prof, idx, editingProfIndex, setEditingProfIn
             );
           })()}
           
-          <span className={`w-10 2xl:w-14 text-center font-bold text-xs 2xl:text-sm shrink-0 ${COR_TREINO[prof.treino] ?? 'text-white'}`}>
+          <span className={`w-11 2xl:w-14 text-center font-bold text-xs 2xl:text-sm shrink-0 ${COR_TREINO[prof.treino] ?? 'text-white'}`}>
             ( {prof.treino + (prof.outros || 0)} )
           </span>
 
@@ -135,7 +135,7 @@ const ProfissaoRow = React.memo(({ prof, idx, editingProfIndex, setEditingProfIn
               setProfissoes(prev => prev.map((p, i) => i === idx ? { ...p, treino: novoValor } : p));
             }}
             options={[{value:'0',label:'0'},{value:'5',label:'5'},{value:'10',label:'10'},{value:'15',label:'15'}]}
-            wrapperClassName="w-8 2xl:w-14 shrink-0"
+            wrapperClassName="w-10 2xl:w-14 shrink-0"
             className={`cursor-pointer border-b bg-transparent text-center font-bold outline-none !px-0 py-0.5 text-xs 2xl:text-sm ${COR_TREINO[prof.treino] ?? 'text-zinc-400'} ${BORDA_TREINO[prof.treino] ?? 'border-zinc-600'}`}
             hideIcon={true}
           />
@@ -151,7 +151,7 @@ const ProfissaoRow = React.memo(({ prof, idx, editingProfIndex, setEditingProfIn
                 commitOutros((e.target as HTMLInputElement).value);
               }
             }}
-            className={`w-7 2xl:w-11 border-b bg-transparent text-center font-bold outline-none text-xs 2xl:text-sm shrink-0 ${COR_TREINO[prof.treino] ?? 'text-zinc-400'} ${BORDA_TREINO[prof.treino] ?? 'border-zinc-600'}`}
+            className={`w-8 2xl:w-11 border-b bg-transparent text-center font-bold outline-none text-xs 2xl:text-sm shrink-0 ${COR_TREINO[prof.treino] ?? 'text-zinc-400'} ${BORDA_TREINO[prof.treino] ?? 'border-zinc-600'}`}
           />
           
           {!((prof as any).origem === 'trilha' || (prof as any).origem === 'trilha65') && (
@@ -206,7 +206,7 @@ export const PericiasTable: React.FC = React.memo(() => {
   };
 
   return (
-    <div className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-2.5 xl:p-4 2xl:p-6 flex flex-col h-full flex-1 min-w-0">
+    <div className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-3.5 xl:p-4 2xl:p-6 flex flex-col h-full flex-1 min-w-0">
       <div className="flex items-center justify-between mb-2 border-b border-zinc-800 pb-1">
         <h3 className="font-display text-base 2xl:text-lg uppercase tracking-[0.2em] text-white ml-2 2xl:ml-4 flex-1 text-center">
           Perícias
@@ -272,10 +272,10 @@ export const PericiasTable: React.FC = React.memo(() => {
           <thead>
             <tr className="border-b border-zinc-700 text-[11px] 2xl:text-xs uppercase tracking-wider text-zinc-400">
               <th className="px-1 2xl:px-2 py-1 2xl:py-1.5 text-left">Perícia</th>
-              <th className="px-0.5 2xl:px-2 py-1 2xl:py-1.5 text-center">Dados</th>
-              <th className="px-0.5 2xl:px-2 py-1 2xl:py-1.5 text-center">Bônus</th>
-              <th className="px-0.5 2xl:px-2 py-1 2xl:py-1.5 text-center">Treino</th>
-              <th className="px-0.5 2xl:px-2 py-1 2xl:py-1.5 text-center">Outros</th>
+              <th className="px-1 2xl:px-2 py-1 2xl:py-1.5 text-center">Dados</th>
+              <th className="px-1 2xl:px-2 py-1 2xl:py-1.5 text-center">Bônus</th>
+              <th className="px-1 2xl:px-2 py-1 2xl:py-1.5 text-center">Treino</th>
+              <th className="px-1 2xl:px-2 py-1 2xl:py-1.5 text-center">Outros</th>
             </tr>
           </thead>
           <tbody>
@@ -373,18 +373,18 @@ export const PericiasTable: React.FC = React.memo(() => {
                     </div>
                   </td>
 
-                  <td className={`px-0.5 2xl:px-2 py-1 2xl:py-1.5 text-center font-bold text-xs 2xl:text-sm whitespace-nowrap ${corTexto}`}>
+                  <td className={`px-1 2xl:px-2 py-1 2xl:py-1.5 text-center font-bold text-xs 2xl:text-sm whitespace-nowrap ${corTexto}`}>
                     ( {totalBonus} )
                   </td>
 
-                  <td className="px-0.5 2xl:px-2 py-1 2xl:py-1.5 text-center">
+                  <td className="px-1 2xl:px-2 py-1 2xl:py-1.5 text-center">
                     <div className="flex justify-center">
                       <CustomSelect
                         value={String(dadosPericia.treino)}
                         onChange={(val) =>
                           handleMudarPericia(nome, 'treino', Number(val))
                         }
-                        wrapperClassName="w-8 2xl:w-14"
+                        wrapperClassName="w-10 2xl:w-14"
                         className={`cursor-pointer appearance-none border-b bg-transparent text-center font-bold outline-none !px-0 py-0.5 text-xs 2xl:text-sm ${corTexto} ${corBorda}`}
                         hideIcon={true}
                         options={[
@@ -397,7 +397,7 @@ export const PericiasTable: React.FC = React.memo(() => {
                     </div>
                   </td>
 
-                  <td className="px-0.5 2xl:px-2 py-1 2xl:py-1.5 text-center">
+                  <td className="px-1 2xl:px-2 py-1 2xl:py-1.5 text-center">
                     <input
                       type="number"
                       onKeyDown={bloquearLetras}
@@ -407,7 +407,7 @@ export const PericiasTable: React.FC = React.memo(() => {
                         const bonusInternosHook = (periciasHook.bonusRegra40?.[nome] || 0) + (periciasHook.bonusVestimentas?.[nome] || 0) + (periciasHook.bonusAtributoDinamico?.[nome] || 0);
                         handleMudarPericia(nome, 'outros', Math.max(0, Number(e.target.value) - bonusRegra8 - bonusRegra13 - bonusRegra25 - bonusTrilha4 - bonusTrilha7 - bonusMonstruoso10 - bonusInternosHook));
                       }}
-                      className={`w-7 2xl:w-11 border-b bg-transparent text-center font-bold outline-none text-xs 2xl:text-sm ${corTexto} ${corBorda}`}
+                      className={`w-8 2xl:w-11 border-b bg-transparent text-center font-bold outline-none text-xs 2xl:text-sm ${corTexto} ${corBorda}`}
                     />
                   </td>
                 </tr>

@@ -452,10 +452,10 @@ export const FichaScreen: React.FC = () => {
         <div className="flex w-full justify-between gap-4 xl:gap-6 2xl:gap-10">
         
         {/* BLOCO ESQUERDO: Header + (Atributos e Perícias) */}
-        <div className="flex flex-[1.6_1.6_58%] 2xl:flex-[2_2_66%] flex-col gap-6 min-w-0">
+        <div className="flex flex-[1.85_1.85_64%] 2xl:flex-[2_2_66%] flex-col gap-6 min-w-0">
           <CharacterHeader />
           
-          <div className="flex w-full justify-between gap-3 xl:gap-5 2xl:gap-8 min-w-0">
+          <div className="flex w-full justify-between gap-4 xl:gap-6 2xl:gap-8 min-w-0">
             {/* COLUNA ESQUERDA: Atributos + Status + Defesa + Proteções */}
             <div className="flex flex-1 flex-col gap-5 pb-10 min-w-0">
               <AtributosFicha />
@@ -465,14 +465,14 @@ export const FichaScreen: React.FC = () => {
             </div>
 
             {/* COLUNA MEIO: Perícias */}
-            <div className="flex flex-[0.88_0.88_0%] 2xl:flex-1 flex-col pb-10 min-w-0">
+            <div className="flex flex-1 flex-col pb-10 min-w-0">
               <PericiasTable />
             </div>
           </div>
         </div>
 
         {/* COLUNA DIREITA: Abas (Combate, Habilidades, Rituais...) */}
-        <div className="relative min-w-[320px] flex-[1.2_1.2_42%] 2xl:flex-[1_1_34%] self-stretch">
+        <div className="relative min-w-[280px] flex-[1_1_36%] 2xl:flex-[1_1_34%] self-stretch">
           <div className="absolute inset-0 pb-10 pt-[22px]">
             <AbasPanel />
           </div>

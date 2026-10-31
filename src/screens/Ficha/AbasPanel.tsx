@@ -1052,11 +1052,11 @@ const AbasPanelInner: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full min-h-0 rounded-lg border border-zinc-800 bg-zinc-900/60 p-3 md:p-4">
-      <div className="mb-5 flex flex-nowrap overflow-x-auto gap-x-0.5 xl:gap-x-1 border-b border-zinc-800 custom-scrollbar pb-1">
+    <div className="flex flex-col h-full min-h-0 rounded-lg border border-zinc-800 bg-zinc-900/60 p-2.5 sm:p-3 xl:p-4">
+      <div className="mb-5 flex flex-nowrap overflow-x-auto gap-x-0 sm:gap-x-0.5 xl:gap-x-1 border-b border-zinc-800 custom-scrollbar pb-1">
         {(['combate','habilidades','rituais','inventario','descricao','regras'] as const).map(aba => (
           <button key={aba} onClick={() => setAbaDireita(aba)}
-            className={`shrink-0 px-0.5 xl:px-1 py-2 text-[10px] 2xl:text-xs font-bold uppercase tracking-tight xl:tracking-wide transition whitespace-nowrap flex-1 text-center cursor-pointer ${
+            className={`shrink-0 px-0.5 xl:px-1 py-1.5 2xl:py-2 text-[9.5px] xl:text-[10.5px] 2xl:text-xs font-bold uppercase tracking-tighter xl:tracking-tight 2xl:tracking-normal transition whitespace-nowrap flex-1 text-center cursor-pointer ${
               abaDireita === aba ? 'border-b-2 border-green-500 text-white' : 'border-b-2 border-transparent text-zinc-400 hover:text-white'
             }`}
           >{aba === 'inventario' ? 'Inventário' : aba === 'descricao' ? 'Descrição' : aba === 'regras' ? 'Regras' : aba}</button>

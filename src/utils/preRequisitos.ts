@@ -24,6 +24,25 @@ export interface ResultadoValidacao {
   motivo?: string;
 }
 
+// Verifica se o personagem possui o poder base (ex: 'especialista em elemento') para o elemento dado.
+// Aceita o nome com sufixo "(Elemento)" ou o poder salvo com o campo elemento preenchido.
+function possuiPoderDeElemento(
+  poderes: ContextoPreRequisitos['poderes'],
+  nomeBase: string,
+  elemento?: string
+): boolean {
+  const norm = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+  const base = norm(nomeBase);
+  const elem = elemento ? norm(elemento) : '';
+  return poderes.some(p => {
+    const nome = norm(p.nome || '');
+    if (!nome.startsWith(base)) return false;
+    if (!elem) return true;
+    if (nome.includes('(' + elem + ')')) return true;
+    return !!p.elemento && norm(p.elemento) === elem;
+  });
+}
+
 export function verificarPreRequisitos(
   poder: Poder,
   contexto: ContextoPreRequisitos,
@@ -273,14 +292,8 @@ export function verificarPreRequisitos(
       const nivelMin = codigo === 18 ? 9 : 6;
       if (contexto.nivel < nivelMin) return { atende: false, motivo: `Nível ${nivelMin}` };
       
-      if (!elementoTentado) {
-        const temAlgum = contexto.poderes.some(p => p.nome.startsWith('especialista em elemento'));
-        if (!temAlgum) return { atende: false, motivo: 'Especialista em Elemento' };
-      } else {
-        const poderExato = `especialista em elemento (${elementoTentado.toLowerCase()})`;
-        if (!contexto.poderes.some(p => p.nome === poderExato)) {
-          return { atende: false, motivo: `Especialista em Elemento (${elementoTentado})` };
-        }
+      if (!possuiPoderDeElemento(contexto.poderes, 'especialista em elemento', elementoTentado)) {
+        return { atende: false, motivo: elementoTentado ? `Especialista em Elemento (${elementoTentado})` : 'Especialista em Elemento' };
       }
       return { atende: true };
     }
@@ -354,14 +367,8 @@ export function verificarPreRequisitos(
         if (contexto.nex < 60) return { atende: false, motivo: 'NEX 60%' };
       }
       
-      if (!elementoTentado) {
-        const temAlgum = contexto.poderes.some(p => p.nome.startsWith('mestre em elemento'));
-        if (!temAlgum) return { atende: false, motivo: 'Mestre em Elemento' };
-      } else {
-        const poderExato = `mestre em elemento (${elementoTentado.toLowerCase()})`;
-        if (!contexto.poderes.some(p => p.nome === poderExato)) {
-          return { atende: false, motivo: `Mestre em Elemento (${elementoTentado})` };
-        }
+      if (!possuiPoderDeElemento(contexto.poderes, 'mestre em elemento', elementoTentado)) {
+        return { atende: false, motivo: elementoTentado ? `Mestre em Elemento (${elementoTentado})` : 'Mestre em Elemento' };
       }
       return { atende: true };
     }

@@ -8,6 +8,7 @@ interface CustomSelectProps {
   options: { value: string; label: string; disabled?: boolean; subtitle?: string }[] | string[];
   className?: string;
   wrapperClassName?: string;
+  minDropdownWidth?: number;
   placeholder?: string;
   hideIcon?: boolean;
   align?: 'left' | 'center' | 'right';
@@ -16,11 +17,15 @@ interface CustomSelectProps {
   unstyled?: boolean;
 }
 
-export function CustomSelect({ value, onChange, options, className = '', wrapperClassName = 'w-full', placeholder, hideIcon = false, align, portal = true, unstyled = false }: CustomSelectProps) {
+export function CustomSelect({ value, onChange, options, className = '', wrapperClassName = 'w-full', minDropdownWidth, placeholder, hideIcon = false, align, portal = true, unstyled = false }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState<{ top?: number; bottom?: number; left: number; width: number; openUp: boolean } | null>(null);
+
+  const isCentered = align === 'center' || (!align && (hideIcon || className.includes('text-center')));
+  const isRight = align === 'right' || (!align && className.includes('text-right'));
+  const textAlignment = isCentered ? 'text-center' : isRight ? 'text-right' : 'text-left';
 
   // Fecha o dropdown se clicar fora
   useEffect(() => {
@@ -47,11 +52,23 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
       const alturaMax = 240 + 8;
       const espacoAbaixo = window.innerHeight - rect.bottom;
       const openUp = espacoAbaixo < alturaMax && rect.top > espacoAbaixo;
+
+      const minW = minDropdownWidth ?? (isCentered ? 64 : 0);
+      const finalWidth = Math.max(rect.width, minW);
+
+      let left = rect.left;
+      if (isCentered && finalWidth > rect.width) {
+        left = rect.left - (finalWidth - rect.width) / 2;
+      } else if (isRight && finalWidth > rect.width) {
+        left = rect.right - finalWidth;
+      }
+      left = Math.max(8, Math.min(left, window.innerWidth - finalWidth - 8));
+
       setPos({
         top: openUp ? undefined : rect.bottom + 4,
         bottom: openUp ? window.innerHeight - rect.top + 4 : undefined,
-        left: rect.left,
-        width: rect.width,
+        left,
+        width: finalWidth,
         openUp,
       });
     };
@@ -62,7 +79,7 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
       window.removeEventListener('scroll', atualizar, true);
       window.removeEventListener('resize', atualizar);
     };
-  }, [portal, isOpen]);
+  }, [portal, isOpen, isCentered, isRight, minDropdownWidth]);
 
   // Normaliza as opções para o formato {value, label}
   const normalizedOptions = options.map(opt => 
@@ -70,10 +87,6 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
   );
 
   const selectedOption = normalizedOptions.find(opt => opt.value === value);
-
-  const isCentered = align === 'center' || (!align && (hideIcon || className.includes('text-center')));
-  const isRight = align === 'right' || (!align && className.includes('text-right'));
-  const textAlignment = isCentered ? 'text-center' : isRight ? 'text-right' : 'text-left';
 
   const lista = (
     <ul 
@@ -100,16 +113,18 @@ export function CustomSelect({ value, onChange, options, className = '', wrapper
               onChange(opt.value);
               setIsOpen(false);
             }}
-            className={`relative px-3 py-2 text-xs md:text-sm transition-colors ${
+            className={`relative ${isCentered ? 'px-2 py-1.5' : 'px-3 py-2'} text-xs md:text-sm transition-colors ${
               opt.disabled
                 ? 'opacity-50 cursor-not-allowed bg-zinc-900/50 text-zinc-500'
                 : isSelected
-                  ? 'bg-zinc-800 text-white font-bold border-l-2 border-green-500'
+                  ? isCentered
+                    ? 'bg-zinc-800 text-green-400 font-bold'
+                    : 'bg-zinc-800 text-white font-bold border-l-2 border-green-500'
                   : 'cursor-pointer select-none text-zinc-300 hover:bg-zinc-800/80 hover:text-white'
             }`}
           >
             <div className={`w-full flex flex-col ${isCentered ? 'justify-center items-center text-center' : isRight ? 'justify-end items-end text-right' : 'justify-start items-start text-left'}`}>
-              <span className={`block w-full truncate ${isCentered ? 'text-center' : isRight ? 'text-right' : 'text-left'}`}>{opt.label}</span>
+              <span className={`block w-full ${isCentered ? 'text-center whitespace-nowrap' : isRight ? 'text-right truncate' : 'text-left truncate'}`}>{opt.label}</span>
               {opt.subtitle && (
                 <span className="text-[10px] mt-0.5 whitespace-normal leading-tight text-red-400/80">
                   {opt.subtitle}

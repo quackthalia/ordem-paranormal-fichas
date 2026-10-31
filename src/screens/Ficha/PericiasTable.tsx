@@ -136,6 +136,7 @@ const ProfissaoRow = React.memo(({ prof, idx, editingProfIndex, setEditingProfIn
             }}
             options={[{value:'0',label:'0'},{value:'5',label:'5'},{value:'10',label:'10'},{value:'15',label:'15'}]}
             wrapperClassName="w-10 2xl:w-14 shrink-0"
+            minDropdownWidth={56}
             className={`cursor-pointer border-b bg-transparent text-center font-bold outline-none !px-0 py-0.5 text-xs 2xl:text-sm ${COR_TREINO[prof.treino] ?? 'text-zinc-400'} ${BORDA_TREINO[prof.treino] ?? 'border-zinc-600'}`}
             hideIcon={true}
           />
@@ -358,7 +359,8 @@ export const PericiasTable: React.FC = React.memo(() => {
                         onChange={(val) =>
                           handleMudarPericia(nome, 'atributo', val as AtributoKey)
                         }
-                        wrapperClassName="w-12 2xl:w-[4.5rem]"
+                        wrapperClassName="w-13 2xl:w-[4.5rem]"
+                        minDropdownWidth={68}
                         className={`cursor-pointer appearance-none border-none bg-transparent text-center font-bold outline-none !px-0 text-xs 2xl:text-sm ${corTexto}`}
                         hideIcon={true}
                         options={[
@@ -385,6 +387,7 @@ export const PericiasTable: React.FC = React.memo(() => {
                           handleMudarPericia(nome, 'treino', Number(val))
                         }
                         wrapperClassName="w-10 2xl:w-14"
+                        minDropdownWidth={56}
                         className={`cursor-pointer appearance-none border-b bg-transparent text-center font-bold outline-none !px-0 py-0.5 text-xs 2xl:text-sm ${corTexto} ${corBorda}`}
                         hideIcon={true}
                         options={[

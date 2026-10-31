@@ -428,16 +428,18 @@ export const FichaScreen: React.FC = () => {
     }
 
     if (temGraduado40 && isInventarioLoaded) {
-      const temGrimorio = itensHook.itensInventario.some((i) => i.item.Nome_Item === 'Grimório Ritualístico');
-      if (!temGrimorio) {
+      const grimorioItem = itensHook.itensInventario.find((i) => i.item.Nome_Item === 'Grimório Ritualístico');
+      if (!grimorioItem) {
          itensHook.adicionarItem({
            Codigo_Item: 9999,
            Nome_Item: 'Grimório Ritualístico',
-           Categoria_Item: 'II',
+           Categoria_Item: '0',
            Espacos_Itens: '1',
            Desc_Item: 'Seu Grimório. Quando o segura, você pode conjurar rituais sem precisar de gestos ou componentes materiais.',
            Grupo_Item: 'Itens Operacionais'
          });
+      } else if (grimorioItem.item.Categoria_Item !== '0') {
+         itensHook.editarItem(grimorioItem.id, { Categoria_Item: '0' });
       }
     }
   }, [trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, effectiveNex, nivel, regras, rituaisHook.rituais, rituaisHook.rituaisAprendidos, itensHook.itensInventario, poderesExtras, regrasAutomaticasAtivas]);

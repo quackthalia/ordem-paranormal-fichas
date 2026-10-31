@@ -36,18 +36,20 @@ export const IdentidadeScreen: React.FC = () => {
 
   const handleFinalizar = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (salvando) return;
+    if (salvando || !nomePersonagem.trim()) return;
     setSalvando(true);
     try {
       await finalizarCriacaoAgente({
-        nomePersonagem,
-        nomeJogador,
+        nomePersonagem: nomePersonagem.trim(),
+        nomeJogador: nomeJogador.trim(),
         fotoPersonagem,
       });
     } finally {
       setSalvando(false);
     }
   };
+
+  const nomeValido = Boolean(nomePersonagem.trim());
 
   const origemNome = origensHook.origemSelecionada?.Nome || 'Não selecionada';
   const temFoto = Boolean(fotoPersonagem && fotoPersonagem.trim() !== '');
@@ -228,8 +230,9 @@ export const IdentidadeScreen: React.FC = () => {
 
           <button
             type="submit"
-            disabled={salvando}
-            className="rounded-lg bg-green-800 px-8 py-3.5 font-bold uppercase tracking-wider text-zinc-100 shadow transition-all duration-200 hover:bg-green-700 hover:shadow-lg hover:shadow-green-950/30 active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+            disabled={salvando || !nomeValido}
+            title={!nomeValido ? 'Informe o nome do personagem para finalizar' : undefined}
+            className="rounded-lg bg-green-800 px-8 py-3.5 font-bold uppercase tracking-wider text-zinc-100 shadow transition-all duration-200 hover:bg-green-700 hover:shadow-lg hover:shadow-green-950/30 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-500 disabled:border disabled:border-zinc-700 disabled:shadow-none disabled:hover:bg-zinc-800 disabled:active:scale-100 cursor-pointer"
           >
             {salvando ? 'Salvando...' : 'Finalizar e Abrir Ficha'}
           </button>

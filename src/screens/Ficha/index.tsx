@@ -446,7 +446,8 @@ export const FichaScreen: React.FC = () => {
 
   return (
     <div className="relative w-full min-h-screen flex flex-col overflow-x-clip">
-      <MatrixBackground afinidade={afinidade} />
+      {/* Animação de fundo mantida no código, porém desativada */}
+      {/* <MatrixBackground afinidade={afinidade} active={false} /> */}
       <div className="relative z-10 mx-auto flex w-full max-w-[1600px] flex-col p-4 md:p-6">
         <div className="flex w-full justify-between gap-6 xl:gap-10">
         

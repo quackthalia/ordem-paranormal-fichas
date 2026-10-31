@@ -182,7 +182,10 @@ const Coluna = React.memo(({ altura, afinidade }: { altura: number, afinidade?: 
   );
 });
 
-export const MatrixBackground = React.memo(({ afinidade }: { afinidade?: string | null }) => {
+export const MatrixBackground = React.memo(({ afinidade, active = false }: { afinidade?: string | null; active?: boolean }) => {
+  // Desativado a pedido: mantém todo o código e lógica intactos, mas não renderiza na tela
+  if (!active) return null;
+
   const isMorte = afinidade === 'Morte';
   const isSangue = afinidade === 'Sangue';
   const isEnergia = afinidade === 'Energia';

@@ -1,4 +1,4 @@
-import type { ItemAmaldicoadoInventario } from '../types';
+import type { ItemAmaldicoadoInventario, ItemGeralInventario } from '../types';
 
 export interface VestimentasBonus {
   pv: number;
@@ -10,14 +10,61 @@ export interface VestimentasBonus {
   vulnerabilidadesExtras: string[];
 }
 
+/**
+ * Bônus de perícia dos itens gerais (Vestimenta, Amuleto Sagrado e Utensílio).
+ * - Vestimenta e Amuleto Sagrado só contam se estiverem equipados.
+ * - O bônus é +2 (ou +5 se a perícia estiver marcada com * pela modificação Aprimorado).
+ * - As perícias vêm do nome do item, ex.: "Vestimenta (Atletismo)" ou "Utensílio (Ciências*, Tecnologia)".
+ * - O Amuleto Sagrado dá +2 em Religião e Vontade por padrão.
+ */
+export function calcularBonusPericiasItensGerais(
+  itensInventario: ItemGeralInventario[]
+): Record<string, number> {
+  const total: Record<string, number> = {};
+
+  for (const inv of itensInventario || []) {
+    const nome = String(inv.item.Nome_Item || '');
+    const nomeLower = nome.toLowerCase();
+    const isAmuleto = nomeLower.includes('amuleto sagrado');
+    const isVestimenta = nomeLower.includes('vestimenta');
+    const isUtensilio = nomeLower.includes('utensílio') || nomeLower.includes('utensilio');
+    if (!isAmuleto && !isVestimenta && !isUtensilio) continue;
+    if ((isAmuleto || isVestimenta) && !inv.equipado) continue;
+
+    const doItem: Record<string, number> = {};
+    if (isAmuleto) {
+      doItem['Religião'] = 2;
+      doItem['Vontade'] = 2;
+    }
+
+    const match = nome.match(/\((.*?)\)/);
+    if (match) {
+      match[1].split(',').forEach(parte => {
+        const aprimorada = parte.includes('*');
+        const pericia = parte.replace('*', '').trim();
+        if (!pericia) return;
+        const valor = aprimorada ? 5 : 2;
+        doItem[pericia] = Math.max(doItem[pericia] || 0, valor);
+      });
+    }
+
+    Object.entries(doItem).forEach(([pericia, valor]) => {
+      total[pericia] = (total[pericia] || 0) + valor;
+    });
+  }
+
+  return total;
+}
+
 export function calcularBonusVestimentas(
-  itensAmaldicoadosInventario: ItemAmaldicoadoInventario[]
+  itensAmaldicoadosInventario: ItemAmaldicoadoInventario[],
+  itensGeraisInventario: ItemGeralInventario[] = []
 ): VestimentasBonus {
   let pv = 0;
   let pe = 0;
   let defesa = 0;
   let deslocamento = 0;
-  const pericias: Record<string, number> = {};
+  const pericias: Record<string, number> = { ...calcularBonusPericiasItensGerais(itensGeraisInventario) };
   const resistenciasExtras: string[] = [];
   const vulnerabilidadesExtras: string[] = [];
 

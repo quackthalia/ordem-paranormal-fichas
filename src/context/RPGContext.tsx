@@ -787,8 +787,8 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const itensAmaldicoadosHook = useItensAmaldicoados();
 
   const bonusVestimentas = useMemo(() => {
-    return calcularBonusVestimentas(itensAmaldicoadosHook.itensAmaldicoadosInventario);
-  }, [itensAmaldicoadosHook.itensAmaldicoadosInventario]);
+    return calcularBonusVestimentas(itensAmaldicoadosHook.itensAmaldicoadosInventario, itensHook.itensInventario);
+  }, [itensAmaldicoadosHook.itensAmaldicoadosInventario, itensHook.itensInventario]);
 
   const bonusMaldicoes = useMemo(() => {
     return calcularBonusMaldicoes(armasHook.armasInventario, protecoesHook.protecoesInventario, itensHook.itensInventario, municoesHook.municoesInventario, maldicoesHook.maldicoes);

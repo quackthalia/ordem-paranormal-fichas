@@ -428,7 +428,7 @@ export const FichaScreen: React.FC = () => {
     }
 
     if (temGraduado40 && isInventarioLoaded) {
-      const grimorioItem = itensHook.itensInventario.find((i) => i.item.Nome_Item === 'Grimório Ritualístico');
+      const grimorioItem = itensHook.itensInventario.find((i) => Number(i.item.Codigo_Item) === 9999 || (i.item.Nome_Item || '').toLowerCase().includes('grimório') || (i.item.Nome_Item || '').toLowerCase().includes('grimorio'));
       if (!grimorioItem) {
          itensHook.adicionarItem({
            Codigo_Item: 9999,

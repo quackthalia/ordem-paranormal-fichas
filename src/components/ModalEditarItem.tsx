@@ -166,6 +166,20 @@ export function ModalEditarItem({
         return cat.includes('arma') || cat.includes('corpo a corpo');
       });
     }
+
+    const isGrimorio = Number(item.item.Codigo_Item) === 9999 || 
+      (item.item.Nome_Item || '').toLowerCase().includes('grimório') || 
+      (item.item.Nome_Item || '').toLowerCase().includes('grimorio') || 
+      nome.toLowerCase().includes('grimório') || 
+      nome.toLowerCase().includes('grimorio');
+
+    if (isGrimorio) {
+      return maldicoesHook.maldicoes.filter(m => {
+        const cat = m.Categoria_Mald.trim().toLowerCase();
+        return cat.includes('vestiment') || cat.includes('utens') || cat.includes('acess');
+      });
+    }
+
     const grupoLower = (grupo || '').toLowerCase().trim();
     return maldicoesHook.maldicoes.filter(m => {
       const cat = m.Categoria_Mald.trim().toLowerCase();
@@ -249,6 +263,12 @@ export function ModalEditarItem({
   };
 
   const getOpcoesModificacoes = () => {
+    const isGrimorio = Number(item.item.Codigo_Item) === 9999 || 
+      (item.item.Nome_Item || '').toLowerCase().includes('grimório') || 
+      (item.item.Nome_Item || '').toLowerCase().includes('grimorio') || 
+      nome.toLowerCase().includes('grimório') || 
+      nome.toLowerCase().includes('grimorio');
+
     return modificacoesHook.modificacoes.filter(m => {
       const nomeMod = m.Nome_Modif.trim().toLowerCase();
       
@@ -285,7 +305,7 @@ export function ModalEditarItem({
       if ((cat.includes('explosivo') || cat.includes('granada')) && grupoLower.includes('explosivo')) return true;
       if (cat.includes('operacional') && grupoLower.includes('operacional')) return true;
       if (cat.includes('paranormal') && grupoLower.includes('paranormal')) return true;
-      if (cat.includes('acessório') && grupoLower.includes('acessório')) return true;
+      if (cat.includes('acessório') && (grupoLower.includes('acessório') || isGrimorio)) return true;
       if (cat.includes('medicamento') && grupoLower.includes('medicamento')) return true;
       
       return false;

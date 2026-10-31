@@ -42,7 +42,7 @@ export const FichaScreen: React.FC = () => {
     const effectiveNex = regras["nex_experiencia"] ? nivel * 5 : nex;
 
   useEffect(() => {
-    const temConduite99 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 11 && (regras['nex_experiencia'] ? nivel >= 20 : effectiveNex >= 99)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 11 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
+    const temConduite99 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 11 && (regras['nex_experiencia'] ? nivel >= 20 : effectiveNex >= 99));
     const jaTemCanalizarMedo = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_conduite' || r.codigo_ritual === 10);
 
     if (temConduite99 && !jaTemCanalizarMedo) {
@@ -60,7 +60,7 @@ export const FichaScreen: React.FC = () => {
       rituaisHook.esquecerRitual('trilha_conduite');
     }
 
-    const temFlagelador99 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 12 && (regras['nex_experiencia'] ? nivel >= 20 : effectiveNex >= 99)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 12 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
+    const temFlagelador99 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 12 && (regras['nex_experiencia'] ? nivel >= 20 : effectiveNex >= 99));
     const jaTemMedoTangivel = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_flagelador' || r.codigo_ritual === 53);
 
     if (temFlagelador99 && !jaTemMedoTangivel) {
@@ -79,7 +79,7 @@ export const FichaScreen: React.FC = () => {
     }
 
     // TRILHA 13: GRADUADO
-    const temGraduado99 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 13 && (regras['nex_experiencia'] ? nivel >= 20 : effectiveNex >= 99)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 13 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
+    const temGraduado99 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 13 && (regras['nex_experiencia'] ? nivel >= 20 : effectiveNex >= 99));
     const jaTemConhecendoMedo = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_graduado' || r.codigo_ritual === 17);
 
     if (temGraduado99 && !jaTemConhecendoMedo) {
@@ -100,7 +100,7 @@ export const FichaScreen: React.FC = () => {
     const temGraduado40 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 13 && (regras['nex_experiencia'] ? nivel >= 8 : effectiveNex >= 40));
 
     // TRILHA 14: INTUITIVO
-    const temIntuitivo99 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 14 && (regras['nex_experiencia'] ? nivel >= 20 : effectiveNex >= 99)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 14 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
+    const temIntuitivo99 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 14 && (regras['nex_experiencia'] ? nivel >= 20 : effectiveNex >= 99));
     const jaTemPresencaMedo = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_intuitivo' || r.codigo_ritual === 64);
 
     if (temIntuitivo99 && !jaTemPresencaMedo) {
@@ -170,7 +170,7 @@ export const FichaScreen: React.FC = () => {
       }
     }
 
-    const temLamina99 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 20 : effectiveNex >= 99)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
+    const temLamina99 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 20 : effectiveNex >= 99));
     const jaTemLaminaMedo = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_lamina_paranormal_99' || r.codigo_ritual === 49);
 
     if (temLamina99 && !jaTemLaminaMedo) {

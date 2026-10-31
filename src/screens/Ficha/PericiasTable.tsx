@@ -184,7 +184,7 @@ export const PericiasTable: React.FC = React.memo(() => {
   
   const effectiveNex = regras["nex_experiencia"] ? nivel * 5 : nex;
   const temOperacoesEspeciais = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 4 && effectiveNex >= 10) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 4 && effectiveNex >= 50);
-  const temGatuno = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 7 && effectiveNex >= 40) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 7 && effectiveNex >= 50);
+  const temGatuno = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 7 && effectiveNex >= 40);
   
 
   

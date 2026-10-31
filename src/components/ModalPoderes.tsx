@@ -357,17 +357,12 @@ export const ModalPoderes: React.FC = () => {
       if (nex >= 99 && t.Nome_Habilidade_99) poderesArray.push({ nome: t.Nome_Habilidade_99.toLowerCase() });
     }
 
-    let nexContexto = nex;
-    let nivelContexto = nivel;
-    if (typeof nexModalAberto === 'number') {
-      if (regras['nex_experiencia'] && nexModalAberto <= 20 && nexModalAberto > 0) {
-        nexContexto = nexModalAberto === 20 ? 99 : nexModalAberto * 5;
-        nivelContexto = nexModalAberto;
-      } else {
-        nexContexto = nexModalAberto;
-        nivelContexto = nexModalAberto === 99 ? 20 : Math.floor(nexModalAberto / 5);
-      }
-    }
+    // Pré-requisitos de nível/NEX usam o nível ATUAL do personagem (não o do slot aberto),
+    // para que quem já está no nível 20 consiga escolher poderes avançados em qualquer slot livre.
+    const nivelContexto = nivel;
+    const nexContexto = regras['nex_experiencia']
+      ? (nivel >= 20 ? 99 : nivel * 5)
+      : nex;
 
     return {
       atributos,

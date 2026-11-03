@@ -222,6 +222,7 @@ const AbasPanelInner: React.FC = () => {
   const [modalPoderOutraOrigemAberto, setModalPoderOutraOrigemAberto] = React.useState(false);
   const [categoriaDiletante, setCategoriaDiletante] = React.useState<'combate' | 'utilidade' | 'gerais'>('gerais');
   const [modalTrilhaExtraAberto, setModalTrilhaExtraAberto] = React.useState(false);
+  const [slotDominarAtivo, setSlotDominarAtivo] = React.useState<string>('extra_regra37');
   const [modalTrilhaPossuido65Aberto, setModalTrilhaPossuido65Aberto] = React.useState(false);
   const [filtroRituais, setFiltroRituais] = React.useState('');
   const [subAbaRituais, setSubAbaRituais] = React.useState<'rituais' | 'grimorio'>('rituais');
@@ -463,6 +464,46 @@ const AbasPanelInner: React.FC = () => {
           categoria: 'trilha',
         });
       }
+    }
+
+    // 1.55 Dominar Habilidade Ritualística (Trilhas Aprendidas)
+    const dominarSlots = Object.entries(poderesEscolhidos).filter(([k, v]) => 
+      v.codigoRegra === 37 || v.nome?.trim().toLowerCase() === 'dominar habilidade ritualística'
+    );
+    if (dominarSlots.length > 0) {
+      dominarSlots.forEach(([slotKey], idx) => {
+        const extraKey = idx === 0 
+          ? (poderesEscolhidos[`extra_regra37_${slotKey}`] ? `extra_regra37_${slotKey}` : (poderesEscolhidos['extra_regra37'] ? 'extra_regra37' : `extra_regra37_${slotKey}`))
+          : `extra_regra37_${slotKey}`;
+        const usouRegra37 = poderesEscolhidos[extraKey];
+        if (usouRegra37) {
+          lista.push({ 
+            id: `escolha_${extraKey}`, 
+            nome: usouRegra37.nome, 
+            descricao: usouRegra37.descricao, 
+            tipo: 'Dominar Habilidade Ritualística', 
+            categoria: 'trilha', 
+            fonte: usouRegra37.fonte, 
+            preRequisitos: usouRegra37.preRequisitos, 
+            elemento: usouRegra37.elemento, 
+            afinidade: usouRegra37.afinidade,
+            isDominarTrilha: true,
+            slotDominarKey: extraKey,
+          });
+        } else {
+          lista.push({ 
+            id: `escolha_${extraKey}`, 
+            nome: 'Escolher Poder de Trilha', 
+            descricao: 'Clique no "+" para abrir a lista e selecionar sua habilidade ritualística.', 
+            tipo: 'Dominar Habilidade Ritualística', 
+            isSlotVazio: true, 
+            nexDoSlot: 0, 
+            categoria: 'trilha',
+            isDominarTrilha: true,
+            slotDominarKey: extraKey,
+          });
+        }
+      });
     }
 
     // 1.6 Poder de Trilha Automático (Monstruoso 75% -> Poder 187)
@@ -756,7 +797,7 @@ const AbasPanelInner: React.FC = () => {
 
     // 5. Poderes Extras
     Object.keys(poderesEscolhidos).forEach(key => {
-      if (String(key).startsWith('extra_') && key !== 'extra_regra1' && key !== 'extra_regra31' && key !== 'extra_regra32' && key !== 'extra_regra37' && key !== 'extra_regra39') {
+      if (String(key).startsWith('extra_') && key !== 'extra_regra1' && key !== 'extra_regra31' && key !== 'extra_regra32' && !String(key).startsWith('extra_regra37') && key !== 'extra_regra39') {
         const escolhido = poderesEscolhidos[key];
         const isAprenderRitual = escolhido.nome.toLowerCase().startsWith('aprender ritual (');
         const isResistir = escolhido.nome.toLowerCase().startsWith('resistir a ');
@@ -938,16 +979,7 @@ const AbasPanelInner: React.FC = () => {
         }
       }
 
-      // --- REGRAS 37 e 39 (Poderes Extras) ---
-      if (regrasAutomaticasAtivas.has(37)) {
-        const extraKey = 'extra_regra37';
-        const usouRegra37 = poderesEscolhidos[extraKey];
-        if (usouRegra37) {
-           lista.push({ id: `escolha_${extraKey}`, nome: usouRegra37.nome, descricao: usouRegra37.descricao, tipo: 'Dominar Habilidade Ritualística', categoria: 'trilha', fonte: usouRegra37.fonte, preRequisitos: usouRegra37.preRequisitos, elemento: usouRegra37.elemento, afinidade: usouRegra37.afinidade });
-        } else {
-           lista.push({ id: `escolha_${extraKey}`, nome: 'Escolher Poder de Trilha', descricao: 'Clique no "+" para abrir a lista e selecionar sua habilidade ritualística.', tipo: 'Dominar Habilidade Ritualística', isSlotVazio: true, nexDoSlot: 0, categoria: 'trilha' });
-        }
-      }
+      // --- REGRA 39 (Poder Paranormal Extra) ---
 
       
       // --- TRILHA SERVENTE 65% (Poder Paranormal do Elemento Primário) ---
@@ -1115,7 +1147,9 @@ const AbasPanelInner: React.FC = () => {
                             <div
                               key={hab.id}
                               onClick={() => {
-                                if (hab.id === 'escolha_extra_regra37') {
+                                if (hab.id.startsWith('escolha_extra_regra37')) {
+                                  const targetSlot = hab.slotDominarKey || hab.id.replace('escolha_', '');
+                                  setSlotDominarAtivo(targetSlot);
                                   setModalTrilhaExtraAberto(true);
                                 } else if (hab.categoria === 'trilha') {
                                   if (hab.id === 'escolha_versatilidade') {
@@ -1175,6 +1209,155 @@ const AbasPanelInner: React.FC = () => {
                               <div className="border-t border-zinc-800/50 px-4 py-3 text-left text-xs leading-relaxed text-zinc-500 transition group-hover:text-zinc-400">
                                 {hab.descricao}
                               </div>
+                            </div>
+                          );
+                        }
+
+                        if (hab.isDominarTrilha && !hab.isSlotVazio) {
+                          const slotKey = hab.slotDominarKey || hab.id.replace('escolha_', '');
+                          const isCardExpandido = habilidadesExpandidas.includes(`dominar_card_${slotKey}`);
+
+                          // Encontrar a trilha à qual essa habilidade pertence, se houver
+                          const trilhaOrigem = (trilhasHook.trilhas || []).find(t => 
+                            t.Nome_Habilidade_10?.trim().toLowerCase() === hab.nome?.trim().toLowerCase() ||
+                            t.Nome_Habilidade_40?.trim().toLowerCase() === hab.nome?.trim().toLowerCase() ||
+                            t.Nome_Habilidade_65?.trim().toLowerCase() === hab.nome?.trim().toLowerCase()
+                          );
+
+                          let nivelDetectado = 10;
+                          if (trilhaOrigem) {
+                            if (trilhaOrigem.Nome_Habilidade_40?.trim().toLowerCase() === hab.nome?.trim().toLowerCase()) nivelDetectado = 40;
+                            else if (trilhaOrigem.Nome_Habilidade_65?.trim().toLowerCase() === hab.nome?.trim().toLowerCase()) nivelDetectado = 65;
+                          }
+
+                          const uniqueHabSubId = `dominar_sub_${slotKey}`;
+                          const isSubExpandido = habilidadesExpandidas.includes(uniqueHabSubId);
+
+                          const rawAuto = trilhaOrigem ? (((trilhaOrigem as any)[`Auto_${nivelDetectado}`] || '').toString().toLowerCase().trim()) : '';
+                          const isAuto = rawAuto === 'sim' || rawAuto === 'auto';
+                          const isSemi = rawAuto === 'semi';
+
+                          return (
+                            <div key={hab.id} className="mb-2 overflow-hidden rounded-r border-l-4 border-green-800 bg-zinc-900/50">
+                              <div
+                                onClick={() => setHabilidadesExpandidas(prev => 
+                                  prev.includes(`dominar_card_${slotKey}`) 
+                                    ? prev.filter(x => x !== `dominar_card_${slotKey}`) 
+                                    : [...prev, `dominar_card_${slotKey}`]
+                                )}
+                                className="flex cursor-pointer flex-col bg-zinc-800/40 px-4 py-3 transition hover:bg-zinc-700/50"
+                              >
+                                <div className="flex items-center justify-between">
+                                  <div className="flex flex-col">
+                                    <span className="text-[0.65rem] font-bold uppercase tracking-widest text-zinc-500">
+                                      Dominar Habilidade Ritualística
+                                    </span>
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-bold text-zinc-200">
+                                        {trilhaOrigem ? trilhaOrigem.Nome_Trilha : 'Habilidade de Trilha'}
+                                      </span>
+                                      {trilhaOrigem?.nome_pericia && (
+                                        <span className="text-[10px] uppercase text-zinc-500">
+                                          ({trilhaOrigem.nome_pericia})
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <span className="text-xs text-zinc-600">
+                                    {isCardExpandido ? '▲' : '▼'}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <Collapse isOpen={isCardExpandido}>
+                                <div className="px-4 pb-4 pt-2 text-sm text-zinc-400">
+                                  {trilhaOrigem?.Descricao_Trilha && (
+                                    <div
+                                      className="mb-3 text-zinc-400 text-left leading-relaxed text-xs"
+                                      dangerouslySetInnerHTML={{ __html: formatarDescricao(trilhaOrigem.Descricao_Trilha) }}
+                                    />
+                                  )}
+
+                                  <h4 className="mb-2 text-xs font-bold uppercase tracking-wider text-green-400 border-b border-zinc-800 pb-1">
+                                    Habilidade Aprendida
+                                  </h4>
+
+                                  {/* Sub-bloquinho no estilo da trilha */}
+                                  <div className="mb-2 overflow-hidden rounded border border-zinc-800 bg-zinc-900/50">
+                                    <div
+                                      onClick={() => setHabilidadesExpandidas(prev => 
+                                        prev.includes(uniqueHabSubId) 
+                                          ? prev.filter(id => id !== uniqueHabSubId) 
+                                          : [...prev, uniqueHabSubId]
+                                      )}
+                                      className="flex cursor-pointer items-center justify-between px-3 py-2 transition hover:bg-zinc-800"
+                                    >
+                                      <div className="flex items-center gap-2 min-w-0">
+                                        <span className="font-bold text-zinc-200 text-xs truncate flex items-center gap-1.5">
+                                          <span className="inline-block rounded bg-zinc-800 px-1.5 py-px text-[9px] font-bold uppercase tracking-wider text-green-400">
+                                            {regras['nex_experiencia'] ? `NV ${calcularNivel(nivelDetectado)}` : `${nivelDetectado}%`}
+                                          </span>
+                                          <span className="text-zinc-200">{hab.nome}</span>
+                                        </span>
+                                        {(isAuto || isSemi) && (
+                                          <span
+                                            title={isAuto ? 'Totalmente automático' : 'Semi-automático'}
+                                            className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.55rem] font-bold uppercase tracking-wider ${
+                                              isAuto
+                                                ? 'bg-green-950/60 text-green-400 border border-green-800/50'
+                                                : 'bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
+                                            }`}
+                                          >
+                                            {isAuto ? 'Auto' : 'Semi'}
+                                          </span>
+                                        )}
+                                      </div>
+                                      <span className="text-xs text-zinc-600 shrink-0">
+                                        {isSubExpandido ? '▲' : '▼'}
+                                      </span>
+                                    </div>
+
+                                    <Collapse isOpen={isSubExpandido}>
+                                      <div className="px-3 pb-3 pt-1 text-xs text-zinc-400 leading-relaxed border-t border-zinc-800/40 bg-zinc-950/30">
+                                        <div dangerouslySetInnerHTML={{ __html: formatarDescricao(hab.descricao) }} />
+                                        {hab.preRequisitos && (
+                                          <div className="mt-2 text-[10px] text-zinc-500">
+                                            <strong className="text-zinc-400">Pré-requisitos:</strong> {hab.preRequisitos}
+                                          </div>
+                                        )}
+                                      </div>
+                                    </Collapse>
+                                  </div>
+
+                                  {hab.fonte && (
+                                    <div className="mt-2 flex justify-end">
+                                      <span className="text-[10px] uppercase tracking-wider text-zinc-600">Fonte: {hab.fonte}</span>
+                                    </div>
+                                  )}
+
+                                  <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-zinc-800/50">
+                                    <button 
+                                      onClick={(e) => { 
+                                        e.stopPropagation(); 
+                                        setSlotDominarAtivo(slotKey);
+                                        setModalTrilhaExtraAberto(true); 
+                                      }}
+                                      className="text-xs px-3 py-1.5 rounded bg-zinc-900 border border-zinc-700 hover:border-yellow-700 hover:bg-yellow-900/20 text-zinc-300 hover:text-yellow-400 transition-colors"
+                                    >
+                                      Trocar Habilidade
+                                    </button>
+                                    <button 
+                                      onClick={(e) => { 
+                                        e.stopPropagation(); 
+                                        removerPoder(slotKey); 
+                                      }}
+                                      className="text-xs text-green-500 hover:text-green-400 bg-green-950/30 hover:bg-green-900/50 px-3 py-1.5 rounded border border-green-900/50 transition-colors"
+                                    >
+                                      Remover
+                                    </button>
+                                  </div>
+                                </div>
+                              </Collapse>
                             </div>
                           );
                         }
@@ -4277,6 +4460,39 @@ return (
           isOpen={true}
           onClose={() => setModalTrilhaExtraAberto(false)}
           nexAtual={effectiveNex}
+          habilidadesJaAdquiridas={(() => {
+            const list: { nome: string; trilhaCodigo?: number; nivelHab?: number }[] = [];
+            // Versatilidade
+            if (trilhasHook.versatilidadeSelecionada) {
+              list.push({
+                nome: trilhasHook.versatilidadeSelecionada.Nome_Habilidade_10,
+                trilhaCodigo: trilhasHook.versatilidadeSelecionada.Codigo_Trilha,
+                nivelHab: 10
+              });
+            }
+            // Slots de dominar já preenchidos (exceto o próprio que está sendo editado/escolhido)
+            Object.entries(poderesEscolhidos).forEach(([k, v]) => {
+              if (k.startsWith('extra_regra37') && k !== slotDominarAtivo && v.nome) {
+                // Descobrir qual trilha e nível esse poder pertence
+                const tMatch = (trilhasHook.trilhas || []).find(t => 
+                  t.Nome_Habilidade_10?.trim().toLowerCase() === v.nome?.trim().toLowerCase() ||
+                  t.Nome_Habilidade_40?.trim().toLowerCase() === v.nome?.trim().toLowerCase() ||
+                  t.Nome_Habilidade_65?.trim().toLowerCase() === v.nome?.trim().toLowerCase()
+                );
+                let lvl = 10;
+                if (tMatch) {
+                  if (tMatch.Nome_Habilidade_40?.trim().toLowerCase() === v.nome?.trim().toLowerCase()) lvl = 40;
+                  else if (tMatch.Nome_Habilidade_65?.trim().toLowerCase() === v.nome?.trim().toLowerCase()) lvl = 65;
+                }
+                list.push({
+                  nome: v.nome,
+                  trilhaCodigo: tMatch?.Codigo_Trilha,
+                  nivelHab: lvl
+                });
+              }
+            });
+            return list;
+          })()}
           onSelect={(habilidade) => {
             poderesHook.escolherPoderExtra(
               {
@@ -4298,7 +4514,7 @@ return (
               } as any,
               undefined,
               undefined,
-              'extra_regra37'
+              slotDominarAtivo || 'extra_regra37'
             );
             setModalTrilhaExtraAberto(false);
           }}

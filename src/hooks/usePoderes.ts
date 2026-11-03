@@ -336,6 +336,7 @@ export function usePoderesFiltrados(
 
       if (nomeBase === 'Guardião da Tropa') return count < 2;
       if (nomeBase === 'Recuperação Flagelante') return count < 3;
+      if (nomeBase === 'Dominar Habilidade Ritualística' || (p as Poder).Codigo_Regra === 37) return count < 3;
       if (['Transcender', 'Foco em Perícia', '<Habilidade> Aprimorada'].includes(nomeBase)) return true;
       if (nomeBase === 'Aprender Ritual') {
         const limit = Math.max(0, intelecto);

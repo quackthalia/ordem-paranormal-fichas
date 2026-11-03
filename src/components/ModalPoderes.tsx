@@ -772,10 +772,8 @@ export const ModalPoderes: React.FC = () => {
                     );
                   }}
                   onEscolher={(elem, periciaId) => {
-                    let categoria: 'utilidade' | 'combate' | 'gerais' | 'paranormais' | 'trilha' = 'utilidade';
+                    let categoria: 'utilidade' | 'combate' | 'gerais' | 'paranormais' | 'trilha' = tipoModalPoderes === 'combate' ? 'combate' : 'utilidade';
                     if (abaModalPoderes === 'combate') categoria = 'combate';
-                    else if (abaModalPoderes === 'gerais') categoria = 'gerais';
-                    else if (abaModalPoderes === 'paranormais') categoria = 'paranormais';
                     else if (abaModalPoderes === 'paranormais') categoria = 'paranormais';
                     
                     const nexEscolhido = nexModalAberto!;

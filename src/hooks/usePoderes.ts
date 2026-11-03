@@ -215,7 +215,7 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
     const isParanormal = 'Elemento' in pp || 'Afinidade' in pp;
     const isTrilha = (poder as Poder).Tipo?.toLowerCase() === 'trilha';
     const catFinal: 'utilidade' | 'combate' | 'gerais' | 'paranormais' | 'trilha' = 
-      isParanormal ? 'paranormais' : (isTrilha ? 'trilha' : ((poder as Poder).Tipo?.toLowerCase() === 'geral' ? 'gerais' : 'utilidade'));
+      isParanormal ? 'paranormais' : (isTrilha ? 'trilha' : 'utilidade');
 
     const uniqueId = customId || `extra_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
     

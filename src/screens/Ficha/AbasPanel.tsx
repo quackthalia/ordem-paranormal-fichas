@@ -656,8 +656,6 @@ const AbasPanelInner: React.FC = () => {
           let categoria: CategoriaHabilidade;
           if (pp) {
             categoria = 'paranormais';
-          } else if (escolhido.categoria === 'gerais') {
-            categoria = 'gerais';
           } else {
             categoria = 'utilidade';
           }
@@ -719,8 +717,6 @@ const AbasPanelInner: React.FC = () => {
           let categoria: CategoriaHabilidade;
           if (pp) {
             categoria = 'paranormais';
-          } else if (escolhido.categoria === 'gerais') {
-            categoria = 'gerais';
           } else {
             categoria = 'combate';
           }
@@ -780,8 +776,8 @@ const AbasPanelInner: React.FC = () => {
         let categoria: CategoriaHabilidade;
         if (pp) {
           categoria = 'paranormais';
-        } else if (escolhido.categoria === 'gerais') {
-          categoria = 'gerais';
+        } else if (escolhido.categoria === 'combate') {
+          categoria = 'combate';
         } else {
           categoria = 'utilidade';
         }
@@ -1040,7 +1036,7 @@ const AbasPanelInner: React.FC = () => {
     ))
   );
 
-  const ordemCategorias: (CategoriaHabilidade | 'trilha')[] = ['origem', 'trilha', 'classe', 'utilidade', 'combate', 'paranormais', 'gerais'];
+  const ordemCategorias: (CategoriaHabilidade | 'trilha')[] = ['origem', 'trilha', 'classe', 'utilidade', 'combate', 'paranormais'];
   const rotuloCategoria: Record<CategoriaHabilidade | 'trilha', string> = {
     origem: 'Poder de Origem',
     trilha: 'Trilha da Classe',

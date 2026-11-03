@@ -548,10 +548,18 @@ export function usePericias(
 
         if (nome === 'Profissão' && campo === 'treino') {
           const novoTreinoNum = Number(valor);
-          setProfissoes(pList => {
-            if (pList.length === 0) return pList;
-            return pList.map((p, i) => i === 0 ? { ...p, treino: novoTreinoNum } : p);
-          });
+          if (novoTreinoNum === 0) {
+            // Se destreinar a profissão geral (treino = 0), remove todas as profissões normais
+            // Preserva apenas profissões vindas de trilhas se houver
+            setProfissoes(pList => pList.filter(p => (p as any).origem === 'trilha' || (p as any).origem === 'trilha65'));
+          } else {
+            setProfissoes(pList => {
+              if (pList.length === 0) {
+                return [{ nome: '', treino: novoTreinoNum, outros: 0 }];
+              }
+              return pList.map((p, i) => i === 0 ? { ...p, treino: novoTreinoNum } : p);
+            });
+          }
         }
 
         return {

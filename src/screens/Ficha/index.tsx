@@ -537,11 +537,13 @@ const AtributosFicha = React.memo(function AtributosFicha() {
                 }
                 setAtributos({ ...atributos, [nome]: baseDesejada });
               } else {
-                // Modo Livre: não mexe nos pontos da base, adiciona direto como bônus!
+                // Modo Livre: permite alterar diretamente o valor base do atributo livremente (sem limite de cap ou pontos)
                 if (!isNaN(numValue)) {
-                   const diferencaSemBonus = atributosFinais[nome] - bonusAtributos[nome];
-                   const novoBonus = Math.max(0, numValue - diferencaSemBonus);
-                   setBonusAtributos({ ...bonusAtributos, [nome]: novoBonus });
+                   const baseDesejada = Math.max(0, numValue - diferenca);
+                   setAtributos({ ...atributos, [nome]: baseDesejada });
+                   if (bonusAtributos[nome] !== 0) {
+                     setBonusAtributos({ ...bonusAtributos, [nome]: 0 });
+                   }
                 }
               }
             }}

@@ -24,7 +24,7 @@ const BORDA_TREINO: Record<number, string> = {
 
 
 
-const ProfissaoRow = React.memo(({ prof, idx, editingProfIndex, setEditingProfIndex, setProfissoes, regrasAtivas, limites, totais, nivel }) => {
+const ProfissaoRow = React.memo(({ prof, idx, editingProfIndex, setEditingProfIndex, setProfissoes, regrasAtivas, limites, totais, nivel, onMudarTreinoProfissaoBase }) => {
   const [mounted, setMounted] = React.useState(false);
   const [closing, setClosing] = React.useState(false);
   const [localNome, setLocalNome] = React.useState(prof.nome || '');
@@ -107,12 +107,18 @@ const ProfissaoRow = React.memo(({ prof, idx, editingProfIndex, setEditingProfIn
             value={String(prof.treino)}
             onChange={val => {
               const novoValor = Number(val);
+              if (idx === 0) {
+                // A 1ª profissão é vinculada à linha principal de Profissão
+                onMudarTreinoProfissaoBase?.(novoValor);
+                return;
+              }
+
               const isTrilhaProf = (prof as any).origem === 'trilha' || (prof as any).origem === 'trilha65';
 
               if (regrasAtivas) {
                 if (isTrilhaProf && novoValor < 5) return;
-                if (novoValor === 10 && nivel < 3) return;
-                if (novoValor === 15 && nivel < 7) return;
+                if (novoValor === 10 && nivel < 7) return;
+                if (novoValor === 15 && nivel < 14) return;
                 
                 const currentTreino = prof.treino;
                 let simTreinadas = totais.totalTreinadasUsadas;
@@ -443,6 +449,9 @@ export const PericiasTable: React.FC = React.memo(() => {
                                   limites={limites}
                                   totais={totais}
                                   nivel={nivel}
+                                  onMudarTreinoProfissaoBase={(novoTreino) => {
+                                    handleMudarPericia('Profissão', 'treino', novoTreino);
+                                  }}
                                 />
                               ))}
 

@@ -450,7 +450,7 @@ export function usePericias(
       // Ignora per�cias marcadas como 'isLivre' (Modo Livre)
       if (dados.isLivre) return;
 
-      if (nome === 'Profissão' && profissoes.length > 0) return;
+      // Profissão base contabilizada normalmente
 
       if (dados.treino >= 5 && !periciasGratis.includes(nome) && !veteranasGratis.includes(nome) && !expertsGratis.includes(nome)) {
         totalTreinadasUsadas += 1;
@@ -464,7 +464,8 @@ export function usePericias(
       }
     });
 
-    profissoes.forEach(prof => {
+    profissoes.forEach((prof, idx) => {
+      if (idx === 0) return; // A 1ª profissão é vinculada à linha principal de Profissão
       const isTrilhaProf = (prof as any).origem === 'trilha' || (prof as any).origem === 'trilha65';
       if (prof.treino >= 5 && !isTrilhaProf) totalTreinadasUsadas += 1;
       if (prof.treino === 10) totalUpgradesGastos += 1;
@@ -514,7 +515,7 @@ export function usePericias(
 
           Object.entries(simuladas).forEach(([n, d]) => {
             if (d.isLivre) return;
-            if (n === 'Profissão' && profissoes.length > 0) return;
+            // Profissão base contabilizada normalmente
             if (d.treino >= 5 && !periciasGratis.includes(n) && !veteranasGratis.includes(n) && !expertsGratis.includes(n)) simTreinadas += 1;
             if (d.treino === 10) {
               if (!veteranasGratis.includes(n) && !expertsGratis.includes(n)) simUpgrades += 1;
@@ -525,7 +526,8 @@ export function usePericias(
             }
           });
 
-          profissoes.forEach(prof => {
+          profissoes.forEach((prof, idx) => {
+            if (idx === 0) return;
             const isTrilhaProf = (prof as any).origem === 'trilha' || (prof as any).origem === 'trilha65';
             if (prof.treino >= 5 && !isTrilhaProf) simTreinadas += 1;
             if (prof.treino === 10) simUpgrades += 1;
@@ -542,6 +544,14 @@ export function usePericias(
             ...prev,
             [nome]: { ...periciaAtual, atributo: valor as AtributoKey },
           };
+        }
+
+        if (nome === 'Profissão' && campo === 'treino') {
+          const novoTreinoNum = Number(valor);
+          setProfissoes(pList => {
+            if (pList.length === 0) return pList;
+            return pList.map((p, i) => i === 0 ? { ...p, treino: novoTreinoNum } : p);
+          });
         }
 
         return {

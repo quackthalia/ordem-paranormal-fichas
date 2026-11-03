@@ -19,7 +19,10 @@ export interface UseInventarioReturn {
 
 const NIVEIS_CREDITO: LimiteCredito[] = ['Baixo', 'Médio', 'Alto', 'Ilimitado'];
 
-export function useInventario(codigoRegra?: number | null, grauProfissao: number = 0): UseInventarioReturn {
+export function useInventario(
+  codigoRegra?: number | null, 
+  grausProfissoes: number | number[] = 0
+): UseInventarioReturn {
   const [prestigio, setPrestigioState] = useState<number>(0);
   
   const [, setPatenteOverride] = useState<Patente | null>(null);
@@ -67,11 +70,14 @@ export function useInventario(codigoRegra?: number | null, grauProfissao: number
   const limitesItens = React.useMemo(() => {
     if (limitesItensOverride) return limitesItensOverride as [number, number, number, number];
     const lims = [...valoresBase.l] as [number, number, number, number];
-    if (grauProfissao >= 15) lims[2] += 1;
-    else if (grauProfissao >= 10) lims[1] += 1;
-    else if (grauProfissao >= 5) lims[0] += 1;
+    const listaGraus = Array.isArray(grausProfissoes) ? grausProfissoes : [grausProfissoes];
+    listaGraus.forEach(grau => {
+      if (grau >= 15) lims[2] += 1;
+      else if (grau >= 10) lims[1] += 1;
+      else if (grau >= 5) lims[0] += 1;
+    });
     return lims;
-  }, [limitesItensOverride, valoresBase.l, grauProfissao]);
+  }, [limitesItensOverride, valoresBase.l, grausProfissoes]);
 
   const setLimiteItemCategoria = useCallback((index: number, val: number) => {
     const novosLimites = [...limitesItens] as [number, number, number, number];

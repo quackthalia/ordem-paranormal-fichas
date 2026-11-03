@@ -1877,8 +1877,21 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     }
   }, [prof65, periciasHook.setProfissoes]);
 
-  const grauProfissao = periciasHook.pericias['Profissão']?.treino || 0;
-  const inventarioHook = useInventario(origensHook.origemSelecionada?.Codigo_Regra, grauProfissao);
+  const grausProfissoes = useMemo(() => {
+    const list: number[] = [];
+    const profBaseTreino = periciasHook.pericias['Profissão']?.treino || 0;
+    if (periciasHook.profissoes && periciasHook.profissoes.length > 0) {
+      periciasHook.profissoes.forEach((p, i) => {
+        const treinoProf = i === 0 ? Math.max(profBaseTreino, p.treino) : p.treino;
+        if (treinoProf >= 5) list.push(treinoProf);
+      });
+    } else if (profBaseTreino >= 5) {
+      list.push(profBaseTreino);
+    }
+    return list;
+  }, [periciasHook.pericias, periciasHook.profissoes]);
+
+  const inventarioHook = useInventario(origensHook.origemSelecionada?.Codigo_Regra, grausProfissoes);
 
   // ============================================================
   // LÓGICA DE ATRIBUTOS

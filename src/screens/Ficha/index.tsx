@@ -503,7 +503,50 @@ const AtributosFicha = React.memo(function AtributosFicha() {
   
   const capMaximo = capMaximoAtributo(nivel);
 
-  const renderAtributo = (nome, posClasses) => {
+  const handleMudarAtributo = (nome: AtributoKey, rawVal: string) => {
+    const diferenca = atributosFinais[nome] - atributos[nome];
+    const limpo = rawVal.trim();
+    if (limpo === '') {
+      const baseDesejada = 0;
+      setAtributos({ ...atributos, [nome]: baseDesejada });
+      if (bonusAtributos[nome] !== 0) {
+        setBonusAtributos({ ...bonusAtributos, [nome]: 0 });
+      }
+      return;
+    }
+    const numValue = Number(limpo);
+    if (isNaN(numValue)) return;
+
+    if (regrasAtivasAtributos) {
+      let baseDesejada = numValue - diferenca;
+      const valorAntigo = atributos[nome];
+      if (baseDesejada > valorAntigo) {
+        let cost = 0;
+        let current = valorAntigo;
+        while (current < baseDesejada && current < capMaximo) {
+          current++;
+          cost++;
+          if (cost > pontosRestantes) {
+            current--;
+            break;
+          }
+        }
+        baseDesejada = current;
+      } else {
+        if (baseDesejada < 0) baseDesejada = 0;
+      }
+      setAtributos({ ...atributos, [nome]: baseDesejada });
+    } else {
+      // Modo Livre: permite alterar diretamente o valor base do atributo livremente (sem limite de cap ou pontos)
+      const baseDesejada = Math.max(0, numValue - diferenca);
+      setAtributos({ ...atributos, [nome]: baseDesejada });
+      if (bonusAtributos[nome] !== 0) {
+        setBonusAtributos({ ...bonusAtributos, [nome]: 0 });
+      }
+    }
+  };
+
+  const renderAtributo = (nome: AtributoKey, posClasses: string) => {
     const bonusTrilhaVal = bonusTrilhasAtributos ? (bonusTrilhasAtributos[nome] || 0) : 0;
     const bonusMaldVal = bonusMaldicoes?.atributos?.[nome] || 0;
     const isGreen = atributosFinais[nome] > (atributos[nome] + bonusAtributos[nome] + bonusTrilhaVal + bonusMaldVal);
@@ -513,41 +556,11 @@ const AtributosFicha = React.memo(function AtributosFicha() {
           <input
             type="number"
             onKeyDown={bloquearLetras}
-            value={atributosFinais[nome]}
-            onChange={(e) => {
-              const diferenca = atributosFinais[nome] - atributos[nome];
-              let numValue = Number(e.target.value);
-              if (regrasAtivasAtributos) {
-                let baseDesejada = isNaN(numValue) ? atributos[nome] : numValue - diferenca;
-                const valorAntigo = atributos[nome];
-                if (baseDesejada > valorAntigo) {
-                   let cost = 0;
-                   let current = valorAntigo;
-                   while (current < baseDesejada && current < capMaximo) {
-                     current++;
-                     cost++;
-                     if (cost > pontosRestantes) {
-                       current--;
-                       break;
-                     }
-                   }
-                   baseDesejada = current;
-                } else {
-                   if (baseDesejada < 0) baseDesejada = 0;
-                }
-                setAtributos({ ...atributos, [nome]: baseDesejada });
-              } else {
-                // Modo Livre: permite alterar diretamente o valor base do atributo livremente (sem limite de cap ou pontos)
-                if (!isNaN(numValue)) {
-                   const baseDesejada = Math.max(0, numValue - diferenca);
-                   setAtributos({ ...atributos, [nome]: baseDesejada });
-                   if (bonusAtributos[nome] !== 0) {
-                     setBonusAtributos({ ...bonusAtributos, [nome]: 0 });
-                   }
-                }
-              }
-            }}
-            className={`relative z-0 w-16 bg-transparent text-center text-[2rem] font-black outline-none ${isGreen ? 'text-green-500' : 'text-white'}`}
+            onFocus={(e) => e.target.select()}
+            value={atributosFinais[nome] === 0 ? '' : atributosFinais[nome]}
+            placeholder="0"
+            onChange={(e) => handleMudarAtributo(nome, e.target.value)}
+            className={`relative z-0 w-16 bg-transparent text-center text-[2rem] font-black outline-none placeholder:text-zinc-600 ${isGreen ? 'text-green-500' : 'text-white'}`}
           />
       </div>
     );

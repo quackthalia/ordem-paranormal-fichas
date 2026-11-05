@@ -78,23 +78,42 @@ export function usePericias(
   }
 
   const todosPoderesComRegra = useMemo(() => {
-    const lista: { idSlot: string, codigoRegra: number, periciaPoder?: number | null, periciaEscolhidaNome?: string }[] = [];
+    const lista: { idSlot: string, codigoRegra: number, periciaPoder?: number | null, periciaEscolhidaNome?: string, nomePoder?: string }[] = [];
     if (origemSelecionada?.Codigo_Regra) {
       lista.push({
         idSlot: 'origem_poder',
         codigoRegra: origemSelecionada.Codigo_Regra,
-        periciaPoder: origemSelecionada.Pericia_Poder
+        periciaPoder: origemSelecionada.Pericia_Poder ?? origemSelecionada.pericia_regra9,
+        periciaEscolhidaNome: origemSelecionada.pericia_regra9 ? nomesPericias[origemSelecionada.pericia_regra9] : undefined,
+        nomePoder: origemSelecionada.Poder_Origem || origemSelecionada.Nome_Origem
       });
     }
     if (poderesEscolhidos) {
       Object.entries(poderesEscolhidos).forEach(([key, p]) => {
-        if (p.codigoRegra) {
-          lista.push({ idSlot: key, codigoRegra: p.codigoRegra, periciaPoder: p.periciaPoder, periciaEscolhidaNome: p.periciaEscolhidaNome });
+        let codRegra = p.codigoRegra;
+        let perPoder = p.periciaPoder;
+        const nomeLower = p.nome?.trim().toLowerCase() || '';
+        // Compatibilidade com fichas já salvas
+        if (nomeLower === 'muito sorrateiro' || p.codigo === 165) {
+          if (!codRegra) codRegra = 47;
+          if (!perPoder) perPoder = 11; // Furtividade
+        } else if (nomeLower === 'ossos de borracha' || p.codigo === 53) {
+          codRegra = p.comAfinidade ? 2602 : 2601;
+          if (!perPoder) perPoder = 1; // Acrobacia
+        }
+        if (codRegra) {
+          lista.push({
+            idSlot: key,
+            codigoRegra: codRegra,
+            periciaPoder: perPoder,
+            periciaEscolhidaNome: p.periciaEscolhidaNome,
+            nomePoder: p.nome
+          });
         }
       });
     }
     return lista;
-  }, [origemSelecionada, poderesEscolhidos]);
+  }, [origemSelecionada, poderesEscolhidos, nomesPericias]);
 
   // Avaliação dinâmica baseada nos poderes escolhidos e origem
   if (todosPoderesComRegra.length > 0 && Object.keys(pericias).length > 0) {
@@ -104,10 +123,12 @@ export function usePericias(
 
     todosPoderesComRegra.forEach(poder => {
       const { idSlot } = poder;
-      const eRegraTreino = [40, 41, 44, 45].includes(poder.codigoRegra);
-      if (eRegraTreino && poder.periciaPoder) {
+      const eRegraTreino = [40, 41, 44, 45, 68].includes(poder.codigoRegra);
+      if (eRegraTreino && (poder.periciaPoder || poder.periciaEscolhidaNome)) {
         if (!avaliouPericiaPoder[idSlot]) {
-          const nomePericiaRegra = nomesPericias[poder.periciaPoder];
+          const nomePericiaRegra = poder.periciaEscolhidaNome && pericias[poder.periciaEscolhidaNome]
+            ? poder.periciaEscolhidaNome
+            : (poder.periciaPoder ? nomesPericias[poder.periciaPoder] : undefined);
           if (nomePericiaRegra && pericias[nomePericiaRegra]) {
             const valorTreino = pericias[nomePericiaRegra].treino;
             const jaTinha = valorTreino >= 5 || periciasGratisBase.includes(nomePericiaRegra);
@@ -142,14 +163,16 @@ export function usePericias(
     }
     
     
-    // Regras 40, 41, 44 e 45 dão treinamento na perícia do poder se o usuário não era treinado
-    const regrasTreino = [40, 41, 44, 45];
+    // Regras 40, 41, 44, 45 e 68 (Autodidata) dão treinamento na perícia do poder se o usuário não era treinado
+    const regrasTreino = [40, 41, 44, 45, 68];
     if (regrasTreino.some(r => regrasAutomaticasAtivas?.has(r))) {
       todosPoderesComRegra.forEach(poder => {
         const { idSlot } = poder;
-        if (regrasTreino.includes(poder.codigoRegra) && poder.periciaPoder) {
+        if (regrasTreino.includes(poder.codigoRegra) && (poder.periciaPoder || poder.periciaEscolhidaNome)) {
           if (avaliouPericiaPoder[idSlot] && !jaTinhaPericiaPoder[idSlot]) {
-            const nome = nomesPericias[poder.periciaPoder];
+            const nome = poder.periciaEscolhidaNome && pericias[poder.periciaEscolhidaNome]
+              ? poder.periciaEscolhidaNome
+              : (poder.periciaPoder ? nomesPericias[poder.periciaPoder] : undefined);
             if (nome && !gratis.includes(nome)) gratis.push(nome);
           }
         }
@@ -157,22 +180,22 @@ export function usePericias(
     }
 
     return gratis;
-  }, [periciasGratisBase, regrasAutomaticasAtivas, jaTinhaProfissao33, todosPoderesComRegra, nomesPericias, avaliouPericiaPoder, jaTinhaPericiaPoder]);
+  }, [periciasGratisBase, regrasAutomaticasAtivas, jaTinhaProfissao33, todosPoderesComRegra, nomesPericias, pericias, avaliouPericiaPoder, jaTinhaPericiaPoder]);
 
-  // Bônus passivo para quem já tinha a perícia (Regras 40, 41, 44, 45) e Bônus de INT (Regra 44)
+  // Bônus passivo para quem já tinha a perícia (Regras 40, 41, 44, 45, 68) e Bônus de INT (Regra 44)
   // Regra 46 (+2 fixo na perícia do poder)
   // Regra 47 (+3 fixo na perícia do poder)
   const bonusRegra40 = useMemo(() => {
     const bonus: Record<string, number> = {};
     
     // Regras de treinamento/bônus para quem já tinha
-    const regrasTreino = [40, 41, 44, 45];
+    const regrasTreino = [40, 41, 44, 45, 68];
     // Regras de bônus fixo
-    const regrasBonusFixo = [46, 47, 49, 50, 52, 55, 56, 57, 58];
+    const regrasBonusFixo = [4, 9, 46, 47, 49, 50, 52, 55, 56, 57, 58, 2601, 2602];
     
     if (regrasTreino.some(r => regrasAutomaticasAtivas?.has(r)) || regrasBonusFixo.some(r => regrasAutomaticasAtivas?.has(r))) {
       todosPoderesComRegra.forEach(poder => {
-        const { idSlot, codigoRegra, periciaPoder, periciaEscolhidaNome } = poder;
+        const { idSlot, codigoRegra, periciaPoder, periciaEscolhidaNome, nomePoder } = poder;
         
         let idPericiaReal = periciaPoder || Number(periciaEscolhidaNome);
         
@@ -180,38 +203,47 @@ export function usePericias(
         if (codigoRegra === 52) {
           idPericiaReal = 10; // 10 é o ID de Fortitude
         }
+
+        const nomeDireto = periciaEscolhidaNome && pericias[periciaEscolhidaNome]
+          ? periciaEscolhidaNome
+          : (idPericiaReal ? nomesPericias[idPericiaReal] : undefined);
         
-        if (idPericiaReal) {
-          const nome = nomesPericias[idPericiaReal];
-          if (nome) {
-            let valorBonus = 0;
-            
-            // Regras 40, 41, 44, 45
-            if (regrasTreino.includes(codigoRegra)) {
-              if (avaliouPericiaPoder[idSlot] && jaTinhaPericiaPoder[idSlot]) {
-                valorBonus += 2;
-              }
-            }
-            
-            // Regra 46, 49 e 50 (+2 passivo)
-            if (codigoRegra === 46 || codigoRegra === 49 || codigoRegra === 50) {
+        if (nomeDireto) {
+          let valorBonus = 0;
+          
+          // Regras 40, 41, 44, 45, 68 (Autodidata)
+          if (regrasTreino.includes(codigoRegra)) {
+            if (avaliouPericiaPoder[idSlot] && jaTinhaPericiaPoder[idSlot]) {
               valorBonus += 2;
             }
-            
-            // Regra 47 (+3 passivo)
-            if (codigoRegra === 47) {
-              valorBonus += 3;
-            }
-            
-            // Regra 52 (+5 passivo em Fortitude)
-            if (codigoRegra === 52 && nome === 'Fortitude') {
-              valorBonus += 5;
-            }
-            
-            if (valorBonus > 0) {
-              bonus[nome] = (bonus[nome] || 0) + valorBonus;
-            }
           }
+          
+          // Regra 9 (Mutação), 46, 49, 50 e 2601/2602 (Ossos de Borracha) (+2 passivo)
+          if (codigoRegra === 9 || codigoRegra === 46 || codigoRegra === 49 || codigoRegra === 50 || codigoRegra === 2601 || codigoRegra === 2602) {
+            valorBonus += 2;
+          }
+          
+          // Regra 47 (+3 passivo)
+          if (codigoRegra === 47) {
+            valorBonus += 3;
+          }
+          
+          // Regra 52 (+5 passivo em Fortitude)
+          if (codigoRegra === 52 && nomeDireto === 'Fortitude') {
+            valorBonus += 5;
+          }
+          
+          if (valorBonus > 0) {
+            bonus[nomeDireto] = (bonus[nomeDireto] || 0) + valorBonus;
+          }
+        }
+
+        // Regra 4: Reflexos Defensivos e Precognição dão +2 em testes de resistência (Fortitude, Reflexos, Vontade)
+        // Patrulha (origem Policial) dá apenas +2 em Defesa
+        if (codigoRegra === 4 && idSlot !== 'origem_poder' && !nomePoder?.toLowerCase().includes('patrulha')) {
+          bonus['Fortitude'] = (bonus['Fortitude'] || 0) + 2;
+          bonus['Reflexos'] = (bonus['Reflexos'] || 0) + 2;
+          bonus['Vontade'] = (bonus['Vontade'] || 0) + 2;
         }
         
         // Regra 44 sempre dá +INT em Intuição, independentemente da perícia do poder
@@ -243,7 +275,7 @@ export function usePericias(
       });
     }
     return bonus;
-  }, [todosPoderesComRegra, regrasAutomaticasAtivas, nomesPericias, avaliouPericiaPoder, jaTinhaPericiaPoder, atributos.INT]);
+  }, [todosPoderesComRegra, regrasAutomaticasAtivas, nomesPericias, pericias, avaliouPericiaPoder, jaTinhaPericiaPoder, atributos.INT]);
 
   // Busca as perícias do banco
   useEffect(() => {
@@ -434,7 +466,6 @@ export function usePericias(
     if (codigoPerRegra === 2) extra = 2;
     if (codigoPerRegra === 4) extra = 5;
     if (codigoPerRegra === 5) extra = 3;
-    if (regrasAutomaticasAtivas?.has(9)) extra += 1;
     
     return {
       ...lim,

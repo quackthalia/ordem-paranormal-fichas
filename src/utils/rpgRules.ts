@@ -163,6 +163,11 @@ export function calcularStatusBase(
     peMax += nivel;
   }
 
+  // Regra 2401: Combatente Esforçado (+1 PE por nível de NEX)
+  if (temRegra(2401)) {
+    peMax += nivel;
+  }
+
   // Regra 45: +3 PE fixos
   if (temRegra(45)) {
     peMax += 3;

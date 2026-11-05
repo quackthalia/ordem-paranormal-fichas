@@ -264,11 +264,15 @@ function PoderCard({
     ...periciasDisponiveis.map(p => {
       const valPericia = contextoPrereq ? verificarPreRequisitos(poder as Poder, contextoPrereq, undefined, p.id) : { atende: true };
       const isFocoEmPericia = (poder as any).Codigo_Regra === 42;
+      const isAutodidata = (poder as any).Codigo_Regra === 68;
+      const isLutaOuPontaria = (isFocoEmPericia || isAutodidata) && (p.nome === 'Luta' || p.nome === 'Pontaria');
       const jaFocou = isFocoEmPericia && contextoPrereq ? Object.values(contextoPrereq.poderes).some(pe => pe.codigoRegra === 42 && pe.periciaEscolhidaNome === p.nome) : false;
-      const isDisabled = !valPericia.atende || jaFocou;
+      const jaAutodidata = isAutodidata && contextoPrereq ? Object.values(contextoPrereq.poderes).some(pe => pe.codigoRegra === 68 && pe.periciaEscolhidaNome === p.nome) : false;
+      const jaVetOuExp = isAutodidata && contextoPrereq ? ((contextoPrereq.pericias?.[p.nome]?.treino || 0) >= 10) : false;
+      const isDisabled = !valPericia.atende || jaFocou || jaAutodidata || isLutaOuPontaria || jaVetOuExp;
       return {
         value: String(p.id),
-        label: `${p.nome} ${jaFocou ? "(Já Escolhido)" : ""}`.trim(),
+        label: `${p.nome} ${(jaFocou || jaAutodidata) ? "(Já Escolhido)" : jaVetOuExp ? "(Já Veterano/Expert)" : ""}`.trim(),
         disabled: isDisabled
       };
     })
@@ -863,7 +867,7 @@ export const ModalPoderes: React.FC = () => {
 
               const nomeCustomizado = `${ritualModalAbertoPara.poder.Nome} (${ritualNome})`;
               
-              escolherPoder(nexEscolhido, ritualModalAbertoPara.poder, ritualModalAbertoPara.categoria, undefined, undefined, isDedo ? 'Dedo Decepado' : undefined, nomeCustomizado);
+              escolherPoder(nexEscolhido, ritualModalAbertoPara.poder, ritualModalAbertoPara.categoria, ritualNome, undefined, isDedo ? 'Dedo Decepado' : undefined, nomeCustomizado);
               if (isDedo) {
                 window.dispatchEvent(new CustomEvent('dedoDecepadoSelecionado', { detail: { poder: ritualModalAbertoPara.poder, elemento: ritualNome || ritualModalAbertoPara.poder.Elemento || 'Varia', poderId: nexEscolhido } }));
               }

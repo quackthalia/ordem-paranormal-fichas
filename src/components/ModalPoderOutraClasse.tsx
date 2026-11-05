@@ -267,10 +267,17 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
     { value: '', label: 'Escolher...' },
     ...periciasDisponiveis.map(p => {
       const valPericia = verificarPreRequisitos(poder as Poder, contextoPrereq, undefined, p.id);
+      const isFocoEmPericia = (poder as any).Codigo_Regra === 42;
+      const isAutodidata = (poder as any).Codigo_Regra === 68;
+      const isLutaOuPontaria = (isFocoEmPericia || isAutodidata) && (p.nome === 'Luta' || p.nome === 'Pontaria');
+      const jaFocou = isFocoEmPericia && contextoPrereq ? Object.values(contextoPrereq.poderes).some(pe => pe.codigoRegra === 42 && pe.periciaEscolhidaNome === p.nome) : false;
+      const jaAutodidata = isAutodidata && contextoPrereq ? Object.values(contextoPrereq.poderes).some(pe => pe.codigoRegra === 68 && pe.periciaEscolhidaNome === p.nome) : false;
+      const jaVetOuExp = isAutodidata && contextoPrereq ? ((contextoPrereq.pericias?.[p.nome]?.treino || 0) >= 10) : false;
+      const isDisabled = !valPericia.atende || jaFocou || jaAutodidata || isLutaOuPontaria || jaVetOuExp;
       return {
         value: String(p.id),
-        label: p.nome,
-        disabled: !valPericia.atende
+        label: `${p.nome} ${(jaFocou || jaAutodidata) ? "(Já Escolhido)" : jaVetOuExp ? "(Já Veterano/Expert)" : ""}`.trim(),
+        disabled: isDisabled
       };
     })
   ]}
@@ -385,7 +392,7 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
             const poder = poderesFiltrados.find(p => p.codigo_poder === escolhendoRitualId);
             if (poder) {
               const nomeCustomizado = `${poder.Nome} (${ritualNome})`;
-              poderesHook.escolherPoderExtra(poder, undefined, undefined, 'extra_regra31', undefined, nomeCustomizado);
+              poderesHook.escolherPoderExtra(poder, ritualNome, undefined, 'extra_regra31', undefined, nomeCustomizado);
             }
             setEscolhendoRitualId(null);
             onClose();

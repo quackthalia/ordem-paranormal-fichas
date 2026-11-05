@@ -36,7 +36,10 @@ export const FichaScreen: React.FC = () => {
     monstruosoElemento,
     regrasAutomaticasAtivas,
     temMonstruosoOcult65,
-    isMonstruosoOcultAtivo
+    isMonstruosoOcultAtivo,
+    temGraduado40,
+    temLamina10,
+    temIlusionista10
   } = useRPG();
 
     const effectiveNex = regras["nex_experiencia"] ? nivel * 5 : nex;
@@ -97,8 +100,6 @@ export const FichaScreen: React.FC = () => {
       rituaisHook.esquecerRitual('trilha_graduado');
     }
 
-    const temGraduado40 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 13 && (regras['nex_experiencia'] ? nivel >= 8 : effectiveNex >= 40));
-
     // TRILHA 14: INTUITIVO
     const temIntuitivo99 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 14 && (regras['nex_experiencia'] ? nivel >= 20 : effectiveNex >= 99));
     const jaTemPresencaMedo = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'trilha_intuitivo' || r.codigo_ritual === 64);
@@ -119,7 +120,6 @@ export const FichaScreen: React.FC = () => {
     }
 
     // TRILHA 15: LÂMINA PARANORMAL
-    const temLamina10 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
     const jaTemAmaldicoarArmaTrilha = (rituaisHook.rituaisAprendidos || []).find((r: any) => Number(r.codigo_ritual) === 3 && r.origem === 'trilha_lamina_paranormal');
     const jaTemAmaldicoarArmaNormal = (rituaisHook.rituaisAprendidos || []).find((r: any) => Number(r.codigo_ritual) === 3 && r.origem !== 'trilha_lamina_paranormal');
 
@@ -211,7 +211,6 @@ export const FichaScreen: React.FC = () => {
     }
 
     // TRILHA 29: ILUSIONISTA
-    const temIlusionista10 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 29 && (regras['nex_experiencia'] ? nivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 29 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
     const jaTemTecerIlusaoTrilha = (rituaisHook.rituaisAprendidos || []).find((r: any) => Number(r.codigo_ritual) === 70 && r.origem === 'trilha_ilusionista');
     const jaTemTecerIlusaoNormal = (rituaisHook.rituaisAprendidos || []).find((r: any) => Number(r.codigo_ritual) === 70 && r.origem !== 'trilha_ilusionista');
 
@@ -442,7 +441,7 @@ export const FichaScreen: React.FC = () => {
          itensHook.editarItem(grimorioItem.id, { Categoria_Item: '0' });
       }
     }
-  }, [trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, effectiveNex, nivel, regras, rituaisHook.rituais, rituaisHook.rituaisAprendidos, itensHook.itensInventario, poderesExtras, regrasAutomaticasAtivas]);
+  }, [trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, effectiveNex, nivel, regras, rituaisHook.rituais, rituaisHook.rituaisAprendidos, itensHook.itensInventario, poderesExtras, regrasAutomaticasAtivas, temGraduado40, temLamina10, temIlusionista10]);
 
   const afinidade = afinidadeAtiva ? afinidadeEscolhida : null;
 
@@ -801,14 +800,14 @@ const AtributosFicha = React.memo(function AtributosFicha() {
 // COMPONENTE INTERNO: DEFESA
 // ============================================================
 const DefesaPanel = React.memo(function DefesaPanel() {
-  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, defOutrosBonusVampiro, bloquearLetras, periciasHook, atributosFinais, regrasAutomaticasAtivas, protecoes, protecoesHook, totalDefesaProtecoes, bonusVestimentas, bonusMaldicoes, trilhasHook, status, regras, nivel, nex, bonusDefesaTrilha34, defOutrosBonusRegra72, defOutrosBonusRegra107 } = useRPG();
+  const { defesaTotal, defEquip, setDefEquip, defOutros, setDefOutros, defOutrosBonusVampiro, bloquearLetras, periciasHook, origensHook, poderesHook, atributosFinais, regrasAutomaticasAtivas, protecoesHook, totalDefesaProtecoes, bonusVestimentas, bonusMaldicoes, trilhasHook, status, regras, nivel, nex, bonusDefesaTrilha34, defOutrosBonusRegra72, defOutrosBonusRegra107 } = useRPG();
 
   const [bloqueio, setBloqueio] = React.useState(0);
   const [esquiva, setEsquiva] = React.useState(0);
   const bloqueioOverride = useRef(false);
   const esquivaOverride = useRef(false);
 
-  // Auto calcula bloqueio a partir de Fortitude (código 10) e esquiva a partir de Reflexos (código 23)
+  // Auto calcula bloqueio a partir de Fortitude (código 10) e esquiva a partir de Reflexos (código 23) ou Acrobacia (Regra 2602 - Ossos de Borracha Afinidade)
   useEffect(() => {
     const { pericias, nomesPericias } = periciasHook;
 
@@ -820,13 +819,18 @@ const DefesaPanel = React.memo(function DefesaPanel() {
       setBloqueio(total);
     }
 
-    // Reflexos
-    const nomeReflexos = nomesPericias[23];
-    if (nomeReflexos && pericias[nomeReflexos] && !esquivaOverride.current) {
-      const total = defesaTotal + pericias[nomeReflexos].treino + pericias[nomeReflexos].outros;
+    // Reflexos (ou Acrobacia se tiver Ossos de Borracha com Afinidade - Regra 2602)
+    const usaAcrobacia = regrasAutomaticasAtivas.has(2602);
+    const nomePericiaEsquiva = usaAcrobacia ? (nomesPericias[1] || 'Acrobacia') : nomesPericias[23];
+    if (nomePericiaEsquiva && pericias[nomePericiaEsquiva] && !esquivaOverride.current) {
+      const total = defesaTotal + pericias[nomePericiaEsquiva].treino + pericias[nomePericiaEsquiva].outros;
       setEsquiva(total);
     }
   }, [periciasHook.pericias, periciasHook.nomesPericias, atributosFinais, defesaTotal, regrasAutomaticasAtivas]);
+
+  const qtdRegra4 = (origensHook.origemSelecionada?.Codigo_Regra === 4 ? 1 : 0) +
+    Object.values(poderesHook.poderesEscolhidos).filter(p => p.codigoRegra === 4).length;
+  const bonusDefesaRegra4 = qtdRegra4 > 0 ? qtdRegra4 * 2 : (regrasAutomaticasAtivas.has(4) ? 2 : 0);
 
   return (
     <div className="mt-8 flex flex-wrap items-center justify-between gap-5 rounded-lg border border-zinc-800 bg-zinc-900/60 p-5">
@@ -856,7 +860,7 @@ const DefesaPanel = React.memo(function DefesaPanel() {
                 type="number"
                 onKeyDown={bloquearLetras}
                 value={(() => {
-                  const defOutrosBonusRegra = (regrasAutomaticasAtivas.has(4) ? 2 : 0) + (regrasAutomaticasAtivas.has(12) ? 2 : 0) + (defOutrosBonusRegra72 || 0) + (defOutrosBonusRegra107 || 0);
+                  const defOutrosBonusRegra = bonusDefesaRegra4 + (regrasAutomaticasAtivas.has(12) ? 2 : 0) + (defOutrosBonusRegra72 || 0) + (defOutrosBonusRegra107 || 0);
                   const temProtecaoPesada = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('pesada')) || false;
                   const bonusRegra21 = (regrasAutomaticasAtivas.has(21) && temProtecaoPesada) ? 2 : 0;
                   const temProtecaoLeve = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('leve')) || false;
@@ -872,7 +876,7 @@ const DefesaPanel = React.memo(function DefesaPanel() {
                 title="Outros bônus de defesa"
                 onChange={e => {
                   const valDigitado = Math.max(0, Number(e.target.value));
-                  const defOutrosBonusRegra = (regrasAutomaticasAtivas.has(4) ? 2 : 0) + (regrasAutomaticasAtivas.has(12) ? 2 : 0) + (defOutrosBonusRegra72 || 0) + (defOutrosBonusRegra107 || 0);
+                  const defOutrosBonusRegra = bonusDefesaRegra4 + (regrasAutomaticasAtivas.has(12) ? 2 : 0) + (defOutrosBonusRegra72 || 0) + (defOutrosBonusRegra107 || 0);
                   const temProtecaoPesada = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('pesada')) || false;
                   const bonusRegra21 = (regrasAutomaticasAtivas.has(21) && temProtecaoPesada) ? 2 : 0;
                   const temProtecaoLeve = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('leve')) || false;
@@ -935,6 +939,7 @@ const ProtecoesPanel = React.memo(function ProtecoesPanel() {
     temMonstruoso10, temMonstruoso40, temMonstruoso65, temMonstruoso99, monstruosoElemento,
     isMonstruosoAtivo10, isMonstruosoAtivo40, isMonstruosoAtivo65,
     temVampiro40, vampiroArquetipo,
+    temIntuitivo10, temIntuitivo65,
     devorarIntCount
   } = useRPG();
   const [mostrarOutros, setMostrarOutros] = React.useState(false);
@@ -1131,9 +1136,7 @@ const ProtecoesPanel = React.memo(function ProtecoesPanel() {
 
   const imunidadesExtras = [...imunidades];
   // TRILHA 14: Intuitivo
-  const temIntuitivo10 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 14 && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 14 && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
-  const temIntuitivo65 = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 14 && (regras['nex_experiencia'] ? effectiveNivel >= 13 : effectiveNex >= 65);
-  if (temIntuitivo10) {
+  if (temIntuitivo10 || temIntuitivo65) {
     if (temIntuitivo65) {
       resistenciasExtras.push('Paranormal 15');
       resistenciasExtras.push('Mental 10');

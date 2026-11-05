@@ -1,6 +1,7 @@
 import { Collapse } from './Collapse';
 import React, { useState, useMemo, useEffect } from 'react';
 import { CustomSelect } from './CustomSelect';
+import { ModalEscolherRitualAprendido } from './ModalEscolherRitualAprendido';
 import type { Poder, PoderParanormal, Trilha } from '../types';
 import { sortPorElementoENome, calcularNivel } from '../utils/rpgRules';
 import { useRPG } from '../context/RPGContext';
@@ -46,7 +47,7 @@ interface ModalPoderesExtraProps {
   poderesGerais: Poder[];
   poderesParanormais: PoderParanormal[];
   trilhas?: Trilha[];
-  onEscolher: (poder: Poder | PoderParanormal, elemento?: string, pericia?: number) => void;
+  onEscolher: (poder: Poder | PoderParanormal, elemento?: string, pericia?: number, nomeCustomizado?: string) => void;
 }
 
 type MainAba = 'utilidade' | 'combate' | 'gerais' | 'paranormais' | 'trilhas';
@@ -74,6 +75,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
       setPoderesExpandidos([]);
       setEscolhendoElementoId(null);
       setEscolhendoPericiaId(null);
+      setEscolhendoRitualPoder(null);
     }
   }, [isOpen]);
 
@@ -123,6 +125,7 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
   const [poderesExpandidos, setPoderesExpandidos] = useState<number[]>([]);
   const [escolhendoElementoId, setEscolhendoElementoId] = useState<number | string | null>(null);
   const [escolhendoPericiaId, setEscolhendoPericiaId] = useState<number | string | null>(null);
+  const [escolhendoRitualPoder, setEscolhendoRitualPoder] = useState<Poder | PoderParanormal | null>(null);
 
   const periciasDisponiveis = useMemo(() => {
     return Object.entries(contextoPrereq.nomesPericias)
@@ -675,11 +678,15 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
     ...periciasDisponiveis.map(p => {
       const valPericia = verificarPreRequisitos(poder as Poder, contextoPrereq, undefined, p.id);
       const isFocoEmPericia = (poder as any).Codigo_Regra === 42;
+      const isAutodidata = (poder as any).Codigo_Regra === 68;
+      const isLutaOuPontaria = (isFocoEmPericia || isAutodidata) && (p.nome === 'Luta' || p.nome === 'Pontaria');
       const jaFocou = isFocoEmPericia && contextoPrereq ? Object.values(contextoPrereq.poderes).some(pe => pe.codigoRegra === 42 && pe.periciaEscolhidaNome === p.nome) : false;
-      const isDisabled = !valPericia.atende || jaFocou;
+      const jaAutodidata = isAutodidata && contextoPrereq ? Object.values(contextoPrereq.poderes).some(pe => pe.codigoRegra === 68 && pe.periciaEscolhidaNome === p.nome) : false;
+      const jaVetOuExp = isAutodidata && contextoPrereq ? ((contextoPrereq.pericias?.[p.nome]?.treino || 0) >= 10) : false;
+      const isDisabled = !valPericia.atende || jaFocou || jaAutodidata || isLutaOuPontaria || jaVetOuExp;
       return {
         value: String(p.id),
-        label: `${p.nome} ${jaFocou ? "(Já Escolhido)" : ""}`.trim(),
+        label: `${p.nome} ${(jaFocou || jaAutodidata) ? "(Já Escolhido)" : jaVetOuExp ? "(Já Veterano/Expert)" : ""}`.trim(),
         disabled: isDisabled
       };
     })
@@ -698,10 +705,13 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          const precisaElemento = poder.Nome.toLowerCase().includes('elemento') || ((poder as any).Descricao && (poder as any).Descricao.toLowerCase().includes('escolha um elemento'));
-                          const precisaPericia = poder.Nome.toLowerCase().includes('perícia') || ((poder as any).Descricao && (poder as any).Descricao.toLowerCase().includes('escolha uma perícia'));
+                          const precisaRitual = (poder as any).Codigo_Regra === 35;
+                          const precisaElemento = poder.Nome.toLowerCase().includes('elemento') || ((poder as any).Descricao && (poder as any).Descricao.toLowerCase().includes('escolha um elemento')) || (poder as any).Codigo_Regra === 34 || (poder as any).Codigo_Regra === 36;
+                          const precisaPericia = poder.Nome.toLowerCase().includes('perícia') || ((poder as any).Descricao && (poder as any).Descricao.toLowerCase().includes('escolha uma perícia')) || (poder as any).Codigo_Regra === 42 || (poder as any).Codigo_Regra === 68;
                           
-                          if (precisaElemento) {
+                          if (precisaRitual) {
+                            setEscolhendoRitualPoder(poder);
+                          } else if (precisaElemento) {
                             setEscolhendoElementoId(codigo);
                           } else if (precisaPericia) {
                             setEscolhendoPericiaId(codigo);
@@ -751,6 +761,25 @@ export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
           )}
         </div>
       </div>
+
+      {escolhendoRitualPoder && (
+        <ModalEscolherRitualAprendido
+          isOpen={true}
+          onClose={() => setEscolhendoRitualPoder(null)}
+          onSelect={(ritualNome) => {
+            const nomeCustomizado = `${escolhendoRitualPoder.Nome} (${ritualNome})`;
+            onEscolher(escolhendoRitualPoder, ritualNome, undefined, nomeCustomizado);
+            setEscolhendoRitualPoder(null);
+            onClose();
+          }}
+          rituaisNomes={(contextoPrereq?.rituaisAprendidos || []).map((ra: any) => {
+            const r = (contextoPrereq?.rituais || []).find((rt: any) => rt.Codigo_Ritual === ra.codigo_ritual);
+            return ra.customNome || (r ? r.Nome_Ritual : String(ra.codigo_ritual));
+          })}
+          rituaisAprendidos={contextoPrereq?.rituaisAprendidos || []}
+          rituaisDb={contextoPrereq?.rituais || []}
+        />
+      )}
     </div>
   );
 };

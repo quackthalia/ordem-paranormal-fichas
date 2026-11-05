@@ -206,6 +206,7 @@ const AbasPanelInner: React.FC = () => {
     temMonstruosoOcult10, temMonstruosoOcult40, temMonstruosoOcult65, temMonstruosoOcult75, temMonstruosoOcult99, isMonstruosoOcultAtivo,
     temVampiro10, temVampiro40, temVampiro65, temVampiro99, vampiroArquetipo,
     temServente10, temServente40, temServente65, temServente99, serventeElementoPrimario, serventeElementoSecundario,
+    temGraduado10, temGraduado40, temGraduado65, temLamina10, temExorcista40, temPossuido65,
   } = useRPG();
 
   const [escolhendoRitualPlaceholder, setEscolhendoRitualPlaceholder] = React.useState<{ origem: string, nex?: number, maxCirculo?: number, circuloFixo?: number, elementoFiltro?: string } | null>(null);
@@ -244,7 +245,7 @@ const AbasPanelInner: React.FC = () => {
 
   const { afinidadeEscolhida, afinidadeAtiva, nivel, regrasAutomaticasAtivas, armasHook, bonusMaldicoes, itensHook } = useRPG();
   const effectiveNex = regras['nex_experiencia'] ? (nivel * 5) : nex;
-  const isLamina = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 15 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
+  const isLamina = temLamina10;
 
   React.useEffect(() => {
     setRituaisExpandidos([]);
@@ -797,7 +798,7 @@ const AbasPanelInner: React.FC = () => {
 
     // 5. Poderes Extras
     Object.keys(poderesEscolhidos).forEach(key => {
-      if (String(key).startsWith('extra_') && key !== 'extra_regra1' && key !== 'extra_regra31' && key !== 'extra_regra32' && !String(key).startsWith('extra_regra37') && key !== 'extra_regra39') {
+      if (String(key).startsWith('extra_') && key !== 'extra_regra1' && key !== 'extra_regra31' && key !== 'extra_regra32' && !String(key).startsWith('extra_regra37') && key !== 'extra_regra39' && key !== 'extra_possuido_trilha_65' && key !== 'extra_monstruoso_ocult_40' && key !== 'extra_servente_65') {
         const escolhido = poderesEscolhidos[key];
         const isAprenderRitual = escolhido.nome.toLowerCase().startsWith('aprender ritual (');
         const isResistir = escolhido.nome.toLowerCase().startsWith('resistir a ');
@@ -853,9 +854,11 @@ const AbasPanelInner: React.FC = () => {
 
     // 6. Transcender via Progressão de NEX (Custom)
     const patamaresTranscenderProgressao = temPossuido ? [15, 30, 45, 60, 75, 90] : [25, 35, 50, 60, 75, 90];
-    if (temPossuido && poderesExtras['possuido_opcao_65'] === 'transcender') {
-      patamaresTranscenderProgressao.push(65);
-      patamaresTranscenderProgressao.sort((a,b) => a-b);
+    if (temPossuido65 && poderesExtras['possuido_opcao_65'] === 'transcender') {
+      if (!patamaresTranscenderProgressao.includes(65)) {
+        patamaresTranscenderProgressao.push(65);
+        patamaresTranscenderProgressao.sort((a,b) => a-b);
+      }
     }
     patamaresTranscenderProgressao.forEach(nivelPatamar => {
       const chave = 1000 + nivelPatamar;
@@ -915,7 +918,7 @@ const AbasPanelInner: React.FC = () => {
             automatico: automaticoVal,
           });
         }
-      } else if (temPossuido && effectiveNex >= nivelPatamar) {
+      } else if ((temPossuido || (temPossuido65 && nivelPatamar === 65)) && effectiveNex >= nivelPatamar) {
         const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
         lista.push({
           id: `escolha_transcender_${chave}`,
@@ -929,7 +932,7 @@ const AbasPanelInner: React.FC = () => {
       }
     });
 
-    if (temPossuido && (poderesExtras['possuido_opcao_65'] === 'trilha' || poderesExtras['possuido_opcao_65'] === 'versatilidade') && effectiveNex >= 65) {
+    if (temPossuido65 && (poderesExtras['possuido_opcao_65'] === 'trilha' || poderesExtras['possuido_opcao_65'] === 'versatilidade') && effectiveNex >= 65) {
       const extraKey = 'extra_possuido_trilha_65';
       const usou65 = poderesEscolhidos[extraKey];
       if (usou65) {
@@ -943,6 +946,8 @@ const AbasPanelInner: React.FC = () => {
           preRequisitos: usou65.preRequisitos,
           elemento: usou65.elemento,
           afinidade: usou65.afinidade,
+          isDominarTrilha: true,
+          slotDominarKey: extraKey,
         });
       } else {
         lista.push({
@@ -1056,7 +1061,7 @@ const AbasPanelInner: React.FC = () => {
     }
 
     return lista;
-  }, [classe, nex, nivel, origemSelecionada, poderClasse, poderesClasse, poderesEscolhidos, poderesParanormais, poderesParanormaisMap, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras, trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, regrasAutomaticasAtivas, temMonstruoso75, temMonstruosoEsp75, listaPoderesUtilidade, temCriptologista10, temCriptologista40, temCriptologista65, temCriptologista99, temVampiro40, poderesExtras]);
+  }, [classe, nex, nivel, origemSelecionada, poderClasse, poderesClasse, poderesEscolhidos, poderesParanormais, poderesParanormaisMap, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras, trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, regrasAutomaticasAtivas, temMonstruoso75, temMonstruosoEsp75, temMonstruosoOcult40, temMonstruosoOcult65, temMonstruosoOcult75, temMonstruosoOcult99, monstruosoElemento, temServente65, serventeElementoPrimario, temPossuido65, listaPoderesUtilidade, temCriptologista10, temCriptologista40, temCriptologista65, temCriptologista99, temVampiro40, poderesExtras]);
 
   const habilidadesFiltradas = listaHabilidades.filter(hab =>
     hab.nome.toLowerCase().includes(filtroHabilidades.toLowerCase()) ||
@@ -1250,7 +1255,7 @@ const AbasPanelInner: React.FC = () => {
                                 <div className="flex items-center justify-between">
                                   <div className="flex flex-col">
                                     <span className="text-[0.65rem] font-bold uppercase tracking-widest text-zinc-500">
-                                      Dominar Habilidade Ritualística
+                                      {slotKey === 'extra_possuido_trilha_65' ? '10% Trilha (Ocultista)' : 'Dominar Habilidade Ritualística'}
                                     </span>
                                     <div className="flex items-center gap-2">
                                       <span className="font-bold text-zinc-200">
@@ -1325,6 +1330,215 @@ const AbasPanelInner: React.FC = () => {
                                             <strong className="text-zinc-400">Pré-requisitos:</strong> {hab.preRequisitos}
                                           </div>
                                         )}
+
+                                        {trilhaOrigem?.Codigo_Trilha === 43 && nivelDetectado === 10 && (
+                                          <div className="mt-3 rounded-lg border border-zinc-800 bg-zinc-950/70 p-2.5 shadow flex flex-col gap-2" onClick={e => e.stopPropagation()}>
+                                            <div className="flex items-center justify-between border-b border-zinc-800/80 pb-1.5">
+                                              <div className="flex items-center gap-2">
+                                                <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+                                                <span className="text-[11px] font-bold uppercase tracking-wider text-green-400">
+                                                  Patrono Paranormal
+                                                </span>
+                                              </div>
+                                            </div>
+                                            <div className="flex flex-col gap-1">
+                                              <label className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">
+                                                Elemento Primário:
+                                              </label>
+                                              <div className="flex flex-wrap gap-1.5 items-center">
+                                                {(['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo'] as const).map(elem => {
+                                                  const isPrimario = (poderesExtras['servente_elemento_primario'] || 'Sangue') === elem;
+                                                  const estilo = isPrimario ? CORES_ELEMENTOS_BOTOES[elem].ativo : CORES_ELEMENTOS_BOTOES[elem].inativo;
+                                                  return (
+                                                    <button
+                                                      key={elem}
+                                                      type="button"
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setPoderesExtras(prev => {
+                                                          const sec = prev['servente_elemento_secundario'] === elem ? '' : prev['servente_elemento_secundario'];
+                                                          return { ...prev, servente_elemento_primario: elem, servente_elemento_secundario: sec };
+                                                        });
+                                                      }}
+                                                      className={`px-2 py-0.5 rounded text-[11px] font-bold uppercase border transition ${estilo}`}
+                                                    >
+                                                      {elem}
+                                                    </button>
+                                                  );
+                                                })}
+                                              </div>
+                                            </div>
+                                            <div className="flex flex-col gap-1">
+                                              <label className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">
+                                                Elemento Secundário:
+                                              </label>
+                                              <div className="flex flex-wrap gap-1.5 items-center">
+                                                <button
+                                                  type="button"
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setPoderesExtras(prev => ({ ...prev, servente_elemento_secundario: '' }));
+                                                  }}
+                                                  className={`px-2 py-0.5 rounded text-[11px] font-bold uppercase border transition ${
+                                                    !poderesExtras['servente_elemento_secundario']
+                                                      ? 'bg-zinc-800 border-zinc-500 text-zinc-100 font-bold'
+                                                      : 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300'
+                                                  }`}
+                                                >
+                                                  Nenhum
+                                                </button>
+                                                {(['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo'] as const).map(elem => {
+                                                  const primario = poderesExtras['servente_elemento_primario'] || 'Sangue';
+                                                  if (elem === primario) return null;
+                                                  const isSec = poderesExtras['servente_elemento_secundario'] === elem;
+                                                  const estilo = isSec ? CORES_ELEMENTOS_BOTOES[elem].ativo : CORES_ELEMENTOS_BOTOES[elem].inativo;
+                                                  return (
+                                                    <button
+                                                      key={elem}
+                                                      type="button"
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setPoderesExtras(prev => ({ ...prev, servente_elemento_secundario: elem }));
+                                                      }}
+                                                      className={`px-2 py-0.5 rounded text-[11px] font-bold uppercase border transition ${estilo}`}
+                                                    >
+                                                      {elem}
+                                                    </button>
+                                                  );
+                                                })}
+                                              </div>
+                                            </div>
+                                          </div>
+                                        )}
+
+                                        {trilhaOrigem?.Codigo_Trilha === 47 && nivelDetectado === 10 && (
+                                          <div className="mt-3 pt-2 border-t border-zinc-800/80 flex flex-col gap-2" onClick={e => e.stopPropagation()}>
+                                            <div className="flex items-center justify-between">
+                                              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                                                Elemento Escolhido (10%):
+                                              </span>
+                                              {afinidadeEscolhida && (
+                                                <span className="text-[10px] text-zinc-500 italic">
+                                                  (Vinculado à Afinidade: {afinidadeEscolhida})
+                                                </span>
+                                              )}
+                                            </div>
+                                            <div className="flex flex-wrap gap-2 items-center">
+                                              {(['Sangue', 'Morte', 'Conhecimento', 'Energia'] as const).map(elem => {
+                                                const isSelected = monstruosoElemento === elem;
+                                                const isDisabled = Boolean(afinidadeEscolhida && afinidadeEscolhida !== elem);
+                                                return (
+                                                  <button
+                                                    key={elem}
+                                                    type="button"
+                                                    disabled={isDisabled}
+                                                    onClick={(e) => {
+                                                      e.stopPropagation();
+                                                      if (!afinidadeEscolhida) {
+                                                        setPoderesExtras(prev => ({ ...prev, monstruoso_elemento: elem }));
+                                                      }
+                                                    }}
+                                                    className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${
+                                                      isSelected 
+                                                        ? 'bg-green-950/60 border-green-600 text-green-300' 
+                                                        : isDisabled
+                                                          ? 'opacity-40 cursor-not-allowed bg-zinc-900 border-zinc-800 text-zinc-600'
+                                                          : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                                                    }`}
+                                                  >
+                                                    {elem}
+                                                  </button>
+                                                );
+                                              })}
+                                            </div>
+                                          </div>
+                                        )}
+
+                                        {trilhaOrigem?.Codigo_Trilha === 47 && (() => {
+                                          const poderMonstruosoOcultMap: Record<number, Record<string, number>> = {
+                                            10: { Sangue: 231, Morte: 232, Conhecimento: 233, Energia: 234 },
+                                            40: { Sangue: 235, Morte: 236, Conhecimento: 237, Energia: 238 },
+                                            65: { Sangue: 239, Morte: 240, Conhecimento: 241, Energia: 242 },
+                                          };
+                                          const codPoder = poderMonstruosoOcultMap[nivelDetectado]?.[monstruosoElemento];
+                                          if (!codPoder) return null;
+                                          const pData = listaPoderesUtilidade.find(p => p.codigo_poder === codPoder);
+                                          if (!pData) return null;
+                                          const badgeClasses = getBadgeElemento(monstruosoElemento);
+                                          return (
+                                            <div className="mt-2 rounded-r border-l-2 border-green-500 bg-zinc-900/80 p-3 flex flex-col" onClick={e => e.stopPropagation()}>
+                                              <div className="flex items-center justify-between gap-2 mb-1">
+                                                <span className="text-xs font-bold text-zinc-100">{pData.Nome}</span>
+                                                <span className={`rounded px-1.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${badgeClasses}`}>
+                                                  {monstruosoElemento}
+                                                </span>
+                                              </div>
+                                              <div className="text-xs text-zinc-300 leading-relaxed" dangerouslySetInnerHTML={{ __html: formatarDescricao(pData.Descricao) }} />
+                                            </div>
+                                          );
+                                        })()}
+
+                                        {trilhaOrigem?.Codigo_Trilha === 22 && nivelDetectado === 40 && (
+                                          <div className="mt-2 pt-2 border-t border-zinc-800/80 flex flex-col gap-1.5" onClick={e => e.stopPropagation()}>
+                                            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+                                              Benefício de Poder da Fé (40%):
+                                            </span>
+                                            <div className="flex flex-wrap gap-2 items-center">
+                                              <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  setPoderesExtras(prev => ({ ...prev, exorcista_opcao_40: 'veterano' }));
+                                                }}
+                                                className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${
+                                                  poderesExtras['exorcista_opcao_40'] !== 'dados'
+                                                    ? 'bg-green-950/60 border-green-600 text-green-300' 
+                                                    : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                                                }`}
+                                              >
+                                                Tornar Veterano (Grátis)
+                                              </button>
+                                              <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  setPoderesExtras(prev => ({ ...prev, exorcista_opcao_40: 'dados' }));
+                                                }}
+                                                className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${
+                                                  poderesExtras['exorcista_opcao_40'] === 'dados'
+                                                    ? 'bg-green-950/60 border-green-600 text-green-300' 
+                                                    : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                                                }`}
+                                              >
+                                                Já era Veterano (+1d20)
+                                              </button>
+                                            </div>
+                                          </div>
+                                        )}
+
+                                        {trilhaOrigem?.Codigo_Trilha === 23 && nivelDetectado === 65 && (
+                                          <div className="mt-2 pt-2 border-t border-zinc-800/80 flex flex-col gap-1.5" onClick={e => e.stopPropagation()}>
+                                            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+                                              Opção de 65%:
+                                            </span>
+                                            <div className="flex flex-wrap gap-2 items-center">
+                                              <button
+                                                type="button"
+                                                onClick={(e) => { e.stopPropagation(); setPoderesExtras(prev => ({ ...prev, possuido_opcao_65: 'transcender' })); }}
+                                                className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${poderesExtras['possuido_opcao_65'] === 'transcender' ? 'bg-green-950/60 border-green-600 text-green-300' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'}`}
+                                              >
+                                                TRANSCENDER
+                                              </button>
+                                              <button
+                                                type="button"
+                                                onClick={(e) => { e.stopPropagation(); setPoderesExtras(prev => ({ ...prev, possuido_opcao_65: 'trilha' })); }}
+                                                className={`px-3 py-1 rounded text-xs font-bold uppercase border transition ${(poderesExtras['possuido_opcao_65'] === 'trilha' || poderesExtras['possuido_opcao_65'] === 'versatilidade') ? 'bg-green-950/60 border-green-600 text-green-300' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'}`}
+                                              >
+                                                10% TRILHA (OCULTISTA)
+                                              </button>
+                                            </div>
+                                          </div>
+                                        )}
                                       </div>
                                     </Collapse>
                                   </div>
@@ -1339,8 +1553,12 @@ const AbasPanelInner: React.FC = () => {
                                     <button 
                                       onClick={(e) => { 
                                         e.stopPropagation(); 
-                                        setSlotDominarAtivo(slotKey);
-                                        setModalTrilhaExtraAberto(true); 
+                                        if (slotKey === 'extra_possuido_trilha_65') {
+                                          setModalTrilhaPossuido65Aberto(true);
+                                        } else {
+                                          setSlotDominarAtivo(slotKey);
+                                          setModalTrilhaExtraAberto(true); 
+                                        }
                                       }}
                                       className="text-xs px-3 py-1.5 rounded bg-zinc-900 border border-zinc-700 hover:border-yellow-700 hover:bg-yellow-900/20 text-zinc-300 hover:text-yellow-400 transition-colors"
                                     >
@@ -2848,7 +3066,7 @@ return (
           const slotsGraduadoPendentesList: { chave?: string, index: number, nex: number, maxCirculo: number, isOcultista: boolean, isGraduado?: boolean }[] = [];
           
           // Saber Ampliado (10%): 1 ritual de 1º círculo + 1 ritual a cada novo círculo que desbloqueia (2º, 3º, 4º)
-          const isGraduado10 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 13 && (regras['nex_experiencia'] ? nivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 13 && (regras['nex_experiencia'] ? nivel >= 10 : effectiveNex >= 50));
+          const isGraduado10 = temGraduado10;
           if (isGraduado10) {
             // 1º Círculo (10%)
             const pego1 = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'graduado_10_1' || r.origem === 'graduado_10_c');
@@ -2874,7 +3092,7 @@ return (
           }
 
           // Grimório Ritualístico (40%): INT rituais de 1º ou 2º círculos + 1 ritual a cada novo círculo (3º e 4º)
-          const isGraduado40 = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 13 && (regras['nex_experiencia'] ? nivel >= 8 : effectiveNex >= 40));
+          const isGraduado40 = temGraduado40;
           if (isGraduado40) {
             const intVal = (atributosFinais?.INT !== undefined ? atributosFinais.INT : (atributos?.INT || 0));
             // Slots base: INT rituais de 1º ou 2º círculos
@@ -3650,7 +3868,8 @@ return (
                               );
                             });
                             const bonusDtEspecialista = temEspecialistaElemento ? 2 : 0;
-                            const baseDT = 10 + (atributosFinais[atrParaDT] || 0) + nivel + (hasAntena ? 3 : 0) + (bonusMaldicoes?.bonusDT || 0) + bonusDtMonstruoso + bonusDtEspecialista;
+                            const bonusDtGraduado65 = temGraduado65 ? 5 : 0;
+                            const baseDT = 10 + (atributosFinais[atrParaDT] || 0) + nivel + (hasAntena ? 3 : 0) + (bonusMaldicoes?.bonusDT || 0) + bonusDtMonstruoso + bonusDtEspecialista + bonusDtGraduado65;
                             
                             return (
                               <div key={elemento} className="mt-2 mb-2 flex flex-col gap-2.5">
@@ -3658,7 +3877,7 @@ return (
                                   <span className="h-2 w-2 rounded-full shrink-0" style={{ background: obterCorBadge(elemento) || '#52525b' }}></span>
                                   <span className="text-[0.6rem] font-bold uppercase tracking-[0.15em] text-zinc-500">{elemento}</span>
                                   <div className="flex-1 border-t border-zinc-800/50"></div>
-                                  <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500" title={`10 + ${atrParaDT} + Nível${bonusDtMonstruoso ? ' + 2 (Tatuagem Ritualística)' : ''}${bonusDtEspecialista ? ' + 2 (Especialista em Elemento)' : ''}`}>DT {baseDT}</span>
+                                  <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500" title={`10 + ${atrParaDT} + Nível${bonusDtGraduado65 ? ' + 5 (Rituais Eficientes)' : ''}${bonusDtMonstruoso ? ' + 2 (Tatuagem Ritualística)' : ''}${bonusDtEspecialista ? ' + 2 (Especialista em Elemento)' : ''}`}>DT {baseDT}</span>
                                 </div>
                                 <div className="flex flex-col gap-2.5">
                                 {ritualsOfElement.map(ritual => {
@@ -3700,7 +3919,13 @@ return (
                             if (temDesconto34) peValor -= 1;
                           }
                           if (regrasAutomaticasAtivas.has(35)) {
-                            const desconto35 = Object.values(poderesEscolhidos).filter(p => p.codigoRegra === 35 && p.elemento === (ritual.customNome || ritual.Nome_Ritual)).length;
+                            const nomeRitualAtual = (ritual.customNome || ritual.Nome_Ritual || '').trim().toLowerCase();
+                            const desconto35 = Object.values(poderesEscolhidos).filter(p => 
+                              p.codigoRegra === 35 && (
+                                (p.elemento && p.elemento.trim().toLowerCase() === nomeRitualAtual) ||
+                                (!p.elemento && nomeRitualAtual && (p.nome || '').toLowerCase().includes(`(${nomeRitualAtual})`))
+                              )
+                            ).length;
                             peValor -= desconto35;
                           }
                           if (!isOrigemConjuracao && temConjuracaoNoItem) {
@@ -4527,9 +4752,9 @@ return (
         poderesGerais={listaPoderesUtilidade}
         poderesParanormais={poderesParanormais}
         trilhas={trilhasHook.trilhas}
-        onEscolher={(poder, elemento, periciaId) => {
+        onEscolher={(poder, elemento, periciaId, nomeCustomizado) => {
           const nomePericia = periciaId ? periciasHook.nomesPericias[periciaId] : undefined;
-          poderesHook.escolherPoderExtra(poder, elemento, nomePericia);
+          poderesHook.escolherPoderExtra(poder, elemento, nomePericia, undefined, undefined, nomeCustomizado);
         }}
       />
       )}

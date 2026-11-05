@@ -24,10 +24,11 @@ export const BonusCondicionaisPanel: React.FC = () => {
     monstruosoElemento,
     atributosFinais,
     queimarVigCount,
+    temExorcista40,
+    temIntuitivo10,
   } = useRPG();
 
   const temPerseverante40 = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 20 && (regras['nex_experiencia'] ? nivel >= 8 : nex >= 40);
-  const temExorcista40 = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 22 && (regras['nex_experiencia'] ? nivel >= 8 : nex >= 40);
 
   return (
     <div className="flex flex-col rounded-md border border-zinc-700 bg-zinc-900 shadow-xl overflow-hidden ">
@@ -42,18 +43,30 @@ export const BonusCondicionaisPanel: React.FC = () => {
             {regrasAutomaticasAtivas.has(30) && (
               <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
                 <span className="text-green-500 font-bold mt-[-1px]">•</span>
-                <span>+2d20 em Diplomacia, Enganação e Intuição no primeiro teste social que fizer num ambiente</span>
+                <span>+2d20 no primeiro teste de Diplomacia, Enganação, Intimidação ou Intuição que fizer em uma cena (Primeira Impressão)</span>
+              </div>
+            )}
+            {regrasAutomaticasAtivas.has(2201) && (
+              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                <span>+1d20 em testes de perícia para fugir em uma perseguição (Correria Desesperada)</span>
+              </div>
+            )}
+            {temIntuitivo10 && (
+              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                <span>+5 em testes de resistência contra efeitos paranormais (Mente Sã)</span>
               </div>
             )}
             {regrasAutomaticasAtivas.has(65) && (
               <>
                 <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
                   <span className="text-green-500 font-bold mt-[-1px]">•</span>
-                  <span>+1d20 em testes para resistir a doenças</span>
+                  <span>+1d20 em testes para resistir a doenças (Mais Bela Infestação)</span>
                 </div>
                 <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
-                  <span className="text-green-500 font-bold mt-[-1px]">•</span>
-                  <span>-1d20 em testes de Percepção para ouvir</span>
+                  <span className="text-red-400 font-bold mt-[-1px]">•</span>
+                  <span>-1d20 em testes de Percepção para ouvir (Mais Bela Infestação)</span>
                 </div>
               </>
             )}
@@ -156,7 +169,7 @@ export const BonusCondicionaisPanel: React.FC = () => {
             )}
             {regrasAutomaticasAtivas.has(9) && (
               <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
-                <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                <span className="text-red-400 font-bold mt-[-1px]">•</span>
                 <span>-1d20 em testes de Diplomacia (Mutação)</span>
               </div>
             )}
@@ -255,11 +268,11 @@ export const BonusCondicionaisPanel: React.FC = () => {
               <>
                 <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
                   <span className="text-green-500 font-bold mt-[-1px]">•</span>
-                  <span>+1d20 em testes para resistir a venenos</span>
+                  <span>+2d20 em testes de Intimidação (Mais Bela Infestação)</span>
                 </div>
                 <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
-                  <span className="text-green-500 font-bold mt-[-1px]">•</span>
-                  <span>+1d20 em testes de Sobrevivência</span>
+                  <span className="text-red-400 font-bold mt-[-1px]">•</span>
+                  <span>-1d20 em testes de Diplomacia (Mais Bela Infestação)</span>
                 </div>
               </>
             )}

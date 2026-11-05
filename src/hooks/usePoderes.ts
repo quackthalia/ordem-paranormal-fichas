@@ -26,9 +26,35 @@ function normalizarPoder(item: Record<string, unknown>): Poder {
     return undefined;
   };
 
+  const codigo_poder = Number(primeiro('Codigo_Poder', 'codigo_poder') ?? 0);
+  const Nome = String(primeiro('Nome', 'nome') ?? '');
+  let Codigo_Regra = primeiro('Codigo_Regra', 'codigo_regra') ? Number(primeiro('Codigo_Regra', 'codigo_regra')) : null;
+  let Automatico = (() => {
+    const val = primeiro('Automatico?', 'automatico?', 'Automatico', 'automatico', 'Automático', 'automático', 'Automático?', 'automático?');
+    if (val === null || val === undefined) return null;
+    const s = String(val).trim();
+    return s.length > 0 ? s : null;
+  })();
+
+  // Desambiguação de códigos de regra colididos com PoderesParanormais e poderes sem código no banco
+  const nomeLower = Nome.trim().toLowerCase();
+  if (codigo_poder === 17 || nomeLower === 'correria desesperada') {
+    Codigo_Regra = 2201;
+    if (!Automatico) Automatico = 'Sim';
+  } else if (codigo_poder === 28 || nomeLower === 'combatente esforçado') {
+    Codigo_Regra = 2401;
+    if (!Automatico) Automatico = 'Sim';
+  } else if (codigo_poder === 165 || nomeLower === 'muito sorrateiro') {
+    if (!Codigo_Regra) Codigo_Regra = 47;
+    if (!Automatico) Automatico = 'Sim';
+  } else if (codigo_poder === 172 || nomeLower === 'sentido tático') {
+    if (!Codigo_Regra) Codigo_Regra = 48;
+    if (!Automatico) Automatico = 'Sim';
+  }
+
   return {
-    codigo_poder: Number(primeiro('Codigo_Poder', 'codigo_poder') ?? 0),
-    Nome: String(primeiro('Nome', 'nome') ?? ''),
+    codigo_poder,
+    Nome,
     Descricao: String(primeiro('Descrição', 'descrição', 'Descricao', 'descricao') ?? ''),
     Classe: String(primeiro('Classe', 'classe') ?? ''),
     Tipo: String(primeiro('Tipo', 'tipo') ?? ''),
@@ -37,14 +63,9 @@ function normalizarPoder(item: Record<string, unknown>): Poder {
     ),
     Fonte: String(primeiro('Fonte', 'fonte') ?? ''),
     Pre_Codigo: primeiro('Pre_Codigo', 'pre_codigo') ? Number(primeiro('Pre_Codigo', 'pre_codigo')) : null,
-    Codigo_Regra: primeiro('Codigo_Regra', 'codigo_regra') ? Number(primeiro('Codigo_Regra', 'codigo_regra')) : null,
+    Codigo_Regra,
     Pericia_Poder: primeiro('Pericia_Poder', 'pericia_poder') ? Number(primeiro('Pericia_Poder', 'pericia_poder')) : null,
-    Automatico: (() => {
-      const val = primeiro('Automatico?', 'automatico?', 'Automatico', 'automatico', 'Automático', 'automático', 'Automático?', 'automático?');
-      if (val === null || val === undefined) return null;
-      const s = String(val).trim();
-      return s.length > 0 ? s : null;
-    })(),
+    Automatico,
   };
 }
 
@@ -57,9 +78,24 @@ function normalizarPoderParanormal(item: Record<string, unknown>): PoderParanorm
     return undefined;
   };
 
+  const codigo_poder = Number(primeiro('Codigo_Poder_Paranormal', 'codigo_poder_paranormal') ?? 0);
+  const Nome = String(primeiro('Nome_Poder_Paranormal', 'nome_poder_paranormal') ?? '');
+  let Codigo_Regra = primeiro('Codigo_Regra_Poder_Paranormal', 'codigo_regra_poder_paranormal', 'Codigo_Regra', 'codigo_regra') 
+    ? Number(primeiro('Codigo_Regra_Poder_Paranormal', 'codigo_regra_poder_paranormal', 'Codigo_Regra', 'codigo_regra')) 
+    : null;
+  let Codigo_Regra_Afinidade = primeiro('Codigo_Regra_Afinidade', 'codigo_regra_afinidade')
+    ? Number(primeiro('Codigo_Regra_Afinidade', 'codigo_regra_afinidade'))
+    : null;
+
+  // Desambiguação de Ossos de Borracha (26 colide com Vitalidade Sofrida)
+  if (codigo_poder === 53 || Nome.trim().toLowerCase() === 'ossos de borracha') {
+    Codigo_Regra = 2601;
+    Codigo_Regra_Afinidade = 2602;
+  }
+
   return {
-    codigo_poder: Number(primeiro('Codigo_Poder_Paranormal', 'codigo_poder_paranormal') ?? 0),
-    Nome: String(primeiro('Nome_Poder_Paranormal', 'nome_poder_paranormal') ?? ''),
+    codigo_poder,
+    Nome,
     Descricao: String(primeiro('Descricao_Poder_Paranormal', 'descricao_poder_paranormal') ?? ''),
     PreRequisitos: String(
       primeiro('Pre_Requisitos_Poder_Paranormal', 'pre_requisitos_poder_paranormal') ?? ''
@@ -80,12 +116,8 @@ function normalizarPoderParanormal(item: Record<string, unknown>): PoderParanorm
     Pre_Codigo_Afinidade: primeiro('Pre_Regra_Afinidade', 'pre_regra_afinidade', 'Pre_Codigo_Afinidade', 'pre_codigo_afinidade')
       ? Number(primeiro('Pre_Regra_Afinidade', 'pre_regra_afinidade', 'Pre_Codigo_Afinidade', 'pre_codigo_afinidade'))
       : null,
-    Codigo_Regra_Afinidade: primeiro('Codigo_Regra_Afinidade', 'codigo_regra_afinidade')
-      ? Number(primeiro('Codigo_Regra_Afinidade', 'codigo_regra_afinidade'))
-      : null,
-    Codigo_Regra: primeiro('Codigo_Regra_Poder_Paranormal', 'codigo_regra_poder_paranormal', 'Codigo_Regra', 'codigo_regra') 
-      ? Number(primeiro('Codigo_Regra_Poder_Paranormal', 'codigo_regra_poder_paranormal', 'Codigo_Regra', 'codigo_regra')) 
-      : null,
+    Codigo_Regra_Afinidade,
+    Codigo_Regra,
     Pericia_Poder: primeiro('Pericia_Poder_Paranormal', 'pericia_poder_paranormal', 'Pericia_Poder', 'pericia_poder')
       ? Number(primeiro('Pericia_Poder_Paranormal', 'pericia_poder_paranormal', 'Pericia_Poder', 'pericia_poder'))
       : null,
@@ -326,6 +358,8 @@ export function usePoderesFiltrados(
       let nomeBase = poder.nome.trim();
       if (nomeBase.toLowerCase().startsWith('aprender ritual')) {
         nomeBase = 'Aprender Ritual';
+      } else if (nomeBase.toLowerCase().startsWith('autodidata')) {
+        nomeBase = 'Autodidata';
       }
       contagemEscolhidos[nomeBase] = (contagemEscolhidos[nomeBase] || 0) + 1;
     });
@@ -338,7 +372,7 @@ export function usePoderesFiltrados(
       if (nomeBase === 'Recuperação Flagelante') return count < 3;
       if (nomeBase === 'Dominar Habilidade Ritualística' || (p as Poder).Codigo_Regra === 37) return count < 3;
       if (['Transcender', 'Foco em Perícia', '<Habilidade> Aprimorada'].includes(nomeBase)) return true;
-      if (nomeBase === 'Aprender Ritual') {
+      if (nomeBase === 'Aprender Ritual' || nomeBase === 'Autodidata') {
         const limit = Math.max(0, intelecto);
         return count < limit;
       }

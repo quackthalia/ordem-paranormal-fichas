@@ -251,6 +251,18 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = React.memo(({ armaInv, e
     extrasStr += `+${qtdDados104}d${faceDado104}[Sangue]`;
   }
 
+  // Regra 27 (Balística Avançada): +2 em rolagens de dano com armas táticas de fogo
+  const isArmaTatica = arma.Proficiencia?.toLowerCase().includes('tática') || arma.Proficiencia?.toLowerCase().includes('tatica');
+  const isArmaFogo = arma.Tipo_Arma?.toLowerCase().includes('fogo');
+  const isArmaDisparo = arma.Tipo_Arma?.toLowerCase().includes('disparo') && !isArmaFogo;
+  if (regrasAutomaticasAtivas.has(27) && isArmaTatica && isArmaFogo) {
+    extrasStr += `+2`;
+  }
+  // Regra 28 (Ninja Urbano): +2 em rolagens de dano com armas táticas corpo a corpo e de disparo
+  if (regrasAutomaticasAtivas.has(28) && isArmaTatica && (isCorpoACorpo || isArmaDisparo)) {
+    extrasStr += `+2`;
+  }
+
   // Calcula bônus de atributo para o DANO
   let bonusDanoAtributo = 0;
   const isFogoDisparo = ['fogo', 'disparo'].some(t => arma.Tipo_Arma?.toLowerCase().includes(t));

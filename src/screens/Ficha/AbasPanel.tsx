@@ -370,6 +370,7 @@ const AbasPanelInner: React.FC = () => {
 
     // 1. Origem
     if (origemSelecionada?.Nome_Poder) {
+      const origemDb = origensHook.origens?.find(o => o.Codigo_Origem === origemSelecionada.Codigo_Origem);
       lista.push({
         id: 'origem_poder',
         nome: origemSelecionada.Nome_Poder,
@@ -377,6 +378,7 @@ const AbasPanelInner: React.FC = () => {
         tipo: 'Origem',
         extra: null,
         subPoder: null,
+        fonte: origemSelecionada.Fonte || (origemSelecionada as any).fonte || origemDb?.Fonte || (origemDb as any)?.fonte || undefined,
         categoria: 'origem',
       });
     }
@@ -1061,7 +1063,7 @@ const AbasPanelInner: React.FC = () => {
     }
 
     return lista;
-  }, [classe, nex, nivel, origemSelecionada, poderClasse, poderesClasse, poderesEscolhidos, poderesParanormais, poderesParanormaisMap, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras, trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, regrasAutomaticasAtivas, temMonstruoso75, temMonstruosoEsp75, temMonstruosoOcult40, temMonstruosoOcult65, temMonstruosoOcult75, temMonstruosoOcult99, monstruosoElemento, temServente65, serventeElementoPrimario, temPossuido65, listaPoderesUtilidade, temCriptologista10, temCriptologista40, temCriptologista65, temCriptologista99, temVampiro40, poderesExtras]);
+  }, [classe, nex, nivel, origemSelecionada, origensHook.origens, poderClasse, poderesClasse, poderesEscolhidos, poderesParanormais, poderesParanormaisMap, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras, trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, regrasAutomaticasAtivas, temMonstruoso75, temMonstruosoEsp75, temMonstruosoOcult40, temMonstruosoOcult65, temMonstruosoOcult75, temMonstruosoOcult99, monstruosoElemento, temServente65, serventeElementoPrimario, temPossuido65, listaPoderesUtilidade, temCriptologista10, temCriptologista40, temCriptologista65, temCriptologista99, temVampiro40, poderesExtras]);
 
   const habilidadesFiltradas = listaHabilidades.filter(hab =>
     hab.nome.toLowerCase().includes(filtroHabilidades.toLowerCase()) ||

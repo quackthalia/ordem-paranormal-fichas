@@ -418,7 +418,8 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const temArtistaMarcialAprimorado = temArtistaMarcialTrilha10 && temArtistaMarcialNosPoderes;
 
   const temHabExtraOcultista = useCallback((codigoTrilha: number, nexLvl: 10 | 40 | 65, nomeFallback?: string) => {
-    const tObj = trilhasHook.todasTrilhas.find(t => Number(t.Codigo_Trilha) === codigoTrilha);
+    const listaTrilhas = trilhasHook.trilhas || (trilhasHook as any).todasTrilhas || [];
+    const tObj = listaTrilhas.find((t: any) => Number(t.Codigo_Trilha) === codigoTrilha);
     const nomeTrilhaLower = tObj?.Nome_Trilha?.trim().toLowerCase() || '';
     const nomeHabLower = (
       (nexLvl === 10 ? tObj?.Nome_Habilidade_10 : nexLvl === 40 ? tObj?.Nome_Habilidade_40 : tObj?.Nome_Habilidade_65) ||
@@ -436,11 +437,11 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
       return false;
     };
 
-    const viaRegra37 = Object.entries(poderesHook.poderesEscolhidos).some(([k, p]) => k.startsWith('extra_regra37') && matchPoder(p));
+    const viaRegra37 = Object.entries(poderesHook.poderesEscolhidos || {}).some(([k, p]) => k.startsWith('extra_regra37') && matchPoder(p));
     if (viaRegra37) return true;
-    if (nexLvl === 10 && matchPoder(poderesHook.poderesEscolhidos['extra_possuido_trilha_65'])) return true;
+    if (nexLvl === 10 && matchPoder(poderesHook.poderesEscolhidos?.['extra_possuido_trilha_65'])) return true;
     return false;
-  }, [trilhasHook.todasTrilhas, poderesHook.poderesEscolhidos]);
+  }, [trilhasHook.trilhas, poderesHook.poderesEscolhidos]);
 
   // Computa o conjunto de regras automáticas ativas
   const regrasAutomaticasAtivas = useMemo(() => {

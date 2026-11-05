@@ -317,6 +317,8 @@ export const ModalPoderes: React.FC = () => {
   const {
     nexModalAberto, setNexModalAberto,
     abaModalPoderes, setAbaModalPoderes,
+    tipoModalPoderes,
+    serventeElementoPrimario,
     classe,
     poderesHook,
     poderesModalExpandidos, setPoderesModalExpandidos,
@@ -449,7 +451,7 @@ export const ModalPoderes: React.FC = () => {
     }
     
     return filtrada;
-  }, [listaFiltradaBase, abaModalPoderes, subAbaElemento, busca, filtroFonte]);
+  }, [listaFiltradaBase, abaModalPoderes, subAbaElemento, busca, filtroFonte, nexModalAberto, serventeElementoPrimario]);
 
   useEffect(() => { setSubAbaElemento(null); }, [abaModalPoderes]);
 

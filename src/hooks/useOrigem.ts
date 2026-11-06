@@ -1,0 +1,157 @@
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { supabase } from '../services/supabase';
+import type { Origem, OrigemSelecionada, GrupoOrigem } from '../types';
+
+interface UseOrigemReturn {
+  origens: Origem[];
+  grupos: GrupoOrigem[];
+  origemSelecionada: OrigemSelecionada | null;
+  setOrigemSelecionada: React.Dispatch<React.SetStateAction<OrigemSelecionada | null>>;
+  origensExpandidas: number[];
+  toggleOrigemExpandida: (id: number) => void;
+  loading: boolean;
+  error: string | null;
+  selecionarOrigem: (origem: Origem, escolhaRegra6?: 'p2' | 'pesp', elemento_escolhido?: string) => void;
+  nomePericia: (codigo: number | null) => string | null;
+}
+
+export function useOrigem(): UseOrigemReturn {
+  const [origens, setOrigens] = useState<Origem[]>([]);
+  const [grupos, setGrupos] = useState<GrupoOrigem[]>([]);
+  const [origemSelecionada, setOrigemSelecionada] = useState<OrigemSelecionada | null>(null);
+  const [origensExpandidas, setOrigensExpandidas] = useState<number[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const [nomesPericias, setNomesPericias] = useState<Record<number, string>>({});
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function carregar() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        // Busca origens
+        const { data: dataOrigens, error: errOrigens } = await supabase
+          .from('Origens')
+          .select('*')
+          .order('Nome');
+
+        // Busca grupos
+        const { data: dataGrupos, error: errGrupos } = await supabase
+          .from('Grupo de Origens')
+          .select('*')
+          .order('Codigo_Grupo');
+
+        if (cancelled) return;
+
+        if (errOrigens) {
+          console.error('Erro ao buscar origens:', errOrigens);
+          setError(errOrigens.message);
+          return;
+        }
+        if (errGrupos) {
+          console.error('Erro ao buscar grupos de origens:', errGrupos);
+        } else if (dataGrupos) {
+          setGrupos(dataGrupos as GrupoOrigem[]);
+        }
+
+        if (dataOrigens) {
+          // Ordena A-Z
+          setOrigens(dataOrigens.sort((a, b) => a.Nome.localeCompare(b.Nome)));
+        }
+
+        // Busca nomes das perícias
+        const { data: dataPericias } = await supabase
+          .from('Perícias')
+          .select('Codigo_Pericia, Nome_Pericia');
+
+        if (cancelled) return;
+
+        if (dataPericias) {
+          const mapa: Record<number, string> = {};
+          dataPericias.forEach((p: { Codigo_Pericia: number; Nome_Pericia: string }) => {
+            mapa[p.Codigo_Pericia] = p.Nome_Pericia;
+          });
+          setNomesPericias(mapa);
+        }
+      } catch (err: any) {
+        if (!cancelled) {
+          console.error('Exceção ao buscar origens:', err);
+          setError(err.message || String(err));
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    carregar();
+    return () => { cancelled = true; };
+  }, []);
+
+  const toggleOrigemExpandida = useCallback((id: number) => {
+    setOrigensExpandidas(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  }, []);
+
+  const nomePericia = useCallback(
+    (codigo: number | null): string | null => {
+      if (codigo === null || codigo === undefined) return null;
+      return nomesPericias[codigo] || String(codigo);
+    },
+    [nomesPericias]
+  );
+
+  const selecionarOrigem = useCallback(
+    (origem: Origem, escolhaRegra6?: 'p2' | 'pesp', elemento_escolhido?: string) => {
+      const nomeP1 = origem.Pericia_Treinada_1 !== null && origem.Pericia_Treinada_1 !== undefined
+        ? (nomesPericias[origem.Pericia_Treinada_1] || String(origem.Pericia_Treinada_1))
+        : null;
+      const nomeP2 = origem.Pericia_Treinada_2 !== null && origem.Pericia_Treinada_2 !== undefined
+        ? (nomesPericias[origem.Pericia_Treinada_2] || String(origem.Pericia_Treinada_2))
+        : null;
+      let nomePEsp = null;
+      if (origem.Pericia_Treinada_Especial) {
+        nomePEsp = nomesPericias[origem.Pericia_Treinada_Especial as any] || String(origem.Pericia_Treinada_Especial);
+      }
+
+      setOrigemSelecionada({
+        ...origem,
+        nome_p1: nomeP1,
+        nome_p2: nomeP2,
+        nome_pesp: nomePEsp,
+        escolhaRegra6,
+        elemento_escolhido,
+      });
+    },
+    [nomesPericias]
+  );
+
+  return useMemo(() => ({
+    origens,
+    grupos,
+    origemSelecionada,
+    setOrigemSelecionada,
+    origensExpandidas,
+    toggleOrigemExpandida,
+    loading,
+    error,
+    selecionarOrigem,
+    nomePericia,
+  }), [
+    origens,
+    grupos,
+    origemSelecionada,
+    origensExpandidas,
+    toggleOrigemExpandida,
+    loading,
+    error,
+    selecionarOrigem,
+    nomePericia,
+  ]);
+}

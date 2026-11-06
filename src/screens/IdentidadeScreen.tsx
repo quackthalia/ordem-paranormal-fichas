@@ -1,0 +1,243 @@
+import React, { useState, useRef } from 'react';
+import { useRPG } from '../context/RPGContext';
+import { comprimirImagemParaAvatar } from '../utils/saveLoad';
+
+export const IdentidadeScreen: React.FC = () => {
+  const {
+    nomePersonagem,
+    setNomePersonagem,
+    nomeJogador,
+    setNomeJogador,
+    fotoPersonagem,
+    setFotoPersonagem,
+    classe,
+    nex,
+    origensHook,
+    setTelaAtual,
+    finalizarCriacaoAgente,
+  } = useRPG();
+
+  const [salvando, setSalvando] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUploadImagem = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const dataUrl = await comprimirImagemParaAvatar(file);
+      setFotoPersonagem(dataUrl);
+    } catch {
+      // ignora erro
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleFinalizar = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (salvando || !nomePersonagem.trim()) return;
+    setSalvando(true);
+    try {
+      await finalizarCriacaoAgente({
+        nomePersonagem: nomePersonagem.trim(),
+        nomeJogador: nomeJogador.trim(),
+        fotoPersonagem,
+      });
+    } finally {
+      setSalvando(false);
+    }
+  };
+
+  const nomeValido = Boolean(nomePersonagem.trim());
+
+  const origemNome = origensHook.origemSelecionada?.Nome || 'Não selecionada';
+  const temFoto = Boolean(fotoPersonagem && fotoPersonagem.trim() !== '');
+
+  return (
+    <div className="mx-auto w-full max-w-6xl">
+      <header className="mb-10 flex flex-col items-center text-center">
+        <h1 className="font-display mb-2 text-3xl uppercase tracking-wide text-zinc-100">
+          Identificação do Agente
+        </h1>
+        <p className="mb-6 text-sm uppercase tracking-widest text-green-500 font-bold">
+          Passo 4 — Toques Finais
+        </p>
+        <div className="w-full max-w-3xl text-sm leading-relaxed text-zinc-400 space-y-4">
+          <p>
+            Insira as informações básicas de seu personagem—seu nome, idade, aparência, um resumo de sua história de vida, etc.— e então, finalize para registrar sua ficha.
+          </p>
+        </div>
+        <div className="mt-8 h-px w-full max-w-5xl bg-zinc-800/80"></div>
+      </header>
+
+      <form onSubmit={handleFinalizar} className="mx-auto w-full max-w-5xl">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 items-start">
+          {/* COLUNA DA ESQUERDA: CAMPOS E RESUMO */}
+          <div className="lg:col-span-7 flex flex-col gap-8">
+            <div className="flex flex-col gap-2">
+              <label
+                htmlFor="nome-personagem"
+                className="text-sm font-bold uppercase tracking-wider text-zinc-200"
+              >
+                Personagem
+              </label>
+              <input
+                id="nome-personagem"
+                type="text"
+                placeholder="Nome do personagem"
+                value={nomePersonagem}
+                onChange={e => setNomePersonagem(e.target.value)}
+                className="w-full border-b border-zinc-700 bg-transparent py-2.5 text-base font-medium text-zinc-100 placeholder-zinc-500 outline-none transition focus:border-green-500"
+                autoFocus
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label
+                htmlFor="nome-jogador"
+                className="text-sm font-bold uppercase tracking-wider text-zinc-200"
+              >
+                Jogador
+              </label>
+              <input
+                id="nome-jogador"
+                type="text"
+                placeholder="Nome do jogador"
+                value={nomeJogador}
+                onChange={e => setNomeJogador(e.target.value)}
+                className="w-full border-b border-zinc-700 bg-transparent py-2.5 text-base font-medium text-zinc-100 placeholder-zinc-500 outline-none transition focus:border-green-500"
+              />
+            </div>
+
+            {/* RESUMO PADRONIZADO */}
+            <div className="mt-2 flex flex-col gap-5 pt-6 border-t border-zinc-800/80">
+              <div className="flex flex-col gap-1 border-b border-zinc-800/50 pb-4">
+                <span className="text-sm font-bold uppercase tracking-wider text-zinc-200">
+                  NEX Inicial
+                </span>
+                <span className="text-base font-bold text-green-400">
+                  {nex}%
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="flex flex-col gap-1">
+                  <span className="text-sm font-bold uppercase tracking-wider text-zinc-200">
+                    Origem
+                  </span>
+                  <span className="text-base font-bold text-green-400">
+                    {origemNome}
+                  </span>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <span className="text-sm font-bold uppercase tracking-wider text-zinc-200">
+                    Classe
+                  </span>
+                  <span className="text-base font-bold text-green-400">
+                    {classe || '—'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* COLUNA DA DIREITA: CANTO DA FOTO DO PERSONAGEM */}
+          <div className="lg:col-span-5 flex flex-col items-center lg:items-end">
+            <div className="w-full max-w-[280px] flex flex-col gap-3">
+              <span className="text-sm font-bold uppercase tracking-wider text-zinc-200">
+                Foto do Personagem
+              </span>
+
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className={`group relative flex h-72 w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border transition ${
+                  temFoto
+                    ? 'border-zinc-800 bg-zinc-900/40 hover:border-zinc-600'
+                    : 'border-dashed border-zinc-700 bg-zinc-900/30 hover:border-zinc-500 hover:bg-zinc-900/60'
+                }`}
+              >
+                {temFoto ? (
+                  <>
+                    <img
+                      src={fotoPersonagem}
+                      alt="Foto do Personagem"
+                      className="h-full w-full object-cover transition duration-200 group-hover:scale-105 group-hover:opacity-40"
+                    />
+                    <button
+                      type="button"
+                      onClick={e => {
+                        e.stopPropagation();
+                        setFotoPersonagem('');
+                      }}
+                      title="Remover foto"
+                      className="absolute top-2.5 right-2.5 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-black/75 text-xs font-bold text-zinc-300 transition hover:bg-black hover:text-white cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                    <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center opacity-0 transition group-hover:opacity-100">
+                      <span className="rounded-md bg-zinc-900/90 px-4 py-2 text-xs font-bold uppercase tracking-wider text-zinc-100 border border-zinc-700">
+                        Trocar Foto
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center gap-3 px-6 text-center">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full border border-zinc-800 bg-zinc-900 text-zinc-500 transition group-hover:border-zinc-600 group-hover:text-zinc-300">
+                      <svg className="h-8 w-8" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
+                      </svg>
+                    </div>
+                    <span className="text-sm font-bold uppercase tracking-wider text-zinc-300 group-hover:text-zinc-100 transition">
+                      Selecionar Imagem
+                    </span>
+                    <span className="text-sm text-zinc-400">
+                      Clique para enviar do computador
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <input
+                type="text"
+                placeholder="Ou cole o link (URL) da imagem"
+                value={fotoPersonagem.startsWith('data:') ? '' : fotoPersonagem}
+                onChange={e => setFotoPersonagem(e.target.value)}
+                className="w-full border-b border-zinc-700 bg-transparent py-2 text-sm text-zinc-100 placeholder-zinc-500 outline-none transition focus:border-green-500"
+              />
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleUploadImagem}
+                className="hidden"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* BOTÕES DE NAVEGAÇÃO PADRONIZADOS */}
+        <div className="mt-12 flex flex-wrap items-center justify-between gap-4">
+          <button
+            type="button"
+            onClick={() => setTelaAtual('classe')}
+            className="rounded-md border border-zinc-700 bg-zinc-800 px-6 py-3 font-bold text-zinc-300 transition-all duration-200 hover:bg-zinc-700 hover:border-zinc-600 hover:-translate-x-0.5 active:translate-x-0 active:scale-95 cursor-pointer"
+          >
+            Voltar
+          </button>
+
+          <button
+            type="submit"
+            disabled={salvando || !nomeValido}
+            title={!nomeValido ? 'Informe o nome do personagem para finalizar' : undefined}
+            className="rounded-lg bg-green-800 px-8 py-3.5 font-bold uppercase tracking-wider text-zinc-100 shadow transition-all duration-200 hover:bg-green-700 hover:shadow-lg hover:shadow-green-950/30 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-500 disabled:border disabled:border-zinc-700 disabled:shadow-none disabled:hover:bg-zinc-800 disabled:active:scale-100 cursor-pointer"
+          >
+            {salvando ? 'Salvando...' : 'Finalizar e Abrir Ficha'}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};

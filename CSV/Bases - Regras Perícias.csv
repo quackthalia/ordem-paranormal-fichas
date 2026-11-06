@@ -1,0 +1,8 @@
+Codigo_Per_Regra,Descricao_Regra
+0,Nenhuma Perícia adicionada.
+1,"Treina apenas a perícia da coluna ""Pericia_Treinada_1"" . Aumenta em +1 o limite de perícias treináveis"
+2,Aumenta em +2 o limite de perícias treináveis
+3,Aumenta em +1 o limite de perícias treináveis
+4,Aumenta em +5 o limite de perícias treináveis
+5,Aumenta em +3 o limite de perícias treináveis
+6,"Check para escolher entre ""Pericia_Treinada_2"" e ""Pericia_Treinada_Especial"""

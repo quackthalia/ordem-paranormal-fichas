@@ -1,0 +1,404 @@
+// ============================================================
+// TIPOS GLOBAIS — TUDO TIPADO
+// ============================================================
+
+export type Tela = 'hub' | 'atributos' | 'origens' | 'classe' | 'identidade' | 'ficha';
+
+export type ClasseRPG = 'Combatente' | 'Especialista' | 'Ocultista' | null;
+
+export type AtributoKey = 'FOR' | 'AGI' | 'INT' | 'PRE' | 'VIG';
+
+export type AbaDireita = 'combate' | 'habilidades' | 'rituais' | 'inventario' | 'descricao';
+
+export type AbaModalPoderes = 'classe' | 'gerais' | 'combate' | 'paranormais';
+
+export interface Atributos {
+  FOR: number;
+  AGI: number;
+  INT: number;
+  PRE: number;
+  VIG: number;
+}
+
+export interface Pericia {
+  id: number;
+  atributo: AtributoKey;
+  treino: number;
+  outros: number;
+  isLivre?: boolean;
+  kit?: boolean;
+  descricao?: string;
+}
+
+export type PericiasMap = Record<string, Pericia>;
+
+export interface Poder {
+  codigo_poder: number;
+  Nome: string;
+  Descricao: string;
+  Classe: string;
+  Tipo: string;
+  PreRequisitos: string;
+  Fonte: string;
+  Pre_Codigo?: number | null;
+  Codigo_Regra?: number | null;
+  Pericia_Poder?: number | null;
+  Automatico?: string | null;
+}
+
+export interface PoderParanormal {
+  codigo_poder: number;
+  Nome: string;
+  Descricao: string;
+  PreRequisitos: string;
+  Afinidade: string;
+  Elemento: string;
+  Fonte: string;
+  Pre_Codigo?: number | null;
+  PreRequisitosAfinidade?: string;
+  Pre_Codigo_Afinidade?: number | null;
+  Codigo_Regra?: number | null;
+  Codigo_Regra_Afinidade?: number | null;
+  Pericia_Poder?: number | null;
+  'Automatico?'?: string | null;
+  'Automatico?_Afinidade'?: string | null;
+}
+
+export interface GrupoOrigem {
+  Codigo_Grupo: number;
+  Nome_Grupo: string;
+  Descricao_Grupo: string;
+}
+
+export interface Origem {
+  Codigo_Origem: number;
+  Codigo_Grupo?: number | null;
+  Codigo_Regra?: number | null;
+  Codigo_Per_Regra?: number | null;
+  Nome: string;
+  Descricao: string;
+  Pericia_Treinada_1: number;
+  Pericia_Treinada_2: number;
+  Pericia_Treinada_Especial: string | number | null;
+  Nome_Poder: string;
+  Descricao_Poder: string;
+  Fonte: string;
+}
+
+export interface OrigemSelecionada extends Origem {
+  nome_p1: string;
+  nome_p2: string;
+  nome_pesp: string | null;
+  escolhaRegra6?: 'p2' | 'pesp' | null;
+  elemento_escolhido?: string | null;
+}
+
+export interface PoderSlot {
+  nome: string;
+  descricao: string;
+  preRequisitos?: string;
+  fonte?: string;
+  afinidade?: string;
+  elemento?: string;
+  categoria?: 'utilidade' | 'combate' | 'gerais' | 'paranormais' | 'trilha';
+  codigoRegra?: number | null;
+  periciaPoder?: number | null;
+  periciaEscolhidaNome?: string;
+}
+
+export interface PoderesEscolhidos {
+  [id: string]: PoderSlot;
+}
+
+export type CategoriaHabilidade = 'origem' | 'classe' | 'utilidade' | 'gerais' | 'combate' | 'paranormais';
+
+export interface HabilidadeItem {
+  id: string;
+  nome: string;
+  descricao: string;
+  tipo: string;
+  extra?: string | null;
+  subPoder?: { nome: string; descricao: string; extra?: string } | null;
+  preRequisitos?: string;
+  isSlotVazio?: boolean;
+  nexDoSlot?: number;
+  limiteCirculos?: LimiteCirculos;
+  fonte?: string;
+  elemento?: string;
+  afinidade?: string;
+  afinidadeAtiva?: boolean;
+  afinidadeAdquiridaKey?: string | number;
+  categoria: CategoriaHabilidade | 'trilha';
+  automatico?: string | null;
+}
+
+export interface LimiteCirculos {
+  c1: number;
+  c2: number;
+  c3: number;
+  c4: number;
+}
+
+export interface Ritual {
+  Codigo_Ritual: number;
+  Nome_Ritual: string;
+  Descricao_Ritual: string;
+  Elemento_Ritual: string;
+  Circulo_Ritual: number;
+  PE_Ritual: string;
+  Execucao_Ritual: string;
+  Alcance_Ritual: string;
+  Area_Ritual: string;
+  Alvo_Ritual: string;
+  Duracao_Ritual: string;
+  Efeito_Ritual: string;
+  Resistencia_Ritual: string;
+  Dados_Ritual: string;
+  Tem_Discente: boolean;
+  Tem_Verdadeiro: boolean;
+  Imagem?: string;
+  Requisito_Discente?: string;
+  Requisito_Verdadeiro?: string;
+  Fonte?: string;
+}
+
+export interface RitualCustomProps {
+  Execucao_Ritual?: string;
+  Alcance_Ritual?: string;
+  Area_Ritual?: string;
+  Alvo_Ritual?: string;
+  Duracao_Ritual?: string;
+  Efeito_Ritual?: string;
+  Resistencia_Ritual?: string;
+  Dados_Ritual?: string;
+  PE_Ritual?: string;
+  Elemento_Ritual?: string;
+}
+
+export interface RitualAprendido {
+  codigo_ritual: number;
+  origem: string;
+  nome?: string;
+  circulo?: number;
+  elemento?: string;
+  elemento_escolhido?: string;
+  customNome?: string;
+  customDesc?: string;
+  customProps?: {
+    normal?: RitualCustomProps;
+    discente?: RitualCustomProps;
+    verdadeiro?: RitualCustomProps;
+  };
+  fonte?: string;
+}
+
+export interface Trilha {
+  Codigo_Trilha: number;
+  Classe_Trilha: string;
+  Nome_Trilha: string;
+  Descricao_Trilha: string;
+  Especial_Trilha?: string;
+  Perícia_Trilha: number;
+  Profissao_Pericia?: string | null;
+  Codigo_Regra_10?: number;
+  Nome_Habilidade_10: string;
+  Descricao_Habilidade_10: string;
+  Codigo_Regra_40?: number;
+  Nome_Habilidade_40: string;
+  Descricao_Habilidade_40: string;
+  Codigo_Regra_65?: number;
+  Nome_Habilidade_65: string;
+  Descricao_Habilidade_65: string;
+  Codigo_Regra_99?: number;
+  Nome_Habilidade_99: string;
+  Descricao_Habilidade_99: string;
+  Auto_10?: string;
+  Auto_40?: string;
+  Auto_65?: string;
+  Auto_99?: string;
+  Fonte_Trilha: string;
+}
+
+export interface TrilhaSelecionada extends Trilha {
+  nome_pericia: string | null;
+}
+
+// ============================================================
+// INVENTÁRIO — ARMAS
+// ============================================================
+export interface Arma {
+  Codigo_Arma: number;
+  Nome_Item: string;
+  Descricao_Item: string;
+  Proficiencia: string;
+  Tipo_Arma: string;
+  Empunhadura_Arma: string;
+  Dano_Arma: string;
+  Critico_Arma: number;
+  Multiplicador_Arma: number;
+  Tipo_Dano_Arma: string;
+  Alcance_Item: string | null;
+  Categoria_Item: string;
+  'Espaços_Item': number;
+  'Agil?': boolean | null;
+  Capacidade_Municao: number | null;
+  dt_item: string | null;
+  Resistencia_Item?: string | null;
+  'Automatica?': boolean | null;
+  'Improvisada?'?: boolean | null;
+  isDuplaObsessivaCompanion?: boolean;
+  isDuplaObsessivaLinked?: boolean;
+  Codigo_Grupo?: number | null;
+  Fonte_Arma: string;
+  Dano_Secundario?: string;
+  Elemento_Arma?: string | null;
+  Especial_Arma?: string | null;
+  isAmaldicoada?: boolean;
+}
+
+export interface ArmaInventario {
+  id: string;
+  arma: Arma;
+  municoesAcopladas?: string[]; // IDs das munições (MunicaoInventario.id) acopladas a esta arma
+  modificacoes?: number[];
+  maldicoes?: number[]; // IDs (Codigo_Modif) das modificações aplicadas
+  maldicoes_elementos?: Record<number, string>;
+}
+
+// ============================================================
+// INVENTÁRIO — PROTEÇÕES
+// ============================================================
+export interface Protecao {
+  Codigo_Protecao: number;
+  Proficiencia: string;
+  Nome_Protecao: string;
+  Descricao_Protecao: string;
+  Defesa_Protecao: string | number;
+  Espacos_Protecao: number;
+  Categoria_Protecao: string;
+}
+
+export interface ProtecaoInventario {
+  id: string;
+  protecao: Protecao;
+  equipado?: boolean;
+  modificacoes?: number[];
+  maldicoes?: number[]; // IDs (Codigo_Modif) das modificações aplicadas
+  maldicoes_elementos?: Record<number, string>;
+}
+
+// ============================================================
+// INVENTÁRIO — ITENS GERAIS
+// ============================================================
+export interface ItemGeral {
+  Codigo_Item: number;
+  Grupo_Item: string;
+  Nome_Item: string;
+  Desc_Item: string;
+  Categoria_Item: string;
+  Espacos_Itens: number | string;
+  Dt_Item: string | null;
+  Fonte_Item: string;
+}
+
+export interface ItemGeralInventario {
+  id: string;
+  item: ItemGeral;
+  equipado?: boolean;
+  modificacoes?: number[];
+  maldicoes?: number[]; // IDs (Codigo_Modif) das modificações aplicadas
+  maldicoes_elementos?: Record<number, string>;
+}
+
+
+// ============================================================
+// INVENTÁRIO — MUNIÇÕES
+// ============================================================
+export interface Municao {
+  Codigo_Municao: number;
+  Nome_Item: string;
+  Descricao_Item: string;
+  Tipo_Arma: string;
+  Categoria_Item: string;
+  'Espaços_Item': number;
+  contagem_municao?: number | string | null;
+  granada_dano?: string;
+  granada_dt?: string;
+}
+
+export interface MunicaoInventario {
+  id: string;
+  municao: Municao;
+  modificacoes?: number[];
+  maldicoes?: number[];
+  maldicoes_elementos?: Record<number, string>;
+}
+
+// ============================================================
+// MODIFICAÇÕES
+// ============================================================
+export interface Maldicao {
+  Codigo_Mald: number;
+  Categoria_Mald: string;
+  Nome_Mald: string;
+  Descricao_Mald: string;
+  Elemento_Mald: string;
+  Efeito: string;
+}
+
+export type Maldição = Maldicao;
+
+export interface Modificacao {
+  Codigo_Modif: number;
+  Categoria_Modif: string;
+  Nome_Modif: string;
+  Descricao_Modif: string;
+  'Multiplica?': boolean | null;
+  Efeito: string;
+}
+
+// ============================================================
+// INVENTÁRIO — ITENS AMALDIÇOADOS
+// ============================================================
+export interface ItemAmaldicoado {
+  Codigo_Item_Ama: number;
+  Nome_Ama: string;
+  Desc_Ama: string;
+  Espacos_Ama: number | string;
+  Categoria_Ama: string;
+  DT_Ama: string | null;
+  Elemento_Ama: string;
+  Fonte_Ama: string;
+  'Vestimenta?': string | null;
+  Bonus_Vestimenta: string | null;
+  ritualSeloKey?: string;
+}
+
+export interface ItemAmaldicoadoInventario {
+  id: string;
+  item: ItemAmaldicoado;
+  equipado?: boolean;
+}
+
+export interface GrupoArma {
+  Codigo_Grupo: number;
+  RD_Grupo?: number | string | null;
+  PV_Grupo?: number | string | null;
+}
+
+export interface AgenteSalvo {
+  id: string;
+  criadoEm: string;
+  atualizadoEm: string;
+  dataRegistro: string;
+  nomePersonagem: string;
+  nomeJogador: string;
+  fotoPersonagem: string;
+  classe: ClasseRPG;
+  nex: number;
+  rawNex: number;
+  nivel: number;
+  rawNivel: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
+}

@@ -1,0 +1,846 @@
+import React, { useMemo, useState } from 'react';
+import { useRPG } from '../context/RPGContext';
+import type { Trilha } from '../types';
+import { calcularNivel } from '../utils/rpgRules';
+import { Collapse } from './Collapse';
+import { CustomSelect } from './CustomSelect';
+
+function formatarDescricao(texto: string): string {
+  if (!texto) return '';
+  let resultado = texto;
+  if (!resultado.includes('<') && !resultado.includes('&')) {
+    resultado = resultado
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    resultado = resultado.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+    resultado = resultado.replace(/_(.*?)_/g, '<em>$1</em>');
+  }
+  resultado = resultado.replace(/\n/g, '<br />');
+  return resultado;
+}
+
+export function ModalTrilhas({
+  onClose,
+  modoVersatilidade,
+  onSelectTrilha,
+  tituloCustom,
+  subtituloCustom,
+}: {
+  onClose: () => void;
+  modoVersatilidade?: boolean;
+  onSelectTrilha?: (trilha: Trilha) => void;
+  tituloCustom?: string;
+  subtituloCustom?: string;
+}) {
+  React.useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = 'unset'; };
+  }, []);
+
+  const { classe, trilhasHook, regras, armasHook, poderesExtras, setPoderesExtras, rituaisHook, periciasHook, periciasGratisSemTrilha } = useRPG();
+  const {
+    trilhas,
+    loading,
+    error,
+    trilhasExpandidas,
+    toggleTrilhaExpandida,
+    selecionarTrilha,
+    selecionarVersatilidade,
+    nomePericia,
+    trilhaSelecionada,
+  } = trilhasHook;
+
+  const [abaAtual, setAbaAtual] = useState<'classe' | 'gerais'>('classe');
+  const [habilidadesExpandidas, setHabilidadesExpandidas] = useState<number[]>([]);
+  const [busca, setBusca] = useState('');
+  const [filtroFonte, setFiltroFonte] = useState<string>('Todas');
+  const [mostrarFiltrosAvancados, setMostrarFiltrosAvancados] = useState(false);
+  const [trilhasModalExpandidas, setTrilhasModalExpandidas] = useState<number[]>([]);
+  const [escolhendoArmaTrilha1, setEscolhendoArmaTrilha1] = useState<Trilha | null>(null);
+    const [escolhendoElementoLamina, setEscolhendoElementoLamina] = useState<number | null>(null);
+  const [escolhendoPericiaAgenteSecreto, setEscolhendoPericiaAgenteSecreto] = useState<number | null>(null);
+  const [escolhendoProfissaoMuambeiro, setEscolhendoProfissaoMuambeiro] = useState<number | null>(null);
+
+  const trilhasFiltradas = useMemo(() => {
+    return trilhas.filter((t) => {
+      // No modo versatilidade, não pode escolher a própria trilha atual
+      if (modoVersatilidade && trilhaSelecionada && Number(t.Codigo_Trilha) === Number(trilhaSelecionada.Codigo_Trilha)) {
+        return false;
+      }
+      if (abaAtual === 'classe') {
+        if (t.Classe_Trilha !== classe) return false;
+      } else {
+        if (t.Classe_Trilha !== 'Geral') return false;
+      }
+      
+      if (busca.trim()) {
+        const lower = busca.toLowerCase();
+        if (!t.Nome_Trilha.toLowerCase().includes(lower)) return false;
+      }
+
+      if (filtroFonte !== 'Todas') {
+        const fonte = (t.Fonte_Trilha || '').trim().toLowerCase();
+        if (filtroFonte === 'Homebrew') {
+          if (fonte !== 'homebrew' && fonte !== 'hb') return false;
+        } else if (filtroFonte === 'AS') {
+          if (fonte !== 'as' && fonte !== 'a.s.' && fonte !== 'a.s' && !fonte.includes('sobreviv') && !fonte.includes('arquivo') && !fonte.includes('aurora') && !fonte.includes('aniquila')) return false;
+        } else {
+          if (fonte !== filtroFonte.toLowerCase()) return false;
+        }
+      }
+
+      return true;
+    });
+  }, [trilhas, abaAtual, classe, modoVersatilidade, trilhaSelecionada, busca, filtroFonte]);
+
+  const toggleHabilidade = (codigo: number) => {
+    setHabilidadesExpandidas((prev) =>
+      prev.includes(codigo) ? prev.filter((i) => i !== codigo) : [...prev, codigo]
+    );
+  };
+
+  const checarRequisito = (trilha: Trilha) => {
+    if (trilha.Codigo_Trilha === 1 && !modoVersatilidade) {
+      const armas = armasHook.armasInventario.filter(a => (!a.arma.Nome_Item?.includes('Ataque Desarmado') && !a.arma.Nome_Item?.includes('Coronhada')));
+      if (armas.length === 0) {
+        return "Requisito: Ter pelo menos uma arma no inventário";
+      }
+    }
+    if (trilha.Codigo_Trilha === 21) {
+      const opcoesMuambeiro = ['armeiro', 'engenheiro', 'químico'];
+      const profissoesTreinadas = (periciasHook.profissoes || [])
+        .filter(p => p.treino >= 5)
+        .map(p => (p.nome || '').trim().toLowerCase());
+      const temTodas = opcoesMuambeiro.every(opt => profissoesTreinadas.includes(opt));
+      if (temTodas) {
+        return "Requisito: Você já possui treinamento em Armeiro, Engenheiro e Químico";
+      }
+    }
+    return null;
+  };
+
+  const handleEscolher = (trilha: Trilha) => {
+    const erro = checarRequisito(trilha);
+    if (erro) return;
+
+    if (trilha.Codigo_Trilha === 1 && !modoVersatilidade) {
+      setEscolhendoArmaTrilha1(trilha);
+      return;
+    }
+
+    
+    if (trilha.Codigo_Trilha === 21) {
+      setEscolhendoProfissaoMuambeiro(trilha.Codigo_Trilha);
+      return;
+    }
+
+    if (trilha.Codigo_Trilha === 16) {
+      setEscolhendoPericiaAgenteSecreto(trilha.Codigo_Trilha);
+      return;
+    }
+
+    // Salva o snapshot de jaTinha para qualquer trilha que conceda perícia
+    const periciaDaTrilha = trilha.nome_pericia || nomePericia(trilha.Perícia_Trilha);
+    if (periciaDaTrilha) {
+      const jaTinha = (periciasHook.pericias[periciaDaTrilha]?.treino || 0) >= 5 || periciasGratisSemTrilha.includes(periciaDaTrilha);
+      const chaveExtra = modoVersatilidade ? 'versatilidade_ja_tinha_pericia' : 'trilha_ja_tinha_pericia';
+      setPoderesExtras(prev => ({ ...prev, [chaveExtra]: String(jaTinha) }));
+    }
+
+    if (trilha.Codigo_Trilha === 17) {
+      const jaTinha = (periciasHook.pericias['Sobrevivência']?.treino || 0) >= 5 || periciasGratisSemTrilha.includes('Sobrevivência');
+      if (modoVersatilidade) {
+        setPoderesExtras(prev => ({ ...prev, cacador_versatilidade_ja_tinha_sobrevivencia: String(jaTinha) }));
+      } else {
+        setPoderesExtras(prev => ({ ...prev, cacador_ja_tinha_sobrevivencia: String(jaTinha) }));
+      }
+    }
+
+    if (trilha.Codigo_Trilha === 18 || trilha.Codigo_Trilha === 45 || trilha.Codigo_Trilha === 47) {
+      const jaTinha = (periciasHook.pericias['Ocultismo']?.treino || 0) >= 5 || periciasGratisSemTrilha.includes('Ocultismo');
+      setPoderesExtras(prev => ({
+        ...prev,
+        monstruoso_ja_tinha_ocultismo: String(jaTinha),
+        monstruoso_ocultismo_jatinha: String(jaTinha),
+      }));
+    }
+
+    if (trilha.Codigo_Trilha === 48 || trilha.Codigo_Trilha === 49 || trilha.Codigo_Trilha === 50) {
+      const pNome = trilha.nome_pericia || 'Fortitude';
+      const jaTinha = (periciasHook.pericias[pNome]?.treino || 0) >= 5 || periciasGratisSemTrilha.includes(pNome);
+      setPoderesExtras(prev => ({
+        ...prev,
+        vampiro_ja_tinha_pericia: String(jaTinha),
+      }));
+    }
+
+    if (trilha.Codigo_Trilha === 22) {
+      const jaTinha = (periciasHook.pericias['Religião']?.treino || 0) >= 5 || periciasGratisSemTrilha.includes('Religião');
+      if (modoVersatilidade) {
+        setPoderesExtras(prev => ({ ...prev, exorcista_versatilidade_ja_tinha_religiao: String(jaTinha) }));
+      } else {
+        setPoderesExtras(prev => ({ ...prev, exorcista_ja_tinha_religiao: String(jaTinha) }));
+      }
+    }
+
+    if (trilha.Codigo_Trilha === 15) {
+      const jaTemAmaldicoarNormal = (rituaisHook.rituaisAprendidos || []).find((r: any) => Number(r.codigo_ritual) === 3);
+      if (jaTemAmaldicoarNormal) {
+        const el = jaTemAmaldicoarNormal.elemento_escolhido || jaTemAmaldicoarNormal.customProps?.normal?.Elemento_Ritual || 'Sangue';
+        prosseguirEscolhaLamina(trilha, el);
+        return;
+      }
+      setEscolhendoElementoLamina(trilha.Codigo_Trilha);
+      return;
+    }
+
+    prosseguirEscolha(trilha);
+    };
+
+    const limparTrilhaAnterior = (novaTrilhaId: number) => {
+      const trilhaAtual = modoVersatilidade ? trilhasHook.versatilidadeSelecionada : trilhasHook.trilhaSelecionada;
+      if ((trilhaAtual?.Codigo_Trilha === 18 || trilhaAtual?.Codigo_Trilha === 45 || trilhaAtual?.Codigo_Trilha === 47) && novaTrilhaId !== 18 && novaTrilhaId !== 45 && novaTrilhaId !== 47) {
+        const outraTemMonstruoso = modoVersatilidade
+          ? (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 18 || trilhasHook.trilhaSelecionada?.Codigo_Trilha === 45 || trilhasHook.trilhaSelecionada?.Codigo_Trilha === 47)
+          : (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 18 || trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 45 || trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 47);
+        if (!outraTemMonstruoso) {
+          setPoderesExtras(prev => {
+            const n = { ...prev };
+            delete n.monstruoso_ja_tinha_ocultismo;
+            delete n.monstruoso_ocultismo_jatinha;
+            delete n.monstruoso_elemento;
+            delete n.monstruoso_ativo;
+            return n;
+          });
+        }
+      }
+      if (trilhaAtual?.Codigo_Trilha === 32 && novaTrilhaId !== 32) {
+        const outraTem32 = modoVersatilidade ? trilhasHook.trilhaSelecionada?.Codigo_Trilha === 32 : trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 32;
+        if (!outraTem32) {
+          rituaisHook.atualizarRituaisAprendidos(prev => prev.filter(r => !r.origem?.startsWith('adepto_')));
+          setPoderesExtras(prev => {
+            const n = { ...prev };
+            delete n.adepto_atributo_40;
+            delete n.adepto_recusados;
+            delete n.adepto_excluidos;
+            return n;
+          });
+        }
+      }
+      if ([48, 49, 50].includes(trilhaAtual?.Codigo_Trilha || 0) && ![48, 49, 50].includes(novaTrilhaId)) {
+        const outraTemVamp = modoVersatilidade
+          ? [48, 49, 50].includes(trilhasHook.trilhaSelecionada?.Codigo_Trilha || 0)
+          : [48, 49, 50].includes(trilhasHook.versatilidadeSelecionada?.Codigo_Trilha || 0);
+        if (!outraTemVamp) {
+          setPoderesExtras(prev => {
+            const n = { ...prev };
+            delete n.vampiro_ja_tinha_pericia;
+            delete n.vampiro_arquetipo;
+            delete n.vampiro_opcao_10;
+            delete n.vampiro_opcao_40;
+            delete n.vampiro_opcao_65;
+            delete n.vampiro_opcao_99;
+            return n;
+          });
+        }
+      }
+    };
+
+    const prosseguirEscolhaAgenteSecreto = (trilha: Trilha, pericia: string) => {
+      setPoderesExtras(prev => ({
+        ...prev,
+        [modoVersatilidade ? 'agente_secreto_pericia_versatilidade' : 'agente_secreto_pericia']: pericia
+      }));
+      prosseguirEscolha(trilha);
+    };
+
+    const prosseguirEscolhaMuambeiro = (trilha: Trilha, prof: string) => {
+      limparTrilhaAnterior(trilha.Codigo_Trilha);
+      setPoderesExtras(prev => ({
+        ...prev,
+        [modoVersatilidade ? 'muambeiro_versatilidade_profissao' : 'muambeiro_profissao_10']: prof
+      }));
+      const trilhaComProfissao = { ...trilha, Profissao_Pericia: prof };
+      if (onSelectTrilha) {
+        onSelectTrilha(trilhaComProfissao);
+      } else if (modoVersatilidade) {
+        selecionarVersatilidade(trilhaComProfissao);
+      } else {
+        selecionarTrilha(trilhaComProfissao);
+      }
+      setEscolhendoProfissaoMuambeiro(null);
+      onClose();
+    };
+
+    const prosseguirEscolhaLamina = (trilha: Trilha, elemento: string) => {
+    limparTrilhaAnterior(trilha.Codigo_Trilha);
+    setPoderesExtras(prev => ({ ...prev, lamina_elemento: elemento }));
+    if (onSelectTrilha) onSelectTrilha(trilha);
+    else if (modoVersatilidade) selecionarVersatilidade(trilha);
+    else selecionarTrilha(trilha);
+    onClose();
+  };
+
+  const prosseguirEscolha = (trilha: Trilha, armaFavId?: string) => {
+    limparTrilhaAnterior(trilha.Codigo_Trilha);
+    if (armaFavId) {
+      setPoderesExtras(prev => ({ ...prev, aniquilador_arma_favorita: armaFavId }));
+    }
+    if (onSelectTrilha) {
+      onSelectTrilha(trilha);
+    } else if (modoVersatilidade) {
+      selecionarVersatilidade(trilha);
+    } else {
+      selecionarTrilha(trilha);
+    }
+    onClose();
+  };
+
+  if (escolhendoArmaTrilha1) {
+    const armasFiltradas = armasHook.armasInventario.filter(a => (!a.arma.Nome_Item?.includes('Ataque Desarmado') && !a.arma.Nome_Item?.includes('Coronhada')));
+    return (
+      <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 p-4 font-sans backdrop-blur-sm">
+        <div className="w-full max-w-2xl rounded-2xl border border-zinc-800 bg-[#0a0a0a] shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-green-500/50 to-transparent" />
+          
+          <div className="flex items-start justify-between border-b border-zinc-800/80 p-5 bg-zinc-900/20">
+            <div>
+              <h2 className="font-display text-lg font-bold uppercase tracking-wider text-zinc-100 flex items-center gap-2">
+                <span className="text-green-500">❖</span> Arma Favorita
+              </h2>
+              <p className="mt-1 text-xs text-zinc-400">Selecione uma arma do seu inventário.</p>
+            </div>
+            <button onClick={() => setEscolhendoArmaTrilha1(null)} className="text-zinc-500 hover:text-white transition">✕</button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-5 custom-scrollbar flex flex-col gap-3">
+            {armasFiltradas.map((a) => (
+              <div 
+                key={a.id} 
+                onClick={() => prosseguirEscolha(escolhendoArmaTrilha1, a.id)}
+                className="cursor-pointer rounded border border-zinc-800 bg-zinc-950/60 hover:bg-zinc-900/60 p-3 transition flex items-center justify-between group"
+              >
+                <div className="flex flex-col gap-1 min-w-0 justify-center">
+                  <span className="font-bold text-sm text-zinc-100 truncate leading-none mt-0.5 flex items-center gap-2">
+                    {a.arma.Nome_Item}
+                    {a.arma.isAmaldicoada && a.arma.Elemento_Arma && (
+                      <span className={`text-[10px] font-bold rounded-sm truncate uppercase tracking-wider w-fit ${
+                        a.arma.Elemento_Arma.toLowerCase().includes('medo') ? 'bg-zinc-200/80 text-zinc-950 px-1' :
+                        a.arma.Elemento_Arma.toLowerCase().includes('sangue') ? 'text-red-500' :
+                        a.arma.Elemento_Arma.toLowerCase().includes('morte') ? 'bg-black/50 text-white px-1' :
+                        a.arma.Elemento_Arma.toLowerCase().includes('conhecimento') ? 'text-yellow-500' :
+                        a.arma.Elemento_Arma.toLowerCase().includes('energia') ? 'text-purple-500' :
+                        'text-zinc-400'
+                      }`}>
+                        {a.arma.Elemento_Arma}
+                      </span>
+                    )}
+                  </span>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-300 mt-0.5">
+                    <span><span className="font-bold text-green-400">Dano:</span> {a.arma.Dano_Arma || '-'}</span>
+                    <span><span className="font-bold text-zinc-400">Crítico:</span> {a.arma.Critico_Arma || 20}/x{a.arma.Multiplicador_Critico || 2}</span>
+                    <span><span className="font-bold text-zinc-400">Alcance:</span> {a.arma.Alcance_Item || '-'}</span>
+                    <span><span className="font-bold text-green-400">Categoria base:</span> {a.arma.Categoria_Item}</span>
+                  </div>
+                  {(a.modificacoes?.length > 0 || a.maldicoes?.length > 0) && (
+                    <div className="flex gap-2 text-[10px] mt-1 text-zinc-500">
+                       {a.modificacoes?.length > 0 && <span>{a.modificacoes.length} Modificações</span>}
+                       {a.maldicoes?.length > 0 && <span>{a.maldicoes.length} Maldições</span>}
+                    </div>
+                  )}
+                </div>
+                <div className="text-[10px] uppercase tracking-wider font-bold text-green-500/0 group-hover:text-green-500/100 transition-colors ml-4 whitespace-nowrap">
+                  Escolher ➔
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onClose}>
+      <div
+        className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden flex flex-col h-[90vh]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="font-display text-lg uppercase tracking-wide text-zinc-100">
+                {tituloCustom || (modoVersatilidade ? 'SELECIONAR VERSATILIDADE' : 'SELECIONAR TRILHA')} 
+                <span className="text-green-500 ml-2">
+                  {subtituloCustom || (modoVersatilidade ? (regras['nex_experiencia'] ? '(Nível 10)' : '(NEX 50%)') : (regras['nex_experiencia'] ? '(Nível 2)' : '(NEX 10%)'))}
+                </span>
+              </h2>
+              <p className="mt-1 text-xs text-zinc-400">Selecione uma opção da lista abaixo.</p>
+            </div>
+            <button
+              onClick={onClose}
+              className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100"
+            >
+              &times;
+            </button>
+          </div>
+          <div className="flex items-stretch gap-2">
+            <input
+              type="text"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar trilha..."
+              className="flex-1 rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700"
+            />
+            <button
+              onClick={() => setMostrarFiltrosAvancados(!mostrarFiltrosAvancados)}
+              className={`rounded border px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider transition ${
+                mostrarFiltrosAvancados || filtroFonte !== 'Todas'
+                  ? 'border-green-800 bg-green-900/40 text-green-300'
+                  : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
+              }`}
+            >
+              Filtros
+            </button>
+          </div>
+          <Collapse isOpen={mostrarFiltrosAvancados} className="z-50">
+            <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-zinc-800/80 mt-3">
+              <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Fonte</label>
+                <CustomSelect
+                  value={filtroFonte}
+                  onChange={setFiltroFonte}
+                  options={[
+                    { value: 'Todas', label: 'Todas' },
+                    { value: 'OPRPG', label: 'OPRPG' },
+                    { value: 'SaH', label: 'SaH' },
+                    { value: 'AS', label: 'AS' },
+                    { value: 'Homebrew', label: 'Homebrew' }
+                  ]}
+                  wrapperClassName="w-full"
+                />
+              </div>
+            </div>
+          </Collapse>
+        </div>
+
+        {/* Abas */}
+        <div className="flex flex-wrap gap-1 border-b border-zinc-800 bg-zinc-900/50 px-4 pt-3">
+          <button
+            onClick={() => setAbaAtual('classe')}
+            className={`min-w-[70px] flex-1 rounded-t px-1 py-2.5 text-xs font-bold uppercase tracking-wider transition ${
+              abaAtual === 'classe'
+                ? 'border border-b-0 border-green-900 bg-zinc-900 text-zinc-100'
+                : 'border border-transparent text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300'
+            }`}
+          >
+            Trilhas da Classe ({classe})
+          </button>
+          <button
+            onClick={() => setAbaAtual('gerais')}
+            className={`min-w-[70px] flex-1 rounded-t px-1 py-2.5 text-xs font-bold uppercase tracking-wider transition ${
+              abaAtual === 'gerais'
+                ? 'border border-b-0 border-green-900 bg-zinc-900 text-zinc-100'
+                : 'border border-transparent text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300'
+            }`}
+          >
+            Trilhas Gerais
+          </button>
+        </div>
+
+        {/* Lista de Trilhas */}
+        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+          {loading && <div className="text-center italic text-zinc-500 mt-5">Carregando trilhas...</div>}
+          {error && <div className="text-center italic text-red-500 mt-5">Erro: {error}</div>}
+
+          {!loading && !error && trilhasFiltradas.length === 0 && (
+            <div className="text-center italic text-zinc-500 mt-5">Nenhuma trilha encontrada.</div>
+          )}
+
+          <div className="flex flex-col md:flex-row gap-3 items-start">
+            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+              {trilhasFiltradas.filter((_, i) => i % 2 === 0).map((trilha) => {
+                const estaExpandida = trilhasModalExpandidas.includes(trilha.Codigo_Trilha);
+                const nexLevels = [10, 40, 65, 99];
+
+                return (
+                  <div key={trilha.Codigo_Trilha} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out cursor-pointer ${estaExpandida ? 'min-h-[170px] max-h-[3000px]' : 'min-h-[170px] max-h-[170px]'}`}>
+                    <div className="flex justify-between items-start mb-2 cursor-pointer" onClick={() => setTrilhasModalExpandidas(prev => prev.includes(trilha.Codigo_Trilha) ? prev.filter(i => i !== trilha.Codigo_Trilha) : [...prev, trilha.Codigo_Trilha])}>
+                      <div className="flex flex-col gap-1">
+                        <span className="font-bold text-zinc-200 group-hover:text-green-400 transition uppercase tracking-wider text-sm">{trilha.Nome_Trilha}</span>
+                        <span className="text-[10px] uppercase text-zinc-500 tracking-wider">
+                          ({nomePericia(trilha.Perícia_Trilha)})
+                        </span>
+                      </div>
+                      <span className="text-zinc-500 text-xs mt-1">
+                        {estaExpandida ? '▲' : '▼'}
+                      </span>
+                    </div>
+
+                    <div className="flex-1 flex flex-col">
+                      <Collapse isOpen={estaExpandida} previewHeight="4.5em">
+                        <div className="cursor-pointer" onClick={() => !estaExpandida && setTrilhasModalExpandidas(prev => [...prev, trilha.Codigo_Trilha])}>
+                        <div className="text-xs text-zinc-400 mb-2 leading-relaxed whitespace-pre-wrap select-none" dangerouslySetInnerHTML={{ __html: formatarDescricao(trilha.Descricao_Trilha) }} />
+                      </div></Collapse>
+                    </div>
+
+                    <Collapse isOpen={estaExpandida}>
+                      <div className="flex flex-col gap-2 mb-4">
+                        <h4 className="mb-1 mt-2 text-[10px] font-bold uppercase tracking-wider text-green-500 border-b border-zinc-800/50 pb-1">
+                          Habilidades da Trilha
+                        </h4>
+
+                        {(modoVersatilidade ? [10] : nexLevels).map((nexLvl) => {
+                          const habNameKey = `Nome_Habilidade_${nexLvl}` as keyof Trilha;
+                          const habDescKey = `Descricao_Habilidade_${nexLvl}` as keyof Trilha;
+                          const nomeHab = trilha[habNameKey] as string;
+                          const descHab = trilha[habDescKey] as string;
+
+                          if (!nomeHab) return null;
+
+                          const uniqueHabId = trilha.Codigo_Trilha * 1000 + nexLvl;
+                          const isHabExpanded = habilidadesExpandidas.includes(uniqueHabId);
+
+                          return (
+                            <div key={nexLvl} className="rounded border border-zinc-800 bg-zinc-950/50 overflow-hidden transition">
+                              <div
+                                onClick={(e) => { e.stopPropagation(); toggleHabilidade(uniqueHabId); }}
+                                className="flex cursor-pointer justify-between items-center p-2 hover:bg-zinc-800/50 transition"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <span className="inline-block rounded bg-zinc-800 px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight text-green-400">
+                                    {regras['nex_experiencia'] ? `NV ${calcularNivel(nexLvl)}` : `${nexLvl}%`}
+                                  </span>
+                                  <span className="font-bold text-zinc-200 text-xs">{nomeHab}</span>
+                                  {(() => {
+                                    const rawAuto = ((trilha as any)[`Auto_${nexLvl}`] || '').toString().toLowerCase().trim();
+                                    const isAuto = rawAuto === 'sim' || rawAuto === 'auto';
+                                    const isSemi = rawAuto === 'semi';
+                                    if (!isAuto && !isSemi) return null;
+                                    return (
+                                      <span
+                                        title={isAuto ? 'Totalmente automático' : 'Semi-automático'}
+                                        className={`shrink-0 flex items-center gap-1 px-1 py-0.5 rounded text-[0.55rem] font-bold uppercase tracking-wider ${
+                                          isAuto
+                                            ? 'bg-green-950/60 text-green-400 border border-green-800/50'
+                                            : 'bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
+                                        }`}
+                                      >
+                                        {isAuto ? (
+                                          <>
+                                            <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z"/></svg>
+                                            Auto
+                                          </>
+                                        ) : (
+                                          <>
+                                            <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z" opacity="0.5"/><path d="M19 3v4m0 4v10" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
+                                            Semi
+                                          </>
+                                        )}
+                                      </span>
+                                    );
+                                  })()}
+                                </div>
+                                <span className="text-[10px] text-zinc-500">
+                                  {isHabExpanded ? '▲' : '▼'}
+                                </span>
+                              </div>
+                              <Collapse isOpen={isHabExpanded}>
+                                <div className="px-3 py-2 border-t border-zinc-800/50 bg-zinc-950/80">
+                                  <div
+                                    className="text-[11px] leading-relaxed text-zinc-400"
+                                    dangerouslySetInnerHTML={{ __html: formatarDescricao(descHab) }}
+                                  />
+                                </div>
+                              </Collapse>
+                            </div>
+                          );
+                        })}
+                        {trilha.Fonte_Trilha && (
+                           <div className="mt-2 flex justify-end">
+                             <span className="text-[10px] text-zinc-600">Fonte: {trilha.Fonte_Trilha}</span>
+                           </div>
+                        )}
+                      </div>
+                    </Collapse>
+
+                    <div className="flex flex-nowrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 shrink-0">
+                      {(() => {
+                        const erroReq = checarRequisito(trilha);
+                          
+                          const isEscolhendoLamina = escolhendoElementoLamina === trilha.Codigo_Trilha;
+                          const isEscolhendoAgente = escolhendoPericiaAgenteSecreto === trilha.Codigo_Trilha;
+                          const isEscolhendoMuambeiro = escolhendoProfissaoMuambeiro === trilha.Codigo_Trilha;
+                          
+                          if (isEscolhendoMuambeiro) {
+                            const profissoesTreinadas = (periciasHook.profissoes || [])
+                              .filter(p => p.treino >= 5)
+                              .map(p => (p.nome || '').trim().toLowerCase());
+
+                            return (
+                              <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800 ml-auto" onClick={e => e.stopPropagation()}>
+                                <span className="text-[10px] text-zinc-500 font-bold uppercase">Profissão:</span>
+                                {['Armeiro', 'Engenheiro', 'Químico'].map(prof => {
+                                  const jaTem = profissoesTreinadas.includes(prof.toLowerCase());
+                                  return (
+                                    <button
+                                      key={prof}
+                                      disabled={jaTem}
+                                      onClick={() => prosseguirEscolhaMuambeiro(trilha, prof)}
+                                      className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border transition ${
+                                        jaTem
+                                          ? 'border-zinc-800 bg-zinc-900/50 text-zinc-600 cursor-not-allowed opacity-50'
+                                          : 'border-zinc-700 hover:bg-zinc-800 text-zinc-300'
+                                      }`}
+                                      title={jaTem ? `Você já é treinado em ${prof}` : undefined}
+                                    >
+                                      {prof}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            );
+                          }
+
+                          if (isEscolhendoAgente) {
+                            return (
+                              <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800 ml-auto" onClick={e => e.stopPropagation()}>
+                                <span className="text-[10px] text-zinc-500 font-bold uppercase">Perícia:</span>
+                                {['Diplomacia', 'Enganação'].map(el => (
+                                  <button
+                                    key={el}
+                                    onClick={() => prosseguirEscolhaAgenteSecreto(trilha, el)}
+                                    className="px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-zinc-700 hover:bg-zinc-800 text-zinc-300"
+                                  >
+                                    {el}
+                                  </button>
+                                ))}
+                              </div>
+                            );
+                          }
+                          
+                          if (isEscolhendoLamina) {
+                            const jaTemAmaldicoar = (rituaisHook.rituaisAprendidos || []).find((r: any) => Number(r.codigo_ritual) === 3);
+                            const elJaExistente = jaTemAmaldicoar?.elemento_escolhido || jaTemAmaldicoar?.customProps?.normal?.Elemento_Ritual;
+                            const elementosExibir = elJaExistente ? [elJaExistente] : ['Sangue', 'Morte', 'Conhecimento', 'Energia'];
+
+                            return (
+                              <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800 ml-auto" onClick={e => e.stopPropagation()}>
+                                <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1">Elemento:</span>
+                                {elementosExibir.map(elem => (
+                                  <button
+                                    key={elem}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setEscolhendoElementoLamina(null);
+                                      prosseguirEscolhaLamina(trilha, elem);
+                                    }}
+                                    className="text-[9px] font-bold px-1.5 py-0.5 rounded border border-zinc-600 hover:border-zinc-400 text-zinc-300 hover:text-white"
+                                  >
+                                    {elem}
+                                  </button>
+                                ))}
+                              </div>
+                            );
+                          }
+                          return (
+                            <button
+                              title={erroReq || undefined}
+                            onClick={(e) => { e.stopPropagation(); if (!erroReq) handleEscolher(trilha); }}
+                            className={erroReq 
+                              ? "ml-auto shrink-0 px-3 py-1 bg-zinc-800 text-zinc-500 rounded font-bold text-[10px] uppercase tracking-wider cursor-not-allowed border border-zinc-700/50"
+                              : "ml-auto shrink-0 px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                            }
+                          >
+                            Escolher
+                          </button>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="flex flex-col gap-3 w-full flex-1 min-w-[200px]">
+              {trilhasFiltradas.filter((_, i) => i % 2 !== 0).map((trilha) => {
+                const estaExpandida = trilhasModalExpandidas.includes(trilha.Codigo_Trilha);
+                const nexLevels = [10, 40, 65, 99];
+
+                return (
+                  <div key={trilha.Codigo_Trilha} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out cursor-pointer ${estaExpandida ? 'min-h-[170px] max-h-[3000px]' : 'min-h-[170px] max-h-[170px]'}`}>
+                    <div className="flex justify-between items-start mb-2 cursor-pointer" onClick={() => setTrilhasModalExpandidas(prev => prev.includes(trilha.Codigo_Trilha) ? prev.filter(i => i !== trilha.Codigo_Trilha) : [...prev, trilha.Codigo_Trilha])}>
+                      <div className="flex flex-col gap-1">
+                        <span className="font-bold text-zinc-200 group-hover:text-green-400 transition uppercase tracking-wider text-sm">{trilha.Nome_Trilha}</span>
+                        <span className="text-[10px] uppercase text-zinc-500 tracking-wider">
+                          ({nomePericia(trilha.Perícia_Trilha)})
+                        </span>
+                      </div>
+                      <span className="text-zinc-500 text-xs mt-1">
+                        {estaExpandida ? '▲' : '▼'}
+                      </span>
+                    </div>
+
+                    <div className="flex-1 flex flex-col">
+                      <Collapse isOpen={estaExpandida} previewHeight="4.5em">
+                        <div className="cursor-pointer" onClick={() => !estaExpandida && setTrilhasModalExpandidas(prev => [...prev, trilha.Codigo_Trilha])}>
+                        <div className="text-xs text-zinc-400 mb-2 leading-relaxed whitespace-pre-wrap select-none" dangerouslySetInnerHTML={{ __html: formatarDescricao(trilha.Descricao_Trilha) }} />
+                      </div></Collapse>
+                    </div>
+
+                    <Collapse isOpen={estaExpandida}>
+                      <div className="flex flex-col gap-2 mb-4">
+                        <h4 className="mb-1 mt-2 text-[10px] font-bold uppercase tracking-wider text-green-500 border-b border-zinc-800/50 pb-1">
+                          Habilidades da Trilha
+                        </h4>
+
+                        {(modoVersatilidade ? [10] : nexLevels).map((nexLvl) => {
+                          const habNameKey = `Nome_Habilidade_${nexLvl}` as keyof Trilha;
+                          const habDescKey = `Descricao_Habilidade_${nexLvl}` as keyof Trilha;
+                          const nomeHab = trilha[habNameKey] as string;
+                          const descHab = trilha[habDescKey] as string;
+
+                          if (!nomeHab) return null;
+
+                          const uniqueHabId = trilha.Codigo_Trilha * 1000 + nexLvl;
+                          const isHabExpanded = habilidadesExpandidas.includes(uniqueHabId);
+
+                          return (
+                            <div key={nexLvl} className="rounded border border-zinc-800 bg-zinc-950/50 overflow-hidden transition">
+                              <div
+                                onClick={() => toggleHabilidade(uniqueHabId)}
+                                className="flex cursor-pointer justify-between items-center p-2 hover:bg-zinc-800/50 transition"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <span className="inline-block rounded bg-zinc-800 px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight text-green-400">
+                                    {regras['nex_experiencia'] ? `NV ${calcularNivel(nexLvl)}` : `${nexLvl}%`}
+                                  </span>
+                                  <span className="font-bold text-zinc-200 text-xs">{nomeHab}</span>
+                                </div>
+                                <span className="text-[10px] text-zinc-500">
+                                  {isHabExpanded ? '▲' : '▼'}
+                                </span>
+                              </div>
+                              <Collapse isOpen={isHabExpanded}>
+                                <div className="px-3 py-2 border-t border-zinc-800/50 bg-zinc-950/80">
+                                  <div
+                                    className="text-[11px] leading-relaxed text-zinc-400"
+                                    dangerouslySetInnerHTML={{ __html: formatarDescricao(descHab) }}
+                                  />
+                                </div>
+                              </Collapse>
+                            </div>
+                          );
+                        })}
+                        {trilha.Fonte_Trilha && (
+                           <div className="mt-2 flex justify-end">
+                             <span className="text-[10px] text-zinc-600">Fonte: {trilha.Fonte_Trilha}</span>
+                           </div>
+                        )}
+                      </div>
+                    </Collapse>
+
+                    <div className="flex flex-nowrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 shrink-0">
+                      {(() => {
+                        const erroReq = checarRequisito(trilha);
+                          
+                          const isEscolhendoLamina = escolhendoElementoLamina === trilha.Codigo_Trilha;
+                          const isEscolhendoAgente = escolhendoPericiaAgenteSecreto === trilha.Codigo_Trilha;
+                          const isEscolhendoMuambeiro = escolhendoProfissaoMuambeiro === trilha.Codigo_Trilha;
+                          
+                          if (isEscolhendoMuambeiro) {
+                            const profissoesTreinadas = (periciasHook.profissoes || [])
+                              .filter(p => p.treino >= 5)
+                              .map(p => (p.nome || '').trim().toLowerCase());
+
+                            return (
+                              <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800 ml-auto" onClick={e => e.stopPropagation()}>
+                                <span className="text-[10px] text-zinc-500 font-bold uppercase">Profissão:</span>
+                                {['Armeiro', 'Engenheiro', 'Químico'].map(prof => {
+                                  const jaTem = profissoesTreinadas.includes(prof.toLowerCase());
+                                  return (
+                                    <button
+                                      key={prof}
+                                      disabled={jaTem}
+                                      onClick={() => prosseguirEscolhaMuambeiro(trilha, prof)}
+                                      className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border transition ${
+                                        jaTem
+                                          ? 'border-zinc-800 bg-zinc-900/50 text-zinc-600 cursor-not-allowed opacity-50'
+                                          : 'border-zinc-700 hover:bg-zinc-800 text-zinc-300'
+                                      }`}
+                                      title={jaTem ? `Você já é treinado em ${prof}` : undefined}
+                                    >
+                                      {prof}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            );
+                          }
+
+                          if (isEscolhendoAgente) {
+                            return (
+                              <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800 ml-auto" onClick={e => e.stopPropagation()}>
+                                <span className="text-[10px] text-zinc-500 font-bold uppercase">Perícia:</span>
+                                {['Diplomacia', 'Enganação'].map(el => (
+                                  <button
+                                    key={el}
+                                    onClick={() => prosseguirEscolhaAgenteSecreto(trilha, el)}
+                                    className="px-2 py-0.5 rounded text-[10px] uppercase font-bold border border-zinc-700 hover:bg-zinc-800 text-zinc-300"
+                                  >
+                                    {el}
+                                  </button>
+                                ))}
+                              </div>
+                            );
+                          }
+                          
+                          if (isEscolhendoLamina) {
+                            const jaTemAmaldicoar = (rituaisHook.rituaisAprendidos || []).find((r: any) => Number(r.codigo_ritual) === 3);
+                            const elJaExistente = jaTemAmaldicoar?.elemento_escolhido || jaTemAmaldicoar?.customProps?.normal?.Elemento_Ritual;
+                            const elementosExibir = elJaExistente ? [elJaExistente] : ['Sangue', 'Morte', 'Conhecimento', 'Energia'];
+
+                            return (
+                              <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800 ml-auto" onClick={e => e.stopPropagation()}>
+                                <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1">Elemento:</span>
+                                {elementosExibir.map(elem => (
+                                  <button
+                                    key={elem}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setEscolhendoElementoLamina(null);
+                                      prosseguirEscolhaLamina(trilha, elem);
+                                    }}
+                                    className="text-[9px] font-bold px-1.5 py-0.5 rounded border border-zinc-600 hover:border-zinc-400 text-zinc-300 hover:text-white"
+                                  >
+                                    {elem}
+                                  </button>
+                                ))}
+                              </div>
+                            );
+                          }
+                          return (
+                            <button
+                              title={erroReq || undefined}
+                            onClick={(e) => { e.stopPropagation(); if (!erroReq) handleEscolher(trilha); }}
+                            className={erroReq 
+                              ? "ml-auto shrink-0 px-3 py-1 bg-zinc-800 text-zinc-500 rounded font-bold text-[10px] uppercase tracking-wider cursor-not-allowed border border-zinc-700/50"
+                              : "ml-auto shrink-0 px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                            }
+                          >
+                            Escolher
+                          </button>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

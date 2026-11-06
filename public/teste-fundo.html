@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vibe Matrix - Harmônico</title>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #050505;
+    color: #8a8a8a; /* Cinza médio, clássico e neutro */
+    font-family: 'Courier New', Courier, monospace;
+    overflow: hidden;
+  }
+
+  /* O container agora vai ser livre pra que as chuvas não fiquem alinhadas feito soldadinhos */
+  #fundo-cascata {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    
+    /* Isso transforma o texto em um "fundo fantasma", impedindo seleção e cliques */
+    -webkit-user-select: none;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .bolinho {
+    position: absolute; /* Deixa eu posicionar as chuvas livremente */
+    display: flex;
+    -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+  }
+
+  .coluna {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 16px;
+    line-height: 16px;
+    width: 14px; 
+    
+    color: transparent;
+    /* 
+      Ajustado! O '#444444' é a cor "base" (quando a luz NÃO tá passando). 
+      Ele é um cinza bem visível, então a matriz nunca vai sumir de verdade. 
+      E a "cabeça" da luz agora é um cinza claro '#cccccc' 
+    */
+    background-image: linear-gradient(to bottom, #444444 0%, #444444 60%, #777777 85%, #cccccc 97%, #444444 100%);
+    
+    /* Tamanho fixo usando a altura da tela, para repetirmos perfeitamente */
+    background-size: 100% 100vh; 
+    background-repeat: repeat-y;
+    
+    -webkit-background-clip: text;
+    background-clip: text;
+    
+    /* Animação infinita descendo */
+    animation: luzCaindo 8s linear infinite;
+    
+    text-shadow: 0 0 2px rgba(138, 138, 138, 0.1);
+  }
+
+  /* Agora move com matemática absoluta pra baixo, evitando o bug visual de subir */
+  @keyframes luzCaindo {
+    0% { background-position: 0px -100vh; }
+    100% { background-position: 0px 0vh; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- (Limpado) -->
+  <div id="fundo-cascata">
+    <div class="bolinho" style="left: 0vw;">
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+    </div>
+    <div class="bolinho" style="left: 15vw;">
+      <div class="coluna">0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br></div>
+    </div>
+    <div class="bolinho" style="left: 29vw;">
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br></div>
+    </div>
+    <div class="bolinho" style="left: 47vw;">
+      <div class="coluna">0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br></div>
+    </div>
+    <div class="bolinho" style="left: 62vw;">
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+    </div>
+    <div class="bolinho" style="left: 75vw;">
+      <div class="coluna">0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br></div>
+    </div>
+    <div class="bolinho" style="right: 0vw;">
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+      <div class="coluna">0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br>0<br></div>
+    </div>
+  </div>
+
+<script>
+  const palavras = [
+    "Abundância", "Ação", "Adaptabilidade", "Alegria", "Alinhamento", "Amor", "Ansiedade", "Apatia", "Apego", "Aplauso", 
+    "Astúcia", "Autoridade", "Aventura", "Caos", "Caridade", "Celebração", "Ciclos", "Clareza", "Colaboração", "Compaixão", 
+    "Competição", "Conclusão", "Confiança", "Conflito", "Confusão", "Conforto", "Conservadorismo", "Controle", "Coragem", 
+    "Criatividade", "Crenças", "Culpa", "Cura", "Curiosidade", "Dedicação", "Defesa", "Derrota", "Desafios", "Desapego", 
+    "Desapontamento", "Descanso", "Despertar", "Destino", "Determinação", "Diplomacia", "Economia", "Empatia", "Ensino", 
+    "Entusiasmo", "Equilíbrio", "Escassez", "Esgotamento", "Esperança", "Espontaneidade", "Espiritualidade", "Estabilidade", 
+    "Estratégia", "Estudo", "Estrutura", "Ética", "Expansão", "Exploração", "Fantasias", "Fé", "Fertilidade", "Foco", 
+    "Generosidade", "Habilidade", "Harmonia", "Herança", "Honra", "Horizontes", "Idealismo", "Ilusão", "Ilusões", "Impasse", 
+    "Impotência", "Impulso", "Incerteza", "Inconsciente", "Indecisão", "Independência", "Infância", "Ingenuidade", "Inocência", 
+    "Inspiração", "Intimidade", "Introspecção", "Intuição", "Isolamento", "Justiça", "Legado", "Lei", "Liberdade", "Liderança", 
+    "Luxo", "Maestria", "Magnetismo", "Manifestação", "Materialismo", "Meditação", "Medo", "Memórias", "Mistério", "Moderação", 
+    "Mudança", "Natureza", "Nostalgia", "Otimismo", "Ousadia", "Paciência", "Paixão", "Parceria", "Partida", "Pausa", "Perda", 
+    "Perseverança", "Persistência", "Pesadelos", "Peso", "Planejamento", "Poder", "Progresso", "Prosperidade", "Rapidez", 
+    "Realização", "Reciprocidade", "Reconhecimento", "Recuperação", "Reencontro", "Renascimento", "Resiliência", "Resistência", 
+    "Risco", "Romantismo", "Rotina", "Ruína", "Ruptura", "Sabedoria", "Sacrifício", "Satisfação", "Sedução", "Segredo", 
+    "Segurança", "Sensibilidade", "Serenidade", "Solidão", "Sombras", "Sucesso", "Tédio", "Totalidade", "Tradição", "Transição", 
+    "Traição", "Tristeza", "União", "Verdade", "Viagem", "Vigilância", "Visão", "Vitalidade", "Vitória"
+  ];
+
+  function textoParaBinario(texto) {
+    return texto.split('').map(char => {
+      return char.charCodeAt(0).toString(2).padStart(8, '0');
+    }).join('');
+  }
+
+  // Pega todas as colunas do seu layout congelado
+  const colunas = document.querySelectorAll('.coluna');
+  
+  // Guarda o tamanho original (exato) de cada coluna pra não quebrar seu desenho
+  // E aproveita pra bagunçar os tempos da animação de queda, pra não cair tudo igual!
+  colunas.forEach(col => {
+    // Conta quantos <br> tem pra saber a altura exata
+    const alturaExata = col.innerHTML.split('<br>').length - 1;
+    col.dataset.altura = alturaExata;
+    
+    // Deixa cada fileira cair num tempo bem lento e totalmente irregular
+    col.style.animationDelay = (Math.random() * 10) + 's'; // Delay grande
+    col.style.animationDuration = (Math.random() * 5 + 6) + 's'; // Demora de 6 a 11 segundos pra cair!
+  });
+
+  function animarColunaAleatoria() {
+    // Escolhe uma coluna qualquer
+    const col = colunas[Math.floor(Math.random() * colunas.length)];
+    const altura = parseInt(col.dataset.altura);
+    
+    // Escolhe uma palavra
+    const palavra = palavras[Math.floor(Math.random() * palavras.length)];
+    let binario = textoParaBinario(palavra);
+    
+    // Bota uns zerinhos no começo e no fim pra dar aquele padding orgânico
+    const zerosInicio = '0'.repeat(Math.floor(Math.random() * 4) + 1);
+    const zerosFim = '0'.repeat(Math.floor(Math.random() * 4) + 1);
+    binario = zerosInicio + binario + zerosFim;
+
+    // Se o binário for maior que a coluna, a gente corta. Se for menor, preenche o resto com 0!
+    if (binario.length > altura) {
+      binario = binario.substring(0, altura);
+    } else {
+      binario = binario.padEnd(altura, '0');
+    }
+
+    // Escreve na coluna de cima pra baixo (bota o <br> depois de cada número)
+    col.innerHTML = binario.split('').join('<br>') + '<br>';
+  }
+
+  // Faz a mágica acontecer bem devagar (muda 1 coluna aleatória a cada 400 milissegundos)
+  // Assim fica uma cintilância suave e não pisca a tela toda!
+  setInterval(animarColunaAleatoria, 400);
+
+</script>
+</body>
+</html>

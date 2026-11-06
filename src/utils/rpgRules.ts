@@ -1,0 +1,604 @@
+import type { Atributos, ClasseRPG, LimiteCirculos } from '../types';
+
+/** Rituais exclusivos de Trilhas no NEX 99% que não podem ser aprendidos por nenhum outro meio */
+export const RITUAIS_EXCLUSIVOS_TRILHA_99_IDS = [
+  10, // Canalizar o Medo (Conduíte 99%)
+  17, // Conhecendo o Medo (Graduado 99%)
+  49, // Lâmina do Medo (Lâmina Paranormal 99%)
+  53, // Medo Tangível (Flagelador 99%)
+  64, // Presença do Medo (Intuitivo 99%)
+  116 // Controlar as Sombras (Viajante das Sombras 99%)
+];
+
+export const RITUAIS_EXCLUSIVOS_TRILHA_99_NOMES = [
+  'canalizar o medo',
+  'conhecendo o medo',
+  'lâmina do medo',
+  'medo tangível',
+  'presença do medo',
+  'controlar as sombras',
+  'viajante das sombras'
+];
+
+export function isRitualExclusivoTrilha99(codigoOuNome: number | string): boolean {
+  if (typeof codigoOuNome === 'number') {
+    return RITUAIS_EXCLUSIVOS_TRILHA_99_IDS.includes(codigoOuNome);
+  }
+  const lower = String(codigoOuNome || '').trim().toLowerCase();
+  return RITUAIS_EXCLUSIVOS_TRILHA_99_NOMES.some(n => lower === n || lower.includes(n));
+}
+
+export const CORES_ELEMENTOS: Record<string, string> = {
+  sangue: '#991b1b',
+  morte: '#18181b', // or gray/zinc
+  conhecimento: '#ca8a04',
+  energia: '#7e22ce'
+};
+
+export function obterElementoOpressor(elemento: string): string {
+  const map: Record<string, string> = {
+    sangue: 'Morte',
+    morte: 'Energia',
+    energia: 'Conhecimento',
+    conhecimento: 'Sangue'
+  };
+  return map[elemento.toLowerCase()] || 'Medo';
+}
+
+/** Valores de NEX disponíveis nos seletores */
+export const NEX_OPTIONS = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 99];
+
+/** Calcula o nível a partir do NEX (99% → 20) */
+export function calcularNivel(nex: number): number {
+  return nex === 99 ? 20 : Math.floor(nex / 5);
+}
+
+/** Pontos de atributo que você ganha conforme o Nível */
+export function pontosIniciaisPorNivel(nivel: number): number {
+  let pts = 4;
+  if (nivel >= 4) pts += 1;
+  if (nivel >= 10) pts += 1;
+  if (nivel >= 16) pts += 1;
+  if (nivel >= 19) pts += 1;
+  return pts;
+}
+
+/** Cap máximo de um atributo (Nível 1 = 3, resto = 5) */
+export function capMaximoAtributo(nivel: number): number {
+  return nivel === 1 ? 3 : 5;
+}
+
+/** Calcula PV, PE, SAN e PE/TURNO */
+export function calcularStatusBase(
+  classe: ClasseRPG,
+  atributos: Atributos,
+  nivel: number,
+  regrasAtivas?: Set<number>
+): { pvMax: number; peMax: number; sanMax: number; peTurno: number } {
+  let pvMax = 0, peMax = 0, sanMax = 0;
+
+  const temRegra = (r: number) => regrasAtivas?.has(r) ?? false;
+
+  // Se a origem/poder possui a Regra 1, a sanidade inicial é reduzida pela metade.
+  const redSanidade = temRegra(1) ? 0.5 : 1;
+
+  // Regras 100..103 (Especialista) e 116..119 (Ocultista): atributo alternativo para calcular PE (em vez de PRE)
+  const atrPe = (temRegra(100) || temRegra(116))
+    ? atributos.FOR
+    : (temRegra(101) || temRegra(117))
+    ? atributos.VIG
+    : (temRegra(102) || temRegra(118))
+    ? atributos.INT
+    : (temRegra(103) || temRegra(119))
+    ? atributos.AGI
+    : atributos.PRE;
+
+  if (temRegra(26)) {
+    pvMax = (24 + atributos.VIG) + ((nivel - 1) * (6 + atributos.VIG));
+    if (classe === 'Combatente') {
+      peMax = (2 + atrPe) + ((nivel - 1) * (2 + atrPe));
+      sanMax = Math.floor(12 * redSanidade) + ((nivel - 1) * 3);
+    } else if (classe === 'Especialista') {
+      peMax = (3 + atrPe) + ((nivel - 1) * (3 + atrPe));
+      sanMax = Math.floor(16 * redSanidade) + ((nivel - 1) * 4);
+    } else if (classe === 'Ocultista') {
+      peMax = (4 + atrPe) + ((nivel - 1) * (4 + atrPe));
+      sanMax = Math.floor(20 * redSanidade) + ((nivel - 1) * 5);
+    }
+  } else {
+    if (classe === 'Combatente') {
+      pvMax = (20 + atributos.VIG) + ((nivel - 1) * (4 + atributos.VIG));
+      peMax = (2 + atrPe) + ((nivel - 1) * (2 + atrPe));
+      sanMax = Math.floor(12 * redSanidade) + ((nivel - 1) * 3);
+    } else if (classe === 'Especialista') {
+      pvMax = (16 + atributos.VIG) + ((nivel - 1) * (3 + atributos.VIG));
+      peMax = (3 + atrPe) + ((nivel - 1) * (3 + atrPe));
+      sanMax = Math.floor(16 * redSanidade) + ((nivel - 1) * 4);
+    } else if (classe === 'Ocultista') {
+      pvMax = (12 + atributos.VIG) + ((nivel - 1) * (2 + atributos.VIG));
+      peMax = (4 + atrPe) + ((nivel - 1) * (4 + atrPe));
+      sanMax = Math.floor(20 * redSanidade) + ((nivel - 1) * 5);
+    }
+  }
+
+  // Regra 2, 49: +1 PV por nível de NEX
+  if (temRegra(2) || temRegra(49)) {
+    pvMax += nivel;
+  }
+
+  // Regra 51 e 52: +2 PV por nível de NEX (Sangue de Ferro base e Afinidade)
+  if (temRegra(51) || temRegra(52)) {
+    pvMax += (nivel * 2);
+  }
+
+  // Regra 10: +5 PV fixos
+  if (temRegra(10)) {
+    pvMax += 5;
+  }
+
+  let peTurno = nivel;
+
+  // Regra 6: +1 PE a cada NEX ímpar (níveis 1, 3, 5...), +1 Limite de PE/turno
+  if (temRegra(6)) {
+    peMax += Math.ceil(nivel / 2);
+    peTurno += 1;
+  }
+
+  // Regra 50: +1 PE em níveis pares (2, 4, 6...)
+  if (temRegra(50)) {
+    peMax += Math.floor(nivel / 2);
+  }
+
+  // Regra 7: +1 de Sanidade para cada 5% de NEX (ou seja, +1 por nível)
+  if (temRegra(7)) {
+    sanMax += nivel;
+  }
+
+  // Regra 22 / 24: Potencial Aprimorado
+  // Regra 22 (base): +1 PE por nível de NEX
+  // Regra 24 (afinidade): +1 PE adicional por nível de NEX (total +2 PE por nível)
+  if (temRegra(24)) {
+    peMax += (nivel * 2);
+  } else if (temRegra(22)) {
+    peMax += nivel;
+  }
+
+  // Regra 2401: Combatente Esforçado (+1 PE por nível de NEX)
+  if (temRegra(2401)) {
+    peMax += nivel;
+  }
+
+  // Regra 45: +3 PE fixos
+  if (temRegra(45)) {
+    peMax += 3;
+  }
+
+  // Regra 14: Diminui os PE iniciais em 1/3 (fica com 2/3)
+  if (temRegra(14)) {
+    peMax = Math.floor(peMax * (2 / 3));
+  }
+
+  // Regra 69 (Monstruosa Transformação): em NEX 99% (ou nível 20), Sanidade máxima é reduzida a 1
+  if (temRegra(69) && nivel >= 20) {
+    sanMax = 1;
+  }
+
+  return { pvMax, peMax, sanMax, peTurno };
+}
+
+/** Ataque Especial (Combatente) */
+export function calcularBonusAtaqueEspecial(nex: number): string {
+  if (nex >= 85) return '5 PE, +20';
+  if (nex >= 55) return '4 PE, +15';
+  if (nex >= 25) return '3 PE, +10';
+  return '2 PE, +5';
+}
+
+/** Perito (Especialista) */
+export function calcularBonusPerito(nex: number): string {
+  if (nex >= 85) return '5 PE, +1d12';
+  if (nex >= 55) return '4 PE, +1d10';
+  if (nex >= 25) return '3 PE, +1d8';
+  return '2 PE, +1d6';
+}
+
+/** Engenhosidade (Especialista) */
+export function calcularBonusEngenhosidade(nex: number): string {
+  if (nex >= 75) return '4 PE, Veterano';
+  return '2 PE, Expert';
+}
+
+/** Total de Rituais (Ocultista) */
+export function calcularTotalRituais(nex: number): string {
+  if (nex >= 99) return '22 Rituais';
+  if (nex >= 95) return '21 Rituais';
+  if (nex >= 90) return '20 Rituais';
+  if (nex >= 85) return '19 Rituais';
+  if (nex >= 60) return '14 Rituais';
+  if (nex >= 55) return '13 Rituais';
+  if (nex >= 30) return '8 Rituais';
+  if (nex >= 25) return '7 Rituais';
+  if (nex >= 10) return '4 Rituais';
+  return '3 Rituais';
+}
+
+/** Limite de círculos (Ocultista) */
+export function obterLimiteCirculos(nex: number): LimiteCirculos {
+  if (nex >= 99) return { c1: 6, c2: 6, c3: 6, c4: 4 };
+  if (nex >= 95) return { c1: 6, c2: 6, c3: 6, c4: 3 };
+  if (nex >= 90) return { c1: 6, c2: 6, c3: 6, c4: 2 };
+  if (nex >= 85) return { c1: 6, c2: 6, c3: 6, c4: 1 };
+  if (nex >= 60) return { c1: 6, c2: 6, c3: 2, c4: 0 };
+  if (nex >= 55) return { c1: 6, c2: 6, c3: 1, c4: 0 };
+  if (nex >= 30) return { c1: 6, c2: 2, c3: 0, c4: 0 };
+  if (nex >= 25) return { c1: 6, c2: 1, c3: 0, c4: 0 };
+  if (nex >= 10) return { c1: 4, c2: 0, c3: 0, c4: 0 };
+  return { c1: 3, c2: 0, c3: 0, c4: 0 };
+}
+
+/** Calcula PD (Pontos de Determinação) — regra Jogando sem Sanidade */
+export function calcularPD(
+  classe: ClasseRPG,
+  atributos: Atributos,
+  nivel: number,
+  regrasAtivas?: Set<number>
+): number {
+  const temRegra = (r: number) => regrasAtivas?.has(r) ?? false;
+  const pre = (temRegra(100) || temRegra(116))
+    ? atributos.FOR
+    : (temRegra(101) || temRegra(117))
+    ? atributos.VIG
+    : (temRegra(102) || temRegra(118))
+    ? atributos.INT
+    : (temRegra(103) || temRegra(119))
+    ? atributos.AGI
+    : atributos.PRE;
+  let pd = 0;
+
+  if (classe === 'Combatente') {
+    pd = (6 + pre) + ((nivel - 1) * (3 + pre));
+  } else if (classe === 'Especialista') {
+    pd = (8 + pre) + ((nivel - 1) * (4 + pre));
+  } else if (classe === 'Ocultista') {
+    pd = (10 + pre) + ((nivel - 1) * (5 + pre));
+  }
+
+  // Regra 14: Diminui os PE (e PD) iniciais em 1/3 (fica com 2/3)
+  if (regrasAtivas?.has(14)) {
+    pd = Math.floor(pd * (2 / 3));
+  }
+
+  return pd;
+}
+
+/** Limites de perícias por classe/nível */
+export function calcularLimitesPericias(
+  classe: ClasseRPG,
+  nivel: number,
+  atributos: Atributos
+): { maxTreinadas: number; maxUpgrades: number } {
+  let maxTreinadas = 0, maxUpgrades = 0;
+
+  if (classe === 'Combatente') {
+    maxTreinadas = 1 + atributos.INT;
+    if (nivel >= 7) maxUpgrades += (2 + atributos.INT);
+    if (nivel >= 14) maxUpgrades += (2 + atributos.INT);
+  } else if (classe === 'Especialista') {
+    maxTreinadas = 7 + atributos.INT;
+    if (nivel >= 7) maxUpgrades += (5 + atributos.INT);
+    if (nivel >= 14) maxUpgrades += (5 + atributos.INT);
+  } else if (classe === 'Ocultista') {
+    maxTreinadas = 3 + atributos.INT;
+    if (nivel >= 7) maxUpgrades += (3 + atributos.INT);
+    if (nivel >= 14) maxUpgrades += (3 + atributos.INT);
+  }
+
+  return { maxTreinadas, maxUpgrades };
+}
+
+/** Proficiências iniciais da classe */
+export function proficienciasIniciais(classe: ClasseRPG): string[] {
+  if (classe === 'Combatente') return ['Armas Simples', 'Armas Táticas', 'Proteções Leves'];
+  if (classe === 'Especialista') return ['Armas Simples', 'Proteções Leves'];
+  if (classe === 'Ocultista') return ['Armas Simples'];
+  return [];
+}
+
+export const ORDEM_ELEMENTOS = ['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo'];
+
+export function compararElementos(a: string | undefined | null, b: string | undefined | null): number {
+  const getIndex = (elem: string | undefined | null) => {
+    if (!elem) return 99; // Sem elemento vai para o final
+    const lower = elem.toLowerCase();
+    const idx = ORDEM_ELEMENTOS.findIndex(e => e.toLowerCase() === lower);
+    return idx === -1 ? 99 : idx;
+  };
+
+  const idxA = getIndex(a);
+  const idxB = getIndex(b);
+
+  if (idxA !== idxB) {
+    return idxA - idxB;
+  }
+  return 0;
+}
+
+export function sortPorElementoENome<T>(
+  a: T, 
+  b: T, 
+  getElemento: (obj: T) => string | undefined | null, 
+  getNome: (obj: T) => string | undefined | null
+): number {
+  const cmp = compararElementos(getElemento(a), getElemento(b));
+  if (cmp !== 0) return cmp;
+  const nomeA = getNome(a) || '';
+  const nomeB = getNome(b) || '';
+  return nomeA.localeCompare(nomeB, 'pt-BR');
+}
+
+/** Cor da badge (Proteções/Resistências) */
+export function obterCorBadge(texto: string): string {
+  const txt = texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+  if (txt.includes('sangue')) return '#CD0000';
+  if (txt.includes('morte')) return '#363636';
+  if (txt.includes('conhecimento')) return '#FFC125';
+  if (txt.includes('energia')) return '#BF3EFF';
+  if (txt.includes('medo')) return '#E8E8E8';
+  if (txt.includes('balistico') || txt.includes('corte') || txt.includes('impacto') || txt.includes('perfuracao')) return '#B5B5B5';
+  if (txt.includes('calor')) return '#FF4500';
+  if (txt.includes('frio')) return '#98F5FF';
+  if (txt.includes('eletricidade')) return '#FFFF00';
+  if (txt.includes('quimico')) return '#00EE00';
+  if (txt.includes('mental') || txt.includes('mentais')) return '#436EEE';
+  if (txt.includes('arma') && txt.includes('simples')) return '#BCD2EE';
+  if (txt.includes('arma') && txt.includes('tatica')) return '#A2B5CD';
+  if (txt.includes('arma') && txt.includes('pesada')) return '#6E7B8B';
+  if (txt.includes('leve')) return '#9BCD9B';
+  if (txt.includes('pesada')) return '#698B69';
+  return '#a1a1aa';
+}
+
+/** Verifica se atende requisito de ritual (Ex: Requer 3º círculo, Afinidade com Morte) */
+export function verificarRequisitoRitual(
+  requisito: string,
+  nivel: number,
+  classe: string | null,
+  afinidadeAtiva: boolean,
+  afinidadeEscolhida: string | null,
+  elementoRitual: string
+): { atende: boolean; motivo?: string } {
+  if (!requisito || requisito.trim() === '') return { atende: true };
+
+  const reqLower = requisito.toLowerCase();
+  const motivos: string[] = [];
+  
+  // 1. Checar Afinidade
+  if (reqLower.includes('afinidade')) {
+    let elementoExigido = elementoRitual;
+    if (reqLower.includes('sangue')) elementoExigido = 'Sangue';
+    else if (reqLower.includes('morte')) elementoExigido = 'Morte';
+    else if (reqLower.includes('energia')) elementoExigido = 'Energia';
+    else if (reqLower.includes('conhecimento')) elementoExigido = 'Conhecimento';
+
+    if (!afinidadeAtiva || afinidadeEscolhida?.toLowerCase() !== elementoExigido.toLowerCase()) {
+      motivos.push(`afinidade com ${elementoExigido}`);
+    }
+  }
+
+  // 2. Checar Círculo
+  // Usamos c.*rculo porque no Supabase algumas palavras vêm com erro de encoding (ex: "Crculo")
+  const circuloMatch = reqLower.match(/(\d+)[º°o]?\s*c.*rculo/);
+  if (circuloMatch) {
+    const circuloExigido = parseInt(circuloMatch[1], 10);
+    const acesso = verificarAcessoCirculo(circuloExigido, nivel, classe);
+    if (!acesso.atende) {
+      motivos.push(acesso.motivo!);
+    }
+  }
+
+  if (motivos.length > 0) {
+    return { atende: false, motivo: `Requer ${motivos.join(' e ')}` };
+  }
+
+  return { atende: true };
+}
+
+export function verificarAcessoCirculo(circuloExigido: number, nivel: number, classe: string | null): { atende: boolean; motivo?: string } {
+  let nivelReqs = [1, 5, 11, 17]; // Ocultista
+  if (classe !== 'Ocultista') {
+    nivelReqs = [1, 9, 15, 999]; // Especialista/Combatente
+  }
+
+  let acessoCirculo = 1;
+  if (nivel >= nivelReqs[3]) acessoCirculo = 4;
+  else if (nivel >= nivelReqs[2]) acessoCirculo = 3;
+  else if (nivel >= nivelReqs[1]) acessoCirculo = 2;
+
+  if (acessoCirculo < circuloExigido) {
+    const nivelExigido = nivelReqs[circuloExigido - 1];
+    const nivelText = nivelExigido === 999 ? 'Inacessível' : `Nível ${nivelExigido}`;
+    return { atende: false, motivo: `acesso ao ${circuloExigido}º Círculo (${nivelText} para ${classe || 'sua classe'})` };
+  }
+  return { atende: true };
+}
+
+export function categoriaRomanParaNum(categoria?: string | number | null): number {
+  if (categoria === undefined || categoria === null) return 0;
+  if (typeof categoria === 'number') return categoria;
+  
+  if (categoria.includes('+')) {
+    const parts = categoria.split('+');
+    return parts.reduce((sum, p) => sum + categoriaRomanParaNum(p.trim()), 0);
+  }
+
+  const c = String(categoria).trim().toUpperCase();
+  if (c === 'O' || c === '0' || c === '') return 0;
+  if (c === 'I' || c === '1') return 1;
+  if (c === 'II' || c === '2') return 2;
+  if (c === 'III' || c === '3') return 3;
+  if (c === 'IV' || c === '4') return 4;
+  return parseInt(c) || 0;
+}
+
+export function categoriaNumParaRoman(num: number): string {
+  if (num <= 0) return '0';
+  if (num === 1) return 'I';
+  if (num === 2) return 'II';
+  if (num === 3) return 'III';
+  return 'IV';
+}
+
+export function calcularCategoriaFinal(categoriaBase: string | number | null | undefined, modificacoesIds?: number[], allModificacoes?: any[], isArmaID71?: boolean | string, maldicoesIds?: number[], allMaldicoes?: any[], descontoFavorita: number = 0): string {
+  const baseNum = categoriaRomanParaNum(categoriaBase);
+  let modificador = modificacoesIds?.length || 0;
+
+  if (isArmaID71 === true && modificador > 0) {
+      modificador -= 1;
+    } else if (typeof isArmaID71 === 'string' && isArmaID71.toLowerCase().includes('fuzil alheio')) {
+      modificador = Math.max(0, modificador - 2);
+    }
+
+  if (modificacoesIds && allModificacoes) {
+    const temApocaliptica = modificacoesIds.some(id => {
+      const mod = allModificacoes.find(m => m.Codigo_Modif === id);
+      return mod?.Nome_Modif.trim().toLowerCase() === 'apocalíptica';
+    });
+    if (temApocaliptica) {
+        modificador -= 2;
+      }
+  }
+
+  let custoMaldicoes = 0;
+  if (maldicoesIds && maldicoesIds.length > 0) {
+    custoMaldicoes = 2 + (maldicoesIds.length - 1);
+  }
+
+  const total = baseNum + modificador + custoMaldicoes - descontoFavorita;
+  return categoriaNumParaRoman(Math.min(Math.max(0, total), 4));
+}
+export function calcularAtributosArmaFinais(
+  danoBase: string,
+  criticoBase: number,
+  multCritBase: number,
+  alcanceBase: string,
+  modsAtivas: any[],
+  maldicoesAtivas: any[],
+  aumentarPassosDano: number = 0,
+  bonusMargemAmeaca: number = 0,
+  danoSecundarioBase: string = ''
+) {
+  let danoFinal = danoBase || '';
+  let criticoFinal = (Number(criticoBase) || 20) - bonusMargemAmeaca;
+  let multCritFinal = Number(multCritBase) || 2;
+  let alcanceFinal = alcanceBase || 'Corpo a Corpo';
+  let extrasDanoStr = '';
+  let danoSecundario = danoSecundarioBase || '';
+
+  const ordAlcance = ['Curto', 'Médio', 'Longo', 'Extremo', 'Ilimitado'];
+  const normalizeAlcance = (s: string) => s.replace(/[áàãâä]/gi, 'a').replace(/[éèêë]/gi, 'e').replace(/[íìîï]/gi, 'i').replace(/[óòõôö]/gi, 'o').replace(/[úùûü]/gi, 'u').trim().toLowerCase();
+  const ordNorm = ordAlcance.map(normalizeAlcance);
+
+  modsAtivas.forEach(m => {
+    if (!m) return;
+    const desc = m.Descricao_Modif || '';
+    const nome = m.Nome_Modif?.toLowerCase() || '';
+    
+    if (nome === 'mira laser' || nome === 'perigosa') criticoFinal -= 2;
+    if (nome === 'dum dum') multCritFinal += 1;
+    if (nome === 'mira telescópica' || nome === 'mira telescopica') {
+      const idx = ordNorm.indexOf(normalizeAlcance(alcanceFinal));
+      if (idx !== -1 && idx < ordAlcance.length - 1) alcanceFinal = ordAlcance[idx + 1];
+    }
+    
+    if (desc.toLowerCase().includes('+2 em rolagens de dano') || desc.toLowerCase().includes('+2 rolagens de dano') || desc.toLowerCase().includes('+2 no dano') || nome.includes('cruel')) {
+       extrasDanoStr += '+2';
+    }
+    
+    const match = (nome !== 'dum dum' && nome !== 'calibre grosso') ? desc.match(/\+\s*(\d+d\d+\*?)/i) : null;
+    if (match) {
+      extrasDanoStr += '+' + match[1];
+    }
+    
+    if (nome === 'calibre grosso') {
+       danoFinal = danoFinal.replace(/(\d+)d(\d+)/gi, (m, p1, p2) => `${Number(p1) + 1}d${p2}`);
+    }
+  });
+
+  (maldicoesAtivas || []).forEach(mald => {
+    if (!mald) return;
+    const nomeM = mald.Nome_Mald?.trim().toLowerCase() || '';
+    if (nomeM === 'erosiva') {
+      danoSecundario = danoSecundario ? `${danoSecundario} +1d8` : '+1d8';
+    } else if (nomeM === 'lancinante') {
+      danoSecundario = danoSecundario ? `${danoSecundario} *+1d8` : '*+1d8';
+    } else if (nomeM === 'predadora') {
+      const margemBase = 21 - (Number(criticoBase) || 20);
+      criticoFinal -= margemBase;
+      const idx = ordNorm.indexOf(normalizeAlcance(alcanceFinal));
+      if (idx !== -1 && idx < ordAlcance.length - 1) alcanceFinal = ordAlcance[idx + 1];
+    } else if (nomeM === 'empuxo') {
+      const norm = normalizeAlcance(alcanceFinal);
+      if (!norm || norm === '-' || norm.includes('corpo')) {
+        alcanceFinal = 'Curto';
+      } else {
+        const idx = ordNorm.indexOf(norm);
+        if (idx !== -1 && idx < ordAlcance.length - 1) alcanceFinal = ordAlcance[idx + 1];
+      }
+    }
+  });
+
+  if (aumentarPassosDano > 0) {
+    for (let i = 0; i < aumentarPassosDano; i++) {
+      danoFinal = danoFinal.replace(/(\d+)d(\d+)/gi, (m, p1, p2) => `${Number(p1) + 1}d${p2}`);
+    }
+  }
+
+  return {
+    danoFinal: (danoFinal + extrasDanoStr).trim(),
+    danoSecundario: danoSecundario.trim(),
+    criticoFinal,
+    multCritFinal,
+    alcanceFinal
+  };
+}
+
+// ============================================================
+// DANO DE EXPLOSIVOS (GRANADEIRO BLASTER / GERAL)
+// ============================================================
+export function extrairDanoExplosivo(item: { Desc_Item?: string; Nome_Item?: string; [key: string]: any }): string | null {
+  const desc = item.Desc_Item || '';
+  if (!desc) return null;
+
+  // Caso explícito se o item tiver propriedade Dano ou Dano_Item
+  if (item.Dano_Item) return String(item.Dano_Item).trim();
+  if (item.Dano) return String(item.Dano).trim();
+
+  // Caso especial Dinamite: "4d6 pontos de dano de impacto e 4d6 pontos de dano de fogo"
+  if (desc.includes('4d6 pontos de dano de impacto e 4d6 pontos de dano de fogo')) {
+    return '4d6 Impacto + 4d6 Fogo';
+  }
+
+  // Padrão geral: "(\d+d\d+) pontos de dano [de] (tipo)" ou "(\d+d\d+) de dano [de] (tipo)"
+  const regex = /(\d+d\d+)(?:\s*[\+\-]\s*\d+)?\s*(?:pontos\s+de\s+dano|de\s+dano)(?:\s+de\s+|\s+)?([a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇÑ]+)?/i;
+  const match = desc.match(regex);
+  if (match) {
+    const dados = match[1];
+    let tipo = match[2] ? match[2].trim().toLowerCase() : '';
+    const stopWords = ['em', 'a', 'no', 'na', 'para', 'por', 'ate', 'até', 'ao', 'aos', 'e'];
+    if (stopWords.includes(tipo)) {
+      tipo = '';
+    }
+    const tipoFormatado = tipo ? tipo.charAt(0).toUpperCase() + tipo.slice(1) : '';
+    return tipoFormatado ? `${dados} ${tipoFormatado}` : dados;
+  }
+
+  return null;
+}
+
+export function dobrarDadosDano(danoStr: string | null): string | null {
+  if (!danoStr) return null;
+  return danoStr.replace(/(\d+)d(\d+)/gi, (_match, count, sides) => {
+    return `${Number(count) * 2}d${sides}`;
+  });
+}

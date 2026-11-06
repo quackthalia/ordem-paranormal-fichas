@@ -1,0 +1,785 @@
+import { Collapse } from './Collapse';
+import React, { useState, useMemo, useEffect } from 'react';
+import { CustomSelect } from './CustomSelect';
+import { ModalEscolherRitualAprendido } from './ModalEscolherRitualAprendido';
+import type { Poder, PoderParanormal, Trilha } from '../types';
+import { sortPorElementoENome, calcularNivel } from '../utils/rpgRules';
+import { useRPG } from '../context/RPGContext';
+import { verificarPreRequisitos, formatarTextoPreRequisitos } from '../utils/preRequisitos';
+
+function formatarDescricao(texto: string): string {
+  if (!texto) return '';
+  let resultado = texto;
+  if (!resultado.includes('<') && !resultado.includes('&')) {
+    resultado = resultado
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    resultado = resultado.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+    resultado = resultado.replace(/_(.*?)_/g, '<em>$1</em>');
+  }
+  resultado = resultado.replace(/\n/g, '<br />');
+  return resultado;
+}
+
+const CORES_ELEMENTOS: Record<string, string> = {
+  sangue: '#b31717',
+  conhecimento: '#b07902',
+  energia: '#af27d9',
+  morte: '#000000',
+  medo: '#ffffff',
+  varia: '#888888',
+};
+
+function obterCorBadge(elemento: string): string {
+  return CORES_ELEMENTOS[elemento?.toLowerCase()] || '#666';
+}
+
+function obterCorTexto(elemento: string): string {
+  const e = elemento?.toLowerCase();
+  if (e === 'medo') return '#000000';
+  return '#ffffff';
+}
+
+interface ModalPoderesExtraProps {
+  isOpen: boolean;
+  onClose: () => void;
+  poderesGerais: Poder[];
+  poderesParanormais: PoderParanormal[];
+  trilhas?: Trilha[];
+  onEscolher: (poder: Poder | PoderParanormal, elemento?: string, pericia?: number, nomeCustomizado?: string) => void;
+}
+
+type MainAba = 'utilidade' | 'combate' | 'gerais' | 'paranormais' | 'trilhas';
+type SubAbaClasse = 'todas' | 'combatente' | 'especialista' | 'ocultista';
+
+export const ModalPoderesExtra: React.FC<ModalPoderesExtraProps> = ({
+  isOpen,
+  onClose,
+  poderesGerais,
+  poderesParanormais,
+  trilhas = [],
+  onEscolher
+}) => {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = 'unset'; };
+    } else {
+      setAbaPrincipal('utilidade');
+      setSubAbaClasse('todas');
+      setSubAbaElemento(null);
+      setBusca('');
+      setFiltroFonte('Todas');
+      setMostrarFiltrosAvancados(false);
+      setPoderesExpandidos([]);
+      setEscolhendoElementoId(null);
+      setEscolhendoPericiaId(null);
+      setEscolhendoRitualPoder(null);
+    }
+  }, [isOpen]);
+
+  const [abaPrincipal, setAbaPrincipal] = useState<MainAba>('utilidade');
+  const [subAbaClasse, setSubAbaClasse] = useState<SubAbaClasse>('todas');
+  const [subAbaElemento, setSubAbaElemento] = useState<string | null>(null);
+  const [busca, setBusca] = useState('');
+  const [filtroFonte, setFiltroFonte] = useState<string>('Todas');
+  const [mostrarFiltrosAvancados, setMostrarFiltrosAvancados] = useState(false);
+
+  const { nex, nivel, regras, atributos, periciasHook, trilhasHook, poderesHook, rituaisHook, origensHook } = useRPG();
+  const contextoPrereq = useMemo(() => {
+    const poderesArray: { nome: string; elemento?: string; codigoRegra?: number | null; periciaEscolhidaNome?: string }[] = Object.values(poderesHook.poderesEscolhidos).map(p => ({
+      nome: p.nome.toLowerCase(),
+      elemento: p.elemento,
+      codigoRegra: p.codigoRegra,
+      periciaEscolhidaNome: p.periciaEscolhidaNome
+    }));
+    
+    if (poderesHook.poderClasse) {
+      poderesArray.push({ nome: poderesHook.poderClasse.Nome.toLowerCase() });
+    }
+
+    if (trilhasHook.trilhaSelecionada) {
+      const t = trilhasHook.trilhaSelecionada;
+      if (nex >= 10 && t.Nome_Habilidade_10) poderesArray.push({ nome: t.Nome_Habilidade_10.toLowerCase() });
+      if (nex >= 40 && t.Nome_Habilidade_40) poderesArray.push({ nome: t.Nome_Habilidade_40.toLowerCase() });
+      if (nex >= 65 && t.Nome_Habilidade_65) poderesArray.push({ nome: t.Nome_Habilidade_65.toLowerCase() });
+      if (nex >= 99 && t.Nome_Habilidade_99) poderesArray.push({ nome: t.Nome_Habilidade_99.toLowerCase() });
+    }
+
+    return {
+      atributos,
+      nex,
+      nivel,
+      pericias: periciasHook.pericias,
+      nomesPericias: periciasHook.nomesPericias,
+      poderes: poderesArray,
+      origem: origensHook.origemSelecionada?.nome_origem,
+      grupo_origem: origensHook.origemSelecionada?.Codigo_Grupo || null,
+      rituaisAprendidos: rituaisHook.rituaisAprendidos,
+      rituais: rituaisHook.rituais,
+      regras
+    };
+  }, [atributos, nex, nivel, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, trilhasHook.trilhaSelecionada, rituaisHook.rituaisAprendidos, rituaisHook.rituais, origensHook.origemSelecionada, regras]);
+
+  const [poderesExpandidos, setPoderesExpandidos] = useState<number[]>([]);
+  const [escolhendoElementoId, setEscolhendoElementoId] = useState<number | string | null>(null);
+  const [escolhendoPericiaId, setEscolhendoPericiaId] = useState<number | string | null>(null);
+  const [escolhendoRitualPoder, setEscolhendoRitualPoder] = useState<Poder | PoderParanormal | null>(null);
+
+  const periciasDisponiveis = useMemo(() => {
+    return Object.entries(contextoPrereq.nomesPericias)
+      .map(([id, nome]) => ({ id: Number(id), nome }))
+      .sort((a,b) => a.nome.localeCompare(b.nome));
+  }, [contextoPrereq.nomesPericias]);
+
+  const toggleExpandir = (codigo: number) => {
+    setPoderesExpandidos(prev => 
+      prev.includes(codigo) ? prev.filter(c => c !== codigo) : [...prev, codigo]
+    );
+  };
+
+  const listaFiltrada = useMemo(() => {
+    if (!isOpen) return [];
+    if (abaPrincipal === 'paranormais') {
+      let lista = [...poderesParanormais].filter(p => {
+        if (subAbaElemento && p.Elemento?.toLowerCase() !== subAbaElemento.toLowerCase()) return false;
+        if (filtroFonte !== 'Todas') {
+          const fonte = (p.Fonte || '').trim().toLowerCase();
+          if (filtroFonte === 'Homebrew') {
+            if (fonte !== 'homebrew' && fonte !== 'hb') return false;
+          } else if (filtroFonte === 'AS') {
+            if (fonte !== 'as' && fonte !== 'a.s.' && fonte !== 'a.s' && !fonte.includes('sobreviv') && !fonte.includes('arquivo') && !fonte.includes('aurora') && !fonte.includes('aniquila')) return false;
+          } else {
+            if (fonte !== filtroFonte.toLowerCase()) return false;
+          }
+        }
+
+        if (busca.trim()) {
+          const lower = busca.toLowerCase();
+          const matchesName = p.Nome.toLowerCase().includes(lower);
+          const matchesDesc = (p.Descricao || '').toLowerCase().includes(lower);
+          if (!matchesName && !matchesDesc) return false;
+        }
+        return true;
+      });
+      return lista.sort((a, b) => sortPorElementoENome(a, b, p => p.Elemento, p => p.Nome));
+    }
+
+    if (abaPrincipal === 'trilhas') return []; // Handled separately
+
+    return poderesGerais
+      .filter(p => {
+        const classePoder = (p.Classe || '').toLowerCase();
+        const tipoPoder = (p.Tipo || '').toLowerCase();
+
+        let show = false;
+        if (abaPrincipal === 'utilidade') {
+          show = tipoPoder === 'utilidade';
+        } else if (abaPrincipal === 'combate') {
+          show = tipoPoder === 'combate';
+        } else if (abaPrincipal === 'gerais') {
+          show = tipoPoder === 'geral' || classePoder === 'geral' || classePoder === 'todos';
+        }
+
+        if (!show) return false;
+
+        // Apply class sub-filter for utilidade and combate
+        if (abaPrincipal === 'utilidade' || abaPrincipal === 'combate') {
+          if (subAbaClasse !== 'todas' && classePoder !== subAbaClasse) {
+            return false;
+          }
+        }
+
+        if (busca.trim()) {
+          const lower = busca.toLowerCase();
+          const matchesName = p.Nome.toLowerCase().includes(lower);
+          const matchesDesc = (p.Descricao || '').toLowerCase().includes(lower);
+          if (!matchesName && !matchesDesc) return false;
+        }
+
+        return true;
+      })
+      .sort((a, b) => a.Nome.localeCompare(b.Nome));
+  }, [isOpen, abaPrincipal, subAbaClasse, subAbaElemento, poderesGerais, poderesParanormais, busca, filtroFonte]);
+
+  const trilhasFiltradas = useMemo(() => {
+    if (!isOpen) return [];
+    return trilhas
+      .filter(t => {
+        const classeTrilha = (t.Classe_Trilha || '').toLowerCase();
+        if (subAbaClasse !== 'todas') {
+          // Para "geral", verifica se a classe contém 'geral' ou 'todas'
+          if (subAbaClasse === 'geral') {
+            if (classeTrilha !== 'geral' && classeTrilha !== 'todas' && classeTrilha !== 'todos') return false;
+          } else {
+            if (classeTrilha !== subAbaClasse) return false;
+          }
+        }
+        
+        if (filtroFonte !== 'Todas') {
+          const fonte = (t.Fonte_Trilha || '').trim().toLowerCase();
+          if (filtroFonte === 'Homebrew') {
+            if (fonte !== 'homebrew' && fonte !== 'hb') return false;
+          } else if (filtroFonte === 'AS') {
+            if (fonte !== 'as' && fonte !== 'a.s.' && fonte !== 'a.s' && !fonte.includes('sobreviv') && !fonte.includes('arquivo') && !fonte.includes('aurora') && !fonte.includes('aniquila')) return false;
+          } else {
+            if (fonte !== filtroFonte.toLowerCase()) return false;
+          }
+        }
+
+        if (busca.trim()) {
+          const lower = busca.toLowerCase();
+          const mName = t.Nome_Trilha.toLowerCase().includes(lower);
+          const m10 = (t.Nome_Habilidade_10 || '').toLowerCase().includes(lower) || (t.Descricao_10 || '').toLowerCase().includes(lower);
+          const m40 = (t.Nome_Habilidade_40 || '').toLowerCase().includes(lower) || (t.Descricao_40 || '').toLowerCase().includes(lower);
+          const m65 = (t.Nome_Habilidade_65 || '').toLowerCase().includes(lower) || (t.Descricao_65 || '').toLowerCase().includes(lower);
+          const m99 = (t.Nome_Habilidade_99 || '').toLowerCase().includes(lower) || (t.Descricao_99 || '').toLowerCase().includes(lower);
+          if (!mName && !m10 && !m40 && !m65 && !m99) return false;
+        }
+        return true;
+      })
+      .sort((a, b) => a.Nome_Trilha.localeCompare(b.Nome_Trilha));
+  }, [isOpen, subAbaClasse, busca, trilhas, filtroFonte]);
+
+  if (!isOpen) return null;
+
+  const abas: { id: MainAba; label: string }[] = [
+    { id: 'utilidade', label: 'Utilidade' },
+    { id: 'combate', label: 'Combate' },
+    { id: 'gerais', label: 'Gerais' },
+    { id: 'trilhas', label: 'Trilhas' },
+    { id: 'paranormais', label: 'Paranormais' },
+  ];
+
+  const subAbasClasses: { id: SubAbaClasse; label: string }[] = [
+    { id: 'todas', label: 'Todas Classes' },
+    { id: 'combatente', label: 'Combatente' },
+    { id: 'especialista', label: 'Especialista' },
+    { id: 'ocultista', label: 'Ocultista' }
+  ];
+
+  const subAbasElementos = ['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Varia'];
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onClose}>
+      <div className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden flex flex-col h-[90vh]" onClick={e => e.stopPropagation()}>
+        
+        {/* Header */}
+        <div className="flex flex-col border-b border-zinc-800 p-5 pb-4 bg-zinc-900/50">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-display text-lg uppercase tracking-wide text-zinc-100">
+              ESCOLHER PODER EXTRA
+            </h3>
+            <button onClick={onClose} className="border-none bg-transparent text-2xl text-zinc-500 transition hover:text-zinc-100">&times;</button>
+          </div>
+          <div className="flex items-stretch gap-2">
+            <input
+              type="text"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar poder..."
+              className="flex-1 rounded border border-zinc-700 bg-zinc-950 px-3 py-1.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700"
+            />
+            <button
+              onClick={() => setMostrarFiltrosAvancados(!mostrarFiltrosAvancados)}
+              className={`rounded border px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider transition ${
+                mostrarFiltrosAvancados || filtroFonte !== 'Todas'
+                  ? 'border-green-800 bg-green-900/40 text-green-300'
+                  : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
+              }`}
+            >
+              Filtros
+            </button>
+          </div>
+          <Collapse isOpen={mostrarFiltrosAvancados} className="z-50">
+            <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-zinc-800/80 mt-3">
+              <div className="flex flex-col gap-1 w-full sm:w-auto flex-1 min-w-[120px]">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Fonte</label>
+                <CustomSelect
+                  value={filtroFonte}
+                  onChange={setFiltroFonte}
+                  options={[
+                    { value: 'Todas', label: 'Todas' },
+                    { value: 'OPRPG', label: 'OPRPG' },
+                    { value: 'SaH', label: 'SaH' },
+                    { value: 'AS', label: 'AS' },
+                    { value: 'Homebrew', label: 'Homebrew' }
+                  ]}
+                  wrapperClassName="w-full"
+                />
+              </div>
+            </div>
+          </Collapse>
+        </div>
+
+        {/* Abas */}
+        <div className="flex border-b border-zinc-800 bg-zinc-950">
+          {abas.map(aba => (
+            <button
+              key={aba.id}
+              onClick={() => setAbaPrincipal(aba.id)}
+              className={`min-w-[70px] flex-1 rounded-t px-1 py-2.5 text-xs font-bold uppercase tracking-wider transition ${
+                abaPrincipal === aba.id
+                  ? 'border border-b-0 border-green-900 bg-zinc-900 text-zinc-100'
+                  : 'border border-transparent text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300'
+              }`}
+            >
+              {aba.label}
+            </button>
+          ))}
+        </div>
+
+          {/* Sub Abas */}
+          {(abaPrincipal === 'utilidade' || abaPrincipal === 'combate' || abaPrincipal === 'trilhas') && (
+            <div className="flex flex-wrap items-center gap-3 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
+              {subAbasClasses.map(sub => (
+                <button
+                  key={sub.id}
+                  onClick={() => setSubAbaClasse(sub.id)}
+                  className={`rounded px-2.5 py-1 text-[0.55rem] font-bold uppercase tracking-wider transition ${
+                    subAbaClasse === sub.id
+                      ? 'bg-green-900/40 text-green-300 border border-green-800'
+                      : 'bg-zinc-800/60 text-zinc-500 border border-zinc-700 hover:text-zinc-300'
+                  }`}
+                >
+                  {sub.label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {abaPrincipal === 'paranormais' && (
+            <div className="flex flex-wrap items-center gap-3 border-b border-zinc-800 bg-zinc-900/90 px-4 py-3">
+              <button
+                onClick={() => setSubAbaElemento(null)}
+                className={`rounded px-2.5 py-1 text-[0.55rem] font-bold uppercase tracking-wider transition ${
+                  subAbaElemento === null
+                    ? 'bg-green-900/40 text-green-300 border border-green-800'
+                    : 'bg-zinc-800/60 text-zinc-500 border border-zinc-700 hover:text-zinc-300'
+                }`}
+              >
+                Todos
+              </button>
+              {subAbasElementos.map(elem => {
+                const ativo = subAbaElemento === elem;
+                return (
+                  <button
+                    key={elem}
+                    onClick={() => setSubAbaElemento(elem)}
+                    className={`rounded px-2.5 py-1 text-[0.55rem] font-bold uppercase tracking-wider transition border ${
+                      ativo
+                        ? (() => {
+                            const elStr = elem.toLowerCase();
+                            if (elStr.includes('medo')) return 'border-zinc-500 bg-zinc-200/80 text-zinc-950 px-3';
+                            if (elStr.includes('sangue')) return 'border-red-900 bg-red-950/20 text-red-500';
+                            if (elStr.includes('morte')) return 'border-zinc-700 bg-black/50 text-white px-3';
+                            if (elStr.includes('conhecimento')) return 'border-yellow-900 bg-yellow-950/20 text-yellow-500';
+                            if (elStr.includes('energia')) return 'border-purple-900 bg-purple-950/20 text-purple-500';
+                            return 'border-zinc-600 text-zinc-100';
+                          })()
+                        : 'border-zinc-700 text-zinc-500 hover:text-zinc-300'
+                    }`}
+                  >
+                    {elem}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+        {/* Lista */}
+        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+                    {(() => {
+            const renderTrilha = (trilha: any) => {
+            const codigo = trilha.Codigo_Trilha;
+            const estaExpandido = poderesExpandidos.includes(codigo);
+            return (
+              <div key={codigo} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 transition group flex flex-col `}>
+                <div
+                  onClick={() => toggleExpandir(codigo)}
+                  className="flex cursor-pointer items-center justify-between gap-3 transition"
+                >
+                  <div className="flex flex-col items-start gap-1">
+                    <span className="font-bold text-zinc-200 group-hover:text-green-400 transition">{trilha.Nome_Trilha}</span>
+                    <span className="inline-block rounded bg-zinc-800 px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight text-zinc-400">
+                      {trilha.Classe_Trilha}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-zinc-500 text-xs">
+                      {estaExpandido ? '▲' : '▼'}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex flex-nowrap items-center gap-2 mt-auto overflow-hidden text-[11px] border-t border-zinc-800/50 pt-2 mt-3">
+                  <div className="flex flex-wrap items-center justify-end gap-3 w-full">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // Adicionar a trilha inteira (4 poderes)
+                        [10, 40, 65, 99].forEach(nex => {
+                          onEscolher({
+                            codigo_poder: Date.now() + nex,
+                            Nome: `${trilha.Nome_Trilha} - ${(trilha as any)[`Nome_Habilidade_${nex}`]}`,
+                            Descricao: (trilha as any)[`Descricao_Habilidade_${nex}`],
+                            Tipo: 'Trilha',
+                            Classe: trilha.Classe_Trilha,
+                            Fonte: trilha.Fonte_Trilha,
+                          } as Poder);
+                        });
+                        onClose();
+                      }}
+                      className="ml-auto shrink-0 px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                    >
+                      Escolher Trilha Completa
+                    </button>
+                  </div>
+                </div>
+
+                <Collapse isOpen={estaExpandido}>
+                  <div className="border-t border-zinc-800 px-5 py-4 text-left">
+                    <div className="mb-4 text-sm leading-relaxed text-zinc-400" dangerouslySetInnerHTML={{ __html: formatarDescricao(trilha.Descricao_Trilha) }} />
+                    
+                    {[10, 40, 65, 99].map(nexLvl => {
+                      const habNameKey = `Nome_Habilidade_${nexLvl}` as keyof typeof trilha;
+                      const habDescKey = `Descricao_Habilidade_${nexLvl}` as keyof typeof trilha;
+                      const nomeHab = trilha[habNameKey] as string;
+                      const descHab = trilha[habDescKey] as string;
+                      
+                      if (!nomeHab) return null;
+
+                      return (
+                        <div key={nexLvl} className="mb-2 rounded border border-zinc-800 bg-zinc-900/40 p-3">
+                          <div className="mb-2 flex items-center justify-between">
+                            <span className="text-sm font-bold text-zinc-300">
+                              {regras['nex_experiencia'] ? `Nível ${calcularNivel(nexLvl)}` : `NEX ${nexLvl}%`} - <span className="text-zinc-400">{nomeHab}</span>
+                            </span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onEscolher({
+                                  codigo_poder: Date.now() + nexLvl,
+                                  Nome: `${trilha.Nome_Trilha} - ${nomeHab}`,
+                                  Descricao: descHab,
+                                  Tipo: 'Trilha',
+                                  Classe: trilha.Classe_Trilha,
+                                  Fonte: trilha.Fonte_Trilha,
+                                } as Poder);
+                                onClose();
+                              }}
+                              className="rounded bg-green-900/60 px-2 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-green-200 transition hover:bg-green-800/80"
+                            >
+                              Escolher
+                            </button>
+                          </div>
+                          <div className="text-xs leading-relaxed text-zinc-500" dangerouslySetInnerHTML={{ __html: formatarDescricao(descHab) }} />
+                        </div>
+                      );
+                    })}
+
+                    {trilha.Especial_Trilha && (
+                      <div className="mt-3 inline-block rounded bg-purple-400/5 px-3 py-2 text-xs italic text-purple-400">
+                        <strong>Especial:</strong> {trilha.Especial_Trilha}
+                      </div>
+                    )}
+
+                    {trilha.Fonte_Trilha && (
+                      <div className="mt-2 text-[0.6rem] uppercase tracking-wider text-zinc-600">
+                        Fonte: {trilha.Fonte_Trilha}
+                      </div>
+                    )}
+                  </div>
+                </Collapse>
+              </div>
+            );
+          };
+            const renderPoder = (poder: any) => {
+            const codigo = ('codigo_poder' in poder && poder.codigo_poder) ? poder.codigo_poder : poder.Nome;
+            const ehParanormal = abaPrincipal === 'paranormais';
+            const estaExpandido = poderesExpandidos.includes(codigo as number);
+            
+            const count = contextoPrereq ? contextoPrereq.poderes.filter(p => p.nome === poder.Nome.toLowerCase()).length : 0;
+            const automaticoVal = ehParanormal 
+              ? (count >= 1 ? (poder['Automatico?_Afinidade'] ?? poder['Automatico?']) : poder['Automatico?'])
+              : poder.Automatico;
+            let val = { atende: true, motivo: '' };
+            if (contextoPrereq) {
+              if (count >= 1 && ehParanormal && ('Pre_Codigo_Afinidade' in poder) && poder.Pre_Codigo_Afinidade) {
+                val = verificarPreRequisitos(
+                  { ...poder, PreRequisitos: (poder as any).PreRequisitosAfinidade || '', Pre_Codigo: poder.Pre_Codigo_Afinidade } as Poder,
+                  contextoPrereq
+                );
+              } else {
+                val = verificarPreRequisitos(poder as Poder, contextoPrereq);
+              }
+            }
+
+            return (
+              <div key={codigo} onClick={() => toggleExpandir(codigo as number)} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out ${estaExpandido ? 'min-h-[170px] max-h-[3000px]' : 'min-h-[170px] max-h-[170px]'} cursor-pointer`}>
+                <div
+                  className="flex items-start justify-between gap-3 mb-2"
+                >
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-bold text-zinc-200 group-hover:text-green-400 transition select-none truncate">{poder.Nome}</span>
+                    {(() => {
+                      const rawAuto = (automaticoVal || '').toString().toLowerCase().trim();
+                      const isAuto = rawAuto === 'sim' || rawAuto === 'auto';
+                      const isSemi = rawAuto === 'semi';
+                      if (!isAuto && !isSemi) return null;
+                      return (
+                        <span
+                          title={isAuto ? 'Totalmente automático — acontece sozinho' : 'Semi-automático — parte funciona automaticamente'}
+                          className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider ${
+                            isAuto
+                              ? 'bg-green-950/60 text-green-400 border border-green-800/50'
+                              : 'bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
+                          }`}
+                        >
+                          {isAuto ? (
+                            <>
+                              <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z"/></svg>
+                              Auto
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z" opacity="0.5"/><path d="M19 3v4m0 4v10" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
+                              Semi
+                            </>
+                          )}
+                        </span>
+                      );
+                    })()}
+                    {ehParanormal && 'Elemento' in poder && poder.Elemento && (
+                      <span
+                        className={`inline-block rounded px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight ${
+                          (() => {
+                            const elStr = poder.Elemento!.toLowerCase();
+                            if (elStr.includes('medo')) return 'bg-zinc-200/80 text-zinc-950 px-2';
+                            if (elStr.includes('sangue')) return 'text-red-500';
+                            if (elStr.includes('morte')) return 'bg-black/50 text-white px-2';
+                            if (elStr.includes('conhecimento')) return 'text-yellow-500';
+                            if (elStr.includes('energia')) return 'text-purple-500';
+                            return 'text-zinc-400';
+                          })()
+                        }`}
+                      >
+                        {poder.Elemento}
+                      </span>
+                    )}
+                    {!ehParanormal && 'Classe' in poder && poder.Classe && (
+                      <span className="inline-block rounded bg-zinc-800 px-1.5 py-px text-[9px] font-bold uppercase tracking-wider leading-tight text-zinc-400">
+                        {poder.Classe}
+                      </span>
+                    )}
+                  </div>
+                  <span className="w-5 text-center text-zinc-500 text-xs flex-shrink-0 mt-0.5">{estaExpandido ? '▲' : '▼'}</span>
+                </div>
+
+                <div className="flex-1 flex flex-col">
+                  <Collapse isOpen={estaExpandido} previewHeight="4.5em">
+                    <p 
+                      className="text-xs text-zinc-400 mb-2 leading-relaxed whitespace-pre-wrap select-none"
+                      dangerouslySetInnerHTML={{ __html: formatarDescricao(poder.Descricao) }} 
+                    />
+                  </Collapse>
+
+                  <Collapse isOpen={estaExpandido}>
+                    <div className="mt-2 text-left border-t border-zinc-800/50 pt-2 flex flex-col gap-2">
+                      {ehParanormal && 'Afinidade' in poder && poder.Afinidade && (
+                        <p className="text-xs leading-relaxed text-zinc-300">
+                          <strong className="text-green-400 font-bold">Afinidade:</strong> {poder.Afinidade}
+                        </p>
+                      )}
+
+                      {poder.PreRequisitos && (
+                        <div className="inline-block rounded bg-amber-400/5 px-3 py-2 text-xs italic text-amber-400 border border-amber-500/20">
+                          <strong>Pré-requisitos:</strong> {formatarTextoPreRequisitos(poder.PreRequisitos, contextoPrereq.nomesPericias)}
+                        </div>
+                      )}
+
+                      {ehParanormal && 'PreRequisitosAfinidade' in poder && poder.PreRequisitosAfinidade && (
+                        <div className="inline-block rounded bg-purple-400/5 px-3 py-2 text-xs italic text-purple-400 border border-purple-500/20">
+                          <strong>Pré-requisitos da Afinidade:</strong> {poder.PreRequisitosAfinidade}
+                        </div>
+                      )}
+
+                      
+
+                      {poder.Fonte && (
+                        <div className="text-[0.6rem] uppercase tracking-wider text-zinc-600">
+                          Fonte: {poder.Fonte}
+                        </div>
+                      )}
+                    </div>
+                  </Collapse>
+                </div>
+
+                <div className="flex flex-nowrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 shrink-0">
+                  <div className="flex flex-wrap items-center justify-end gap-3 w-full">
+                    {escolhendoElementoId != null && escolhendoElementoId === codigo ? (
+                      <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800">
+                        <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline">Elemento:</span>
+                        {['Sangue', 'Morte', 'Conhecimento', 'Energia'].map(elem => {
+                          const valElem = verificarPreRequisitos(poder as Poder, contextoPrereq, elem);
+                          return (
+                            <button
+                              key={elem}
+                              disabled={!valElem.atende}
+                              title={valElem.motivo || ''}
+                              onClick={(e) => { 
+                                e.stopPropagation(); 
+                                setEscolhendoElementoId(null); 
+                                onEscolher(poder, elem); 
+                                onClose(); 
+                              }}
+                              className={`rounded px-1.5 py-0.5 text-[0.55rem] font-bold uppercase transition border ${
+                                !valElem.atende 
+                                  ? 'border-green-500 hover:scale-105 opacity-80' 
+                                  : 'border-zinc-700 hover:scale-105'
+                              } ${
+                                (() => {
+                                  const elStr = elem.toLowerCase();
+                                  if (elStr.includes('medo')) return 'bg-zinc-200/80 text-zinc-950 px-2';
+                                  if (elStr.includes('sangue')) return 'text-red-500 bg-transparent';
+                                  if (elStr.includes('morte')) return 'bg-black/50 text-white px-2';
+                                  if (elStr.includes('conhecimento')) return 'text-yellow-500 bg-transparent';
+                                  if (elStr.includes('energia')) return 'text-purple-500 bg-transparent';
+                                  return 'text-zinc-400 bg-transparent';
+                                })()
+                              }`}
+                            >
+                              {elem}
+                            </button>
+                          );
+                        })}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setEscolhendoElementoId(null); }}
+                          className="ml-1 rounded px-1 py-0.5 text-[0.6rem] font-bold text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 transition"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ) : escolhendoPericiaId != null && escolhendoPericiaId === codigo ? (
+                      <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
+                        <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline">Perícia:</span>
+                        <CustomSelect
+  value=""
+  onChange={(val) => {
+    const cod = Number(val);
+    if (cod) {
+      setEscolhendoPericiaId(null);
+      onEscolher(poder, undefined, cod);
+      onClose();
+    }
+  }}
+  options={[
+    { value: '', label: 'Escolher...' },
+    ...periciasDisponiveis.map(p => {
+      const valPericia = verificarPreRequisitos(poder as Poder, contextoPrereq, undefined, p.id);
+      const isFocoEmPericia = (poder as any).Codigo_Regra === 42;
+      const isAutodidata = (poder as any).Codigo_Regra === 68;
+      const isLutaOuPontaria = (isFocoEmPericia || isAutodidata) && (p.nome === 'Luta' || p.nome === 'Pontaria');
+      const jaFocou = isFocoEmPericia && contextoPrereq ? Object.values(contextoPrereq.poderes).some(pe => pe.codigoRegra === 42 && pe.periciaEscolhidaNome === p.nome) : false;
+      const jaAutodidata = isAutodidata && contextoPrereq ? Object.values(contextoPrereq.poderes).some(pe => pe.codigoRegra === 68 && pe.periciaEscolhidaNome === p.nome) : false;
+      const jaVetOuExp = isAutodidata && contextoPrereq ? ((contextoPrereq.pericias?.[p.nome]?.treino || 0) >= 10) : false;
+      const isDisabled = !valPericia.atende || jaFocou || jaAutodidata || isLutaOuPontaria || jaVetOuExp;
+      return {
+        value: String(p.id),
+        label: `${p.nome} ${(jaFocou || jaAutodidata) ? "(Já Escolhido)" : jaVetOuExp ? "(Já Veterano/Expert)" : ""}`.trim(),
+        disabled: isDisabled
+      };
+    })
+  ]}
+  wrapperClassName="max-w-[120px]"
+  className="bg-zinc-900 border border-zinc-700 text-xs text-zinc-300 rounded px-1 py-1"
+/>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setEscolhendoPericiaId(null); }}
+                          className="ml-1 rounded px-1 py-0.5 text-[0.6rem] font-bold text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 transition"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const precisaRitual = (poder as any).Codigo_Regra === 35;
+                          const precisaElemento = poder.Nome.toLowerCase().includes('elemento') || ((poder as any).Descricao && (poder as any).Descricao.toLowerCase().includes('escolha um elemento')) || (poder as any).Codigo_Regra === 34 || (poder as any).Codigo_Regra === 36;
+                          const precisaPericia = poder.Nome.toLowerCase().includes('perícia') || ((poder as any).Descricao && (poder as any).Descricao.toLowerCase().includes('escolha uma perícia')) || (poder as any).Codigo_Regra === 42 || (poder as any).Codigo_Regra === 68;
+                          
+                          if (precisaRitual) {
+                            setEscolhendoRitualPoder(poder);
+                          } else if (precisaElemento) {
+                            setEscolhendoElementoId(codigo);
+                          } else if (precisaPericia) {
+                            setEscolhendoPericiaId(codigo);
+                          } else {
+                            onEscolher(poder);
+                            onClose();
+                          }
+                        }}
+                        className="ml-auto shrink-0 px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95"
+                      >
+                        Escolher
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          };
+            
+            return (
+              <div className="flex flex-col md:flex-row gap-3 items-start">
+                <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
+                  {abaPrincipal === 'trilhas'
+                    ? trilhasFiltradas.filter((_, i) => i % 2 === 0).map(renderTrilha)
+                    : listaFiltrada.filter((_, i) => i % 2 === 0).map(renderPoder)}
+                </div>
+                <div className="flex flex-col gap-3 w-full md:w-1/2 flex-1 min-w-0">
+                  {abaPrincipal === 'trilhas'
+                    ? trilhasFiltradas.filter((_, i) => i % 2 !== 0).map(renderTrilha)
+                    : listaFiltrada.filter((_, i) => i % 2 !== 0).map(renderPoder)}
+                </div>
+              </div>
+            );
+          })()}
+          
+          
+          {abaPrincipal !== 'trilhas' && listaFiltrada.length === 0 && (
+            <div className="py-10 text-center text-zinc-500">
+              Nenhum poder encontrado nesta categoria.
+            </div>
+          )}
+          
+          {abaPrincipal === 'trilhas' && trilhasFiltradas.length === 0 && (
+            <div className="py-10 text-center text-zinc-500">
+              Nenhuma trilha encontrada nesta categoria.
+            </div>
+          )}
+        </div>
+      </div>
+
+      {escolhendoRitualPoder && (
+        <ModalEscolherRitualAprendido
+          isOpen={true}
+          onClose={() => setEscolhendoRitualPoder(null)}
+          onSelect={(ritualNome) => {
+            const nomeCustomizado = `${escolhendoRitualPoder.Nome} (${ritualNome})`;
+            onEscolher(escolhendoRitualPoder, ritualNome, undefined, nomeCustomizado);
+            setEscolhendoRitualPoder(null);
+            onClose();
+          }}
+          rituaisNomes={(contextoPrereq?.rituaisAprendidos || []).map((ra: any) => {
+            const r = (contextoPrereq?.rituais || []).find((rt: any) => rt.Codigo_Ritual === ra.codigo_ritual);
+            return ra.customNome || (r ? r.Nome_Ritual : String(ra.codigo_ritual));
+          })}
+          rituaisAprendidos={contextoPrereq?.rituaisAprendidos || []}
+          rituaisDb={contextoPrereq?.rituais || []}
+        />
+      )}
+    </div>
+  );
+};

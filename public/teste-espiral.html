@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Teste Espiral Morte</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #09090b;
+      color: #71717a;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 16px;
+      line-height: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    #matriz {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      white-space: pre;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      z-index: 0;
+    }
+    .linha {
+      height: 16px;
+      letter-spacing: 0px;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="matriz"></div>
+
+  <script>
+    const matrizDiv = document.getElementById('matriz');
+    const charWidth = 9.6; 
+    const charHeight = 16;
+    
+    let linhas = [];
+    let cols = 0;
+    let rows = 0;
+    let time = 0;
+    
+    function init() {
+      cols = Math.ceil(window.innerWidth / charWidth);
+      rows = Math.ceil(window.innerHeight / charHeight);
+      
+      matrizDiv.innerHTML = '';
+      linhas = [];
+      
+      for (let y = 0; y < rows; y++) {
+        const div = document.createElement('div');
+        div.className = 'linha';
+        matrizDiv.appendChild(div);
+        linhas.push(div);
+      }
+    }
+
+    function estaNaEspiral(x, y, cx, cy) {
+      const dx = (x - cx) * charWidth;
+      const dy = (y - cy) * charHeight;
+      const r = Math.sqrt(dx*dx + dy*dy);
+      const theta = Math.atan2(dy, dx);
+      
+      const espacamento = 180;
+      const espessura = 55; 
+      
+      let v = (r / espacamento) - ((theta + time) / (2 * Math.PI));
+      
+      v = v - Math.floor(v);
+      
+      return v < (espessura / espacamento);
+    }
+
+    function draw() {
+      const cx = cols / 2;
+      const cy = rows / 2;
+      
+      for (let y = 0; y < rows; y++) {
+        let textoLinha = '';
+        for (let x = 0; x < cols; x++) {
+          if (estaNaEspiral(x, y, cx, cy)) {
+            textoLinha += Math.random() < 0.05 ? '1' : '0';
+          } else {
+            textoLinha += ' ';
+          }
+        }
+        linhas[y].innerText = textoLinha;
+      }
+      
+      time += 0.015;
+      
+      setTimeout(() => requestAnimationFrame(draw), 80);
+    }
+
+    window.addEventListener('resize', init);
+    init();
+    draw();
+  </script>
+</body>
+</html>

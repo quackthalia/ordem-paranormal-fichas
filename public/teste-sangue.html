@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Teste Sangue Derretendo</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #050000;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    #fundo-sangue {
+      position: absolute; 
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100vw;
+      height: 100%; 
+      user-select: none;
+      z-index: 0;
+      display: flex;
+      justify-content: space-around;
+      overflow: hidden;
+    }
+
+    /* A máscara faz o sangue parecer estar "escorrendo" do topo e sumindo */
+    .bolinho {
+      display: flex;
+      position: relative;
+      -webkit-mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
+      mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
+    }
+
+    .coluna {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: bold;
+      font-size: 16px;
+      line-height: 14px; /* Mais espremido pra parecer um líquido contínuo */
+      width: 14px; 
+      
+      color: transparent;
+      /* Gradiente de Sangue: topo escuro/coagulado, ponta viva e brilhante */
+      background-image: linear-gradient(to bottom, #2b0000 0%, #4a0000 60%, #990000 85%, #ff1a1a 97%, #2b0000 100%);
+      background-size: 100% 100vh; 
+      background-repeat: repeat-y;
+      
+      -webkit-background-clip: text;
+      background-clip: text;
+      
+      /* Animação irregular pra parecer algo viscoso escorrendo, não caindo reto */
+      animation: sangueEscorrendo 10s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+    }
+
+    @keyframes sangueEscorrendo {
+      0% { background-position: 0px -100vh; }
+      100% { background-position: 0px 0vh; }
+    }
+  </style>
+</head>
+<body>
+  <div id="fundo-sangue"></div>
+
+  <script>
+    const fundo = document.getElementById('fundo-sangue');
+    
+    // Palavras pra converter pro sangue binário
+    const PALAVRAS = ["SANGUE", "DOR", "CARNE", "CORPO", "PULSO"];
+    
+    function textoParaBinario(texto) {
+      return texto.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0')).join('');
+    }
+
+    // Criar várias colunas pelo topo da tela
+    for(let i = 0; i < 70; i++) {
+      const coluna = document.createElement('div');
+      coluna.className = 'coluna';
+      
+      // Delay aleatório pra cada filete de sangue descer num tempo diferente
+      const delay = (Math.random() * -20).toFixed(2);
+      // Duração aleatória (alguns escorrem rápido, outros devagar)
+      const duration = (Math.random() * 8 + 6).toFixed(2);
+      
+      coluna.style.animationDelay = `${delay}s`;
+      coluna.style.animationDuration = `${duration}s`;
+      
+      // Altura do filete (tamanho da palavra)
+      const altura = Math.floor(Math.random() * 20) + 15;
+      
+      const palavra = PALAVRAS[Math.floor(Math.random() * PALAVRAS.length)];
+      let binario = textoParaBinario(palavra);
+      while(binario.length < altura) binario += textoParaBinario(palavra);
+      binario = binario.substring(0, altura);
+      
+      // Pra dar um aspecto mais "sujo/líquido", vamos trocar alguns 0s por letras escorridas
+      let charsSujos = binario.split('').map(c => {
+        if (Math.random() < 0.1) return '|';
+        if (Math.random() < 0.1) return 'v';
+        if (Math.random() < 0.1) return '.';
+        return c;
+      });
+
+      coluna.innerHTML = charsSujos.join('<br/>');
+      fundo.appendChild(coluna);
+    }
+  </script>
+</body>
+</html>

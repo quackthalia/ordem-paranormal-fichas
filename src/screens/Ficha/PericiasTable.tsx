@@ -291,6 +291,7 @@ export const PericiasTable: React.FC = React.memo(() => {
               .map(([nome, dadosPericia]) => {
               const bonusRegra8 = (nome === 'Diplomacia' && regrasAutomaticasAtivas.has(8)) ? 2 : 0;
               const bonusRegra13 = (nome === 'Vontade' && regrasAutomaticasAtivas.has(13)) ? 2 : 0;
+              const bonusRegra14 = (nome === 'Vontade' && regrasAutomaticasAtivas.has(14)) ? -2 : 0;
               const bonusRegra25 = (nome === 'Reflexos' && regrasAutomaticasAtivas.has(25) && temProtecaoLeve) ? 2 : 0;
               const bonusTrilha4 = (nome === 'Iniciativa' && temOperacoesEspeciais) ? 5 : 0;
     const bonusTrilha7 = ((nome === 'Atletismo' || nome === 'Crime') && temGatuno) ? 5 : 0;
@@ -298,7 +299,7 @@ export const PericiasTable: React.FC = React.memo(() => {
               // Nota: dadosPericia.outros já inclui periciasHook.bonusVestimentas (vestimentas, utensílios, amuleto sagrado, maldições, itens amaldiçoados e trilhas) e bonusRegra40
               const bonusMonstruoso10 = 0;
               const isPericiaBloqueada = nome === 'Intimidação' && bloquearIntimidacaoVampiro;
-              const totalBonus = dadosPericia.treino + dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10;
+              const totalBonus = dadosPericia.treino + dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra14 + bonusRegra25 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10;
               const corTexto = isPericiaBloqueada ? '!text-zinc-600 line-through' : (COR_TREINO[dadosPericia.treino] ?? 'text-white');
               const corBorda = isPericiaBloqueada ? 'border-zinc-700 opacity-40' : (BORDA_TREINO[dadosPericia.treino] ?? 'border-zinc-600');
 
@@ -410,11 +411,11 @@ export const PericiasTable: React.FC = React.memo(() => {
                     <input
                       type="number"
                       onKeyDown={bloquearLetras}
-                      value={(dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10) === 0 ? '' : (dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra25 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10)}
+                      value={(dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra14 + bonusRegra25 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10) === 0 ? '' : (dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra14 + bonusRegra25 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10)}
                       placeholder="0"
                       onChange={(e) => {
                         const bonusInternosHook = (periciasHook.bonusRegra40?.[nome] || 0) + (periciasHook.bonusVestimentas?.[nome] || 0) + (periciasHook.bonusAtributoDinamico?.[nome] || 0);
-                        handleMudarPericia(nome, 'outros', Math.max(0, Number(e.target.value) - bonusRegra8 - bonusRegra13 - bonusRegra25 - bonusTrilha4 - bonusTrilha7 - bonusMonstruoso10 - bonusInternosHook));
+                        handleMudarPericia(nome, 'outros', Math.max(0, Number(e.target.value) - bonusRegra8 - bonusRegra13 - bonusRegra14 - bonusRegra25 - bonusTrilha4 - bonusTrilha7 - bonusMonstruoso10 - bonusInternosHook));
                       }}
                       className={`w-8 2xl:w-11 border-b bg-transparent text-center font-bold outline-none text-xs 2xl:text-sm ${corTexto} ${corBorda}`}
                     />

@@ -449,7 +449,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     if (origensHook.origemSelecionada?.Codigo_Regra) {
       set.add(Number(origensHook.origemSelecionada.Codigo_Regra));
     }
-    Object.values(poderesHook.poderesEscolhidos).forEach(p => {
+    Object.entries(poderesHook.poderesEscolhidos).forEach(([key, p]) => {
       const nomeLower = p.nome?.trim().toLowerCase() || '';
       if (nomeLower === 'correria desesperada' || (p.codigo === 17 && p.categoria !== 'paranormais')) {
         set.add(2201);
@@ -471,7 +471,19 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
         set.add(48);
         return;
       }
-      if (p.codigoRegra) set.add(Number(p.codigoRegra));
+      if (p.codigoRegra) {
+        set.add(Number(p.codigoRegra));
+      } else if (key === 'extra_regra32' && origensHook.origens) {
+        const baseNomePoder = nomeLower.replace(/\s*\([^)]+\)\s*$/, '').replace(/:\s*.+$/, '').trim();
+        const origMatch = origensHook.origens.find(o =>
+          (p.origemCodigo && o.Codigo_Origem === Number(p.origemCodigo)) ||
+          (p.origemNome && o.Nome?.trim().toLowerCase() === p.origemNome.trim().toLowerCase()) ||
+          (o.Nome_Poder && (o.Nome_Poder.trim().toLowerCase() === nomeLower || o.Nome_Poder.trim().toLowerCase() === baseNomePoder))
+        );
+        if (origMatch?.Codigo_Regra) {
+          set.add(Number(origMatch.Codigo_Regra));
+        }
+      }
     });
     if (temArtistaMarcialTrilha10) {
       set.add(84);
@@ -623,7 +635,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
       else if (elemMonst === 'Energia') set.add(131);
     }
     return set;
-  }, [origensHook.origemSelecionada, poderesHook.poderesEscolhidos, temArtistaMarcialTrilha10, trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, regras, nivel, nex, afinidadeEscolhida, poderesExtras, temHabExtraOcultista]);
+  }, [origensHook.origemSelecionada, origensHook.origens, poderesHook.poderesEscolhidos, temArtistaMarcialTrilha10, trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, regras, nivel, nex, afinidadeEscolhida, poderesExtras, temHabExtraOcultista]);
 
   const effectiveNex = useMemo(() => {
     let finalNex = nex;
@@ -2084,7 +2096,7 @@ const temPossuido = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23 && (reg
   // DEFESA
   // ============================================================
   const qtdRegra4 = (origensHook.origemSelecionada?.Codigo_Regra === 4 ? 1 : 0) +
-    Object.values(poderesHook.poderesEscolhidos).filter(p => p.codigoRegra === 4).length;
+    Object.values(poderesHook.poderesEscolhidos).filter(p => p.codigoRegra === 4 || p.nome?.trim().toLowerCase() === 'patrulha').length;
   const defOutrosBonusRegra4 = qtdRegra4 > 0 ? qtdRegra4 * 2 : (regrasAutomaticasAtivas.has(4) ? 2 : 0);
   const defOutrosBonusRegra12 = regrasAutomaticasAtivas.has(12) ? 2 : 0;
   

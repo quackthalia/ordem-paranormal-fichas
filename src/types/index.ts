@@ -104,6 +104,8 @@ export interface PoderSlot {
   codigoRegra?: number | null;
   periciaPoder?: number | null;
   periciaEscolhidaNome?: string;
+  origemNome?: string;
+  origemCodigo?: number;
 }
 
 export interface PoderesEscolhidos {

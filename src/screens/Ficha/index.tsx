@@ -829,7 +829,7 @@ const DefesaPanel = React.memo(function DefesaPanel() {
   }, [periciasHook.pericias, periciasHook.nomesPericias, atributosFinais, defesaTotal, regrasAutomaticasAtivas]);
 
   const qtdRegra4 = (origensHook.origemSelecionada?.Codigo_Regra === 4 ? 1 : 0) +
-    Object.values(poderesHook.poderesEscolhidos).filter(p => p.codigoRegra === 4).length;
+    Object.values(poderesHook.poderesEscolhidos).filter(p => p.codigoRegra === 4 || p.nome?.trim().toLowerCase() === 'patrulha').length;
   const bonusDefesaRegra4 = qtdRegra4 > 0 ? qtdRegra4 * 2 : (regrasAutomaticasAtivas.has(4) ? 2 : 0);
 
   return (
@@ -1018,8 +1018,9 @@ const ProtecoesPanel = React.memo(function ProtecoesPanel() {
   }
 
   // REGRA 18 e 19: Resistência 10 (ou 20) ao elemento escolhido
-  const poderesRegra18 = Object.values(poderesHook.poderesEscolhidos || {}).filter(p => p.codigoRegra === 18);
-  const elementoRegra18 = poderesRegra18[0]?.elemento || origensHook.origemSelecionada?.elemento_escolhido;
+  const poderesRegra18 = Object.values(poderesHook.poderesEscolhidos || {}).filter(p => p.codigoRegra === 18 || p.nome?.trim().toLowerCase().startsWith('o que restou'));
+  const elementoExtraido18 = poderesRegra18[0]?.nome?.match(/\(([^)]+)\)\s*$/)?.[1]?.trim();
+  const elementoRegra18 = poderesRegra18[0]?.elemento || elementoExtraido18 || origensHook.origemSelecionada?.elemento_escolhido;
 
   if (regrasAutomaticasAtivas.has(18) && elementoRegra18) {
     const temAfinidade = regrasAutomaticasAtivas.has(19) || poderesRegra18.length >= 2;

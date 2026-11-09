@@ -236,6 +236,8 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
           codigoRegra: regraAplicada,
           periciaPoder: (poder as Poder).Pericia_Poder || pp.Pericia_Poder || null,
           periciaEscolhidaNome: periciaEscolhida || undefined,
+          origemNome: (poder as any).origemNome || undefined,
+          origemCodigo: (poder as any).origemCodigo || undefined,
           isAfinidade
         },
       };
@@ -286,6 +288,8 @@ export function usePoderes(classe: ClasseRPG): UsePoderesReturn {
           codigoRegra: regraAplicada,
           periciaPoder: (poder as Poder).Pericia_Poder || pp.Pericia_Poder || null,
           periciaEscolhidaNome: periciaEscolhida || undefined,
+          origemNome: (poder as any).origemNome || undefined,
+          origemCodigo: (poder as any).origemCodigo || undefined,
           isAfinidade
         },
       };

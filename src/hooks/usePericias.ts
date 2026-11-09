@@ -92,6 +92,7 @@ export function usePericias(
       Object.entries(poderesEscolhidos).forEach(([key, p]) => {
         let codRegra = p.codigoRegra;
         let perPoder = p.periciaPoder;
+        let perEscolhidaNome = p.periciaEscolhidaNome;
         const nomeLower = p.nome?.trim().toLowerCase() || '';
         // Compatibilidade com fichas já salvas
         if (nomeLower === 'muito sorrateiro' || p.codigo === 165) {
@@ -100,13 +101,19 @@ export function usePericias(
         } else if (nomeLower === 'ossos de borracha' || p.codigo === 53) {
           codRegra = p.comAfinidade ? 2602 : 2601;
           if (!perPoder) perPoder = 1; // Acrobacia
+        } else if (key === 'extra_regra32' && !codRegra && nomeLower.startsWith('destemido')) {
+          codRegra = 9;
+        }
+        if (codRegra === 9 && !perEscolhidaNome) {
+          const matchParen = p.nome?.match(/\(([^)]+)\)\s*$/);
+          if (matchParen) perEscolhidaNome = matchParen[1].trim();
         }
         if (codRegra) {
           lista.push({
             idSlot: key,
             codigoRegra: codRegra,
             periciaPoder: perPoder,
-            periciaEscolhidaNome: p.periciaEscolhidaNome,
+            periciaEscolhidaNome: perEscolhidaNome,
             nomePoder: p.nome
           });
         }

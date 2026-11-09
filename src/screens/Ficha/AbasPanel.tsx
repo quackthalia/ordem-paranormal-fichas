@@ -379,6 +379,39 @@ const AbasPanelInner: React.FC = () => {
     const poderesRenderizados = new Set<string>();
     let lista: HabilidadeItem[] = [];
 
+    const obterAutomaticoOrigem = (codRegra?: number | null, nomePoder?: string): string | undefined => {
+      const r = codRegra ? Number(codRegra) : null;
+      const n = (nomePoder || '').trim().toLowerCase();
+      if ((r && [1, 2, 3, 4, 5, 6, 7, 11, 12, 14, 15, 16, 18, 83].includes(r)) || ['mão pesada', 'para bellum', 'furacão mental'].includes(n)) {
+        return 'Sim';
+      }
+      if (r && [8, 9, 10, 13].includes(r)) {
+        return 'Semi';
+      }
+      return undefined;
+    };
+
+    const usouRegra32 = poderesEscolhidos['extra_regra32'];
+    const origemFlashbackObj = (() => {
+      if (!usouRegra32) return null;
+      const listaOrigens = origensHook.origens || [];
+      if (usouRegra32.origemCodigo) {
+        const byCod = listaOrigens.find(o => o.Codigo_Origem === Number(usouRegra32.origemCodigo));
+        if (byCod) return byCod;
+      }
+      if (usouRegra32.origemNome) {
+        const byNome = listaOrigens.find(o => o.Nome.trim().toLowerCase() === usouRegra32.origemNome!.trim().toLowerCase());
+        if (byNome) return byNome;
+      }
+      const rawNomePoder = (usouRegra32.nome || '').trim().toLowerCase();
+      const baseNomePoder = rawNomePoder.replace(/\s*\([^)]+\)\s*$/, '').replace(/:\s*.+$/, '').trim();
+      return listaOrigens.find(o => {
+        const np = (o.Nome_Poder || '').trim().toLowerCase();
+        return np === rawNomePoder || np === baseNomePoder;
+      }) || null;
+    })();
+    const nomeOrigemFlashback = usouRegra32?.origemNome || origemFlashbackObj?.Nome || null;
+
     // 1. Origem
     if (origemSelecionada?.Nome_Poder) {
       const origemDb = origensHook.origens?.find(o => o.Codigo_Origem === origemSelecionada.Codigo_Origem);
@@ -387,33 +420,51 @@ const AbasPanelInner: React.FC = () => {
         nome: origemSelecionada.Nome_Poder,
         descricao: origemSelecionada.Descricao_Poder,
         tipo: 'Origem',
-        extra: null,
+        extra: origemSelecionada.Nome || null,
         subPoder: null,
         fonte: origemSelecionada.Fonte || (origemSelecionada as any).fonte || origemDb?.Fonte || (origemDb as any)?.fonte || undefined,
         categoria: 'origem',
+        codigoRegra: origemSelecionada.Codigo_Regra,
+        automatico: obterAutomaticoOrigem(origemSelecionada.Codigo_Regra, origemSelecionada.Nome_Poder),
       });
     }
 
     // Regra 32 (Flashback) logo abaixo da origem
     if (regrasAutomaticasAtivas.has(32)) {
-      const usouRegra32 = poderesEscolhidos['extra_regra32'];
       if (usouRegra32) {
-         lista.push({ id: 'extra_regra32', nome: usouRegra32.nome, descricao: usouRegra32.descricao, tipo: 'Flashback', categoria: 'origem', fonte: usouRegra32.fonte, preRequisitos: usouRegra32.preRequisitos, elemento: usouRegra32.elemento, afinidade: usouRegra32.afinidade });
+         const codRegra32 = usouRegra32.codigoRegra ?? origemFlashbackObj?.Codigo_Regra;
+         lista.push({
+           id: 'extra_regra32',
+           nome: usouRegra32.nome,
+           descricao: usouRegra32.descricao,
+           tipo: nomeOrigemFlashback ? `Flashback (${nomeOrigemFlashback})` : 'Flashback',
+           extra: nomeOrigemFlashback,
+           categoria: 'origem',
+           fonte: usouRegra32.fonte || origemFlashbackObj?.Fonte,
+           preRequisitos: usouRegra32.preRequisitos,
+           elemento: usouRegra32.elemento,
+           afinidade: usouRegra32.afinidade,
+           codigoRegra: codRegra32,
+           automatico: obterAutomaticoOrigem(codRegra32, usouRegra32.nome),
+         });
       } else {
          lista.push({ id: 'escolha_extra_regra32', nome: 'Escolher Poder de Outra Origem', descricao: 'Clique no "+" para abrir a lista e selecionar seu poder de origem.', tipo: 'Flashback', isSlotVazio: true, nexDoSlot: 0, categoria: 'origem' });
       }
     }
 
     // 1.1 Poder Extra da Origem (Regra 1)
-    if (origemSelecionada?.Codigo_Regra === 1) {
+    if (regrasAutomaticasAtivas.has(1)) {
       const extraKey = 'extra_regra1';
       const escolhido = poderesEscolhidos[extraKey];
+      const tipoRegra1 = origemSelecionada?.Codigo_Regra === 1
+        ? 'Origem'
+        : (nomeOrigemFlashback ? `Flashback (${nomeOrigemFlashback})` : 'Flashback');
       if (escolhido) {
         lista.push({
           id: `escolha_${extraKey}`,
           nome: escolhido.nome,
           descricao: escolhido.descricao,
-          tipo: 'Origem',
+          tipo: tipoRegra1,
           categoria: 'paranormais',
           preRequisitos: escolhido.preRequisitos,
           fonte: escolhido.fonte,
@@ -424,7 +475,7 @@ const AbasPanelInner: React.FC = () => {
           id: `escolha_${extraKey}`,
           nome: 'Escolher Poder Paranormal',
           descricao: 'Sua origem fornece um poder paranormal extra.',
-          tipo: 'Origem',
+          tipo: tipoRegra1,
           isSlotVazio: true,
           nexDoSlot: 0,
           categoria: 'paranormais'
@@ -774,8 +825,12 @@ const AbasPanelInner: React.FC = () => {
             if (pp) poderesRenderizados.add(nomeBaseCheck);
             const automaticoVal = pp ? (afinidadeAtiva ? (pp['Automatico?_Afinidade'] ?? pp['Automatico?']) : pp['Automatico?']) : (poderesGeraisMap.get(nomeBaseCheck) || undefined);
             const isTatuagem = escolhido.codigoRegra === 89 || (escolhido as any).codigo_poder === 89 || escolhido.nome?.toLowerCase().trim() === 'tatuagem ritualística';
-            const descFinal = (temMonstruosoOcult40 && isTatuagem) ? buildDescTatuagem(escolhido.descricao) : escolhido.descricao;
-            lista.push({ id: `escolha_nex_${nivelPatamar}`, nome: escolhido.nome, descricao: descFinal, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal, codigoRegra: escolhido.codigoRegra });
+            const isFlashback = escolhido.codigoRegra === 32 || escolhido.nome?.toLowerCase().trim() === 'flashback';
+            let descFinal = (temMonstruosoOcult40 && isTatuagem) ? buildDescTatuagem(escolhido.descricao) : escolhido.descricao;
+            if (isFlashback && usouRegra32) {
+              descFinal = `${descFinal}<br/><br/><strong class="text-green-400">❖ Origem Escolhida:</strong> ${nomeOrigemFlashback ? `${nomeOrigemFlashback} — ` : ''}${usouRegra32.nome}`;
+            }
+            lista.push({ id: `escolha_nex_${nivelPatamar}`, nome: escolhido.nome, descricao: descFinal, tipo: finalTipoLabel, extra: isFlashback ? nomeOrigemFlashback : undefined, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal, codigoRegra: escolhido.codigoRegra });
           }
         } else {
           const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
@@ -895,8 +950,12 @@ const AbasPanelInner: React.FC = () => {
           if (pp) poderesRenderizados.add(nomeBaseCheck);
           const automaticoVal = pp ? (afinidadeAtiva ? (pp['Automatico?_Afinidade'] ?? pp['Automatico?']) : pp['Automatico?']) : (poderesGeraisMap.get(nomeBaseCheck) || undefined);
           const isTatuagemExtra = escolhido.codigoRegra === 89 || (escolhido as any).codigo_poder === 89 || escolhido.nome?.toLowerCase().trim() === 'tatuagem ritualística';
-          const descFinalExtra = (temMonstruosoOcult40 && isTatuagemExtra) ? buildDescTatuagem(escolhido.descricao) : escolhido.descricao;
-          lista.push({ id: `escolha_${key}`, nome: escolhido.nome, descricao: descFinalExtra, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal, codigoRegra: escolhido.codigoRegra });
+          const isFlashbackExtra = escolhido.codigoRegra === 32 || escolhido.nome?.toLowerCase().trim() === 'flashback';
+          let descFinalExtra = (temMonstruosoOcult40 && isTatuagemExtra) ? buildDescTatuagem(escolhido.descricao) : escolhido.descricao;
+          if (isFlashbackExtra && usouRegra32) {
+            descFinalExtra = `${descFinalExtra}<br/><br/><strong class="text-green-400">❖ Origem Escolhida:</strong> ${nomeOrigemFlashback ? `${nomeOrigemFlashback} — ` : ''}${usouRegra32.nome}`;
+          }
+          lista.push({ id: `escolha_${key}`, nome: escolhido.nome, descricao: descFinalExtra, tipo: finalTipoLabel, extra: isFlashbackExtra ? nomeOrigemFlashback : undefined, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal, codigoRegra: escolhido.codigoRegra });
         }
       }
     });
@@ -2952,6 +3011,11 @@ return (
 
                                 {(!hab.isSlotVazio && (hab.id.startsWith('escolha_nex_') || hab.id.startsWith('escolha_extra_') || hab.id === 'extra_regra32' || hab.id === 'escolha_extra_possuido_trilha_65')) && (
                                   <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-zinc-800/50">
+                                    {hab.id === 'extra_regra32' && (
+                                      <button onClick={(e) => { e.stopPropagation(); setModalPoderOutraOrigemAberto(true); }}
+                                        className="text-xs px-3 py-1.5 rounded bg-zinc-900 border border-zinc-700 hover:border-green-700 hover:bg-green-900/20 text-zinc-300 hover:text-green-400 transition-colors"
+                                      >Trocar Origem</button>
+                                    )}
                                     <button onClick={(e) => { e.stopPropagation(); const nivel = extrairKeyDoId(hab.id); if (nivel !== null) { setNexPoderEditando(nivel); setNomeEditando(hab.nome); setDescricaoEditando(hab.descricao); setAfinidadeEditando(hab.afinidade || ''); } }}
                                       className="text-xs px-3 py-1.5 rounded bg-zinc-900 border border-zinc-700 hover:border-yellow-700 hover:bg-yellow-900/20 text-zinc-300 hover:text-yellow-400 transition-colors"
                                     >Editar</button>
@@ -2964,13 +3028,22 @@ return (
                                           const nomePoder = escolhido.nome.toLowerCase();
                                           const isResistir = nomePoder.startsWith('resistir a ');
                                           const baseName = nomePoder.startsWith('aprender ritual (') ? 'aprender ritual' : (isResistir ? 'resistir a <elemento>' : nomePoder);
-                                          const isParanormal = poderesParanormaisMap.has(baseName) || baseName === 'aprender ritual';
                                           
-                                          // A penalidade de sanidade é atualizada automaticamente pelo useStatus
-
                                           if (baseName === 'aprender ritual') {
                                             const ra = rituaisHook.rituaisAprendidos.find(r => r.origem === `poder_57_${nivel}` || r.origem === `poder_57_combate_${nivel}`);
                                             if (ra) rituaisHook.esquecerRitual(ra.origem);
+                                          }
+                                          const isRemovingFlashback = escolhido.codigoRegra === 32 || nomePoder.trim() === 'flashback';
+                                          if (isRemovingFlashback || nivel === 'extra_regra32') {
+                                            if (isRemovingFlashback) {
+                                              removerPoder('extra_regra32');
+                                            }
+                                            if (origemSelecionada?.Codigo_Regra !== 1) {
+                                              removerPoder('extra_regra1');
+                                            }
+                                            if (origemSelecionada?.Codigo_Regra !== 16) {
+                                              rituaisHook.esquecerRitual('origem_16');
+                                            }
                                           }
                                         }
                                         removerPoder(nivel); 
@@ -3937,7 +4010,10 @@ return (
                             });
                             const bonusDtEspecialista = temEspecialistaElemento ? 2 : 0;
                             const bonusDtGraduado65 = temGraduado65 ? 5 : 0;
-                            const baseDT = 10 + (atributosFinais[atrParaDT] || 0) + nivel + (hasAntena ? 3 : 0) + (bonusMaldicoes?.bonusDT || 0) + bonusDtMonstruoso + bonusDtEspecialista + bonusDtGraduado65;
+                            const temFuracaoMental = origemSelecionada?.Nome_Poder?.trim().toLowerCase() === 'furacão mental' ||
+                              Object.values(poderesEscolhidos).some(p => p.nome?.trim().toLowerCase() === 'furacão mental');
+                            const bonusDtFuracao = temFuracaoMental ? 2 : 0;
+                            const baseDT = 10 + (atributosFinais[atrParaDT] || 0) + nivel + (hasAntena ? 3 : 0) + (bonusMaldicoes?.bonusDT || 0) + bonusDtMonstruoso + bonusDtEspecialista + bonusDtGraduado65 + bonusDtFuracao;
                             
                             return (
                               <div key={elemento} className="mt-2 mb-2 flex flex-col gap-2.5">

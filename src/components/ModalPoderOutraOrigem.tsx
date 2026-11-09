@@ -116,10 +116,10 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
   const renderOrigem = (origem: any) => {
 
               const isExpanded = expandidos.includes(origem.Codigo_Origem);
-              const alreadyHas = Object.values(poderesHook.poderesEscolhidos).some(p => p.nome === origem.Nome_Poder);
+              const alreadyHas = Object.values(poderesHook.poderesEscolhidos).some(p => p.nome === origem.Nome_Poder || p.origemCodigo === origem.Codigo_Origem);
 
               const pseudoPoder = { Nome: origem.Nome_Poder, Descricao: origem.Descricao_Poder, Codigo_Regra: origem.Codigo_Regra, PreRequisitos: '' } as any;
-              const precisaEscolherElemento = origem.Nome_Poder.toLowerCase().includes('elemento') || (origem.Descricao_Poder && origem.Descricao_Poder.toLowerCase().includes('escolha um elemento')) || origem.Codigo_Regra === 34 || origem.Codigo_Regra === 36;
+              const precisaEscolherElemento = origem.Nome_Poder.toLowerCase().includes('elemento') || (origem.Descricao_Poder && origem.Descricao_Poder.toLowerCase().includes('escolha um elemento')) || origem.Codigo_Regra === 18 || origem.Codigo_Regra === 34 || origem.Codigo_Regra === 36;
               const precisaEscolherRitual = origem.Codigo_Regra === 35;
               const precisaEscolherPericia = origem.Nome_Poder.toLowerCase().includes('perícia') || (origem.Descricao_Poder && origem.Descricao_Poder.toLowerCase().includes('escolha uma perícia')) || origem.Codigo_Regra === 9;
 
@@ -165,7 +165,7 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
                               onClick={(e) => { 
                                 e.stopPropagation(); 
                                 setEscolhendoElementoId(null); 
-                                poderesHook.escolherPoderExtra({ Id_Poder: -origem.Codigo_Origem, Codigo_Poder: -1, Nome: origem.Nome_Poder, Descricao: origem.Descricao_Poder, Fonte: origem.Fonte, Tipo: 'Geral', Codigo_Regra: origem.Codigo_Regra } as any, elem, undefined, 'extra_regra32');
+                                poderesHook.escolherPoderExtra({ Id_Poder: -origem.Codigo_Origem, Codigo_Poder: -1, Nome: origem.Nome_Poder, Descricao: origem.Descricao_Poder, Fonte: origem.Fonte, Tipo: 'Geral', Codigo_Regra: origem.Codigo_Regra, origemNome: origem.Nome, origemCodigo: origem.Codigo_Origem } as any, elem, undefined, 'extra_regra32');
                                 onClose();
                               }}
                               className="rounded px-1.5 py-0.5 text-[0.55rem] font-bold uppercase transition border border-zinc-700 hover:scale-105"
@@ -193,7 +193,9 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
         Descricao: origem.Descricao_Poder,
         Fonte: origem.Fonte,
         Tipo: 'Geral',
-        Codigo_Regra: origem.Codigo_Regra
+        Codigo_Regra: origem.Codigo_Regra,
+        origemNome: origem.Nome,
+        origemCodigo: origem.Codigo_Origem
       } as any, undefined, nomePericia, 'extra_regra32');
       onClose();
     }
@@ -235,7 +237,9 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
                                 Descricao: origem.Descricao_Poder,
                                 Fonte: origem.Fonte,
                                 Tipo: 'Geral',
-                                Codigo_Regra: origem.Codigo_Regra
+                                Codigo_Regra: origem.Codigo_Regra,
+                                origemNome: origem.Nome,
+                                origemCodigo: origem.Codigo_Origem
                               } as any, undefined, undefined, 'extra_regra32');
                               onClose();
                             }
@@ -312,7 +316,7 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
           onSelect={(ritualNome) => {
             const origem = origensFiltradas.find(o => o.Codigo_Origem === escolhendoRitualId);
             if (origem) {
-              poderesHook.escolherPoderExtra({ Id_Poder: -origem.Codigo_Origem, Codigo_Poder: -1, Nome: origem.Nome_Poder, Descricao: origem.Descricao_Poder, Fonte: origem.Fonte, Tipo: 'Geral', Codigo_Regra: origem.Codigo_Regra } as any, ritualNome, undefined, 'extra_regra32', undefined, `${origem.Nome_Poder}: ${ritualNome}`);
+              poderesHook.escolherPoderExtra({ Id_Poder: -origem.Codigo_Origem, Codigo_Poder: -1, Nome: origem.Nome_Poder, Descricao: origem.Descricao_Poder, Fonte: origem.Fonte, Tipo: 'Geral', Codigo_Regra: origem.Codigo_Regra, origemNome: origem.Nome, origemCodigo: origem.Codigo_Origem } as any, ritualNome, undefined, 'extra_regra32', undefined, `${origem.Nome_Poder}: ${ritualNome}`);
             }
             setEscolhendoRitualId(null);
             onClose();

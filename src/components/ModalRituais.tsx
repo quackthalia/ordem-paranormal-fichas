@@ -14,7 +14,7 @@ interface ModalRituaisProps {
   elementosPermitidosPorRitual?: Record<number, string[]>;
 }
 
-const ELEMENTOS = ['Sangue', 'Conhecimento', 'Energia', 'Morte', 'Medo', 'Varia'];
+const ELEMENTOS = ['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo', 'Varia'];
 const BANNED_RITUAIS = [10, 17, 49, 53, 64, 116];
 
 const CORES_ELEMENTOS: Record<string, string> = {

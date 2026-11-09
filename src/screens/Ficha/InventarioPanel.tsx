@@ -1272,31 +1272,36 @@ export const InventarioPanel = React.memo(function InventarioPanel() {
             {(itensHook?.gruposUnicos.includes(categoriaFiltro) || categoriaFiltro === 'Geral' || categoriaFiltro === 'Itens Operacionais') && (
               <>
                 {categoriaFiltro === 'Geral' || categoriaFiltro === 'Itens Operacionais' ? (
-                  Array.from(new Set(itensGeral.map(i => i.item.Grupo_Item.trim()))).sort().map(grupo => {
-                    const itensDoGrupo = itensGeral.filter(i => i.item.Grupo_Item.trim() === grupo);
-                    if (itensDoGrupo.length === 0) return null;
-                    return (
-                      <div key={grupo} className="flex flex-col gap-2">
-                        <h3 className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1 mt-2 border-b border-zinc-800/50 pb-1 ml-1">{grupo}</h3>
-                        <SortableContext items={itensDoGrupo.map(i => i.id)} strategy={verticalListSortingStrategy}>
-                          {itensDoGrupo.map(item => (
-                            <SortableItemGeral 
-                              key={item.id} 
-                              item={item} 
-                              isExpanded={!!expandidos[item.id]}
-                              toggleExpandir={(id) => setExpandidos(prev => ({ ...prev, [id]: !prev[id] }))}
-                              stringDT={calcularDT(item.item.Dt_Item, item.item.Grupo_Item?.toLowerCase().includes('explosivos'))}
-                              removerItem={itensHook?.removerItem || (() => {})}
-                              onEditar={() => {
-                                setEditingItem({ id: item.id, tipo: 'item' });
-                              }}
-                              toggleEquipado={itensHook?.toggleEquipado || (() => {})}
-                            />
-                          ))}
-                        </SortableContext>
-                      </div>
-                    );
-                  })
+                  <>
+                    {Array.from(new Set(itensGeral.map(i => i.item.Grupo_Item.trim()))).sort().map(grupo => {
+                      const itensDoGrupo = itensGeral.filter(i => i.item.Grupo_Item.trim() === grupo);
+                      if (itensDoGrupo.length === 0) return null;
+                      return (
+                        <div key={grupo} className="flex flex-col gap-2">
+                          <h3 className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1 mt-2 border-b border-zinc-800/50 pb-1 ml-1">{grupo}</h3>
+                          <SortableContext items={itensDoGrupo.map(i => i.id)} strategy={verticalListSortingStrategy}>
+                            {itensDoGrupo.map(item => (
+                              <SortableItemGeral 
+                                key={item.id} 
+                                item={item} 
+                                isExpanded={!!expandidos[item.id]}
+                                toggleExpandir={(id) => setExpandidos(prev => ({ ...prev, [id]: !prev[id] }))}
+                                stringDT={calcularDT(item.item.Dt_Item, item.item.Grupo_Item?.toLowerCase().includes('explosivos'))}
+                                removerItem={itensHook?.removerItem || (() => {})}
+                                onEditar={() => {
+                                  setEditingItem({ id: item.id, tipo: 'item' });
+                                }}
+                                toggleEquipado={itensHook?.toggleEquipado || (() => {})}
+                              />
+                            ))}
+                          </SortableContext>
+                        </div>
+                      );
+                    })}
+                    {categoriaFiltro === 'Itens Operacionais' && itensGeral.length === 0 && (
+                      <p className="text-center text-zinc-600 text-sm py-4">Nenhum item operacional ou recurso no inventário.</p>
+                    )}
+                  </>
                 ) : (
                   <>
                     <SortableContext items={itensGeral.map(i => i.id)} strategy={verticalListSortingStrategy}>
@@ -1330,7 +1335,7 @@ export const InventarioPanel = React.memo(function InventarioPanel() {
               </>
             )}
 
-            {(categoriaFiltro === 'Amaldiçoados' || categoriaFiltro === 'Geral') && ((itensAmaldicoadosHook?.itensAmaldicoadosInventario?.length || 0) > 0 || armasAmaldicoadasExibidas.length > 0) && (
+            {(categoriaFiltro === 'Amaldiçoados' || (categoriaFiltro === 'Geral' && ((itensAmaldicoadosHook?.itensAmaldicoadosInventario?.length || 0) > 0 || armasAmaldicoadasExibidas.length > 0))) && (
                   <>
                   {['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo', 'Outros'].map(elemento => {
                     const armasNesteElemento = armasAmaldicoadasExibidas.filter(a => {

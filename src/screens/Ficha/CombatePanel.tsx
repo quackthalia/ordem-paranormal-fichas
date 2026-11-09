@@ -125,7 +125,7 @@ interface ArmaCombateCardProps {
 }
 
 const ArmaCombateCard: React.FC<ArmaCombateCardProps> = React.memo(({ armaInv, estaExpandida, toggleExpandir, modificacoesHook, maldicoesHook, onAddMunicao, municoesHook, itensHook, armasHook }) => {
-  const { atributosFinais, proficienciasTotais, regrasAutomaticasAtivas, status, regras, trilhasHook, poderesExtras, origensHook, poderesHook, nivel, nex, danoDeMovimento, bonusMaldicoes, devorarIntCount, temDobroPerito } = useRPG();
+  const { atributosFinais, proficienciasTotais, regrasAutomaticasAtivas, status, regras, trilhasHook, poderesExtras, nivel, nex, danoDeMovimento, bonusMaldicoes, devorarIntCount, temDobroPerito } = useRPG();
   const effectiveNex = regras['nex_experiencia'] ? (nivel * 5) : nex;
   const isAniquilador = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 1;
   const armaFavId = isAniquilador ? poderesExtras["aniquilador_arma_favorita"] : null;
@@ -260,18 +260,6 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = React.memo(({ armaInv, e
   }
   // Regra 28 (Ninja Urbano): +2 em rolagens de dano com armas táticas corpo a corpo e de disparo
   if (regrasAutomaticasAtivas.has(28) && isArmaTatica && (isCorpoACorpo || isArmaDisparo)) {
-    extrasStr += `+2`;
-  }
-  // Lutador (Mão Pesada): +2 em rolagens de dano com ataques corpo a corpo
-  const temMaoPesada = origensHook?.origemSelecionada?.Nome_Poder?.trim().toLowerCase() === 'mão pesada' ||
-    Object.values(poderesHook?.poderesEscolhidos || {}).some(p => p.nome?.trim().toLowerCase() === 'mão pesada');
-  if (temMaoPesada && isCorpoACorpo) {
-    extrasStr += `+2`;
-  }
-  // Militar (Para Bellum): +2 em rolagens de dano com armas de fogo
-  const temParaBellum = origensHook?.origemSelecionada?.Nome_Poder?.trim().toLowerCase() === 'para bellum' ||
-    Object.values(poderesHook?.poderesEscolhidos || {}).some(p => p.nome?.trim().toLowerCase() === 'para bellum');
-  if (temParaBellum && isArmaFogo) {
     extrasStr += `+2`;
   }
 

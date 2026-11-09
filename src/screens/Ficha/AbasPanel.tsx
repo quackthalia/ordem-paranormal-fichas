@@ -379,18 +379,6 @@ const AbasPanelInner: React.FC = () => {
     const poderesRenderizados = new Set<string>();
     let lista: HabilidadeItem[] = [];
 
-    const obterAutomaticoOrigem = (codRegra?: number | null, nomePoder?: string): string | undefined => {
-      const r = codRegra ? Number(codRegra) : null;
-      const n = (nomePoder || '').trim().toLowerCase();
-      if ((r && [1, 2, 3, 4, 5, 6, 7, 11, 12, 14, 15, 16, 18, 83].includes(r)) || ['mão pesada', 'para bellum', 'furacão mental'].includes(n)) {
-        return 'Sim';
-      }
-      if (r && [8, 9, 10, 13].includes(r)) {
-        return 'Semi';
-      }
-      return undefined;
-    };
-
     const usouRegra32 = poderesEscolhidos['extra_regra32'];
     const origemFlashbackObj = (() => {
       if (!usouRegra32) return null;
@@ -420,12 +408,11 @@ const AbasPanelInner: React.FC = () => {
         nome: origemSelecionada.Nome_Poder,
         descricao: origemSelecionada.Descricao_Poder,
         tipo: 'Origem',
-        extra: origemSelecionada.Nome || null,
+        extra: null,
         subPoder: null,
         fonte: origemSelecionada.Fonte || (origemSelecionada as any).fonte || origemDb?.Fonte || (origemDb as any)?.fonte || undefined,
         categoria: 'origem',
         codigoRegra: origemSelecionada.Codigo_Regra,
-        automatico: obterAutomaticoOrigem(origemSelecionada.Codigo_Regra, origemSelecionada.Nome_Poder),
       });
     }
 
@@ -438,14 +425,12 @@ const AbasPanelInner: React.FC = () => {
            nome: usouRegra32.nome,
            descricao: usouRegra32.descricao,
            tipo: nomeOrigemFlashback ? `Flashback (${nomeOrigemFlashback})` : 'Flashback',
-           extra: nomeOrigemFlashback,
            categoria: 'origem',
            fonte: usouRegra32.fonte || origemFlashbackObj?.Fonte,
            preRequisitos: usouRegra32.preRequisitos,
            elemento: usouRegra32.elemento,
            afinidade: usouRegra32.afinidade,
            codigoRegra: codRegra32,
-           automatico: obterAutomaticoOrigem(codRegra32, usouRegra32.nome),
          });
       } else {
          lista.push({ id: 'escolha_extra_regra32', nome: 'Escolher Poder de Outra Origem', descricao: 'Clique no "+" para abrir a lista e selecionar seu poder de origem.', tipo: 'Flashback', isSlotVazio: true, nexDoSlot: 0, categoria: 'origem' });
@@ -830,7 +815,8 @@ const AbasPanelInner: React.FC = () => {
             if (isFlashback && usouRegra32) {
               descFinal = `${descFinal}<br/><br/><strong class="text-green-400">❖ Origem Escolhida:</strong> ${nomeOrigemFlashback ? `${nomeOrigemFlashback} — ` : ''}${usouRegra32.nome}`;
             }
-            lista.push({ id: `escolha_nex_${nivelPatamar}`, nome: escolhido.nome, descricao: descFinal, tipo: finalTipoLabel, extra: isFlashback ? nomeOrigemFlashback : undefined, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal, codigoRegra: escolhido.codigoRegra });
+            const nomeExibicao = (isFlashback && nomeOrigemFlashback) ? `${escolhido.nome} (${nomeOrigemFlashback})` : escolhido.nome;
+            lista.push({ id: `escolha_nex_${nivelPatamar}`, nome: nomeExibicao, descricao: descFinal, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal, codigoRegra: escolhido.codigoRegra });
           }
         } else {
           const nivelLabel = regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelPatamar)}` : `NEX ${nivelPatamar}%`;
@@ -955,7 +941,8 @@ const AbasPanelInner: React.FC = () => {
           if (isFlashbackExtra && usouRegra32) {
             descFinalExtra = `${descFinalExtra}<br/><br/><strong class="text-green-400">❖ Origem Escolhida:</strong> ${nomeOrigemFlashback ? `${nomeOrigemFlashback} — ` : ''}${usouRegra32.nome}`;
           }
-          lista.push({ id: `escolha_${key}`, nome: escolhido.nome, descricao: descFinalExtra, tipo: finalTipoLabel, extra: isFlashbackExtra ? nomeOrigemFlashback : undefined, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal, codigoRegra: escolhido.codigoRegra });
+          const nomeExibicaoExtra = (isFlashbackExtra && nomeOrigemFlashback) ? `${escolhido.nome} (${nomeOrigemFlashback})` : escolhido.nome;
+          lista.push({ id: `escolha_${key}`, nome: nomeExibicaoExtra, descricao: descFinalExtra, tipo: finalTipoLabel, preRequisitos: escolhido.preRequisitos, fonte: escolhido.fonte || pp?.Fonte, elemento: elementoDoPoder, afinidade: afinidadeDoPoder, afinidadeAtiva, afinidadeAdquiridaKey: adqKey, categoria, automatico: automaticoVal, codigoRegra: escolhido.codigoRegra });
         }
       }
     });
@@ -4010,10 +3997,7 @@ return (
                             });
                             const bonusDtEspecialista = temEspecialistaElemento ? 2 : 0;
                             const bonusDtGraduado65 = temGraduado65 ? 5 : 0;
-                            const temFuracaoMental = origemSelecionada?.Nome_Poder?.trim().toLowerCase() === 'furacão mental' ||
-                              Object.values(poderesEscolhidos).some(p => p.nome?.trim().toLowerCase() === 'furacão mental');
-                            const bonusDtFuracao = temFuracaoMental ? 2 : 0;
-                            const baseDT = 10 + (atributosFinais[atrParaDT] || 0) + nivel + (hasAntena ? 3 : 0) + (bonusMaldicoes?.bonusDT || 0) + bonusDtMonstruoso + bonusDtEspecialista + bonusDtGraduado65 + bonusDtFuracao;
+                            const baseDT = 10 + (atributosFinais[atrParaDT] || 0) + nivel + (hasAntena ? 3 : 0) + (bonusMaldicoes?.bonusDT || 0) + bonusDtMonstruoso + bonusDtEspecialista + bonusDtGraduado65;
                             
                             return (
                               <div key={elemento} className="mt-2 mb-2 flex flex-col gap-2.5">

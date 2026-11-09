@@ -356,10 +356,19 @@ export function usePoderesFiltrados(
     const contagemEscolhidos: Record<string, number> = {};
     Object.values(poderesEscolhidos).forEach(poder => {
       let nomeBase = poder.nome.trim();
-      if (nomeBase.toLowerCase().startsWith('aprender ritual')) {
+      const lower = nomeBase.toLowerCase();
+      if (lower.startsWith('aprender ritual')) {
         nomeBase = 'Aprender Ritual';
-      } else if (nomeBase.toLowerCase().startsWith('autodidata')) {
+      } else if (lower.startsWith('autodidata')) {
         nomeBase = 'Autodidata';
+      } else if (lower.startsWith('especialista em elemento')) {
+        nomeBase = 'Especialista em Elemento';
+      } else if (lower.startsWith('mestre em elemento')) {
+        nomeBase = 'Mestre em Elemento';
+      } else if (lower.startsWith('grão-mestre em elemento') || lower.startsWith('grao-mestre em elemento')) {
+        nomeBase = 'Grão-Mestre em Elemento';
+      } else if (lower.startsWith('barreira do oculto')) {
+        nomeBase = 'Barreira do Oculto';
       }
       contagemEscolhidos[nomeBase] = (contagemEscolhidos[nomeBase] || 0) + 1;
     });

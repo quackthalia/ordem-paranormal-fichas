@@ -149,7 +149,15 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
 
               const req = verificarPreRequisitos(poder as Poder, contextoPrereq);
               const isExpanded = expandidos.includes(poder.codigo_poder);
-              const alreadyHas = Object.values(poderesHook.poderesEscolhidos).some(p => p.nome === poder.Nome);
+              const alreadyHas = Object.values(poderesHook.poderesEscolhidos).some(p => {
+                const nEscolhido = (p.nome || '').trim().toLowerCase();
+                const nPoder = (poder.Nome || '').trim().toLowerCase();
+                if (nEscolhido === nPoder) return true;
+                if (['especialista em elemento', 'mestre em elemento', 'grão-mestre em elemento', 'barreira do oculto'].includes(nPoder)) {
+                  return nEscolhido.startsWith(nPoder);
+                }
+                return false;
+              });
               
               const precisaEscolherElemento = poder.Nome.toLowerCase().includes('elemento') || (poder.Descricao && poder.Descricao.toLowerCase().includes('escolha um elemento')) || poder.Codigo_Regra === 34 || poder.Codigo_Regra === 36;
               const precisaEscolherRitual = poder.Codigo_Regra === 35;

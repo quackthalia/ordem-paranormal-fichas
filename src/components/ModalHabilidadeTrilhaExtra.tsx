@@ -70,10 +70,20 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
 
   useEffect(() => {
     if (!isOpen) return;
+    const idMain = Number(trilhasHook?.trilhaSelecionada?.Codigo_Trilha || 0);
+    const nomeMain = (trilhasHook?.trilhaSelecionada?.Nome_Trilha || '').trim().toLowerCase();
+    const deveIgnorar = (t: any) => {
+      const cod = Number(t.Codigo_Trilha);
+      const nome = (t.Nome_Trilha || '').trim().toLowerCase();
+      if (trilhaIdIgnorar && cod === Number(trilhaIdIgnorar)) return true;
+      if (idMain && cod === idMain) return true;
+      if (nomeMain && nome === nomeMain) return true;
+      return false;
+    };
+
     if (trilhasHook?.trilhas && trilhasHook.trilhas.length > 0) {
-      const ocultistaTrilhas = trilhasHook.trilhas.filter(t => t.Classe_Trilha === 'Ocultista');
-      const filtradas = trilhaIdIgnorar ? ocultistaTrilhas.filter(t => t.Codigo_Trilha !== trilhaIdIgnorar) : ocultistaTrilhas;
-      setTrilhas([...filtradas].sort((a, b) => a.Nome_Trilha.localeCompare(b.Nome_Trilha)));
+      const ocultistaTrilhas = trilhasHook.trilhas.filter(t => t.Classe_Trilha === 'Ocultista' && !deveIgnorar(t));
+      setTrilhas([...ocultistaTrilhas].sort((a, b) => a.Nome_Trilha.localeCompare(b.Nome_Trilha)));
       setLoading(false);
       return;
     }
@@ -85,13 +95,13 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
         .eq('Classe_Trilha', 'Ocultista');
       
       if (data) {
-        const filtradas = trilhaIdIgnorar ? data.filter((t: any) => t.Codigo_Trilha !== trilhaIdIgnorar) : data;
+        const filtradas = data.filter((t: any) => !deveIgnorar(t));
         setTrilhas((filtradas as Trilha[]).sort((a, b) => a.Nome_Trilha.localeCompare(b.Nome_Trilha)));
       }
       setLoading(false);
     }
     fetchTrilhas();
-  }, [isOpen, trilhaIdIgnorar, trilhasHook?.trilhas]);
+  }, [isOpen, trilhaIdIgnorar, trilhasHook?.trilhas, trilhasHook?.trilhaSelecionada]);
 
   const nexLevels = apenas10 ? [10] : [10, 40, 65];
 

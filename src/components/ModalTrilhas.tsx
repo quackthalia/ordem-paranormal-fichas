@@ -49,6 +49,7 @@ export function ModalTrilhas({
     selecionarVersatilidade,
     nomePericia,
     trilhaSelecionada,
+    versatilidadeSelecionada,
   } = trilhasHook;
 
   const [abaAtual, setAbaAtual] = useState<'classe' | 'gerais'>('classe');
@@ -64,9 +65,16 @@ export function ModalTrilhas({
 
   const trilhasFiltradas = useMemo(() => {
     return trilhas.filter((t) => {
-      // No modo versatilidade, não pode escolher a própria trilha atual
-      if (modoVersatilidade && trilhaSelecionada && Number(t.Codigo_Trilha) === Number(trilhaSelecionada.Codigo_Trilha)) {
-        return false;
+      // Não permite escolher a mesma trilha na Trilha Principal e na Versatilidade
+      const outraSelecionada = modoVersatilidade ? trilhaSelecionada : versatilidadeSelecionada;
+      if (outraSelecionada) {
+        const codT = Number(t.Codigo_Trilha);
+        const codOutra = Number(outraSelecionada.Codigo_Trilha);
+        const nomeT = (t.Nome_Trilha || '').trim().toLowerCase();
+        const nomeOutra = (outraSelecionada.Nome_Trilha || '').trim().toLowerCase();
+        if (codT === codOutra || (nomeT && nomeT === nomeOutra)) {
+          return false;
+        }
       }
       if (abaAtual === 'classe') {
         if (t.Classe_Trilha !== classe) return false;
@@ -92,7 +100,7 @@ export function ModalTrilhas({
 
       return true;
     });
-  }, [trilhas, abaAtual, classe, modoVersatilidade, trilhaSelecionada, busca, filtroFonte]);
+  }, [trilhas, abaAtual, classe, modoVersatilidade, trilhaSelecionada, versatilidadeSelecionada, busca, filtroFonte]);
 
   const toggleHabilidade = (codigo: number) => {
     setHabilidadesExpandidas((prev) =>

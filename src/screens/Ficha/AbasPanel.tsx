@@ -4830,6 +4830,13 @@ return (
           nexAtual={effectiveNex}
           habilidadesJaAdquiridas={(() => {
             const list: { nome: string; trilhaCodigo?: number; nivelHab?: number }[] = [];
+            // Trilha Principal
+            if (trilhasHook.trilhaSelecionada) {
+              const ts = trilhasHook.trilhaSelecionada;
+              if (ts.Nome_Habilidade_10) list.push({ nome: ts.Nome_Habilidade_10, trilhaCodigo: ts.Codigo_Trilha, nivelHab: 10 });
+              if (ts.Nome_Habilidade_40) list.push({ nome: ts.Nome_Habilidade_40, trilhaCodigo: ts.Codigo_Trilha, nivelHab: 40 });
+              if (ts.Nome_Habilidade_65) list.push({ nome: ts.Nome_Habilidade_65, trilhaCodigo: ts.Codigo_Trilha, nivelHab: 65 });
+            }
             // Versatilidade
             if (trilhasHook.versatilidadeSelecionada) {
               list.push({

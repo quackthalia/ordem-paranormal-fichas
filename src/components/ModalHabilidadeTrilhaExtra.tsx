@@ -315,9 +315,7 @@ export const ModalHabilidadeTrilhaExtra: React.FC<ModalHabilidadeTrilhaExtraProp
           <p className="text-xs text-zinc-400">
             {apenas10 
               ? (regras['nex_experiencia'] ? 'Selecione a habilidade de Nível 2 de uma trilha de Ocultista.' : 'Selecione a habilidade de 10% de uma trilha de Ocultista.')
-              : (regras['nex_experiencia'] 
-                  ? `Selecione uma habilidade ritualística (Nível atual: ${calcularNivel(nexAtual)}). Habilidades avançadas requerem a anterior da mesma trilha.` 
-                  : `Selecione uma habilidade ritualística (NEX atual: ${nexAtual}%). Habilidades de 40% requerem a de 10% da mesma trilha, e 65% requerem a de 40%.`)}
+              : 'Selecione uma habilidade ritualística.'}
           </p>
 
           {/* Barra de Busca e Filtros */}

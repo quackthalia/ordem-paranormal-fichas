@@ -140,6 +140,14 @@ export function ModalTrilhas({
       return;
     }
 
+    // Salva o snapshot de jaTinha para qualquer trilha que conceda perícia
+    const periciaDaTrilha = trilha.nome_pericia || nomePericia(trilha.Perícia_Trilha);
+    if (periciaDaTrilha) {
+      const jaTinha = (periciasHook.pericias[periciaDaTrilha]?.treino || 0) >= 5 || periciasGratisSemTrilha.includes(periciaDaTrilha);
+      const chaveExtra = modoVersatilidade ? 'versatilidade_ja_tinha_pericia' : 'trilha_ja_tinha_pericia';
+      setPoderesExtras(prev => ({ ...prev, [chaveExtra]: String(jaTinha) }));
+    }
+
     if (trilha.Codigo_Trilha === 17) {
       const jaTinha = (periciasHook.pericias['Sobrevivência']?.treino || 0) >= 5 || periciasGratisSemTrilha.includes('Sobrevivência');
       if (modoVersatilidade) {

@@ -809,6 +809,14 @@ export const ModalPoderes: React.FC = () => {
                         }
                       window.dispatchEvent(new Event('abrirModalOutraOrigem'));
                       setNexModalAberto(null);
+                    } else if (poder.Nome.toLowerCase().trim() === 'dominar habilidade ritualística' || poder.Codigo_Regra === 37 || (poder as any).codigo_regra === 37) {
+                      const isDedo = typeof nexEscolhido === 'string' && nexEscolhido.startsWith('extra_dedo_decepado');
+                        escolherPoder(nexEscolhido, poder, categoria, elem, nomePericia, isDedo ? 'Dedo Decepado' : undefined);
+                        if (isDedo) {
+                          window.dispatchEvent(new CustomEvent('dedoDecepadoSelecionado', { detail: { poder, elemento: elem || poder.Elemento || 'Varia', poderId: nexEscolhido } }));
+                        }
+                      window.dispatchEvent(new CustomEvent('abrirModalDominarHabilidade', { detail: { nex: nexEscolhido } }));
+                      setNexModalAberto(null);
                     } else if (poder.Codigo_Regra === 35) {
                       setRitualModalAbertoPara({ poder, categoria });
                     } else {

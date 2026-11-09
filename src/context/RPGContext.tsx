@@ -1437,22 +1437,7 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
     return periciasGratisSemTrilha.includes(nomeP);
   }, [periciasGratisSemTrilha, trilhasHook.trilhaSelecionada, trilhasHook.nomePericia, poderesExtras]);
 
-  const jaTinhaPericiaVersatilidade = useMemo(() => {
-    if (!trilhasHook.versatilidadeSelecionada) return false;
-    if (trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 16 && poderesExtras['agente_secreto_pericia_versatilidade']) {
-      return periciasGratisSemTrilha.includes(poderesExtras['agente_secreto_pericia_versatilidade']);
-    }
-    // Caçador, Muambeiro, Exorcista, Monstruoso e Vampiro não dão o +1d20 de duplicata de trilha na Versatilidade
-    if (trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 17 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 18 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 45 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 47 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 48 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 49 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 50 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 21 || trilhasHook.versatilidadeSelecionada.Codigo_Trilha === 22) {
-      return false;
-    }
-    const nomeP = trilhasHook.versatilidadeSelecionada.nome_pericia || trilhasHook.nomePericia(trilhasHook.versatilidadeSelecionada.Perícia_Trilha);
-    if (!nomeP) return false;
-    if (poderesExtras['versatilidade_ja_tinha_pericia'] !== undefined) {
-      return poderesExtras['versatilidade_ja_tinha_pericia'] === 'true';
-    }
-    return periciasGratisSemTrilha.includes(nomeP);
-  }, [periciasGratisSemTrilha, trilhasHook.versatilidadeSelecionada, trilhasHook.nomePericia, poderesExtras]);
+  const jaTinhaPericiaVersatilidade = false;
 
   const periciasGratis = useMemo(() => {
     const list = [...periciasGratisSemTrilha];
@@ -1800,13 +1785,6 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
       const jaTinha = (periciasHook.pericias[nomePTrilha]?.treino || 0) >= 5 || periciasGratisSemTrilha.includes(nomePTrilha);
       if (jaTinha) {
         setPoderesExtras(prev => ({ ...prev, trilha_ja_tinha_pericia: 'true' }));
-      }
-    }
-    const nomePVers = trilhasHook.versatilidadeSelecionada?.nome_pericia || (trilhasHook.versatilidadeSelecionada ? trilhasHook.nomePericia(trilhasHook.versatilidadeSelecionada.Perícia_Trilha) : null);
-    if (nomePVers && poderesExtras['versatilidade_ja_tinha_pericia'] === undefined && Object.keys(periciasHook.pericias).length > 0) {
-      const jaTinha = (periciasHook.pericias[nomePVers]?.treino || 0) >= 5 || periciasGratisSemTrilha.includes(nomePVers);
-      if (jaTinha) {
-        setPoderesExtras(prev => ({ ...prev, versatilidade_ja_tinha_pericia: 'true' }));
       }
     }
   }, [trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, poderesExtras, periciasHook.pericias, periciasGratisSemTrilha]);

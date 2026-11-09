@@ -344,31 +344,60 @@ export const ModalPoderes: React.FC = () => {
   } = useRPG();
 
   const contextoPrereq = useMemo(() => {
-    const poderesArray: { nome: string; elemento?: string; codigoRegra?: number | null; periciaEscolhidaNome?: string }[] = Object.values(poderesHook.poderesEscolhidos).map(p => ({
-      nome: p.nome.toLowerCase(),
-      elemento: p.elemento,
-      codigoRegra: p.codigoRegra,
-      periciaEscolhidaNome: p.periciaEscolhidaNome
-    }));
+    const slotNex = typeof nexModalAberto === 'number'
+      ? (nexModalAberto >= 1000 ? nexModalAberto - 1000 : nexModalAberto)
+      : nexModalAberto === 'extra_monstruoso_ocult_40'
+        ? 40
+        : nexModalAberto === 'extra_servente_65'
+          ? 65
+          : null;
+
+    const getKeyNex = (k: string): number | null => {
+      if (k === 'extra_regra1') return 0;
+      if (k === 'extra_monstruoso_ocult_40') return 40;
+      if (k === 'extra_servente_65') return 65;
+      const num = parseInt(k, 10);
+      if (!isNaN(num) && String(num) === k) {
+        return num >= 1000 ? num - 1000 : num;
+      }
+      return null;
+    };
+
+    const poderesArray: { nome: string; elemento?: string; codigoRegra?: number | null; periciaEscolhidaNome?: string }[] = Object.entries(poderesHook.poderesEscolhidos)
+      .filter(([key]) => {
+        if (String(key) === String(nexModalAberto)) return false;
+        if (slotNex !== null) {
+          const kNex = getKeyNex(String(key));
+          if (kNex !== null && kNex >= slotNex) return false;
+        }
+        return true;
+      })
+      .map(([, p]) => ({
+        nome: p.nome.toLowerCase(),
+        elemento: p.elemento,
+        codigoRegra: p.codigoRegra,
+        periciaEscolhidaNome: p.periciaEscolhidaNome
+      }));
     
     if (poderesHook.poderClasse) {
       poderesArray.push({ nome: poderesHook.poderClasse.Nome.toLowerCase() });
     }
 
+    const nexEfetivoTrilha = slotNex !== null ? slotNex : (regras['nex_experiencia'] ? (nivel >= 20 ? 99 : nivel * 5) : nex);
     if (trilhasHook.trilhaSelecionada) {
       const t = trilhasHook.trilhaSelecionada;
-      if (nex >= 10 && t.Nome_Habilidade_10) poderesArray.push({ nome: t.Nome_Habilidade_10.toLowerCase() });
-      if (nex >= 40 && t.Nome_Habilidade_40) poderesArray.push({ nome: t.Nome_Habilidade_40.toLowerCase() });
-      if (nex >= 65 && t.Nome_Habilidade_65) poderesArray.push({ nome: t.Nome_Habilidade_65.toLowerCase() });
-      if (nex >= 99 && t.Nome_Habilidade_99) poderesArray.push({ nome: t.Nome_Habilidade_99.toLowerCase() });
+      if (nexEfetivoTrilha >= 10 && t.Nome_Habilidade_10) poderesArray.push({ nome: t.Nome_Habilidade_10.toLowerCase() });
+      if (nexEfetivoTrilha >= 40 && t.Nome_Habilidade_40) poderesArray.push({ nome: t.Nome_Habilidade_40.toLowerCase() });
+      if (nexEfetivoTrilha >= 65 && t.Nome_Habilidade_65) poderesArray.push({ nome: t.Nome_Habilidade_65.toLowerCase() });
+      if (nexEfetivoTrilha >= 99 && t.Nome_Habilidade_99) poderesArray.push({ nome: t.Nome_Habilidade_99.toLowerCase() });
     }
 
-    // Pré-requisitos de nível/NEX usam o nível ATUAL do personagem (não o do slot aberto),
-    // para que quem já está no nível 20 consiga escolher poderes avançados em qualquer slot livre.
-    const nivelContexto = nivel;
-    const nexContexto = regras['nex_experiencia']
-      ? (nivel >= 20 ? 99 : nivel * 5)
-      : nex;
+    const nexContexto = slotNex !== null
+      ? slotNex
+      : (regras['nex_experiencia'] ? (nivel >= 20 ? 99 : nivel * 5) : nex);
+    const nivelContexto = slotNex !== null
+      ? calcularNivel(slotNex)
+      : nivel;
 
     return {
       atributos,
@@ -383,7 +412,7 @@ export const ModalPoderes: React.FC = () => {
       rituais: rituaisHook.rituais,
       regras
     };
-  }, [atributos, nex, nivel, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, trilhasHook.trilhaSelecionada, rituaisHook.rituaisAprendidos, rituaisHook.rituais, origensHook.origemSelecionada, regras]);
+  }, [atributos, nex, nivel, nexModalAberto, periciasHook.pericias, periciasHook.nomesPericias, poderesHook.poderesEscolhidos, poderesHook.poderClasse, trilhasHook.trilhaSelecionada, rituaisHook.rituaisAprendidos, rituaisHook.rituais, origensHook.origemSelecionada, regras]);
 
   const editorRef = useRef<HTMLDivElement>(null);
   const afinidadeRef = useRef<HTMLDivElement>(null);

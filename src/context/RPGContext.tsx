@@ -1277,7 +1277,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     }
   }, [regrasAutomaticasAtivas, nex, nivel, regras]); // Removemos 'status' das dependências para não engatilhar ao desativar
 
-const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
+const temPossuido = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23 && (regras['nex_experiencia'] ? effectiveNivel >= 2 : effectiveNex >= 10)) || (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 23 && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50)) || temHabExtraOcultista(23, 10, 'poder não desejado');
   const ppMax = temPossuido ? 3 + Object.values(poderesHook.poderesEscolhidos).filter(p => p.categoria === 'paranormais').length * 2 : 0;
   const ppTurno = temPossuido ? atributosBaseComBonus.PRE : 0;
 

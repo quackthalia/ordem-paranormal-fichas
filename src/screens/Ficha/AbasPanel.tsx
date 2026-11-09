@@ -199,7 +199,10 @@ const AbasPanelInner: React.FC = () => {
     status, trilhasHook, periciasHook, poderesExtras, setPoderesExtras,
     temAdepto10, temAdepto40, temAdepto65, temAdepto99,
     temEstudioso10, temEstudioso40, temEstudioso65, temEstudioso99,
+    temGranadeiro10, temGranadeiro40, temGranadeiro65, temGranadeiro99, temDobroPerito,
     temCriptologista10, temCriptologista40, temCriptologista65, temCriptologista99, selosPorInterludio, temDobroCriarSelo,
+    temIlusionista10, temIlusionista40, temIlusionista65, temIlusionista99,
+    temArtistaMarcialTrilha10, temArtistaMarcialTrilha40, temArtistaMarcialTrilha65, temArtistaMarcialTrilha99, temArtistaMarcialAprimorado,
     temMonstruoso10, temMonstruoso40, temMonstruoso65, temMonstruoso75, temMonstruoso99, monstruosoElemento,
     isMonstruosoAtivo10, isMonstruosoAtivo40, isMonstruosoAtivo65, isMonstruosoAtivo75,
     temMonstruosoEsp10, temMonstruosoEsp40, temMonstruosoEsp65, temMonstruosoEsp75, temMonstruosoEsp99, isMonstruosoEspAtivo,
@@ -267,14 +270,22 @@ const AbasPanelInner: React.FC = () => {
       setModalPoderOutraClasseAberto(true);
     };
     const handleAbrirModalOutraOrigem = () => setModalPoderOutraOrigemAberto(true);
+    const handleAbrirModalDominarHabilidade = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      const slot = customEvent.detail?.slot || 'extra_regra37';
+      setSlotDominarAtivo(slot);
+      setModalTrilhaExtraAberto(true);
+    };
 
     window.addEventListener('abrirModalRituais', handler);
     window.addEventListener('abrirModalOutraClasse', handleAbrirModalOutraClasse);
     window.addEventListener('abrirModalOutraOrigem', handleAbrirModalOutraOrigem);
+    window.addEventListener('abrirModalDominarHabilidade', handleAbrirModalDominarHabilidade);
     return () => {
       window.removeEventListener('abrirModalRituais', handler);
       window.removeEventListener('abrirModalOutraClasse', handleAbrirModalOutraClasse);
       window.removeEventListener('abrirModalOutraOrigem', handleAbrirModalOutraOrigem);
+      window.removeEventListener('abrirModalDominarHabilidade', handleAbrirModalDominarHabilidade);
     };
   }, []);
 
@@ -525,6 +536,23 @@ const AbasPanelInner: React.FC = () => {
       });
     }
 
+    // Trilha 25 (Granadeiro Blaster - 40% Fogo Amigo): Concede Perito em Explosivos
+    const temPeritoEmExplosivosNosPoderes = Object.values(poderesEscolhidos).some(p => 
+      p.codigoRegra === 29 || p.nome?.toLowerCase() === 'perito em explosivos'
+    );
+    if (temGranadeiro40 && !temPeritoEmExplosivosNosPoderes) {
+      lista.push({
+        id: 'trilha_granadeiro_perito_explosivos',
+        nome: 'Perito em Explosivos',
+        descricao: 'Você soma seu Intelecto na DT para resistir aos seus explosivos e pode excluir dos efeitos da explosão um número de alvos igual ao seu valor de Intelecto.',
+        tipo: 'Habilidade de Trilha',
+        categoria: 'combate',
+        fonte: 'Granadeiro Blaster',
+        codigoRegra: 29,
+        automatico: 'Semi',
+      });
+    }
+
     // Trilha 26 (Criptologista do Oculto - 10% Método Intuitivo): Concede Criar Selo
     const temCriarSeloNosPoderes = Object.values(poderesEscolhidos).some(p => 
       p.nome?.toLowerCase() === 'criar selo' || p.nome?.toLowerCase().startsWith('criar selo')
@@ -537,6 +565,25 @@ const AbasPanelInner: React.FC = () => {
         tipo: 'Habilidade de Trilha',
         categoria: 'utilidade',
         fonte: 'Criptologista do Oculto',
+        automatico: 'Sim',
+      });
+    }
+
+    // Trilha 31 (Artista Marcial - 10% Arte da Violência): Concede Artista Marcial
+    const temArtistaMarcialNosPoderes = Object.values(poderesEscolhidos).some(p => 
+      p.codigoRegra === 84 || p.nome?.toLowerCase() === 'artista marcial'
+    );
+    if (temArtistaMarcialTrilha10 && !temArtistaMarcialNosPoderes) {
+      lista.push({
+        id: 'trilha_artista_marcial_poder',
+        nome: 'Artista Marcial',
+        descricao: temArtistaMarcialAprimorado
+          ? 'Seus ataques desarmados causam 2d8 pontos de dano, podem causar dano letal e se tornam armas ágeis (podendo usar Agilidade no lugar de Força). Em NEX 35%, o dano aumenta para 2d10, em NEX 45%, para 3d10, em NEX 70%, para 3d12 e, em NEX 75%, para 4d12.'
+          : 'Seus ataques desarmados causam 2d6 pontos de dano, podem causar dano letal e se tornam armas ágeis (podendo usar Agilidade no lugar de Força). Em NEX 35%, o dano aumenta para 2d8, em NEX 45%, para 3d8, em NEX 70%, para 3d10 e, em NEX 75%, para 4d10.',
+        tipo: 'Habilidade de Trilha',
+        categoria: classe === 'Combatente' ? 'combate' : 'gerais',
+        fonte: 'Artista Marcial',
+        codigoRegra: 84,
         automatico: 'Sim',
       });
     }
@@ -1063,7 +1110,7 @@ const AbasPanelInner: React.FC = () => {
     }
 
     return lista;
-  }, [classe, nex, nivel, origemSelecionada, origensHook.origens, poderClasse, poderesClasse, poderesEscolhidos, poderesParanormais, poderesParanormaisMap, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras, trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, regrasAutomaticasAtivas, temMonstruoso75, temMonstruosoEsp75, temMonstruosoOcult40, temMonstruosoOcult65, temMonstruosoOcult75, temMonstruosoOcult99, monstruosoElemento, temServente65, serventeElementoPrimario, temPossuido65, listaPoderesUtilidade, temCriptologista10, temCriptologista40, temCriptologista65, temCriptologista99, temVampiro40, poderesExtras]);
+  }, [classe, nex, nivel, origemSelecionada, origensHook.origens, poderClasse, poderesClasse, poderesEscolhidos, poderesParanormais, poderesParanormaisMap, rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras, trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, regrasAutomaticasAtivas, temMonstruoso75, temMonstruosoEsp75, temMonstruosoOcult40, temMonstruosoOcult65, temMonstruosoOcult75, temMonstruosoOcult99, monstruosoElemento, temServente65, serventeElementoPrimario, temPossuido65, listaPoderesUtilidade, temGranadeiro40, temDobroPerito, temCriptologista10, temCriptologista40, temCriptologista65, temCriptologista99, temArtistaMarcialTrilha10, temArtistaMarcialAprimorado, temVampiro40, poderesExtras]);
 
   const habilidadesFiltradas = listaHabilidades.filter(hab =>
     hab.nome.toLowerCase().includes(filtroHabilidades.toLowerCase()) ||
@@ -1606,7 +1653,7 @@ const AbasPanelInner: React.FC = () => {
                                       {hab.tipo}
                                     </span>
                                     <div className="flex items-center gap-2">
-                                      <span className="font-bold text-zinc-200">{isVersatilidade ? 'Versatilidade' : t.Nome_Trilha}</span>
+                                      <span className="font-bold text-zinc-200">{t.Nome_Trilha}</span>
                                       {!isVersatilidade && (
                                         <span className="text-[10px] uppercase text-zinc-500">
                                           ({t.nome_pericia})
@@ -1761,9 +1808,28 @@ const AbasPanelInner: React.FC = () => {
                                       else if (effectiveNex >= 40) nomeHab += ' (4 PE, +1d10)';
                                     }
                                     let descHab = t[habDescKey] as string;
+                                    if (t.Codigo_Trilha === 25 && nexLvl === 40) {
+                                      if (temDobroPerito) {
+                                        descHab += `<br/><br/><strong class="text-green-400">❖ Fogo Amigo Aprimorado:</strong> soma +${atributosFinais.INT * 2} na DT dos seus explosivos e exclui até ${atributosFinais.INT * 2} alvo(s).`;
+                                      } else {
+                                        descHab += `<br/><br/><strong class="text-green-400">❖ Fogo Amigo:</strong> soma +${atributosFinais.INT} na DT dos seus explosivos e exclui até ${atributosFinais.INT} alvo(s).`;
+                                      }
+                                    }
                                     if (t.Codigo_Trilha === 26 && nexLvl === 10) {
                                       const maxSelos = temDobroCriarSelo ? atributosFinais.PRE * 2 : atributosFinais.PRE;
                                       descHab += `<br/><br/><strong class="text-green-400">❖ Método Intuitivo${temDobroCriarSelo ? ' Aprimorado' : ''}:</strong> você pode fabricar ${selosPorInterludio} selo(s) em uma ação de interlúdio e ter um máximo de ${maxSelos} selo(s) ativos simultâneos${temDobroCriarSelo ? ' (Presença × 2)' : ' (Presença)'}.`;
+                                    }
+                                    if (t.Codigo_Trilha === 29 && nexLvl === 10) {
+                                      descHab += `<br/><br/><strong class="text-green-400">❖ Fumaça e Espelhos:</strong> você aprende Tecer Ilusão. Caso o aprenda de novo na progressão, pode gastar +1 PE para conjurá-lo como ação de movimento. A forma Discente pode ser conjurada sem pré-requisitos (-1 PE quando cumprir 2º círculo) e a forma Verdadeira pode ser conjurada com 2º círculo (-2 PE quando cumprir 3º círculo).`;
+                                    }
+                                    if (t.Codigo_Trilha === 29 && nexLvl === 65) {
+                                      descHab += `<br/><br/><strong class="text-green-400">❖ Ilusão Duradoura:</strong> a duração do ritual Tecer Ilusão muda para “Cena”.`;
+                                    }
+                                    if (Number(t.Codigo_Trilha) === 31 && nexLvl === 10 && temArtistaMarcialAprimorado) {
+                                      descHab += `<br/><br/><strong class="text-green-400">❖ Arte da Violência Aprimorado:</strong> como você também adquiriu o poder Artista Marcial na progressão, o tipo de dado de dano aumenta em um passo (d8 / d10 / d12).`;
+                                    }
+                                    if (Number(t.Codigo_Trilha) === 31 && nexLvl === 99) {
+                                      descHab += `<br/><br/><strong class="text-green-400">❖ Mestre da Porradaria:</strong> você recebeu +1 em Agilidade e Força automaticamente. Seus acertos críticos desarmados causam o dano máximo diretamente.`;
                                     }
               
                                     if (!nomeHab) return null;
@@ -2715,11 +2781,17 @@ return (
                                   );
                                 })()}
                                 <div dangerouslySetInnerHTML={{ __html: formatarDescricao(
-                                  (hab.nome?.toLowerCase() === 'criar selo' && temCriptologista10)
-                                    ? `${hab.descricao}<br/><br/><strong class="text-green-400">❖ Método Intuitivo${temDobroCriarSelo ? ' Aprimorado' : ''}:</strong> você pode fabricar ${selosPorInterludio} selo(s) em uma ação de interlúdio e ter um máximo de ${temDobroCriarSelo ? atributosFinais.PRE * 2 : atributosFinais.PRE} selo(s) ativos simultâneos${temDobroCriarSelo ? ' (Presença × 2)' : ' (Presença)'}.`
-                                    : (hab.nome?.toLowerCase() === 'tatuagem ritualística' && temMonstruosoOcult40)
-                                      ? `${hab.descricao}<br/><br/><strong class="text-green-400">❖ Ser Perfurado (40%):</strong> Diferente do normal, este poder também se aplica a todos os rituais de ${monstruosoElemento} marcados em sua pele, não apenas aos de alcance pessoal que têm você como alvo.${temMonstruosoOcult65 ? `<br/><br/><strong class="text-green-400">❖ Ser Rasgado (65%):</strong> a DT dos rituais de ${monstruosoElemento} marcados na pele tem sua DT aumentada em +2.` : ''}${temMonstruosoOcult99 ? `<br/><br/><strong class="text-green-400">❖ Ser Mutilado (99%):</strong> você pode conjurar rituais de ${monstruosoElemento} marcados na pele sem a necessidade de fala, gestos e componentes.` : ''}`
-                                      : hab.descricao
+                                  hab.nome?.toLowerCase() === 'perito em explosivos'
+                                    ? `${hab.descricao}<br/><br/><strong class="text-green-400">❖ ${temDobroPerito ? 'Fogo Amigo Aprimorado' : 'Perito em Explosivos'}:</strong> soma +${temDobroPerito ? atributosFinais.INT * 2 : atributosFinais.INT} na DT dos seus explosivos e exclui até ${temDobroPerito ? atributosFinais.INT * 2 : atributosFinais.INT} alvo(s).`
+                                    : (hab.nome?.toLowerCase() === 'criar selo' && temCriptologista10)
+                                      ? `${hab.descricao}<br/><br/><strong class="text-green-400">❖ Método Intuitivo${temDobroCriarSelo ? ' Aprimorado' : ''}:</strong> você pode fabricar ${selosPorInterludio} selo(s) em uma ação de interlúdio e ter um máximo de ${temDobroCriarSelo ? atributosFinais.PRE * 2 : atributosFinais.PRE} selo(s) ativos simultâneos${temDobroCriarSelo ? ' (Presença × 2)' : ' (Presença)'}.`
+                                      : (hab.nome?.toLowerCase() === 'artista marcial' && temArtistaMarcialTrilha10)
+                                        ? (temArtistaMarcialAprimorado
+                                            ? 'Seus ataques desarmados causam 2d8 pontos de dano, podem causar dano letal e se tornam armas ágeis (podendo usar Agilidade no lugar de Força). Em NEX 35%, o dano aumenta para 2d10, em NEX 45%, para 3d10, em NEX 70%, para 3d12 e, em NEX 75%, para 4d12.<br/><br/><strong class="text-green-400">❖ Arte da Violência Aprimorado:</strong> como você também adquiriu o poder na progressão, o tipo de dado de dano aumenta em um passo.'
+                                            : 'Seus ataques desarmados causam 2d6 pontos de dano, podem causar dano letal e se tornam armas ágeis (podendo usar Agilidade no lugar de Força). Em NEX 35%, o dano aumenta para 2d8, em NEX 45%, para 3d8, em NEX 70%, para 3d10 e, em NEX 75%, para 4d10.')
+                                        : (hab.nome?.toLowerCase() === 'tatuagem ritualística' && temMonstruosoOcult40)
+                                          ? `${hab.descricao}<br/><br/><strong class="text-green-400">❖ Ser Perfurado (40%):</strong> Diferente do normal, este poder também se aplica a todos os rituais de ${monstruosoElemento} marcados em sua pele, não apenas aos de alcance pessoal que têm você como alvo.${temMonstruosoOcult65 ? `<br/><br/><strong class="text-green-400">❖ Ser Rasgado (65%):</strong> a DT dos rituais de ${monstruosoElemento} marcados na pele tem sua DT aumentada em +2.` : ''}${temMonstruosoOcult99 ? `<br/><br/><strong class="text-green-400">❖ Ser Mutilado (99%):</strong> você pode conjurar rituais de ${monstruosoElemento} marcados na pele sem a necessidade de fala, gestos e componentes.` : ''}`
+                                          : hab.descricao
                                 ) }} />
 
                                 {/* Regra 102: escolha 2 perícias para treinar (ou +2 se já treinado) */}
@@ -3955,10 +4027,22 @@ return (
                               peValor -= 1;
                             }
                           }
+                          if (Number(ritual.Codigo_Ritual) === 70 && temIlusionista10) {
+                            if (versao === 'discente') {
+                              const reqDiscente = verificarRequisitoRitual(ritual.Requisito_Discente || '2º círculo', nivel, classe, afinidadeAtiva, afinidadeEscolhida, ritual.Elemento_Ritual);
+                              if (reqDiscente.atende) peValor -= 1;
+                            } else if (versao === 'verdadeiro') {
+                              const reqVerdadeiro = verificarRequisitoRitual(ritual.Requisito_Verdadeiro || '3º círculo', nivel, classe, afinidadeAtiva, afinidadeEscolhida, ritual.Elemento_Ritual);
+                              if (reqVerdadeiro.atende) peValor -= 2;
+                            }
+                          }
                           peValor = Math.max(1, peValor);
                         }
                         const pe = isNaN(peValor) ? peOriginal : String(peOriginal).replace(/\d+/, peValor.toString());
-                        const duracao = ritual.customProps?.[versao]?.Duracao_Ritual || obterValorVersao(ritual.Duracao_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                        let duracao = ritual.customProps?.[versao]?.Duracao_Ritual || obterValorVersao(ritual.Duracao_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
+                        if (Number(ritual.Codigo_Ritual) === 70 && temIlusionista65) {
+                          duracao = 'Cena';
+                        }
                         let execucao = ritual.customProps?.[versao]?.Execucao_Ritual || obterValorVersao(ritual.Execucao_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
 
 
@@ -3976,19 +4060,22 @@ return (
                           },
                         ];
                         if (ritual.Tem_Discente) {
-                          const req = verificarRequisitoRitual(ritual.Requisito_Discente, nivel, classe, afinidadeAtiva, afinidadeEscolhida, ritual.Elemento_Ritual);
+                          const req = verificarRequisitoRitual(ritual.Requisito_Discente || '2º círculo', nivel, classe, afinidadeAtiva, afinidadeEscolhida, ritual.Elemento_Ritual);
+                          const isTecerIlusao = Number(ritual.Codigo_Ritual) === 70;
                           versoesDisponiveis.push({ 
                             value: 'discente', 
                             label: 'Discente',
-                            disabled: !req.atende
+                            disabled: (isTecerIlusao && temIlusionista10) ? false : !req.atende
                           });
                         }
                         if (ritual.Tem_Verdadeiro) {
-                          const req = verificarRequisitoRitual(ritual.Requisito_Verdadeiro, nivel, classe, afinidadeAtiva, afinidadeEscolhida, ritual.Elemento_Ritual);
+                          const req = verificarRequisitoRitual(ritual.Requisito_Verdadeiro || '3º círculo', nivel, classe, afinidadeAtiva, afinidadeEscolhida, ritual.Elemento_Ritual);
+                          const reqDiscente = verificarRequisitoRitual(ritual.Requisito_Discente || '2º círculo', nivel, classe, afinidadeAtiva, afinidadeEscolhida, ritual.Elemento_Ritual);
+                          const isTecerIlusao = Number(ritual.Codigo_Ritual) === 70;
                           versoesDisponiveis.push({ 
                             value: 'verdadeiro', 
                             label: 'Verdadeiro',
-                            disabled: !req.atende
+                            disabled: (isTecerIlusao && temIlusionista10) ? !reqDiscente.atende : !req.atende
                           });
                         }
 
@@ -4042,7 +4129,13 @@ return (
                                 )}
                                 <div className="flex flex-col gap-1 justify-center py-1">
                                   <div className="flex items-center gap-2">
-                                    <span className="text-sm font-bold text-zinc-100">{ritual.customNome || (ritual.learnedNome && ritual.learnedNome !== ritual.Nome_Ritual ? ritual.learnedNome : (ritual.Origem === 'trilha_conduite' ? `${ritual.Nome_Ritual} (Conduíte)` : (ritual.Origem === 'trilha_flagelador' ? `${ritual.Nome_Ritual} (Flagelador)` : (ritual.Origem === 'trilha_graduado' ? `${ritual.Nome_Ritual} (Graduado)` : (ritual.Origem === 'trilha_viajante_das_sombras' ? `${ritual.Nome_Ritual} (Viajante das Sombras)` : (ritual.Origem?.startsWith('servente_') ? `${ritual.Nome_Ritual} (Servente)` : (ritual.Origem?.startsWith('adepto_') ? `${ritual.Nome_Ritual} (Adepto)` : (ritual.Origem?.startsWith('estudioso_') ? `${ritual.Nome_Ritual} (Estudioso)` : (ritual.Origem?.startsWith('trilha_monstruoso_99_') || ritual.Origem === 'monstruoso_99_conhecimento' || ritual.Origem?.startsWith('monstruoso_ocult_99_') ? `${ritual.Nome_Ritual} (Monstruoso)` : ritual.Nome_Ritual)))))))))}</span>
+                                    <span className="text-sm font-bold text-zinc-100">{(() => {
+                                      let nomeFinal = ritual.customNome || (ritual.learnedNome && ritual.learnedNome !== ritual.Nome_Ritual ? ritual.learnedNome : (ritual.Origem === 'trilha_conduite' ? `${ritual.Nome_Ritual} (Conduíte)` : (ritual.Origem === 'trilha_flagelador' ? `${ritual.Nome_Ritual} (Flagelador)` : (ritual.Origem === 'trilha_graduado' ? `${ritual.Nome_Ritual} (Graduado)` : (ritual.Origem === 'trilha_ilusionista' ? `${ritual.Nome_Ritual} (Ilusionista)` : (ritual.Origem === 'trilha_viajante_das_sombras' ? `${ritual.Nome_Ritual} (Viajante das Sombras)` : (ritual.Origem?.startsWith('servente_') ? `${ritual.Nome_Ritual} (Servente)` : (ritual.Origem?.startsWith('adepto_') ? `${ritual.Nome_Ritual} (Adepto)` : (ritual.Origem?.startsWith('estudioso_') ? `${ritual.Nome_Ritual} (Estudioso)` : (ritual.Origem?.startsWith('trilha_monstruoso_99_') || ritual.Origem === 'monstruoso_99_conhecimento' || ritual.Origem?.startsWith('monstruoso_ocult_99_') ? `${ritual.Nome_Ritual} (Monstruoso)` : ritual.Nome_Ritual))))))))));
+                                      if (ritual.Origem !== 'trilha_ilusionista') {
+                                        nomeFinal = nomeFinal.replace(/\s*\(Ilusionista\)/gi, '').trim();
+                                      }
+                                      return nomeFinal;
+                                    })()}</span>
                                     <span className="rounded bg-blue-950/30 px-1.5 py-0.5 text-[10px] font-bold text-blue-400 border border-blue-900/50">
                                       {pe} PE
                                     </span>
@@ -4240,6 +4333,18 @@ return (
 
                                 <div className="mt-3 text-[0.6rem] uppercase tracking-wider text-zinc-600">Fonte: {ritual.Fonte || 'NÃO DEFINIDA'}</div>
 
+                                {Number(ritual.Codigo_Ritual) === 70 && temIlusionista10 && (
+                                  <div className="mt-3 rounded border border-green-900/40 bg-green-950/20 p-2.5 text-xs leading-relaxed text-zinc-300">
+                                    <strong className="text-green-400">❖ Fumaça e Espelhos (Ilusionista):</strong> você pode conjurar a forma Discente mesmo sem cumprir pré-requisitos (-1 PE ao cumprir 2º círculo). A forma Verdadeira pode ser conjurada ao cumprir os pré-requisitos da forma discente (-2 PE ao cumprir 3º círculo).
+                                    {temIlusionista65 && (
+                                      <>
+                                        <br />
+                                        <strong className="text-green-400">❖ Ilusão Duradoura (65%):</strong> a duração do ritual muda para Cena.
+                                      </>
+                                    )}
+                                  </div>
+                                )}
+
                                 <div className="mt-4 flex justify-end gap-2 border-t border-zinc-800/50 pt-3">
                                   <button
                                     onClick={(e) => {
@@ -4289,6 +4394,23 @@ return (
                                                 circulo: baseRitual.Circulo_Ritual,
                                                 elemento: baseRitual.Elemento_Ritual,
                                                 elemento_escolhido: elementoEscolhido
+                                              }
+                                            ]);
+                                            return;
+                                          }
+                                        }
+
+                                        if (Number(ritual.Codigo_Ritual) === 70 && temIlusionista10) {
+                                          const baseRitual = (rituaisHook.rituais || []).find(r => Number(r.Codigo_Ritual) === 70);
+                                          if (baseRitual) {
+                                            rituaisHook.atualizarRituaisAprendidos(prev => [
+                                              ...prev.filter(r => r.origem !== ritual.Origem && r.origem !== 'trilha_ilusionista'),
+                                              {
+                                                codigo_ritual: 70,
+                                                nome: `${baseRitual.Nome_Ritual} (Ilusionista)`,
+                                                origem: 'trilha_ilusionista',
+                                                circulo: baseRitual.Circulo_Ritual,
+                                                elemento: baseRitual.Elemento_Ritual
                                               }
                                             ]);
                                             return;
@@ -4369,6 +4491,10 @@ return (
             const temNormal = (rituaisHook.rituaisAprendidos || []).some((x: any) => Number(x.codigo_ritual) === 3 && x.origem !== 'trilha_lamina_paranormal');
             if (!temNormal) return false;
           }
+          if (Number(r.codigo_ritual) === 70 && temIlusionista10) {
+            const temNormal = (rituaisHook.rituaisAprendidos || []).some((x: any) => Number(x.codigo_ritual) === 70 && x.origem !== 'trilha_ilusionista');
+            if (!temNormal) return false;
+          }
           return true;
         }).map((r: any) => r.codigo_ritual);
 
@@ -4395,13 +4521,21 @@ return (
                     };
                     rituaisHook.esquecerRitual('trilha_lamina_paranormal');
                   }
+                  if (Number(ritual.Codigo_Ritual) === 70 && temIlusionista10) {
+                    propsLamina = {
+                      normal: { Execucao_Ritual: 'Movimento (+1 PE)' },
+                      discente: { Execucao_Ritual: 'Movimento (+1 PE)' },
+                      verdadeiro: { Execucao_Ritual: 'Movimento (+1 PE)' }
+                    };
+                    rituaisHook.esquecerRitual('trilha_ilusionista');
+                  }
                   
                   rituaisHook.aprenderRitual({
                     codigo_ritual: ritual.Codigo_Ritual,
                     origem: origemExtra,
                     elemento_escolhido: elementoFinal,
                     circulo: ritual.Circulo_Ritual,
-                    customNome: ritual.Nome_Ritual,
+                    customNome: ritual.Nome_Ritual.replace(/\s*\(Ilusionista\)/gi, '').trim(),
                     customDesc: ritual.Descricao_Ritual,
                     ...(propsLamina ? { customProps: propsLamina } : {}),
                   });
@@ -4442,11 +4576,20 @@ return (
                     };
                     rituaisHook.esquecerRitual('trilha_lamina_paranormal');
                   }
+                  if (Number(ritual.Codigo_Ritual) === 70 && temIlusionista10) {
+                    propsLamina = {
+                      normal: { Execucao_Ritual: 'Movimento (+1 PE)' },
+                      discente: { Execucao_Ritual: 'Movimento (+1 PE)' },
+                      verdadeiro: { Execucao_Ritual: 'Movimento (+1 PE)' }
+                    };
+                    rituaisHook.esquecerRitual('trilha_ilusionista');
+                  }
                   
                   rituaisHook.aprenderRitual({
                     codigo_ritual: ritual.Codigo_Ritual,
                     origem: origem,
                     elemento_escolhido: elementoFinal,
+                    customNome: ritual.Nome_Ritual.replace(/\s*\(Ilusionista\)/gi, '').trim(),
                     ...(propsLamina ? { customProps: propsLamina } : {}),
                   });
 

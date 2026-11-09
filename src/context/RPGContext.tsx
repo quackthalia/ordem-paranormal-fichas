@@ -481,6 +481,10 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     const bonusNivel83 = set.has(83) ? 1 : 0;
     const effNex = Math.min(99, (regras['nex_experiencia'] ? nivel * 5 : nex) + bonusNex83);
     const effNivel = Math.min(20, (regras['nex_experiencia'] ? nivel : Math.ceil(nex / 5)) + bonusNivel83);
+    const temGranadeiro40Early = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 25 && (regras['nex_experiencia'] ? effNivel >= 8 : effNex >= 40);
+    if (temGranadeiro40Early) {
+      set.add(29);
+    }
     const isMonstTrilha = trilhasHook.trilhaSelecionada && (
       Number(trilhasHook.trilhaSelecionada.Codigo_Trilha) === 18 ||
       Number((trilhasHook.trilhaSelecionada as any)?.codigo_trilha) === 18 ||

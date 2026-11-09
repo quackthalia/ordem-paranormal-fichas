@@ -227,6 +227,18 @@ export function ModalTrilhas({
           });
         }
       }
+      if (Number(trilhaAtual?.Codigo_Trilha) === 22 && Number(novaTrilhaId) !== 22) {
+        setPoderesExtras(prev => {
+          const n = { ...prev };
+          if (modoVersatilidade) {
+            delete n.exorcista_versatilidade_ja_tinha_religiao;
+          } else {
+            delete n.exorcista_ja_tinha_religiao;
+            delete n.exorcista_opcao_40;
+          }
+          return n;
+        });
+      }
       if ([48, 49, 50].includes(trilhaAtual?.Codigo_Trilha || 0) && ![48, 49, 50].includes(novaTrilhaId)) {
         const outraTemVamp = modoVersatilidade
           ? [48, 49, 50].includes(trilhasHook.trilhaSelecionada?.Codigo_Trilha || 0)

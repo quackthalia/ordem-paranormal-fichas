@@ -4799,6 +4799,10 @@ return (
           trilhaIdIgnorar={23}
           tituloCustom="Escolher 10% Trilha"
           onSelect={(habilidade) => {
+            if (habilidade.trilhaCodigo === 22 || habilidade.nome?.toLowerCase().includes('revelação do mal')) {
+              const jaTinha = (periciasHook.pericias['Religião']?.treino || 0) >= 5 || periciasGratisSemTrilha.includes('Religião');
+              setPoderesExtras(prev => ({ ...prev, exorcista_versatilidade_ja_tinha_religiao: String(jaTinha) }));
+            }
             poderesHook.escolherPoderExtra(
               {
                 Codigo_Poder: -1,
@@ -4864,6 +4868,10 @@ return (
             return list;
           })()}
           onSelect={(habilidade) => {
+            if ((habilidade.trilhaCodigo === 22 && habilidade.nivelHab === 10) || habilidade.nome?.toLowerCase().includes('revelação do mal')) {
+              const jaTinha = (periciasHook.pericias['Religião']?.treino || 0) >= 5 || periciasGratisSemTrilha.includes('Religião');
+              setPoderesExtras(prev => ({ ...prev, exorcista_versatilidade_ja_tinha_religiao: String(jaTinha) }));
+            }
             poderesHook.escolherPoderExtra(
               {
                 Codigo_Poder: -1,

@@ -233,7 +233,7 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
                   <div className="flex flex-nowrap items-center gap-2 mt-auto text-[11px] border-t border-zinc-800/50 pt-2 shrink-0">
                     <div className="flex items-center justify-end w-full gap-2">
                       {!alreadyHas && escolhendoElementoId === poder.codigo_poder ? (
-                        <div className="flex gap-1 items-center bg-zinc-950 p-1 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
+                        <div className="flex flex-wrap gap-1 items-center bg-zinc-950 p-1.5 rounded border border-zinc-800" onClick={e => e.stopPropagation()}>
                           <span className="text-[0.55rem] text-zinc-500 uppercase font-bold px-1 hidden sm:inline">Elemento:</span>
                           {['Sangue', 'Morte', 'Conhecimento', 'Energia'].map(elem => {
                             const valElem = verificarPreRequisitos(poder as Poder, contextoPrereq, elem);
@@ -248,8 +248,21 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
                                   poderesHook.escolherPoderExtra(poder, elem, undefined, 'extra_regra31');
                                   onClose();
                                 }}
-                                className={`rounded px-1.5 py-0.5 text-[0.55rem] font-bold uppercase transition border ${!valElem.atende ? 'bg-zinc-900 border-zinc-800 text-zinc-600 cursor-not-allowed opacity-50' : 'border-zinc-700 hover:scale-105'}`}
-                                style={valElem.atende ? { backgroundColor: elem==='Sangue'?'#7f1d1d':elem==='Morte'?'#000':elem==='Conhecimento'?'#b45309':'#4c1d95', color: elem==='Morte'?'#d4d4d8':'#f4f4f5' } : undefined}
+                                className={`rounded px-1.5 py-0.5 text-[0.55rem] font-bold uppercase transition border ${
+                                  !valElem.atende 
+                                    ? 'bg-zinc-900 border-zinc-800 text-zinc-600 cursor-not-allowed opacity-50'
+                                    : 'border-zinc-700 hover:scale-105'
+                                } ${
+                                  valElem.atende ? (() => {
+                                    const elStr = elem.toLowerCase();
+                                    if (elStr.includes('medo')) return 'bg-zinc-200/80 text-zinc-950 px-2';
+                                    if (elStr.includes('sangue')) return 'text-red-500 bg-transparent';
+                                    if (elStr.includes('morte')) return 'bg-black/50 text-white px-2';
+                                    if (elStr.includes('conhecimento')) return 'text-yellow-500 bg-transparent';
+                                    if (elStr.includes('energia')) return 'text-purple-500 bg-transparent';
+                                    return 'text-zinc-400 bg-transparent';
+                                  })() : ''
+                                }`}
                               >
                                 {elem}
                               </button>
@@ -302,7 +315,7 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
                       ) : !alreadyHas && (
                         <button
                           disabled={blocked}
-                          title={bloqRitual ? "Você não possui nenhum ritual aprendido." : ""}
+                          title={!req.atende ? (req.motivo || '') : bloqRitual ? "Você não possui nenhum ritual aprendido." : ""}
                           onClick={(e) => {
                             e.stopPropagation();
                             if (!blocked) {
@@ -315,7 +328,7 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
                               }
                             }
                           }}
-                          className={`ml-auto px-3 py-1 bg-green-700 hover:bg-green-600 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-colors active:scale-95 ${blocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          className={`ml-auto px-3 py-1 rounded font-bold text-[10px] uppercase tracking-wider transition-colors ${blocked ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed' : 'bg-green-700 hover:bg-green-600 text-white active:scale-95'}`}
                         >
                           Escolher
                         </button>

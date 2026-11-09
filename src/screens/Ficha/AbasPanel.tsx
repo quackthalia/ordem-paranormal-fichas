@@ -1819,12 +1819,6 @@ const AbasPanelInner: React.FC = () => {
                                       const maxSelos = temDobroCriarSelo ? atributosFinais.PRE * 2 : atributosFinais.PRE;
                                       descHab += `<br/><br/><strong class="text-green-400">❖ Método Intuitivo${temDobroCriarSelo ? ' Aprimorado' : ''}:</strong> você pode fabricar ${selosPorInterludio} selo(s) em uma ação de interlúdio e ter um máximo de ${maxSelos} selo(s) ativos simultâneos${temDobroCriarSelo ? ' (Presença × 2)' : ' (Presença)'}.`;
                                     }
-                                    if (t.Codigo_Trilha === 29 && nexLvl === 10) {
-                                      descHab += `<br/><br/><strong class="text-green-400">❖ Fumaça e Espelhos:</strong> você aprende Tecer Ilusão. Caso o aprenda de novo na progressão, pode gastar +1 PE para conjurá-lo como ação de movimento. A forma Discente pode ser conjurada sem pré-requisitos (-1 PE quando cumprir 2º círculo) e a forma Verdadeira pode ser conjurada com 2º círculo (-2 PE quando cumprir 3º círculo).`;
-                                    }
-                                    if (t.Codigo_Trilha === 29 && nexLvl === 65) {
-                                      descHab += `<br/><br/><strong class="text-green-400">❖ Ilusão Duradoura:</strong> a duração do ritual Tecer Ilusão muda para “Cena”.`;
-                                    }
                                     if (Number(t.Codigo_Trilha) === 31 && nexLvl === 10 && temArtistaMarcialAprimorado) {
                                       descHab += `<br/><br/><strong class="text-green-400">❖ Arte da Violência Aprimorado:</strong> como você também adquiriu o poder Artista Marcial na progressão, o tipo de dado de dano aumenta em um passo (d8 / d10 / d12).`;
                                     }

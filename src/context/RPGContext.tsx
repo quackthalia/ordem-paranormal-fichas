@@ -1376,6 +1376,14 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
 
   const temCacadorVersatilidade = (trilhasHook.versatilidadeSelecionada?.Codigo_Trilha === 17 && (regras['nex_experiencia'] ? effectiveNivel >= 10 : effectiveNex >= 50));
 
+  const jaTinhaReligiaoTrilha = useMemo(() => {
+    if (periciasGratisSemTrilha.includes('Religião')) return true;
+    if (poderesExtras['exorcista_ja_tinha_religiao'] !== undefined) {
+      return poderesExtras['exorcista_ja_tinha_religiao'] === 'true';
+    }
+    return false;
+  }, [poderesExtras, periciasGratisSemTrilha]);
+
   const jaTinhaReligiaoVersatilidade = useMemo(() => {
     if (periciasGratisSemTrilha.includes('Religião')) return true;
     if (poderesExtras['exorcista_versatilidade_ja_tinha_religiao'] !== undefined) {
@@ -1468,6 +1476,9 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
       if (temCacadorVersatilidade && !jaTinhaSobrevivenciaVersatilidade) {
         list.push('Sobrevivência');
       }
+    }
+    if (temExorcista10 && !jaTinhaReligiaoTrilha && !list.some(p => p.toLowerCase().startsWith('religi'))) {
+      list.push('Religião');
     }
     if (temExorcistaVersatilidade && trilhasHook.trilhaSelecionada?.Codigo_Trilha !== 22 && !jaTinhaReligiaoVersatilidade && !list.includes('Religião')) {
       list.push('Religião');
@@ -1599,7 +1610,7 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
 
     // Trilha 22 (Exorcista)
     // Na Trilha Principal: Como Exorcista já dá Religião por padrão, a habilidade de 10% dá o +2 automaticamente
-    if (temExorcista10) {
+    if (temExorcista10 && jaTinhaReligiaoTrilha) {
       comb['Religião'] = (comb['Religião'] || 0) + 2;
     }
     // Na Versatilidade: Só dá o +2 se já tiver Religião (se não tiver, ganha treino em periciasGratis)
@@ -1758,6 +1769,10 @@ const temPossuido = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23;
   // Sincroniza flag de Ocultismo prévio para fichas que já estavam com Trilha 18 ou 45 selecionada antes da atualização
   useEffect(() => {
     const codT = trilhasHook.trilhaSelecionada?.Codigo_Trilha;
+    if (codT === 22 && poderesExtras['exorcista_ja_tinha_religiao'] === undefined && Object.keys(periciasHook.pericias).length > 0) {
+      const jaTinha = (periciasHook.pericias['Religião']?.treino || 0) >= 5 || periciasGratisSemTrilha.includes('Religião');
+      setPoderesExtras(prev => ({ ...prev, exorcista_ja_tinha_religiao: String(jaTinha) }));
+    }
     const codV = trilhasHook.versatilidadeSelecionada?.Codigo_Trilha;
     if ((codT === 18 || codT === 45 || codT === 47 || codV === 18 || codV === 45 || codV === 47) && poderesExtras['monstruoso_ocultismo_jatinha'] === undefined && Object.keys(periciasHook.pericias).length > 0) {
       const jaTinha = (periciasHook.pericias['Ocultismo']?.treino || 0) >= 5 || periciasGratisSemTrilha.includes('Ocultismo');

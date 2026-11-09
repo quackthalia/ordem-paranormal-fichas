@@ -53,7 +53,7 @@ export function verificarPreRequisitos(
   const texto = poder.PreRequisitos || '';
 
   // Se não houver código, ou se for código não implementado ainda, libera por padrão
-  if (!codigo || codigo > 48) {
+  if (!codigo || codigo > 50) {
     return { atende: true };
   }
 
@@ -529,7 +529,7 @@ export function verificarPreRequisitos(
       const resAttr = verificarAtributo(textoLower);
       if (!resAttr.atende) return resAttr;
       if (!contexto.rituaisAprendidos || !contexto.rituaisAprendidos.some(r => {
-         const def = contexto.rituais?.find(rd => rd.Nome_Ritual === r.nome);
+         const def = contexto.rituais?.find(rd => Number(rd.Codigo_Ritual) === Number(r.codigo_ritual) || (r.nome && rd.Nome_Ritual?.toLowerCase().trim() === r.nome.toLowerCase().trim()));
          return def && def.Circulo_Ritual >= 2;
       })) {
         return { atende: false, motivo: 'Ritual de 2º Círculo' };
@@ -688,8 +688,13 @@ export function verificarPreRequisitos(
     case 45: {
       // Ter um ritual de Sangue
       const temSangue = contexto.rituaisAprendidos?.some(ra => {
-        const def = contexto.rituais?.find(r => r.Nome_Ritual === ra.nome);
-        return def && def.Elemento_Ritual?.toLowerCase().trim() === 'sangue';
+        const def = contexto.rituais?.find(r => Number(r.Codigo_Ritual) === Number(ra.codigo_ritual) || (ra.nome && r.Nome_Ritual?.toLowerCase().trim() === ra.nome.toLowerCase().trim()));
+        if (!def) return false;
+        const elemRitual = def.Elemento_Ritual?.toLowerCase().trim() || '';
+        if (elemRitual === 'lista' || elemRitual === 'varia' || elemRitual === 'vária') {
+          return ra.elemento_escolhido?.toLowerCase().trim() === 'sangue';
+        }
+        return elemRitual === 'sangue';
       });
       if (!temSangue) {
         return { atende: false, motivo: 'Ritual de Sangue' };
@@ -731,7 +736,12 @@ export function verificarPreRequisitos(
 
     case 48: {
       // Ritual Vomitar Pestes
-      if (!contexto.rituaisAprendidos || !contexto.rituaisAprendidos.some(r => r.nome.toLowerCase() === 'vomitar pestes')) {
+      const temVomitarPestes = contexto.rituaisAprendidos?.some(ra => {
+        const def = contexto.rituais?.find(r => Number(r.Codigo_Ritual) === Number(ra.codigo_ritual));
+        const nomeRitual = (def?.Nome_Ritual || ra.customNome || ra.nome || '').toLowerCase().trim();
+        return nomeRitual === 'vomitar pestes';
+      });
+      if (!temVomitarPestes) {
         return { atende: false, motivo: 'Ritual Vomitar Pestes' };
       }
       return { atende: true };

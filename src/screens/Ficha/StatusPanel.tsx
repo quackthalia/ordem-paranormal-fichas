@@ -1,4 +1,5 @@
 import React, { useCallback, useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useRPG } from '../../context/RPGContext';
 import { NEX_OPTIONS, CORES_ELEMENTOS, obterElementoOpressor } from '../../utils/rpgRules';
 import { ModalAfinidade } from '../../components/ModalAfinidade';
@@ -35,6 +36,9 @@ export const StatusPanel: React.FC = React.memo(() => {
 
   const regraNexExperiencia = regras['nex_experiencia'];
   const regraSemSanidade = regras['sem_sanidade'];
+
+  const [modoReduzir, setModoReduzir] = useState(false);
+  const desativarModoReduzir = useCallback(() => setModoReduzir(false), []);
 
   const {
     pvAtual, pvMax, setPvMax, setPvAtual,
@@ -212,6 +216,24 @@ export const StatusPanel: React.FC = React.memo(() => {
       </div>
 
       {/* BARRAS DE STATUS */}
+      <div className="mb-2 flex items-center justify-between">
+        <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Status Vitais</span>
+        <button
+          type="button"
+          onClick={() => setModoReduzir(prev => !prev)}
+          className={`flex items-center gap-1.5 rounded border px-2.5 py-1 text-xs font-bold transition select-none cursor-pointer ${
+            modoReduzir
+              ? 'border-red-600/80 bg-red-950/40 text-red-300 shadow-[0_0_12px_rgba(220,38,38,0.2)]'
+              : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-900 hover:text-zinc-200'
+          }`}
+          title={modoReduzir ? 'Cancelar redução de status' : 'Ativar modo de redução de status'}
+        >
+          <span className="text-sm leading-none font-bold">−</span>
+          <span className="text-[11px] uppercase tracking-wider font-semibold">
+            {modoReduzir ? 'Cancelar' : 'Reduzir'}
+          </span>
+        </button>
+      </div>
       <div className="mb-8 flex flex-col gap-6">
         {/* VIDA — usa a função com temporário */}
         <BarraStatus
@@ -224,6 +246,8 @@ export const StatusPanel: React.FC = React.memo(() => {
           setValorMax={setPvMax}
           alterarStatus={alterarPvComTemp} // ← TROCADO
           bloquearLetras={bloquearLetras}
+          modoReduzir={modoReduzir}
+          onDeducaoRealizada={desativarModoReduzir}
           hasTemp={hasPvTemp}
           setHasTemp={setHasPvTemp}
           tempAtual={pvTempAtual}
@@ -290,6 +314,8 @@ export const StatusPanel: React.FC = React.memo(() => {
             setValorMax={setSanMax}
             alterarStatus={(qtd) => alterarStatus('san', qtd)}
             bloquearLetras={bloquearLetras}
+            modoReduzir={modoReduzir}
+            onDeducaoRealizada={desativarModoReduzir}
           />
         )}
 
@@ -305,6 +331,8 @@ export const StatusPanel: React.FC = React.memo(() => {
             setValorMax={setPeMax}
             alterarStatus={alterarPeComTemp}
             bloquearLetras={bloquearLetras}
+            modoReduzir={modoReduzir}
+            onDeducaoRealizada={desativarModoReduzir}
             hasTemp={hasPeTemp}
             setHasTemp={setHasPeTemp}
             tempAtual={peTempAtual}
@@ -325,6 +353,8 @@ export const StatusPanel: React.FC = React.memo(() => {
             setValorMax={() => {}}
             alterarStatus={(qtd) => status.setPpAtual(prev => Math.max(0, Math.min(ppMax, (prev ?? 0) + qtd)))}
             bloquearLetras={bloquearLetras}
+            modoReduzir={modoReduzir}
+            onDeducaoRealizada={desativarModoReduzir}
           />
         )}
 
@@ -339,6 +369,8 @@ export const StatusPanel: React.FC = React.memo(() => {
             setValorMax={setPdMax}
             alterarStatus={(qtd) => alterarStatus('pd', qtd)}
             bloquearLetras={bloquearLetras}
+            modoReduzir={modoReduzir}
+            onDeducaoRealizada={desativarModoReduzir}
             hasTemp={hasPdTemp}
             setHasTemp={setHasPdTemp}
             tempAtual={pdTempAtual}
@@ -372,6 +404,8 @@ interface BarraStatusProps {
   setValorMax: React.Dispatch<React.SetStateAction<number>>;
   alterarStatus: (qtd: number) => void;
   bloquearLetras: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  modoReduzir?: boolean;
+  onDeducaoRealizada?: () => void;
   hasTemp?: boolean;
   setHasTemp?: React.Dispatch<React.SetStateAction<boolean>>;
   tempAtual?: number;
@@ -393,6 +427,8 @@ function BarraStatus({
   setValorMax,
   alterarStatus,
   bloquearLetras,
+  modoReduzir,
+  onDeducaoRealizada,
   hasTemp,
   setHasTemp,
   tempAtual,
@@ -414,36 +450,22 @@ function BarraStatus({
   const percentual = valorMax > 0 ? Math.min(100, (valorAtual / valorMax) * 100) : 0;
   const percentualTemp = tempMax && tempMax > 0 && tempAtual !== undefined ? Math.min(100, (tempAtual / tempMax) * 100) : 0;
 
-  const [isDeducaoAberta, setIsDeducaoAberta] = useState(false);
   const [deducaoValor, setDeducaoValor] = useState('');
   const deducaoInputRef = useRef<HTMLInputElement>(null);
-  const deducaoContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (isDeducaoAberta) {
-      deducaoInputRef.current?.focus();
+    if (modoReduzir) {
+      setDeducaoValor('');
     }
-  }, [isDeducaoAberta]);
-
-  useEffect(() => {
-    if (!isDeducaoAberta) return;
-    const handleClickFora = (e: MouseEvent) => {
-      if (deducaoContainerRef.current && !deducaoContainerRef.current.contains(e.target as Node)) {
-        setIsDeducaoAberta(false);
-        setDeducaoValor('');
-      }
-    };
-    document.addEventListener('mousedown', handleClickFora);
-    return () => document.removeEventListener('mousedown', handleClickFora);
-  }, [isDeducaoAberta]);
+  }, [modoReduzir]);
 
   const aplicarDeducao = () => {
     const qtd = Number(deducaoValor);
     if (!isNaN(qtd) && qtd > 0) {
       alterarStatus(-qtd);
+      setDeducaoValor('');
+      onDeducaoRealizada?.();
     }
-    setDeducaoValor('');
-    setIsDeducaoAberta(false);
   };
 
   const handleDeducaoKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -452,11 +474,9 @@ function BarraStatus({
       aplicarDeducao();
     } else if (e.key === 'Escape') {
       e.preventDefault();
-      setIsDeducaoAberta(false);
-      setDeducaoValor('');
+      onDeducaoRealizada?.();
     }
   };
-
   return (
     <div>
       {/* CABEÇALHO */}
@@ -464,25 +484,22 @@ function BarraStatus({
         <span className="ml-1 text-sm font-bold uppercase tracking-wider text-white">{titulo}</span>
 
         <div className="flex items-center gap-2.5">
-          {/* CAMPO EXPANSÍVEL DE REDUÇÃO/SUBTRAÇÃO */}
-          <div ref={deducaoContainerRef} className="relative flex items-center">
-            {!isDeducaoAberta ? (
-              <button
-                type="button"
-                onClick={() => setIsDeducaoAberta(true)}
-                className="flex items-center gap-1 rounded border border-zinc-800 bg-zinc-900/60 px-2 py-0.5 text-xs font-bold text-zinc-400 transition hover:border-zinc-700 hover:bg-zinc-900 hover:text-zinc-200 cursor-pointer select-none"
-                title={`Diminuir ${titulo}`}
+          {/* CAMPO ANIMADO DE REDUÇÃO */}
+          <AnimatePresence>
+            {modoReduzir && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, x: 10 }}
+                animate={{ opacity: 1, scale: 1, x: 0 }}
+                exit={{ opacity: 0, scale: 0.9, x: 10 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="flex items-center rounded border border-zinc-700 bg-zinc-900/95 px-2 py-0.5 shadow-md"
               >
-                <span className="text-sm leading-none font-bold">−</span>
-                <span className="text-[11px] uppercase tracking-wider font-semibold">Reduzir</span>
-              </button>
-            ) : (
-              <div className="flex items-center rounded border border-zinc-700 bg-zinc-900/95 px-2 py-0.5 shadow-md">
                 <span className="text-sm font-bold text-zinc-400 select-none mr-1">−</span>
                 <input
                   ref={deducaoInputRef}
                   type="number"
                   min="1"
+                  autoFocus={titulo === "Vida"}
                   onKeyDown={(e) => {
                     bloquearLetras(e);
                     handleDeducaoKeyDown(e);
@@ -500,9 +517,9 @@ function BarraStatus({
                 >
                   ✓
                 </button>
-              </div>
+              </motion.div>
             )}
-          </div>
+          </AnimatePresence>
 
           {setHasTemp && (
             <label className="flex cursor-pointer items-center gap-1.5 text-xs text-zinc-400 transition hover:text-zinc-200">

@@ -18,7 +18,18 @@ export function useModificacoes() {
         console.error('Erro ao buscar modificações:', error);
         setError(error.message);
       } else if (data) {
-        setModificacoes(data as Modificacao[]);
+        const lista = data as Modificacao[];
+        if (!lista.some(m => m.Codigo_Modif === 35 || m.Nome_Modif.trim().toLowerCase() === 'aprimorada')) {
+          lista.push({
+            Codigo_Modif: 35,
+            Categoria_Modif: 'Itens Operacionais',
+            Nome_Modif: 'Aprimorada',
+            Descricao_Modif: 'Esta é uma modificação para a mochila militar. Aumenta a capacidade de carga fornecida em 5 espaços (em vez de 2).',
+            'Multiplica?': null,
+            Efeito: 'Aumenta a capacidade de carga fornecida para 5 espaços.'
+          });
+        }
+        setModificacoes(lista);
       }
       setLoading(false);
     }

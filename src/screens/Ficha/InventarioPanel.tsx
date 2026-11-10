@@ -135,9 +135,15 @@ const calcularEspacosFinais = (espacoBase: number | string, modificacoesIds?: nu
           extra -= 1;
        } else if (nome === 'blindada' || nome === 'reforçada') {
           extra += 1;
+       } else if (nome === 'aprimorada') {
+          if (val < 0) {
+            val = -5;
+          }
        }
     });
-    val = Math.max(0, val + extra);
+    if (val >= 0) {
+      val = Math.max(0, val + extra);
+    }
   }
   return val;
 };
@@ -538,7 +544,18 @@ export const InventarioPanel = React.memo(function InventarioPanel() {
     });
     municoesHook?.municoesInventario.forEach(i => total += calcularEspacosFinais(i.municao['Espaços_Item'], i.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas.has(43)));
     protecoesHook?.protecoesInventario.forEach(i => total += calcularEspacosFinais(i.protecao.Espacos_Protecao, i.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas.has(43)));
-    itensHook?.itensInventario.forEach(i => total += calcularEspacosFinais(i.item.Espacos_Itens, i.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas.has(43)));
+    itensHook?.itensInventario.forEach(i => {
+      const isMochila = Number(i.item.Codigo_Item) === 35 || (i.item.Nome_Item || '').toLowerCase().includes('mochila militar');
+      if (isMochila) {
+        const temAprimorada = (i.modificacoes || []).some(id => {
+          const m = modificacoesHook.modificacoes.find(mod => mod.Codigo_Modif === id);
+          return m?.Nome_Modif.trim().toLowerCase() === 'aprimorada';
+        });
+        total -= temAprimorada ? 5 : 2;
+      } else {
+        total += calcularEspacosFinais(i.item.Espacos_Itens, i.modificacoes, modificacoesHook.modificacoes, regrasAutomaticasAtivas.has(43));
+      }
+    });
     itensAmaldicoadosHook?.itensAmaldicoadosInventario.forEach(i => {
       total += Number(i.item.Espacos_Ama) || 0;
     });

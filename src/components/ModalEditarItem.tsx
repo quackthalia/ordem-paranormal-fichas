@@ -293,6 +293,12 @@ export function ModalEditarItem({
         return codigo === 12;
       }
 
+      if (nomeMod === 'aprimorada') {
+        const codigo = Number(item.Codigo_Item);
+        const isMochila = codigo === 35 || nome.toLowerCase().includes('mochila militar') || (item.Nome_Item || '').toLowerCase().includes('mochila militar');
+        return isMochila;
+      }
+
       const cat = m.Categoria_Modif.toLowerCase().trim();
       
       if (nome.toLowerCase().includes('soqueira')) {

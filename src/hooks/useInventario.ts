@@ -15,6 +15,8 @@ export interface UseInventarioReturn {
   limitesItensOverride: [number, number, number, number] | null;
   setLimitesItensOverride: (val: [number, number, number, number] | null) => void;
   setLimiteItemCategoria: (index: number, val: number) => void;
+  abaInventario: string;
+  setAbaInventario: (aba: string) => void;
 }
 
 const NIVEIS_CREDITO: LimiteCredito[] = ['Baixo', 'Médio', 'Alto', 'Ilimitado'];
@@ -28,6 +30,7 @@ export function useInventario(
   const [, setPatenteOverride] = useState<Patente | null>(null);
   const [creditoOverride, setCreditoOverride] = useState<LimiteCredito | null>(null);
   const [limitesItensOverride, setLimitesItensOverride] = useState<[number, number, number, number] | null>(null);
+  const [abaInventario, setAbaInventario] = useState<string>('Geral');
 
   // Se alterar o prestígio, reseta os overrides para seguir a tabela natural
   const setPrestigio = useCallback((val: number) => {
@@ -97,6 +100,8 @@ export function useInventario(
     limitesItensOverride,
     setLimitesItensOverride,
     setLimiteItemCategoria,
+    abaInventario,
+    setAbaInventario,
   }), [
     prestigio,
     setPrestigio,
@@ -107,5 +112,7 @@ export function useInventario(
     limitesItens,
     limitesItensOverride,
     setLimiteItemCategoria,
+    abaInventario,
+    setAbaInventario,
   ]);
 }

@@ -484,10 +484,10 @@ export const InventarioPanel = React.memo(function InventarioPanel() {
   const [modalArmasAberto, setModalArmasAberto] = useState(false);
   const [modalMunicoesAberto, setModalMunicoesAberto] = useState(false);
   const [modalProteçõesAberto, setModalProtecoesAberto] = useState(false);
-  const [categoriaFiltro, setCategoriaFiltro] = useState<string>('Armas');
+  const { abaInventario: categoriaFiltro, setAbaInventario: setCategoriaFiltro } = inventarioHook;
   useEffect(() => {
     if (!temGraduado40 && categoriaFiltro === 'Grimório') {
-      setCategoriaFiltro('Armas');
+      setCategoriaFiltro('Geral');
     }
   }, [temGraduado40, categoriaFiltro]);
   const [modalItensAberto, setModalItensAberto] = useState(false);

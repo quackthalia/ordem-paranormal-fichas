@@ -283,8 +283,9 @@ export function ModalEditarItem({
         const isVestimenta = nome.toLowerCase().includes('vestimenta');
         const isUtensilio = nome.toLowerCase().includes('utensílio') || nome.toLowerCase().includes('utensilio');
         const isAmuleto = nome.toLowerCase().includes('amuleto sagrado');
+        const isManual = nome.toLowerCase().includes('manual operacional');
         const temBonusPericia = /\((.*?)\)/.test(nome);
-        return isVestimenta || isUtensilio || isAmuleto || temBonusPericia;
+        return isVestimenta || isUtensilio || isAmuleto || isManual || temBonusPericia;
       }
       
       if (nomeMod === 'rodinhas de skate para todo terreno') {

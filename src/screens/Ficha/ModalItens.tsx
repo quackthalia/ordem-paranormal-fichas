@@ -368,7 +368,8 @@ export function ModalItens({ isEmbedded, aberto, onFechar, grupoAba }: ModalIten
                             const isUtensilioVestimenta = item.Nome_Item.toLowerCase().includes('vestimenta') || 
                                                           item.Nome_Item.toLowerCase().includes('utensílio') || 
                                                           item.Nome_Item.toLowerCase().includes('utensilio');
-                            if (isUtensilioVestimenta || Number(item.Codigo_Item) === 1 || Number(item.Codigo_Item) === 2) {
+                            const isManual = item.Nome_Item.toLowerCase().includes('manual operacional') || Number(item.Codigo_Item) === 9;
+                            if (isUtensilioVestimenta || isManual || Number(item.Codigo_Item) === 1 || Number(item.Codigo_Item) === 2) {
                               setEscolhendoPericia(item.Codigo_Item);
                             } else {
                               itensHook.adicionarItem(item);

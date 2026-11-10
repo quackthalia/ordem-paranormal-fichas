@@ -470,14 +470,15 @@ function BarraStatus({
               <button
                 type="button"
                 onClick={() => setIsDeducaoAberta(true)}
-                className="flex items-center justify-center h-6 w-6 rounded border border-zinc-700/70 bg-zinc-900/80 text-xs font-bold text-zinc-400 transition hover:border-zinc-500 hover:bg-zinc-800 hover:text-white cursor-pointer select-none"
+                className="flex items-center gap-1 rounded border border-zinc-800 bg-zinc-900/60 px-2 py-0.5 text-xs font-bold text-zinc-400 transition hover:border-zinc-700 hover:bg-zinc-900 hover:text-zinc-200 cursor-pointer select-none"
                 title={`Diminuir ${titulo}`}
               >
-                −
+                <span className="text-sm leading-none font-bold">−</span>
+                <span className="text-[11px] uppercase tracking-wider font-semibold">Reduzir</span>
               </button>
             ) : (
-              <div className="flex items-center rounded border border-zinc-600 bg-zinc-950 px-1 py-0.5 shadow-sm">
-                <span className="text-xs font-bold text-zinc-400 select-none pl-0.5">−</span>
+              <div className="flex items-center rounded border border-zinc-700 bg-zinc-900/95 px-2 py-0.5 shadow-md">
+                <span className="text-sm font-bold text-zinc-400 select-none mr-1">−</span>
                 <input
                   ref={deducaoInputRef}
                   type="number"
@@ -488,13 +489,13 @@ function BarraStatus({
                   }}
                   value={deducaoValor}
                   onChange={(e) => setDeducaoValor(e.target.value)}
-                  className="w-10 bg-transparent text-center text-xs font-bold text-white outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="w-12 bg-transparent text-center text-xs font-bold text-white outline-none placeholder:text-zinc-600 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   placeholder="0"
                 />
                 <button
                   type="button"
                   onClick={aplicarDeducao}
-                  className="px-1 text-xs font-bold text-zinc-400 hover:text-green-400 transition cursor-pointer select-none"
+                  className="ml-1 px-1 text-xs font-bold text-green-500 hover:text-green-400 transition cursor-pointer select-none"
                   title="Confirmar (Enter)"
                 >
                   ✓

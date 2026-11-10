@@ -448,7 +448,7 @@ const getBadgeCloseClasses = (minv: any) => {
 
 
 export const InventarioPanel = React.memo(function InventarioPanel() {
-  const { maldicoesHook, bonusMaldicoes, inventarioHook, atributosFinais, regrasAutomaticasAtivas, armasHook, municoesHook, protecoesHook, itensHook, itensAmaldicoadosHook, toggleVestimentaGeral, status, modificacoesHook, proficienciasTotais, rituaisHook, poderesHook, poderesExtras, regras, nivel, trilhasHook, nex, maxExplosivosAutorais, temVigilante10 } = useRPG();
+  const { maldicoesHook, bonusMaldicoes, inventarioHook, atributosFinais, regrasAutomaticasAtivas, armasHook, municoesHook, protecoesHook, itensHook, itensAmaldicoadosHook, toggleVestimentaGeral, status, modificacoesHook, proficienciasTotais, rituaisHook, poderesHook, poderesExtras, regras, nivel, trilhasHook, nex, maxExplosivosAutorais, temVigilante10, temGraduado40 } = useRPG();
   const effectiveNex = regras["nex_experiencia"] ? nivel * 5 : nex;
   const isAniquilador = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 1;
   const armaFavId = isAniquilador ? poderesExtras["aniquilador_arma_favorita"] : null;
@@ -485,6 +485,11 @@ export const InventarioPanel = React.memo(function InventarioPanel() {
   const [modalMunicoesAberto, setModalMunicoesAberto] = useState(false);
   const [modalProteçõesAberto, setModalProtecoesAberto] = useState(false);
   const [categoriaFiltro, setCategoriaFiltro] = useState<string>('Armas');
+  useEffect(() => {
+    if (!temGraduado40 && categoriaFiltro === 'Grimório') {
+      setCategoriaFiltro('Armas');
+    }
+  }, [temGraduado40, categoriaFiltro]);
   const [modalItensAberto, setModalItensAberto] = useState(false);
   const [modalItensAmaldicoadosAberto, setModalItensAmaldicoadosAberto] = useState(false);
   const [modalUnificadoAberto, setModalUnificadoAberto] = useState(false);
@@ -1053,7 +1058,7 @@ export const InventarioPanel = React.memo(function InventarioPanel() {
           >
             💀
           </button>
-          {((itensHook?.itensInventario?.some(i => i.item.Nome_Item === 'Grimório Ritualístico')) || (trilhasHook?.trilhaSelecionada?.Codigo_Trilha === 13 && effectiveNex >= 40)) && (
+          {temGraduado40 && (
             <button
               onClick={() => setCategoriaFiltro('Grimório')}
               title="Grimório Ritualístico"

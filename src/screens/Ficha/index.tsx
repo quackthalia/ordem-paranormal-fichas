@@ -440,6 +440,11 @@ export const FichaScreen: React.FC = () => {
       } else if (grimorioItem.item.Categoria_Item !== '0') {
          itensHook.editarItem(grimorioItem.id, { Categoria_Item: '0' });
       }
+    } else if (!temGraduado40 && isInventarioLoaded) {
+      const grimorioItem = itensHook.itensInventario.find((i) => Number(i.item.Codigo_Item) === 9999 || i.item.Nome_Item === 'Grimório Ritualístico');
+      if (grimorioItem) {
+        itensHook.removerItem(grimorioItem.id);
+      }
     }
   }, [trilhasHook.trilhaSelecionada, trilhasHook.versatilidadeSelecionada, effectiveNex, nivel, regras, rituaisHook.rituais, rituaisHook.rituaisAprendidos, itensHook.itensInventario, poderesExtras, regrasAutomaticasAtivas, temGraduado40, temLamina10, temIlusionista10]);
 

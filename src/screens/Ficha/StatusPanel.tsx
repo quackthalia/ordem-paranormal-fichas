@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState, useRef, useEffect } from 'react';
 import { useRPG } from '../../context/RPGContext';
 import { NEX_OPTIONS, CORES_ELEMENTOS, obterElementoOpressor } from '../../utils/rpgRules';
 import { ModalAfinidade } from '../../components/ModalAfinidade';
@@ -414,28 +414,113 @@ function BarraStatus({
   const percentual = valorMax > 0 ? Math.min(100, (valorAtual / valorMax) * 100) : 0;
   const percentualTemp = tempMax && tempMax > 0 && tempAtual !== undefined ? Math.min(100, (tempAtual / tempMax) * 100) : 0;
 
+  const [isDeducaoAberta, setIsDeducaoAberta] = useState(false);
+  const [deducaoValor, setDeducaoValor] = useState('');
+  const deducaoInputRef = useRef<HTMLInputElement>(null);
+  const deducaoContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isDeducaoAberta) {
+      deducaoInputRef.current?.focus();
+    }
+  }, [isDeducaoAberta]);
+
+  useEffect(() => {
+    if (!isDeducaoAberta) return;
+    const handleClickFora = (e: MouseEvent) => {
+      if (deducaoContainerRef.current && !deducaoContainerRef.current.contains(e.target as Node)) {
+        setIsDeducaoAberta(false);
+        setDeducaoValor('');
+      }
+    };
+    document.addEventListener('mousedown', handleClickFora);
+    return () => document.removeEventListener('mousedown', handleClickFora);
+  }, [isDeducaoAberta]);
+
+  const aplicarDeducao = () => {
+    const qtd = Number(deducaoValor);
+    if (!isNaN(qtd) && qtd > 0) {
+      alterarStatus(-qtd);
+    }
+    setDeducaoValor('');
+    setIsDeducaoAberta(false);
+  };
+
+  const handleDeducaoKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      aplicarDeducao();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      setIsDeducaoAberta(false);
+      setDeducaoValor('');
+    }
+  };
+
   return (
     <div>
       {/* CABEÇALHO */}
       <div className="mb-1.5 flex items-center justify-between">
         <span className="ml-1 text-sm font-bold uppercase tracking-wider text-white">{titulo}</span>
-        {setHasTemp && (
-          <label className="flex cursor-pointer items-center gap-1.5 text-xs text-zinc-400 transition hover:text-zinc-200">
-            <input
-              type="checkbox"
-              className="accent-green-600"
-              checked={hasTemp}
-              onChange={(e) => {
-                setHasTemp(e.target.checked);
-                if (!e.target.checked && setTempAtual && setTempMax) {
-                  setTempAtual(0);
-                  setTempMax(0);
-                }
-              }}
-            />
-            + Temporário
-          </label>
-        )}
+
+        <div className="flex items-center gap-2.5">
+          {/* CAMPO EXPANSÍVEL DE REDUÇÃO/SUBTRAÇÃO */}
+          <div ref={deducaoContainerRef} className="relative flex items-center">
+            {!isDeducaoAberta ? (
+              <button
+                type="button"
+                onClick={() => setIsDeducaoAberta(true)}
+                className="flex items-center justify-center h-6 w-6 rounded border border-zinc-700/70 bg-zinc-900/80 text-xs font-bold text-zinc-400 transition hover:border-zinc-500 hover:bg-zinc-800 hover:text-white cursor-pointer select-none"
+                title={`Diminuir ${titulo}`}
+              >
+                −
+              </button>
+            ) : (
+              <div className="flex items-center rounded border border-zinc-600 bg-zinc-950 px-1 py-0.5 shadow-sm">
+                <span className="text-xs font-bold text-zinc-400 select-none pl-0.5">−</span>
+                <input
+                  ref={deducaoInputRef}
+                  type="number"
+                  min="1"
+                  onKeyDown={(e) => {
+                    bloquearLetras(e);
+                    handleDeducaoKeyDown(e);
+                  }}
+                  value={deducaoValor}
+                  onChange={(e) => setDeducaoValor(e.target.value)}
+                  className="w-10 bg-transparent text-center text-xs font-bold text-white outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  placeholder="0"
+                />
+                <button
+                  type="button"
+                  onClick={aplicarDeducao}
+                  className="px-1 text-xs font-bold text-zinc-400 hover:text-green-400 transition cursor-pointer select-none"
+                  title="Confirmar (Enter)"
+                >
+                  ✓
+                </button>
+              </div>
+            )}
+          </div>
+
+          {setHasTemp && (
+            <label className="flex cursor-pointer items-center gap-1.5 text-xs text-zinc-400 transition hover:text-zinc-200">
+              <input
+                type="checkbox"
+                className="accent-green-600"
+                checked={hasTemp}
+                onChange={(e) => {
+                  setHasTemp(e.target.checked);
+                  if (!e.target.checked && setTempAtual && setTempMax) {
+                    setTempAtual(0);
+                    setTempMax(0);
+                  }
+                }}
+              />
+              + Temporário
+            </label>
+          )}
+        </div>
       </div>
 
       {/* CORPO */}

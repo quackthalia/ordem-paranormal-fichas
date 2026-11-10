@@ -1286,10 +1286,71 @@ function BadgeBlock({
           'proteções pesadas': 5
         };
 
-        const todosItens = [
-          ...itensExtras.map((text, i) => ({ text, isExtra: true, originalIndex: i, id: `extra-${i}` })),
-          ...itens.map((text, i) => ({ text, isExtra: false, originalIndex: i, id: `normal-${i}` }))
-        ].sort((a, b) => {
+        const isResistencia = titulo.toLowerCase().includes('resistência');
+
+        let listaItens: { text: string; isExtra: boolean; originalIndex?: number; indicesNormais?: number[]; id: string }[] = [];
+
+        if (isResistencia) {
+          const map = new Map<string, { tipoDisplay: string; valorTotal: number; hasValor: boolean; indicesNormais: number[]; temExtra: boolean; id: string }>();
+
+          const processItem = (text: string, isExtra: boolean, originalIndex: number, id: string) => {
+            const trimmed = text.trim();
+            const match = trimmed.match(/^(.*?)(?:\s+(\d+))$/);
+            if (match) {
+              const tipo = match[1].trim();
+              const valor = parseInt(match[2], 10);
+              const key = tipo.toLowerCase();
+              if (!map.has(key)) {
+                map.set(key, {
+                  tipoDisplay: tipo,
+                  valorTotal: valor,
+                  hasValor: true,
+                  indicesNormais: isExtra ? [] : [originalIndex],
+                  temExtra: isExtra,
+                  id
+                });
+              } else {
+                const existing = map.get(key)!;
+                existing.valorTotal += valor;
+                if (!isExtra) existing.indicesNormais.push(originalIndex);
+                if (isExtra) existing.temExtra = true;
+              }
+            } else {
+              const key = trimmed.toLowerCase();
+              if (!map.has(key)) {
+                map.set(key, {
+                  tipoDisplay: trimmed,
+                  valorTotal: 0,
+                  hasValor: false,
+                  indicesNormais: isExtra ? [] : [originalIndex],
+                  temExtra: isExtra,
+                  id
+                });
+              } else {
+                const existing = map.get(key)!;
+                if (!isExtra) existing.indicesNormais.push(originalIndex);
+                if (isExtra) existing.temExtra = true;
+              }
+            }
+          };
+
+          itensExtras.forEach((text, i) => processItem(text, true, i, `extra-${i}`));
+          itens.forEach((text, i) => processItem(text, false, i, `normal-${i}`));
+
+          listaItens = Array.from(map.values()).map(entry => ({
+            text: entry.hasValor ? `${entry.tipoDisplay} ${entry.valorTotal}` : entry.tipoDisplay,
+            isExtra: entry.temExtra,
+            indicesNormais: entry.indicesNormais,
+            id: entry.id
+          }));
+        } else {
+          listaItens = [
+            ...itensExtras.map((text, i) => ({ text, isExtra: true, originalIndex: i, id: `extra-${i}` })),
+            ...itens.map((text, i) => ({ text, isExtra: false, originalIndex: i, id: `normal-${i}` }))
+          ];
+        }
+
+        const todosItens = listaItens.sort((a, b) => {
           const pesoA = ordemCustomizada[a.text.toLowerCase()] || 99;
           const pesoB = ordemCustomizada[b.text.toLowerCase()] || 99;
           if (pesoA !== pesoB) return pesoA - pesoB;
@@ -1308,7 +1369,13 @@ function BadgeBlock({
                 <span className="break-all">{item.text}</span>
                 {!item.isExtra && (
                   <button
-                    onClick={() => setItens(itens.filter((_, j) => j !== item.originalIndex))}
+                    onClick={() => {
+                      if (item.indicesNormais && item.indicesNormais.length > 0) {
+                        setItens(itens.filter((_, j) => !item.indicesNormais!.includes(j)));
+                      } else if (item.originalIndex !== undefined) {
+                        setItens(itens.filter((_, j) => j !== item.originalIndex));
+                      }
+                    }}
                     className="px-0.5 text-zinc-500 transition hover:text-green-500"
                     title="Remover"
                   >

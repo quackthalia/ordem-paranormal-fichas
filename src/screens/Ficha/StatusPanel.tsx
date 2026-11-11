@@ -216,8 +216,7 @@ export const StatusPanel: React.FC = React.memo(() => {
       </div>
 
       {/* BARRAS DE STATUS */}
-      <div className="mb-2 flex items-center justify-between">
-        <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Status Vitais</span>
+      <div className="mb-3 flex items-center justify-start">
         <button
           type="button"
           onClick={() => setModoReduzir(prev => !prev)}
@@ -478,19 +477,19 @@ function BarraStatus({
     }
   };
   return (
-    <div>
+    <div className="relative">
       {/* CABEÇALHO */}
-      <div className="mb-1.5 flex items-center justify-between">
-        <span className="ml-1 text-sm font-bold uppercase tracking-wider text-white">{titulo}</span>
-
+      <div className="mb-1.5 flex h-7 items-center justify-between">
         <div className="flex items-center gap-2.5">
-          {/* CAMPO ANIMADO DE REDUÇÃO */}
+          <span className="ml-1 text-sm font-bold uppercase tracking-wider text-white">{titulo}</span>
+
+          {/* CAMPO ANIMADO DE REDUÇÃO (LADO ESQUERDO) */}
           <AnimatePresence>
             {modoReduzir && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.9, x: 10 }}
+                initial={{ opacity: 0, scale: 0.9, x: -10 }}
                 animate={{ opacity: 1, scale: 1, x: 0 }}
-                exit={{ opacity: 0, scale: 0.9, x: 10 }}
+                exit={{ opacity: 0, scale: 0.9, x: -10 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
                 className="flex items-center rounded border border-zinc-700 bg-zinc-900/95 px-2 py-0.5 shadow-md"
               >
@@ -520,25 +519,26 @@ function BarraStatus({
               </motion.div>
             )}
           </AnimatePresence>
-
-          {setHasTemp && (
-            <label className="flex cursor-pointer items-center gap-1.5 text-xs text-zinc-400 transition hover:text-zinc-200">
-              <input
-                type="checkbox"
-                className="accent-green-600"
-                checked={hasTemp}
-                onChange={(e) => {
-                  setHasTemp(e.target.checked);
-                  if (!e.target.checked && setTempAtual && setTempMax) {
-                    setTempAtual(0);
-                    setTempMax(0);
-                  }
-                }}
-              />
-              + Temporário
-            </label>
-          )}
         </div>
+
+        {/* LADO DIREITO: + TEMPORÁRIO */}
+        {setHasTemp && (
+          <label className="flex cursor-pointer items-center gap-1.5 text-xs text-zinc-400 transition hover:text-zinc-200">
+            <input
+              type="checkbox"
+              className="accent-green-600"
+              checked={hasTemp}
+              onChange={(e) => {
+                setHasTemp(e.target.checked);
+                if (!e.target.checked && setTempAtual && setTempMax) {
+                  setTempAtual(0);
+                  setTempMax(0);
+                }
+              }}
+            />
+            + Temporário
+          </label>
+        )}
       </div>
 
       {/* CORPO */}

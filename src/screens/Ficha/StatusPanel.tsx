@@ -315,6 +315,19 @@ export const StatusPanel: React.FC = React.memo(() => {
             bloquearLetras={bloquearLetras}
             modoReduzir={modoReduzir}
             onDeducaoRealizada={desativarModoReduzir}
+            isMorrendo={sanAtual === 0}
+            maxMorrendo={3}
+            morrendoCount={Number(poderesExtras['enlouquecendo_count'] || 0)}
+            onToggleMorrendo={(i) => {
+              const currentCount = Number(poderesExtras['enlouquecendo_count'] || 0);
+              const isMarked = i < currentCount;
+              const newCount = isMarked ? i : i + 1;
+              setPoderesExtras(prev => ({ ...prev, enlouquecendo_count: String(newCount) }));
+            }}
+            onCurarMorrendo={() => {
+              setSanAtual(1);
+              setPoderesExtras(prev => ({ ...prev, enlouquecendo_count: '0' }));
+            }}
           />
         )}
 
@@ -555,7 +568,7 @@ function BarraStatus({
                   <button
                     key={i}
                     type="button"
-                    title={`Turno ${i + 1} morrendo`}
+                    title={titulo === 'Sanidade' ? `Rodada ${i + 1} enlouquecendo` : `Turno ${i + 1} morrendo`}
                     onClick={() => onToggleMorrendo?.(i)}
                     className={`h-5 w-5 rounded-full border-2 transition-colors flex items-center justify-center cursor-pointer ${
                       isMarked
@@ -567,13 +580,13 @@ function BarraStatus({
               })}
             </div>
 
-            {/* Botão CURAR */}
+            {/* Botão CURAR / RECUPERAR */}
             <button
               type="button"
               onClick={onCurarMorrendo}
               className="absolute left-1/2 -translate-x-1/2 rounded border border-green-800/80 bg-zinc-900 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-green-500 transition hover:border-green-700 hover:bg-green-950/40 hover:text-green-400 cursor-pointer"
             >
-              Curar
+              {titulo === 'Sanidade' ? 'Acalmar' : 'Curar'}
             </button>
 
             {/* Valor Atual / Max (0/94) */}

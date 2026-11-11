@@ -586,7 +586,7 @@ function BarraStatus({
               onClick={onCurarMorrendo}
               className="absolute left-1/2 -translate-x-1/2 rounded border border-green-800/80 bg-zinc-900 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-green-500 transition hover:border-green-700 hover:bg-green-950/40 hover:text-green-400 cursor-pointer"
             >
-              {titulo === 'Sanidade' ? 'Acalmar' : 'Curar'}
+              {titulo === 'Sanidade' ? 'Estabilizar' : 'Curar'}
             </button>
 
             {/* Valor Atual / Max (0/94) */}

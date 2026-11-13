@@ -346,7 +346,7 @@ export function obterCorBadge(texto: string): string {
   if (txt.includes('energia')) return '#BF3EFF';
   if (txt.includes('medo')) return '#E8E8E8';
   if (txt.includes('balistico') || txt.includes('corte') || txt.includes('impacto') || txt.includes('perfuracao')) return '#B5B5B5';
-  if (txt.includes('calor')) return '#FF4500';
+  if (txt.includes('calor') || (txt.includes('fogo') && !txt.includes('arma'))) return '#FF4500';
   if (txt.includes('frio')) return '#98F5FF';
   if (txt.includes('eletricidade')) return '#FFFF00';
   if (txt.includes('quimico')) return '#00EE00';

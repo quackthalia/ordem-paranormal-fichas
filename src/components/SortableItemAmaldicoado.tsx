@@ -112,43 +112,46 @@ export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, remo
                 <span><span className="font-bold text-green-400">DT:</span> {stringDT}</span>
               </div>
             )}
-            
-            <div className="flex items-center flex-wrap gap-2 min-w-0">
-              <span className="text-[11px] text-zinc-400 truncate">
-                Categoria {item.item.Categoria_Ama}
-              </span>
-              {(item.item.Codigo_Item_Ama === 60 || item.item.Nome_Ama.toLowerCase().includes('proteção torácica') || item.item.Nome_Ama.toLowerCase().includes('proteção toráxica')) && (
+
+            {(item.item.Codigo_Item_Ama === 60 || item.item.Nome_Ama.toLowerCase().includes('proteção torácica') || item.item.Nome_Ama.toLowerCase().includes('proteção toráxica')) && (
+              <div className="flex items-center gap-2.5 text-xs text-zinc-300 mt-0.5">
+                <span>
+                  <span className="font-bold text-green-400">Defesa</span>{' '}
+                  <span className={(item.defesaAtualToracica ?? 10) === 0 ? 'text-red-400 font-semibold' : ''}>
+                    +{item.defesaAtualToracica ?? 10}
+                  </span>
+                </span>
                 <div
-                  className="flex items-center gap-1 bg-zinc-950 border border-zinc-800 rounded px-1.5 py-0.5"
+                  className="flex items-center gap-1"
                   onPointerDown={(e) => e.stopPropagation()}
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                    Defesa
-                  </span>
                   <button
                     type="button"
                     onClick={() => itensAmaldicoadosHook.alterarDefesaToracica(item.id, -2)}
                     disabled={(item.defesaAtualToracica ?? 10) <= 0}
-                    className="w-4 h-4 flex items-center justify-center rounded bg-zinc-900 hover:bg-red-950/60 hover:text-red-400 text-zinc-300 border border-zinc-800 text-xs font-bold leading-none transition-colors disabled:opacity-30 disabled:pointer-events-none"
+                    className="w-6 h-6 flex items-center justify-center rounded bg-zinc-900 hover:bg-red-950/60 hover:text-red-400 hover:border-red-900/60 text-zinc-300 border border-zinc-700/80 text-sm font-bold leading-none transition-colors disabled:opacity-30 disabled:pointer-events-none"
                     title="Diminuir defesa (-2)"
                   >
                     −
                   </button>
-                  <span className={`text-[11px] font-mono font-bold min-w-[2.2rem] text-center ${(item.defesaAtualToracica ?? 10) === 0 ? 'text-red-400' : 'text-green-400'}`}>
-                    +{item.defesaAtualToracica ?? 10}/10
-                  </span>
                   <button
                     type="button"
                     onClick={() => itensAmaldicoadosHook.alterarDefesaToracica(item.id, 2)}
                     disabled={(item.defesaAtualToracica ?? 10) >= 10}
-                    className="w-4 h-4 flex items-center justify-center rounded bg-zinc-900 hover:bg-green-950/60 hover:text-green-400 text-zinc-300 border border-zinc-800 text-xs font-bold leading-none transition-colors disabled:opacity-30 disabled:pointer-events-none"
+                    className="w-6 h-6 flex items-center justify-center rounded bg-zinc-900 hover:bg-green-950/60 hover:text-green-400 hover:border-green-900/60 text-zinc-300 border border-zinc-700/80 text-sm font-bold leading-none transition-colors disabled:opacity-30 disabled:pointer-events-none"
                     title="Aumentar defesa (+2)"
                   >
                     +
                   </button>
                 </div>
-              )}
+              </div>
+            )}
+            
+            <div className="flex items-center min-w-0">
+              <span className="text-[11px] text-zinc-400 truncate">
+                Categoria {item.item.Categoria_Ama}
+              </span>
             </div>
           </div>
         </div>

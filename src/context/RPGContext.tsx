@@ -975,7 +975,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
       
       // Calculate what was added
       current.forEach(ritual => {
-        if (ritual.origem?.startsWith('maldicao_conjuracao_')) return;
+        if (ritual.origem?.startsWith('maldicao_conjuracao_') || ritual.origem === 'item_kamikaze') return;
         const key = getRitualKey(ritual);
         if (!previous.some(p => getRitualKey(p) === key)) {
           const def = rituaisHook.rituais?.find(r => r.Codigo_Ritual === ritual.codigo_ritual);
@@ -986,7 +986,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
       
       // Calculate what was removed
       previous.forEach(ritual => {
-        if (ritual.origem?.startsWith('maldicao_conjuracao_')) return;
+        if (ritual.origem?.startsWith('maldicao_conjuracao_') || ritual.origem === 'item_kamikaze') return;
         const key = getRitualKey(ritual);
         if (!current.some(p => getRitualKey(p) === key)) {
           const def = rituaisHook.rituais?.find(r => r.Codigo_Ritual === ritual.codigo_ritual);
@@ -1002,6 +1002,39 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
 
     rituaisAprendidosRef.current = current;
   }, [rituaisHook.rituaisAprendidos, rituaisHook.rituais, regras]);
+
+  // Sincroniza o ritual Deflagração de Energia concedido pelo item amaldiçoado Kamikaze
+  React.useEffect(() => {
+    const temKamikaze = itensAmaldicoadosHook.itensAmaldicoadosInventario.some(
+      i => i.item.Codigo_Item_Ama === 72 || i.item.Nome_Ama?.toLowerCase().includes('kamikaze')
+    );
+    const jaTemRitualKamikaze = (rituaisHook.rituaisAprendidos || []).some(
+      r => r.origem === 'item_kamikaze'
+    );
+
+    if (temKamikaze && !jaTemRitualKamikaze) {
+      const deflagracao = (rituaisHook.rituais || []).find(
+        r => Number(r.Codigo_Ritual) === 27 || r.Nome_Ritual?.toLowerCase() === 'deflagração de energia'
+      );
+      if (deflagracao) {
+        rituaisHook.atualizarRituaisAprendidos(prev => {
+          if (prev.some(r => r.origem === 'item_kamikaze')) return prev;
+          return [
+            ...prev,
+            {
+              codigo_ritual: deflagracao.Codigo_Ritual,
+              nome: deflagracao.Nome_Ritual,
+              circulo: deflagracao.Circulo_Ritual,
+              origem: 'item_kamikaze',
+              fonte: deflagracao.Fonte
+            }
+          ];
+        });
+      }
+    } else if (!temKamikaze && jaTemRitualKamikaze) {
+      rituaisHook.atualizarRituaisAprendidos(prev => prev.filter(r => r.origem !== 'item_kamikaze'));
+    }
+  }, [itensAmaldicoadosHook.itensAmaldicoadosInventario, rituaisHook.rituaisAprendidos, rituaisHook.rituais, rituaisHook.atualizarRituaisAprendidos]);
 
   const paranormalPenalty = useMemo(() => {
     const qtd = Object.entries(poderesHook.poderesEscolhidos).filter(([key, p]) => {

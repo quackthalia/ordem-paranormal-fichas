@@ -4014,7 +4014,8 @@ return (
                         // O código único na interface do usuário agora é uma combinação do código do ritual e a origem (para suportar o mesmo ritual pego mais de uma vez, caso aconteça)
                         const chaveUnica = `${ritual.Codigo_Ritual}_${ritual.Origem}`;
                         const expandido = rituaisExpandidos.includes(chaveUnica as any);
-                        const versao: VersaoRitual = versaoRitual[chaveUnica] || 'normal';
+                        const isOrigemKamikaze = ritual.Origem === 'item_kamikaze';
+                        const versao: VersaoRitual = isOrigemKamikaze ? 'normal' : (versaoRitual[chaveUnica] || 'normal');
 
                         const isLista = ritual.Elemento_Ritual.toLowerCase() === 'lista' || ritual.Elemento_Ritual.toLowerCase() === 'varia';
                         // Usa a escolha permanente feita na hora de aprender
@@ -4090,9 +4091,9 @@ return (
                               if (reqVerdadeiro.atende) peValor -= 2;
                             }
                           }
-                          peValor = Math.max(1, peValor);
+                          peValor = isOrigemKamikaze ? 0 : Math.max(1, peValor);
                         }
-                        const pe = isNaN(peValor) ? peOriginal : String(peOriginal).replace(/\d+/, peValor.toString());
+                        const pe = isOrigemKamikaze ? '0' : (isNaN(peValor) ? peOriginal : String(peOriginal).replace(/\d+/, peValor.toString()));
                         let duracao = ritual.customProps?.[versao]?.Duracao_Ritual || obterValorVersao(ritual.Duracao_Ritual, versao, ritual.Tem_Discente, ritual.Tem_Verdadeiro);
                         if (Number(ritual.Codigo_Ritual) === 70 && temIlusionista65) {
                           duracao = 'Cena';
@@ -4110,10 +4111,10 @@ return (
                           { 
                             value: 'normal', 
                             label: 'Normal',
-                            disabled: !reqNormal.atende
+                            disabled: isOrigemKamikaze ? false : !reqNormal.atende
                           },
                         ];
-                        if (ritual.Tem_Discente) {
+                        if (!isOrigemKamikaze && ritual.Tem_Discente) {
                           const req = verificarRequisitoRitual(ritual.Requisito_Discente || '2º círculo', nivel, classe, afinidadeAtiva, afinidadeEscolhida, ritual.Elemento_Ritual);
                           const isTecerIlusao = Number(ritual.Codigo_Ritual) === 70;
                           versoesDisponiveis.push({ 
@@ -4122,7 +4123,7 @@ return (
                             disabled: (isTecerIlusao && temIlusionista10) ? false : !req.atende
                           });
                         }
-                        if (ritual.Tem_Verdadeiro) {
+                        if (!isOrigemKamikaze && ritual.Tem_Verdadeiro) {
                           const req = verificarRequisitoRitual(ritual.Requisito_Verdadeiro || '3º círculo', nivel, classe, afinidadeAtiva, afinidadeEscolhida, ritual.Elemento_Ritual);
                           const reqDiscente = verificarRequisitoRitual(ritual.Requisito_Discente || '2º círculo', nivel, classe, afinidadeAtiva, afinidadeEscolhida, ritual.Elemento_Ritual);
                           const isTecerIlusao = Number(ritual.Codigo_Ritual) === 70;
@@ -4196,7 +4197,7 @@ return (
                                   </div>
                                   {/* Dados abaixo do título — todas as versões, ativa acesa */}
                                   {ritual.Dados_Ritual && (() => {
-                                    const partesDados = ritual.Dados_Ritual.split('/').map(p => p.trim());
+                                    const partesDados = isOrigemKamikaze ? [ritual.Dados_Ritual.split('/')[0].trim()] : ritual.Dados_Ritual.split('/').map(p => p.trim());
                                     const normal = partesDados[0];
                                     if (partesDados.length === 1 && normal) {
                                       return <span className="text-sm font-bold text-zinc-100">{normal}</span>;
@@ -4249,6 +4250,11 @@ return (
                                   {(isOrigemConjuracao || temConjuracaoNoItem) && (
                                     <span className="text-[9px] font-bold uppercase tracking-wider text-yellow-500/90 bg-yellow-950/30 border border-yellow-800/40 px-1.5 py-0.5 rounded">
                                       Conjuração
+                                    </span>
+                                  )}
+                                  {isOrigemKamikaze && (
+                                    <span className="text-[9px] font-bold uppercase tracking-wider text-purple-400/90 bg-purple-950/30 border border-purple-800/40 px-1.5 py-0.5 rounded">
+                                      Kamikaze
                                     </span>
                                   )}
                                   {/* Seta */}
@@ -4411,7 +4417,7 @@ return (
                                     }}
                                     className="rounded bg-zinc-800 border border-zinc-700 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-zinc-300 transition hover:bg-zinc-700 hover:text-zinc-100"
                                   >Editar</button>
-                                  {!ritual.Origem.startsWith('trilha_') && !ritual.Origem.startsWith('maldicao_conjuracao_') && (
+                                  {!ritual.Origem.startsWith('trilha_') && !ritual.Origem.startsWith('maldicao_conjuracao_') && ritual.Origem !== 'item_kamikaze' && (
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation();
@@ -4545,6 +4551,7 @@ return (
             const temNormal = (rituaisHook.rituaisAprendidos || []).some((x: any) => Number(x.codigo_ritual) === 3 && x.origem !== 'trilha_lamina_paranormal');
             if (!temNormal) return false;
           }
+          if (r.origem === 'item_kamikaze') return false;
           if (Number(r.codigo_ritual) === 70 && temIlusionista10) {
             const temNormal = (rituaisHook.rituaisAprendidos || []).some((x: any) => Number(x.codigo_ritual) === 70 && x.origem !== 'trilha_ilusionista');
             if (!temNormal) return false;

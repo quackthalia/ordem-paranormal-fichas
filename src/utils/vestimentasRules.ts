@@ -106,8 +106,13 @@ export function calcularBonusVestimentas(
       defesa += 10;
     }
     // Proteção Torácica
-    if (id === 60) {
-      defesa += 10;
+    const nomeAmaLower = String(inv.item.Nome_Ama || '').toLowerCase();
+    if (id === 60 || nomeAmaLower.includes('proteção torácica') || nomeAmaLower.includes('proteção toráxica')) {
+      const defesaToracica = inv.defesaAtualToracica !== undefined ? inv.defesaAtualToracica : 10;
+      defesa += defesaToracica;
+      if (defesaToracica <= 0) {
+        vulnerabilidadesExtras.push('Balístico', 'Corte', 'Impacto', 'Perfuração', 'Fogo', 'Energia');
+      }
     }
     // Máscara do Assassino Sobrevivente
     if (id === 62) {

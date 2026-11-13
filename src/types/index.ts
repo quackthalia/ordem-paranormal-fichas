@@ -380,6 +380,7 @@ export interface ItemAmaldicoadoInventario {
   id: string;
   item: ItemAmaldicoado;
   equipado?: boolean;
+  defesaAtualToracica?: number;
 }
 
 export interface GrupoArma {

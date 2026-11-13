@@ -849,7 +849,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const municoesHook = useMunicoes();
   const apenasEscudosMonstruoso = temMonstruoso99 && monstruosoElemento === 'Energia';
   const opcoesProtecoes = useMemo(() => ({ apenasEscudos: apenasEscudosMonstruoso }), [apenasEscudosMonstruoso]);
-  const protecoesHook = useProtecoes(opcoesProtecoes);
+  const protecoesHookRaw = useProtecoes(opcoesProtecoes);
   const rituaisHook = useRituais();
 
   const modificacoesHook = useModificacoes();
@@ -858,6 +858,31 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   const maxVestimentasMonstruoso = apenasEscudosMonstruoso ? 0 : (regrasAutomaticasAtivas.has(23) ? 3 : 2);
   const itensHook = useItens(maxVestimentasMonstruoso);
   const itensAmaldicoadosHook = useItensAmaldicoados();
+
+  const isProtecaoToracica = (item: { item: { Codigo_Item_Ama: number; Nome_Ama: string } }) => {
+    const nome = item.item.Nome_Ama.toLowerCase();
+    return item.item.Codigo_Item_Ama === 60 || nome.includes('proteção torácica') || nome.includes('proteção toráxica');
+  };
+
+  const toggleProtecaoEquipado = useCallback((id: string) => {
+    const target = protecoesHookRaw.protecoesInventario.find(p => p.id === id);
+    if (target && !target.equipado) {
+      const isEscudo = target.protecao.Proficiencia?.toLowerCase().includes('escudo') || target.protecao.Nome_Protecao?.toLowerCase().includes('escudo');
+      if (!isEscudo && !apenasEscudosMonstruoso) {
+        itensAmaldicoadosHook.itensAmaldicoadosInventario.forEach(i => {
+          if (i.equipado && isProtecaoToracica(i)) {
+            itensAmaldicoadosHook.toggleEquipadoSimples(i.id, false);
+          }
+        });
+      }
+    }
+    protecoesHookRaw.toggleEquipado(id);
+  }, [protecoesHookRaw, itensAmaldicoadosHook, apenasEscudosMonstruoso]);
+
+  const protecoesHook = useMemo(() => ({
+    ...protecoesHookRaw,
+    toggleEquipado: toggleProtecaoEquipado
+  }), [protecoesHookRaw, toggleProtecaoEquipado]);
 
   const bonusVestimentas = useMemo(() => {
     return calcularBonusVestimentas(itensAmaldicoadosHook.itensAmaldicoadosInventario, itensHook.itensInventario);
@@ -901,9 +926,21 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    if (isAmaldicoado) itensAmaldicoadosHook.toggleEquipadoSimples(id, true);
-    else itensHook.toggleEquipadoSimples(id, true);
-  }, [itensHook, itensAmaldicoadosHook, regrasAutomaticasAtivas]);
+    if (isAmaldicoado) {
+      const itemAlvo = itensAmaldicoadosHook.itensAmaldicoadosInventario.find(i => i.id === id);
+      if (itemAlvo && isProtecaoToracica(itemAlvo)) {
+        protecoesHookRaw.setProtecoesInventario(prev =>
+          prev.map(p => {
+            const isEscudo = p.protecao.Proficiencia?.toLowerCase().includes('escudo') || p.protecao.Nome_Protecao?.toLowerCase().includes('escudo');
+            return p.equipado && !isEscudo ? { ...p, equipado: false } : p;
+          })
+        );
+      }
+      itensAmaldicoadosHook.toggleEquipadoSimples(id, true);
+    } else {
+      itensHook.toggleEquipadoSimples(id, true);
+    }
+  }, [itensHook, itensAmaldicoadosHook, protecoesHookRaw, maxVestimentasMonstruoso]);
 
   // Monstruoso 99% Energia: desequipa vestimentas e armaduras que não sejam escudo
   React.useEffect(() => {

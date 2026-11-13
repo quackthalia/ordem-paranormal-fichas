@@ -72,6 +72,17 @@ export function useItensAmaldicoados() {
     }));
   }, []);
 
+  const alterarDefesaToracica = useCallback((id: string, delta: number) => {
+    setItensAmaldicoadosInventario(prev => prev.map(i => {
+      if (i.id === id) {
+        const atual = i.defesaAtualToracica !== undefined ? i.defesaAtualToracica : 10;
+        const novaDefesa = Math.max(0, Math.min(10, atual + delta));
+        return { ...i, defesaAtualToracica: novaDefesa };
+      }
+      return i;
+    }));
+  }, []);
+
   const contagemPorCategoria = useMemo(() => {
     const contagem = [0, 0, 0, 0];
     itensAmaldicoadosInventario.forEach(obj => {
@@ -95,6 +106,7 @@ export function useItensAmaldicoados() {
     reordenarItens, 
     editarItem,
     toggleEquipadoSimples,
+    alterarDefesaToracica,
     contagemPorCategoria,
     loading, 
     error 
@@ -107,6 +119,7 @@ export function useItensAmaldicoados() {
     reordenarItens,
     editarItem,
     toggleEquipadoSimples,
+    alterarDefesaToracica,
     contagemPorCategoria,
     loading,
     error

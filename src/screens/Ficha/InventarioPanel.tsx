@@ -275,6 +275,8 @@ function SortableItemGeral({ item, isExpanded, toggleExpandir, removerItem, stri
         <div className="flex items-center gap-3 flex-shrink-0">
           {(item.item.Nome_Item.toLowerCase().includes('vestimenta') || 
             item.item.Nome_Item.toLowerCase().includes('amuleto sagrado') || 
+            item.item.Nome_Item.toLowerCase().includes('utensílio') ||
+            item.item.Nome_Item.toLowerCase().includes('utensilio') ||
             item.item.Grupo_Item?.toLowerCase() === 'proteções' ||
             item.item.Grupo_Item?.toLowerCase() === 'protecoes') && (
             (() => {

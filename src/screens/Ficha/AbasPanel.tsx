@@ -4031,7 +4031,7 @@ return (
                         const temConjuracaoNoItem = (itensHook?.itensInventario || []).some(i => {
                           const nomeItem = (i.item.Nome_Item || '').toLowerCase();
                           const grupoItem = (i.item.Grupo_Item || '').toLowerCase();
-                          const reqEquip = nomeItem.includes('vestimenta') || nomeItem.includes('amuleto sagrado') || grupoItem === 'proteções' || grupoItem === 'protecoes';
+                          const reqEquip = nomeItem.includes('vestimenta') || nomeItem.includes('amuleto sagrado') || nomeItem.includes('utensílio') || nomeItem.includes('utensilio') || grupoItem === 'proteções' || grupoItem === 'protecoes';
                           const ativo = reqEquip ? Boolean(i.equipado) : true;
                           return ativo && Array.isArray(i.maldicoes) && i.maldicoes.includes(24) && (i.maldicoes_elementos?.[24] || '').trim().toLowerCase() === (ritual.Nome_Ritual || '').trim().toLowerCase();
                         });

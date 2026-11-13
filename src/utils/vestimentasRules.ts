@@ -30,7 +30,7 @@ export function calcularBonusPericiasItensGerais(
     const isUtensilio = nomeLower.includes('utensílio') || nomeLower.includes('utensilio');
     const isGrimorio = nomeLower.includes('grimório') || nomeLower.includes('grimorio') || Number(inv.item.Codigo_Item) === 9999;
     if (!isAmuleto && !isVestimenta && !isUtensilio && !isGrimorio) continue;
-    if ((isAmuleto || isVestimenta) && !inv.equipado) continue;
+    if ((isAmuleto || isVestimenta || isUtensilio) && !inv.equipado) continue;
 
     const doItem: Record<string, number> = {};
     if (isAmuleto) {

@@ -57,7 +57,7 @@ export function calcularBonusMaldicoes(
   itens.forEach(i => {
     const nomeItem = (i.item.Nome_Item || '').toLowerCase();
     const grupoItem = (i.item.Grupo_Item || '').toLowerCase();
-    const requerEquipar = nomeItem.includes('vestimenta') || nomeItem.includes('amuleto sagrado') || grupoItem === 'proteções' || grupoItem === 'protecoes';
+    const requerEquipar = nomeItem.includes('vestimenta') || nomeItem.includes('amuleto sagrado') || nomeItem.includes('utensílio') || nomeItem.includes('utensilio') || grupoItem === 'proteções' || grupoItem === 'protecoes';
     const estaAtivo = requerEquipar ? Boolean(i.equipado) : true;
     if (estaAtivo && Array.isArray(i.maldicoes)) i.maldicoes.forEach(m => allMaldicoes.push({ id: m, elem: i.maldicoes_elementos?.[m] }));
   });

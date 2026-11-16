@@ -118,6 +118,10 @@ export function calcularBonusVestimentas(
     if (id === 62) {
       resistenciasExtras.push('+2d20 Percepção para armadilhas');
     }
+    // Kamikaze
+    if (id === 72 || nomeAmaLower.includes('kamikaze')) {
+      defesa += 2;
+    }
   }
 
   return { pv, pe, defesa, deslocamento, pericias, resistenciasExtras, vulnerabilidadesExtras };

@@ -28,6 +28,24 @@ import { ModalPoderOutraOrigem } from '../../components/ModalPoderOutraOrigem';
 import { ModalHabilidadeTrilhaExtra } from '../../components/ModalHabilidadeTrilhaExtra';
 import { ProgressaoNEXPanel } from './ProgressaoNEXPanel';
 import { InventarioPanel } from './InventarioPanel';
+
+const VAMPIRO_OPCOES_NOMES: Record<number, Record<string, string[]>> = {
+  40: {
+    Ancião: ['Desafiar Gravidade', 'Mente Apática', 'Aura Apavorante'],
+    Bestial: ['Fome Feroz', 'Aparência Enganosa', 'Besta Sanguinária'],
+    Encantador: ['Sempre Atraente', 'O Prometido', 'Intuição Apurada'],
+  },
+  65: {
+    Ancião: ['Planar', 'Forma de Fumaça', 'Amigo da Escuridão'],
+    Bestial: ['Forma de Ratos', 'Forma de Morcego', 'Forma de Lobo'],
+    Encantador: ['Agilidade Macabra', 'Aparição Conveniente', 'Perseguição Implacável'],
+  },
+  99: {
+    Ancião: ['Manancial Vampírico', 'Lenda Local', 'Reflexo Hipnótico'],
+    Bestial: ['Forma Animal Expandida', 'Instintos Reprimidos', 'Conexão Animal'],
+    Encantador: ['Aquele Perfeito', 'Reflexos Instantâneos', 'Controle Mental'],
+  },
+};
 import { CombatePanel } from './CombatePanel';
 // ═══════════════════════════════════════════════════════════════
 // CORES DOS ELEMENTOS
@@ -1895,6 +1913,14 @@ const AbasPanelInner: React.FC = () => {
                                       }));
                                     };
               
+                                    const isTrilhaVamp = t.Codigo_Trilha === 48 || t.Codigo_Trilha === 49 || t.Codigo_Trilha === 50 || Boolean(t.Nome_Trilha && t.Nome_Trilha.toLowerCase().includes('vontade vamp'));
+                                    const vampOpcaoKey = `vampiro_opcao_${nexLvl}`;
+                                    const vampOpcaoEscolhida = poderesExtras[vampOpcaoKey];
+                                    const vampArqEscolhido = poderesExtras['vampiro_opcao_10'] || poderesExtras['vampiro_arquetipo'] || 'Ancião';
+                                    const vampNomeOpcaoEscolhida = (isTrilhaVamp && nexLvl > 10 && vampOpcaoEscolhida)
+                                      ? VAMPIRO_OPCOES_NOMES[nexLvl]?.[vampArqEscolhido]?.[Number(vampOpcaoEscolhida) - 1]
+                                      : undefined;
+
                                     return (
                                       <div key={nexLvl} className="mb-2 overflow-hidden rounded border border-zinc-800 bg-zinc-900/50">
                                         <div
@@ -1913,7 +1939,7 @@ const AbasPanelInner: React.FC = () => {
                                               />
                                             )}
                                             <span className="font-bold text-zinc-200 text-xs truncate">
-                                              {regras['nex_experiencia'] ? `Nível ${calcularNivel(nexLvl)}` : `NEX ${nexLvl}%`} - <span className="text-zinc-300">{nomeHab}</span>
+                                              {regras['nex_experiencia'] ? `Nível ${calcularNivel(nexLvl)}` : `NEX ${nexLvl}%`} - <span className="text-zinc-300">{vampNomeOpcaoEscolhida ? `${nomeHab} — ${vampNomeOpcaoEscolhida}` : nomeHab}</span>
                                             </span>
                                           </div>
                                           <span className="text-xs text-zinc-600 shrink-0">
@@ -2052,7 +2078,7 @@ if (isTrilhaVamp && nexLvl > 10 && opcoesArq.length > 0 && !opcaoEscolhida) {
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-green-400">
-                    Opção {numOpcao}
+                    {VAMPIRO_OPCOES_NOMES[nexLvl]?.[arqEscolhido]?.[idx] || `Opção ${numOpcao}`}
                   </span>
                   {badgeTag && (
                     <span
@@ -2113,7 +2139,9 @@ if (isTrilhaVamp && nexLvl === 10 && opcaoEscolhida) {
   const partes = [];
   if (introComum) partes.push(introComum);
   if (subintroArq) partes.push(subintroArq);
-  if (textoOpcaoEscolhida) partes.push(textoOpcaoEscolhida);
+  if (textoOpcaoEscolhida) {
+    partes.push(vampNomeOpcaoEscolhida ? `<strong class="text-green-400">${vampNomeOpcaoEscolhida}:</strong> ${textoOpcaoEscolhida}` : textoOpcaoEscolhida);
+  }
   textoExibicao = partes.join('\n\n').trim();
 }
 

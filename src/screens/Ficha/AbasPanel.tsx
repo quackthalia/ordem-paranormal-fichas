@@ -804,6 +804,8 @@ const AbasPanelInner: React.FC = () => {
           let categoria: CategoriaHabilidade;
           if (pp) {
             categoria = 'paranormais';
+          } else if (escolhido.categoria === 'gerais' || poderesGeraisMap.has(escolhido.nome.toLowerCase().trim())) {
+            categoria = 'gerais';
           } else {
             categoria = 'utilidade';
           }
@@ -870,6 +872,8 @@ const AbasPanelInner: React.FC = () => {
           let categoria: CategoriaHabilidade;
           if (pp) {
             categoria = 'paranormais';
+          } else if (escolhido.categoria === 'gerais' || poderesGeraisMap.has(escolhido.nome.toLowerCase().trim())) {
+            categoria = 'gerais';
           } else {
             categoria = 'combate';
           }
@@ -929,6 +933,8 @@ const AbasPanelInner: React.FC = () => {
         let categoria: CategoriaHabilidade;
         if (pp) {
           categoria = 'paranormais';
+        } else if (escolhido.categoria === 'gerais' || poderesGeraisMap.has(escolhido.nome.toLowerCase().trim())) {
+          categoria = 'gerais';
         } else if (escolhido.categoria === 'combate') {
           categoria = 'combate';
         } else {
@@ -1189,7 +1195,8 @@ const AbasPanelInner: React.FC = () => {
     ))
   );
 
-  const ordemCategorias: (CategoriaHabilidade | 'trilha')[] = ['origem', 'trilha', 'classe', 'utilidade', 'combate', 'paranormais'];
+  const [filtroTipoHabilidade, setFiltroTipoHabilidade] = React.useState<string>('todas');
+  const ordemCategorias: (CategoriaHabilidade | 'trilha')[] = ['origem', 'trilha', 'classe', 'utilidade', 'combate', 'gerais', 'paranormais'];
   const rotuloCategoria: Record<CategoriaHabilidade | 'trilha', string> = {
     origem: 'Poder de Origem',
     trilha: 'Trilha da Classe',
@@ -1217,16 +1224,39 @@ const AbasPanelInner: React.FC = () => {
 
         {abaDireita === 'habilidades' && (
           <div className="flex flex-1 flex-col min-h-0">
-            <div className="mb-5 flex items-center gap-4">
+            <div className="mb-5 flex flex-wrap items-center gap-3">
               <InputOtimizado value={filtroHabilidades} onChange={setFiltroHabilidades}
                 placeholder="Filtrar habilidades..."
-                className="flex-1 border-b border-zinc-700 bg-transparent py-2 text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700"
+                className="flex-1 min-w-[140px] border-b border-zinc-700 bg-transparent py-2 text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700"
+              />
+              <CustomSelect
+                value={filtroTipoHabilidade}
+                onChange={setFiltroTipoHabilidade}
+                wrapperClassName="w-auto shrink-0"
+                minDropdownWidth={150}
+                className={`rounded border px-3 py-2 text-xs font-bold transition ${
+                  filtroTipoHabilidade !== 'todas'
+                    ? 'border-green-700/70 bg-green-950/40 text-green-300'
+                    : 'border-zinc-700 bg-zinc-800 text-zinc-200 hover:border-zinc-600'
+                }`}
+                options={[
+                  { value: 'todas', label: 'Tipo: Todos' },
+                  { value: 'origem', label: 'Origem' },
+                  { value: 'trilha', label: 'Trilha' },
+                  { value: 'classe', label: 'Classe' },
+                  { value: 'utilidade', label: 'Utilidade' },
+                  { value: 'combate', label: 'Combate' },
+                  { value: 'gerais', label: 'Geral' },
+                  { value: 'paranormais', label: 'Paranormais' },
+                ]}
               />
               <button onClick={() => setModalExtraAberto(true)} className="whitespace-nowrap rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-xs font-bold text-zinc-200 transition hover:border-green-800 hover:bg-green-950/40">+ Adicionar</button>
             </div>
 
             <div className="flex flex-1 flex-col gap-0 overflow-y-auto pr-1 min-h-0 custom-scrollbar">
-              {ordemCategorias.map(categoria => {
+              {ordemCategorias
+                .filter(cat => filtroTipoHabilidade === 'todas' || cat === filtroTipoHabilidade)
+                .map(categoria => {
                 const itensDaCategoria = habilidadesFiltradas.filter(h => h.categoria === categoria);
                 if (itensDaCategoria.length === 0) return null;
 

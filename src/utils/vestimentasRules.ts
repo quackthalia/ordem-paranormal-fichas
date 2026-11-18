@@ -65,7 +65,12 @@ export function isVestimentaAmaldicoada(item: {
   if (String(item['Vestimenta?'] || '').toLowerCase() === 'true') return true;
   const nome = String(item.Nome_Ama || '').toLowerCase();
   return (
+    item.Codigo_Item_Ama === 14 ||
     item.Codigo_Item_Ama === 24 ||
+    nome.includes('máscara das pessoas nas sombras') ||
+    nome.includes('máscara das pessoas das sombras') ||
+    nome.includes('mascara das pessoas nas sombras') ||
+    nome.includes('mascara das pessoas das sombras') ||
     nome.includes('jaqueta de veríssimo') ||
     nome.includes('jaqueta do veríssimo') ||
     nome.includes('jaqueta de verissimo') ||
@@ -93,6 +98,16 @@ export function calcularBonusVestimentas(
     const id = inv.item.Codigo_Item_Ama;
     const nomeAmaLower = String(inv.item.Nome_Ama || '').toLowerCase();
 
+    // Máscara das Pessoas nas Sombras
+    if (
+      id === 14 ||
+      nomeAmaLower.includes('máscara das pessoas nas sombras') ||
+      nomeAmaLower.includes('máscara das pessoas das sombras') ||
+      nomeAmaLower.includes('mascara das pessoas nas sombras') ||
+      nomeAmaLower.includes('mascara das pessoas das sombras')
+    ) {
+      resistenciasExtras.push('Conhecimento 10');
+    }
     // Jaqueta de Veríssimo / Jaqueta do Veríssimo
     if (
       id === 24 ||

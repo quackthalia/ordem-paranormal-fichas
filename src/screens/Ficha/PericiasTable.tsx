@@ -330,11 +330,6 @@ export const PericiasTable: React.FC = React.memo(() => {
                       >
                         {nome}
                       </span>
-                      {isPericiaBloqueada && (
-                        <span className="ml-0.5 text-[8px] 2xl:text-[9px] uppercase px-1 py-0.5 rounded bg-red-950/80 border border-red-800/50 text-red-400 font-bold no-underline shrink-0">
-                          Bloqueada
-                        </span>
-                      )}
                       {dadosPericia.kit && (
                         <div className="group relative flex items-center shrink-0">
                           <img 

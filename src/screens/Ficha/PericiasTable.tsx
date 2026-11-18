@@ -374,6 +374,14 @@ export const PericiasTable: React.FC = React.memo(() => {
                         ]}
                       />
                       <span>)</span>
+                      {nome === 'Diplomacia' && regrasAutomaticasAtivas.has(9) && (
+                        <span
+                          className="ml-0.5 text-[10px] font-bold text-red-400"
+                          title="Mutação (Experimento): -1d20 em testes de Diplomacia"
+                        >
+                          -1d20
+                        </span>
+                      )}
                     </div>
                   </td>
 

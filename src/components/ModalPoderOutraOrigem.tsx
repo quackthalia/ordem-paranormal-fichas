@@ -119,7 +119,7 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
               const alreadyHas = Object.values(poderesHook.poderesEscolhidos).some(p => p.nome === origem.Nome_Poder || p.origemCodigo === origem.Codigo_Origem);
 
               const pseudoPoder = { Nome: origem.Nome_Poder, Descricao: origem.Descricao_Poder, Codigo_Regra: origem.Codigo_Regra, PreRequisitos: '' } as any;
-              const precisaEscolherElemento = origem.Nome_Poder.toLowerCase().includes('elemento') || (origem.Descricao_Poder && origem.Descricao_Poder.toLowerCase().includes('escolha um elemento')) || origem.Codigo_Regra === 18 || origem.Codigo_Regra === 34 || origem.Codigo_Regra === 36;
+              const precisaEscolherElemento = origem.Nome_Poder.toLowerCase().includes('elemento') || (origem.Descricao_Poder && origem.Descricao_Poder.toLowerCase().includes('escolha um elemento')) || origem.Codigo_Regra === 18 || origem.Codigo_Regra === 134 || origem.Codigo_Regra === 34 || origem.Codigo_Regra === 36;
               const precisaEscolherRitual = origem.Codigo_Regra === 35;
               const precisaEscolherPericia = origem.Nome_Poder.toLowerCase().includes('perícia') || (origem.Descricao_Poder && origem.Descricao_Poder.toLowerCase().includes('escolha uma perícia')) || origem.Codigo_Regra === 9;
 

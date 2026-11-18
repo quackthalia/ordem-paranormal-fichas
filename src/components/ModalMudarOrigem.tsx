@@ -174,7 +174,7 @@ export const ModalMudarOrigem: React.FC<ModalMudarOrigemProps> = ({ onClose }) =
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            if (origem.Codigo_Regra === 18) {
+                            if (origem.Codigo_Regra === 18 || origem.Codigo_Regra === 134 || origem.Codigo_Origem === 58) {
                               setEscolhendoElementoPara(origem.Codigo_Origem);
                               return;
                             }
@@ -251,7 +251,7 @@ export const ModalMudarOrigem: React.FC<ModalMudarOrigemProps> = ({ onClose }) =
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            if (origem.Codigo_Regra === 18) {
+                            if (origem.Codigo_Regra === 18 || origem.Codigo_Regra === 134 || origem.Codigo_Origem === 58) {
                               setEscolhendoElementoPara(origem.Codigo_Origem);
                               return;
                             }

@@ -7,6 +7,7 @@ export const BonusCondicionaisPanel: React.FC = () => {
     bonusDadosCondicionais, setBonusDadosCondicionais,
     bonusDadosAtivos, setBonusDadosAtivos,
     poderesHook,
+    origensHook,
     periciasHook,
     jaTinhaPericiaTrilha,
     jaTinhaPericiaVersatilidade,
@@ -167,6 +168,19 @@ export const BonusCondicionaisPanel: React.FC = () => {
                 <span>-1d20 em testes de Diplomacia (Mutação)</span>
               </div>
             )}
+            {regrasAutomaticasAtivas.has(134) && (() => {
+              const elemFerido = origensHook.origemSelecionada?.Codigo_Regra === 134
+                ? origensHook.origemSelecionada?.elemento_escolhido
+                : poderesHook.poderesEscolhidos?.['extra_regra32']?.elemento;
+              return (
+                <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                  <span className="text-red-400 font-bold mt-[-1px]">•</span>
+                  <span>
+                    -1d20 em testes de resistência contra efeitos de {elemFerido || 'seu elemento'} (Mácula Ritualística)
+                  </span>
+                </div>
+              );
+            })()}
             {temMonstruoso10 && isMonstruosoAtivo10 && monstruosoElemento === 'Sangue' && (
               <>
                 <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">

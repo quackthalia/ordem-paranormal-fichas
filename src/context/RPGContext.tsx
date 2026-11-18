@@ -1433,10 +1433,14 @@ const temPossuido = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23 && (reg
       if (skillCombatente2) gratis.push(skillCombatente2);
     }
     if (origensHook.origemSelecionada) {
-      const { nome_p1, nome_p2, nome_pesp, Codigo_Per_Regra, escolhaRegra6 } = origensHook.origemSelecionada;
+      const { nome_p1, nome_p2, nome_pesp, Codigo_Per_Regra, escolhaRegra6, Codigo_Origem, elemento_escolhido } = origensHook.origemSelecionada;
       if (nome_p1 && nome_p1 !== 'null') gratis.push(nome_p1);
 
-      if (Codigo_Per_Regra === 1) {
+      if (Codigo_Origem === 58 && elemento_escolhido) {
+        if (elemento_escolhido === 'Sangue') gratis.push('Fortitude');
+        else if (elemento_escolhido === 'Morte' || elemento_escolhido === 'Conhecimento') gratis.push('Vontade');
+        else if (elemento_escolhido === 'Energia') gratis.push('Reflexos');
+      } else if (Codigo_Per_Regra === 1) {
         // Regra 1: Apenas a per�cia 1
       } else if (Codigo_Per_Regra === 6) {
         // Regra 6: Per�cia 1 + escolha

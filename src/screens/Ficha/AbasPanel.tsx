@@ -3113,6 +3113,9 @@ return (
                                             if (origemSelecionada?.Codigo_Regra !== 16) {
                                               rituaisHook.esquecerRitual('origem_16');
                                             }
+                                            if (origemSelecionada?.Codigo_Regra !== 134) {
+                                              rituaisHook.esquecerRitual('origem_134');
+                                            }
                                           }
                                         }
                                         removerPoder(nivel); 
@@ -3225,11 +3228,28 @@ return (
           }
 
           // 2.5 Calcular slot de Origem/Poder (Regra 16)
-          const slotsOrigemPendentesList: { chave?: string, index: number, nex: number, maxCirculo: number, isOcultista: boolean, isOrigem?: boolean }[] = [];
+          const slotsOrigemPendentesList: { chave?: string, index: number, nex: number, maxCirculo: number, isOcultista: boolean, isOrigem?: boolean, elementoFiltro?: string }[] = [];
           if (regrasAutomaticasAtivas.has(16)) {
             const pego = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'origem_16');
             if (!pego) {
               slotsOrigemPendentesList.push({ chave: 'origem_16', index: 999, nex: 0, maxCirculo: 1, isOcultista: false, isOrigem: true });
+            }
+          }
+          if (regrasAutomaticasAtivas.has(134)) {
+            const pego134 = (rituaisHook.rituaisAprendidos || []).some(r => r.origem === 'origem_134');
+            if (!pego134) {
+              const elemFerido = origensHook.origemSelecionada?.Codigo_Regra === 134
+                ? origensHook.origemSelecionada?.elemento_escolhido
+                : poderesEscolhidos['extra_regra32']?.elemento;
+              slotsOrigemPendentesList.push({
+                chave: 'origem_134',
+                index: 998,
+                nex: 0,
+                maxCirculo: 1,
+                isOcultista: false,
+                isOrigem: true,
+                ...(elemFerido ? { elementoFiltro: elemFerido } : {}),
+              });
             }
           }
 
@@ -3997,7 +4017,7 @@ return (
                             return (
                               <div
                               key={`vazio_poder_${chave}_${idx}`}
-                              onClick={() => setEscolhendoRitualPlaceholder({ origem: isOrigemSlot || isRegra61 || isRegra62 ? chave : `poder_57_${chave}`, nex: isOrigemSlot || isRegra61 || isRegra62 ? 0 : (isExtra ? nex : nivelNum), ...(isOrigemSlot || isRegra61 || isRegra62 ? { maxCirculo: chave === 'regra_61_3' ? 3 : chave === 'regra_61_2' ? 2 : chave?.startsWith('regra_62_') ? (nex >= 55 ? 3 : nex >= 25 ? 2 : 1) : 1 } : {}) })}
+                              onClick={() => setEscolhendoRitualPlaceholder({ origem: isOrigemSlot || isRegra61 || isRegra62 ? chave : `poder_57_${chave}`, nex: isOrigemSlot || isRegra61 || isRegra62 ? 0 : (isExtra ? nex : nivelNum), ...((slot as any).elementoFiltro ? { elementoFiltro: (slot as any).elementoFiltro } : {}), ...(isOrigemSlot || isRegra61 || isRegra62 ? { maxCirculo: chave === 'regra_61_3' ? 3 : chave === 'regra_61_2' ? 2 : chave?.startsWith('regra_62_') ? (nex >= 55 ? 3 : nex >= 25 ? 2 : 1) : 1 } : {}) })}
                               className="group flex w-full cursor-pointer flex-col overflow-hidden rounded border-2 border-dashed border-zinc-700 border-l-zinc-600 border-l-4 bg-zinc-900/40 transition hover:border-green-800 hover:bg-zinc-900/80"
                               style={{ borderLeftStyle: 'solid' }}
                             >

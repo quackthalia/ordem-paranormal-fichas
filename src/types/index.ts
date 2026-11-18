@@ -83,6 +83,7 @@ export interface Origem {
   Nome_Poder: string;
   Descricao_Poder: string;
   Fonte: string;
+  'Automatico?'?: string | null;
 }
 
 export interface OrigemSelecionada extends Origem {

@@ -431,6 +431,7 @@ const AbasPanelInner: React.FC = () => {
         fonte: origemSelecionada.Fonte || (origemSelecionada as any).fonte || origemDb?.Fonte || (origemDb as any)?.fonte || undefined,
         categoria: 'origem',
         codigoRegra: origemSelecionada.Codigo_Regra,
+        automatico: origemSelecionada['Automatico?'] ?? origemDb?.['Automatico?'] ?? null,
       });
     }
 
@@ -449,6 +450,7 @@ const AbasPanelInner: React.FC = () => {
            elemento: usouRegra32.elemento,
            afinidade: usouRegra32.afinidade,
            codigoRegra: codRegra32,
+           automatico: usouRegra32.automatico ?? origemFlashbackObj?.['Automatico?'] ?? null,
          });
       } else {
          lista.push({ id: 'escolha_extra_regra32', nome: 'Escolher Poder de Outra Origem', descricao: 'Clique no "+" para abrir a lista e selecionar seu poder de origem.', tipo: 'Flashback', isSlotVazio: true, nexDoSlot: 0, categoria: 'origem' });

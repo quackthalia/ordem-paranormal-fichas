@@ -1241,9 +1241,9 @@ const AbasPanelInner: React.FC = () => {
                 }`}
                 options={[
                   { value: 'todas', label: 'Tipo: Todos' },
+                  { value: 'classe', label: 'Classe' },
                   { value: 'origem', label: 'Origem' },
                   { value: 'trilha', label: 'Trilha' },
-                  { value: 'classe', label: 'Classe' },
                   { value: 'utilidade', label: 'Utilidade' },
                   { value: 'combate', label: 'Combate' },
                   { value: 'gerais', label: 'Geral' },

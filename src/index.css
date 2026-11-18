@@ -135,3 +135,15 @@ button {
 .animate-pop-in {
   animation: popIn 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+.semi-auto-part {
+  transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, padding 0.18s ease;
+  border-radius: 0.25rem;
+}
+
+.semi-card:has(.semi-badge:hover) .semi-auto-part {
+  background-color: rgba(234, 179, 8, 0.2);
+  color: #fef08a;
+  box-shadow: 0 0 0 1px rgba(234, 179, 8, 0.45);
+  padding: 0 3px;
+}

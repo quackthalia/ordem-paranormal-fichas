@@ -16,6 +16,7 @@ function formatarDescricao(texto: string): string {
     resultado = resultado.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
     resultado = resultado.replace(/_(.*?)_/g, '<em>$1</em>');
   }
+  resultado = resultado.replace(/\+\+([\s\S]*?)\+\+/g, '<span class="semi-auto-part">$1</span>');
   resultado = resultado.replace(/\n/g, '<br />');
   return resultado;
 }
@@ -522,7 +523,7 @@ export function ModalTrilhas({
                           const isHabExpanded = habilidadesExpandidas.includes(uniqueHabId);
 
                           return (
-                            <div key={nexLvl} className="rounded border border-zinc-800 bg-zinc-950/50 overflow-hidden transition">
+                            <div key={nexLvl} className="semi-card rounded border border-zinc-800 bg-zinc-950/50 overflow-hidden transition">
                               <div
                                 onClick={(e) => { e.stopPropagation(); toggleHabilidade(uniqueHabId); }}
                                 className="flex cursor-pointer justify-between items-center p-2 hover:bg-zinc-800/50 transition"
@@ -543,7 +544,7 @@ export function ModalTrilhas({
                                         className={`shrink-0 flex items-center gap-1 px-1 py-0.5 rounded text-[0.55rem] font-bold uppercase tracking-wider ${
                                           isAuto
                                             ? 'bg-green-950/60 text-green-400 border border-green-800/50'
-                                            : 'bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
+                                            : 'semi-badge cursor-help bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
                                         }`}
                                       >
                                         {isAuto ? (
@@ -726,7 +727,7 @@ export function ModalTrilhas({
                           const isHabExpanded = habilidadesExpandidas.includes(uniqueHabId);
 
                           return (
-                            <div key={nexLvl} className="rounded border border-zinc-800 bg-zinc-950/50 overflow-hidden transition">
+                            <div key={nexLvl} className="semi-card rounded border border-zinc-800 bg-zinc-950/50 overflow-hidden transition">
                               <div
                                 onClick={() => toggleHabilidade(uniqueHabId)}
                                 className="flex cursor-pointer justify-between items-center p-2 hover:bg-zinc-800/50 transition"

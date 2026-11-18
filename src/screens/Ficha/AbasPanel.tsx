@@ -151,6 +151,7 @@ function formatarDescricao(texto: string): string {
     resultado = resultado.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
     resultado = resultado.replace(/_(.*?)_/g, '<em>$1</em>');
   }
+  resultado = resultado.replace(/\+\+([\s\S]*?)\+\+/g, '<span class="semi-auto-part">$1</span>');
   resultado = resultado.replace(/\n/g, '<br />');
   return resultado;
 }
@@ -1403,7 +1404,7 @@ const AbasPanelInner: React.FC = () => {
                                   </h4>
 
                                   {/* Sub-bloquinho no estilo da trilha */}
-                                  <div className="mb-2 overflow-hidden rounded border border-zinc-800 bg-zinc-900/50">
+                                  <div className="semi-card mb-2 overflow-hidden rounded border border-zinc-800 bg-zinc-900/50">
                                     <div
                                       onClick={() => setHabilidadesExpandidas(prev => 
                                         prev.includes(uniqueHabSubId) 
@@ -1425,7 +1426,7 @@ const AbasPanelInner: React.FC = () => {
                                             className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.55rem] font-bold uppercase tracking-wider ${
                                               isAuto
                                                 ? 'bg-green-950/60 text-green-400 border border-green-800/50'
-                                                : 'bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
+                                                : 'semi-badge cursor-help bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
                                             }`}
                                           >
                                             {isAuto ? 'Auto' : 'Semi'}
@@ -1924,7 +1925,7 @@ const AbasPanelInner: React.FC = () => {
                                       : undefined;
 
                                     return (
-                                      <div key={nexLvl} className="mb-2 overflow-hidden rounded border border-zinc-800 bg-zinc-900/50">
+                                      <div key={nexLvl} className="semi-card mb-2 overflow-hidden rounded border border-zinc-800 bg-zinc-900/50">
                                         <div
                                           onClick={() => setHabilidadesExpandidas(prev => prev.includes(uniqueHabId) ? prev.filter(id => id !== uniqueHabId) : [...prev, uniqueHabId])}
                                           className="flex cursor-pointer items-center justify-between px-3 py-2 transition hover:bg-zinc-800"
@@ -1943,6 +1944,24 @@ const AbasPanelInner: React.FC = () => {
                                             <span className="font-bold text-zinc-200 text-xs truncate">
                                               {regras['nex_experiencia'] ? `Nível ${calcularNivel(nexLvl)}` : `NEX ${nexLvl}%`} - <span className="text-zinc-300">{vampNomeOpcaoEscolhida ? `${nomeHab} — ${vampNomeOpcaoEscolhida}` : nomeHab}</span>
                                             </span>
+                                            {(() => {
+                                              const rawTrilhaAuto = ((t as any)[`Auto_${nexLvl}`] || '').toString().toLowerCase().trim();
+                                              const isTrilhaAuto = rawTrilhaAuto === 'sim' || rawTrilhaAuto === 'auto';
+                                              const isTrilhaSemi = rawTrilhaAuto === 'semi';
+                                              if (!isTrilhaAuto && !isTrilhaSemi) return null;
+                                              return (
+                                                <span
+                                                  title={isTrilhaAuto ? 'Totalmente automático' : 'Semi-automático'}
+                                                  className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.55rem] font-bold uppercase tracking-wider ${
+                                                    isTrilhaAuto
+                                                      ? 'bg-green-950/60 text-green-400 border border-green-800/50'
+                                                      : 'semi-badge cursor-help bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
+                                                  }`}
+                                                >
+                                                  {isTrilhaAuto ? 'Auto' : 'Semi'}
+                                                </span>
+                                              );
+                                            })()}
                                           </div>
                                           <span className="text-xs text-zinc-600 shrink-0">
                                             {isHabExpanded ? '▲' : '▼'}
@@ -1978,7 +1997,7 @@ if (isTrilhaVamp && nexLvl === 10 && !opcaoEscolhida) {
             <div
               key={arqItem.nome}
               onClick={e => e.stopPropagation()}
-              className="rounded-lg border border-zinc-800 bg-zinc-950/60 p-3 shadow-sm hover:border-zinc-700 transition flex flex-col gap-2.5"
+              className="semi-card rounded-lg border border-zinc-800 bg-zinc-950/60 p-3 shadow-sm hover:border-zinc-700 transition flex flex-col gap-2.5"
             >
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-green-400">
@@ -2075,7 +2094,7 @@ if (isTrilhaVamp && nexLvl > 10 && opcoesArq.length > 0 && !opcaoEscolhida) {
             <div
               key={numOpcao}
               onClick={e => e.stopPropagation()}
-              className="rounded-lg border border-zinc-800 bg-zinc-950/60 p-3 shadow-sm hover:border-zinc-700 transition flex flex-col gap-2.5"
+              className="semi-card rounded-lg border border-zinc-800 bg-zinc-950/60 p-3 shadow-sm hover:border-zinc-700 transition flex flex-col gap-2.5"
             >
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
@@ -2085,7 +2104,7 @@ if (isTrilhaVamp && nexLvl > 10 && opcoesArq.length > 0 && !opcaoEscolhida) {
                   {badgeTag && (
                     <span
                       title={badgeTag === 'Auto' ? 'Totalmente automático — acontece sozinho' : 'Semi-automático — parte funciona automaticamente'}
-                      className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider ${badgeTag === 'Auto' ? 'bg-green-950/60 text-green-400 border border-green-800/50' : 'bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'}`}
+                      className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider ${badgeTag === 'Auto' ? 'bg-green-950/60 text-green-400 border border-green-800/50' : 'semi-badge cursor-help bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'}`}
                     >
                       {badgeTag === 'Auto' ? (
                         <>
@@ -2237,7 +2256,7 @@ return (
                                                         className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider ${
                                                           isAuto
                                                             ? 'bg-green-950/60 text-green-400 border border-green-800/50'
-                                                            : 'bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
+                                                            : 'semi-badge cursor-help bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
                                                         }`}
                                                       >
                                                         {isAuto ? (

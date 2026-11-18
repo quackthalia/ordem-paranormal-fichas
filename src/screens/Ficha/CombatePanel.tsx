@@ -729,7 +729,7 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = React.memo(({ armaInv, e
 
           {armaInv.arma.Descricao_Item && (
             <div className="mt-2 pt-2 border-t border-zinc-800/50 text-xs text-zinc-300 leading-relaxed whitespace-pre-line">
-              <span className="font-bold text-green-400">Efeito:</span>
+              <span className="font-bold text-green-400">Descrição:</span>
               <div className="mt-1 flex flex-col gap-1 text-zinc-300">
                 {armaInv.arma.Descricao_Item}
               </div>

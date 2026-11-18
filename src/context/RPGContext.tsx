@@ -30,7 +30,7 @@ import { useMunicoes } from '../hooks/useMunicoes';
 import { useProtecoes } from '../hooks/useProtecoes';
 import { useItens } from '../hooks/useItens';
 import { useItensAmaldicoados } from '../hooks/useItensAmaldicoados';
-import { calcularBonusVestimentas, type VestimentasBonus } from '../utils/vestimentasRules';
+import { calcularBonusVestimentas, isVestimentaAmaldicoada, type VestimentasBonus } from '../utils/vestimentasRules';
 import { calcularBonusMaldicoes, type MaldicoesBonusGlobais } from '../utils/maldicoesRules';
 import { useModificacoes } from '../hooks/useModificacoes';
 import { useMaldicoes } from '../hooks/useMaldicoes';
@@ -914,7 +914,7 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
     }
 
     const vestimentasGeraisEquipadas = itensHook.itensInventario.filter(i => i.equipado && (i.item.Nome_Item.toLowerCase().includes('vestimenta') || i.item.Nome_Item.toLowerCase().includes('amuleto sagrado')));
-    const vestimentasAmaldicoadasEquipadas = itensAmaldicoadosHook.itensAmaldicoadosInventario.filter(i => i.equipado && i.item['Vestimenta?']?.toLowerCase() === 'true');
+    const vestimentasAmaldicoadasEquipadas = itensAmaldicoadosHook.itensAmaldicoadosInventario.filter(i => i.equipado && isVestimentaAmaldicoada(i.item));
 
     const totalEquipadas = vestimentasGeraisEquipadas.length + vestimentasAmaldicoadasEquipadas.length;
 

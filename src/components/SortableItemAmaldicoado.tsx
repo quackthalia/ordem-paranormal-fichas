@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useRPG } from '../context/RPGContext';
 import type { ItemAmaldicoadoInventario } from '../types';
+import { isVestimentaAmaldicoada } from '../utils/vestimentasRules';
 import { formatarTexto } from '../utils/formatters';
 import { Collapse } from './Collapse';
 import { CustomSelect } from './CustomSelect';
@@ -172,7 +173,7 @@ export function SortableItemAmaldicoado({ item, isExpanded, toggleExpandir, remo
               );
           })() : <span className="text-[10px] font-bold text-zinc-300 bg-zinc-700/50 px-1 rounded-sm truncate uppercase tracking-wider">Sem Elemento</span>}
 
-          {(String(item.item['Vestimenta?']).toLowerCase() === 'true') && (() => {
+          {isVestimentaAmaldicoada(item.item) && (() => {
             const elStr = String(item.item.Elemento_Ama || '').toLowerCase();
             const checkedColor = elStr.includes('medo') ? 'bg-white border-zinc-400 text-zinc-950' :
                                  elStr.includes('sangue') ? 'bg-red-700 border-zinc-700 text-white' :

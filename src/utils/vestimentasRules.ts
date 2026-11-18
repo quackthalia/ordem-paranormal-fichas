@@ -57,6 +57,22 @@ export function calcularBonusPericiasItensGerais(
   return total;
 }
 
+export function isVestimentaAmaldicoada(item: {
+  Codigo_Item_Ama: number;
+  Nome_Ama?: string | null;
+  'Vestimenta?'?: string | null;
+}): boolean {
+  if (String(item['Vestimenta?'] || '').toLowerCase() === 'true') return true;
+  const nome = String(item.Nome_Ama || '').toLowerCase();
+  return (
+    item.Codigo_Item_Ama === 24 ||
+    nome.includes('jaqueta de veríssimo') ||
+    nome.includes('jaqueta do veríssimo') ||
+    nome.includes('jaqueta de verissimo') ||
+    nome.includes('jaqueta do verissimo')
+  );
+}
+
 export function calcularBonusVestimentas(
   itensAmaldicoadosInventario: ItemAmaldicoadoInventario[],
   itensGeraisInventario: ItemGeralInventario[] = []
@@ -70,12 +86,23 @@ export function calcularBonusVestimentas(
   const vulnerabilidadesExtras: string[] = [];
 
   const equipadas = itensAmaldicoadosInventario.filter(
-    i => i.equipado && i.item['Vestimenta?']?.toLowerCase() === 'true'
+    i => i.equipado && isVestimentaAmaldicoada(i.item)
   );
 
   for (const inv of equipadas) {
     const id = inv.item.Codigo_Item_Ama;
+    const nomeAmaLower = String(inv.item.Nome_Ama || '').toLowerCase();
 
+    // Jaqueta de Veríssimo / Jaqueta do Veríssimo
+    if (
+      id === 24 ||
+      nomeAmaLower.includes('jaqueta de veríssimo') ||
+      nomeAmaLower.includes('jaqueta do veríssimo') ||
+      nomeAmaLower.includes('jaqueta de verissimo') ||
+      nomeAmaLower.includes('jaqueta do verissimo')
+    ) {
+      resistenciasExtras.push('Paranormal 15');
+    }
     // Casaco de Lodo
     if (id === 7) {
       resistenciasExtras.push('Corte 5', 'Impacto 5', 'Morte 5', 'Perfuração 5');
@@ -106,7 +133,6 @@ export function calcularBonusVestimentas(
       defesa += 10;
     }
     // Proteção Torácica
-    const nomeAmaLower = String(inv.item.Nome_Ama || '').toLowerCase();
     if (id === 60 || nomeAmaLower.includes('proteção torácica') || nomeAmaLower.includes('proteção toráxica')) {
       const defesaToracica = inv.defesaAtualToracica !== undefined ? inv.defesaAtualToracica : 10;
       defesa += defesaToracica;

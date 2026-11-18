@@ -259,6 +259,15 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = React.memo(({ armaInv, e
     extrasStr += `+2`;
   }
   // Regra 28 (Ninja Urbano): +2 em rolagens de dano com armas táticas corpo a corpo e de disparo
+  // Regra 132 (Lutador - Mão Pesada): +2 em rolagens de dano com ataques corpo a corpo
+  if (regrasAutomaticasAtivas.has(132) && isCorpoACorpo) {
+    extrasStr += `+2`;
+  }
+  // Regra 133 (Militar - Para Bellum): +2 em rolagens de dano com armas de fogo
+  if (regrasAutomaticasAtivas.has(133) && isArmaFogo) {
+    extrasStr += `+2`;
+  }
+  // Regra 28 (Ninja Urbano): +2 em rolagens de dano com armas táticas corpo a corpo e de disparo
   if (regrasAutomaticasAtivas.has(28) && isArmaTatica && (isCorpoACorpo || isArmaDisparo)) {
     extrasStr += `+2`;
   }

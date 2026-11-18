@@ -137,13 +137,13 @@ button {
 }
 
 .semi-auto-part {
-  transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, padding 0.18s ease;
-  border-radius: 0.25rem;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.18s ease;
 }
 
 .semi-card:has(.semi-badge:hover) .semi-auto-part {
-  background-color: rgba(234, 179, 8, 0.2);
-  color: #fef08a;
-  box-shadow: 0 0 0 1px rgba(234, 179, 8, 0.45);
-  padding: 0 3px;
+  text-decoration-color: #22c55e;
 }

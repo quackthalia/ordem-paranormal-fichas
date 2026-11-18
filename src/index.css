@@ -139,7 +139,7 @@ button {
 .semi-auto-part {
   text-decoration: underline;
   text-decoration-color: transparent;
-  text-decoration-thickness: 2px;
+  text-decoration-thickness: 1px;
   text-underline-offset: 3px;
   transition: text-decoration-color 0.18s ease;
 }

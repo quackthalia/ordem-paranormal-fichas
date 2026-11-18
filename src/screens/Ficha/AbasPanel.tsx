@@ -3596,7 +3596,7 @@ return (
              return subAbaRituais === 'grimorio' ? isGrimorio : !isGrimorio;
           });
           for (const slot of slotsParaSubAba) {
-             if ((slot as any).isAdepto || (slot as any).isEstudioso || (slot as any).isMonstruoso || (slot as any).isMonstruosoOcult || (slot as any).isServente) {
+             if ((slot as any).isAdepto || (slot as any).isEstudioso || (slot as any).isMonstruoso || (slot as any).isMonstruosoOcult || (slot as any).isServente || (slot as any).isOrigem) {
                 visibleRitualSlots.push(slot);
              } else if (!circlesSeen.has(slot.maxCirculo)) {
                 visibleRitualSlots.push(slot);

@@ -1229,27 +1229,30 @@ const AbasPanelInner: React.FC = () => {
                 placeholder="Filtrar habilidades..."
                 className="flex-1 min-w-[140px] border-b border-zinc-700 bg-transparent py-2 text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-green-700"
               />
-              <CustomSelect
-                value={filtroTipoHabilidade}
-                onChange={setFiltroTipoHabilidade}
-                wrapperClassName="w-auto shrink-0"
-                minDropdownWidth={150}
-                className={`rounded border px-3 py-2 text-xs font-bold transition ${
-                  filtroTipoHabilidade !== 'todas'
-                    ? 'border-green-700/70 bg-green-950/40 text-green-300'
-                    : 'border-zinc-700 bg-zinc-800 text-zinc-200 hover:border-zinc-600'
-                }`}
-                options={[
-                  { value: 'todas', label: 'Tipo: Todos' },
-                  { value: 'classe', label: 'Classe' },
-                  { value: 'origem', label: 'Origem' },
-                  { value: 'trilha', label: 'Trilha' },
-                  { value: 'utilidade', label: 'Utilidade' },
-                  { value: 'combate', label: 'Combate' },
-                  { value: 'gerais', label: 'Geral' },
-                  { value: 'paranormais', label: 'Paranormais' },
-                ]}
-              />
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-500">Tipo:</span>
+                <CustomSelect
+                  value={filtroTipoHabilidade}
+                  onChange={setFiltroTipoHabilidade}
+                  wrapperClassName="w-auto shrink-0"
+                  minDropdownWidth={140}
+                  className={`rounded border px-3 py-2 text-xs font-bold transition ${
+                    filtroTipoHabilidade !== 'todas'
+                      ? 'border-green-700/70 bg-green-950/40 text-green-300'
+                      : 'border-zinc-700 bg-zinc-800 text-zinc-200 hover:border-zinc-600'
+                  }`}
+                  options={[
+                    { value: 'todas', label: 'Todos' },
+                    { value: 'classe', label: 'Classe' },
+                    { value: 'origem', label: 'Origem' },
+                    { value: 'trilha', label: 'Trilha' },
+                    { value: 'utilidade', label: 'Utilidade' },
+                    { value: 'combate', label: 'Combate' },
+                    { value: 'gerais', label: 'Geral' },
+                    { value: 'paranormais', label: 'Paranormais' },
+                  ]}
+                />
+              </div>
               <button onClick={() => setModalExtraAberto(true)} className="whitespace-nowrap rounded border border-zinc-700 bg-zinc-800 px-3 py-2 text-xs font-bold text-zinc-200 transition hover:border-green-800 hover:bg-green-950/40">+ Adicionar</button>
             </div>
 

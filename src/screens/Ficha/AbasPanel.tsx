@@ -4860,19 +4860,11 @@ return (
     tabs: AbaId[],
     activeTab: AbaId,
     onSelectTab: (aba: AbaId) => void,
-    paneId: 'top' | 'bottom',
-    customStyle?: React.CSSProperties
+    paneId: 'top' | 'bottom'
   ) => (
-    <motion.div
-      initial={paneId === 'bottom' ? { opacity: 0, y: 12 } : false}
-      animate={{ opacity: 1, y: 0 }}
-      exit={paneId === 'bottom' ? { opacity: 0, y: 12 } : undefined}
-      transition={{ duration: 0.18, ease: 'easeOut' }}
+    <div
       ref={paneId === 'top' ? topPaneRef : bottomPaneRef}
-      style={customStyle}
-      className={`flex flex-col min-h-0 rounded-lg border bg-zinc-900/60 p-2.5 sm:p-3 xl:p-4 shrink-0 ${
-        isResizingSplit ? 'transition-colors' : 'transition-[height,border-color] duration-200 ease-out'
-      } ${
+      className={`flex flex-1 flex-col min-h-0 rounded-lg border bg-zinc-900/60 p-2.5 sm:p-3 xl:p-4 transition-colors ${
         dropZoneTarget === paneId ? 'border-green-500/80 ring-1 ring-green-500/40' : 'border-zinc-800'
       }`}
     >
@@ -4920,17 +4912,16 @@ return (
       <div className={`mt-1 flex flex-1 flex-col min-h-0 ${draggingTab ? 'pointer-events-none select-none' : ''}`}>
         {renderAbaConteudo(activeTab)}
       </div>
-    </motion.div>
+    </div>
   );
 
   return (
-    <div ref={splitContainerRef} className="flex flex-col h-full min-h-0 relative">
+    <div ref={splitContainerRef} className="flex flex-col h-full min-h-0 relative overflow-hidden">
       {renderPainelAbas(
         layoutAbas.topTabs,
         abaDireita as AbaId,
         (a) => setAbaDireita(a as any),
-        'top',
-        { height: layoutAbas.bottomTabs.length === 0 ? '100%' : `calc(${layoutAbas.splitRatio}% - 4px)` }
+        'top'
       )}
 
       {layoutAbas.bottomTabs.length === 0 && draggingTab && layoutAbas.topTabs.length > 1 && (
@@ -4944,9 +4935,16 @@ return (
         />
       )}
 
-      <AnimatePresence>
+      <AnimatePresence initial={false}>
         {layoutAbas.bottomTabs.length > 0 && (
-          <React.Fragment key="bottom-split-group">
+          <motion.div
+            key="bottom-split-wrapper"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: `${100 - layoutAbas.splitRatio}%`, opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={isResizingSplit ? { duration: 0 } : { duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+            className="flex flex-col shrink-0 min-h-0 overflow-hidden"
+          >
             <div
               onPointerDown={iniciarRedimensionamentoSplit}
               title="Arraste para redimensionar os painéis"
@@ -4958,10 +4956,9 @@ return (
               layoutAbas.bottomTabs,
               layoutAbas.bottomActiveTab,
               (a) => setLayoutAbas(prev => ({ ...prev, bottomActiveTab: a })),
-              'bottom',
-              { height: `calc(${100 - layoutAbas.splitRatio}% - 4px)` }
+              'bottom'
             )}
-          </React.Fragment>
+          </motion.div>
         )}
       </AnimatePresence>
 

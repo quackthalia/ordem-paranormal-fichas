@@ -125,7 +125,7 @@ interface ArmaCombateCardProps {
 }
 
 const ArmaCombateCard: React.FC<ArmaCombateCardProps> = React.memo(({ armaInv, estaExpandida, toggleExpandir, modificacoesHook, maldicoesHook, onAddMunicao, municoesHook, itensHook, armasHook }) => {
-  const { atributosFinais, proficienciasTotais, regrasAutomaticasAtivas, status, regras, trilhasHook, poderesExtras, nivel, nex, danoDeMovimento, bonusMaldicoes, devorarIntCount, temDobroPerito } = useRPG();
+  const { atributosFinais, proficienciasTotais, regrasAutomaticasAtivas, status, regras, trilhasHook, poderesExtras, nivel, nex, danoDeMovimento, bonusMaldicoes, devorarIntCount, temDobroPerito, protecoesHook } = useRPG();
   const effectiveNex = regras['nex_experiencia'] ? (nivel * 5) : nex;
   const isAniquilador = trilhasHook.trilhaSelecionada?.Codigo_Trilha === 1;
   const armaFavId = isAniquilador ? poderesExtras["aniquilador_arma_favorita"] : null;
@@ -424,6 +424,38 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = React.memo(({ armaInv, e
   let danoSelecionadoEditado = danoSelecionado;
   if (aniquiladorNivel99 && danoSelecionadoEditado) {
     danoSelecionadoEditado = danoSelecionadoEditado.replace(/(\d+)d(\d+)/gi, (m, p1, p2) => `${Number(p1) + 1}d${p2}`);
+  }
+  // Regra 137 (Cavaleiro - Armadura Real): vestindo Proteção Pesada, ataques corpo a corpo com arma de duas mãos somam metade da Defesa da proteção no dano
+  if (regrasAutomaticasAtivas.has(137) && isCorpoACorpo && protecoesHook) {
+    const empLower = (arma.Empunhadura_Arma || '').toLowerCase();
+    const empParts = empLower.includes('/') ? empLower.split('/').map(s => s.trim()) : [empLower];
+    const empAtual = empParts[currentDanoIdx] ?? empParts[0] ?? '';
+    if (empAtual.includes('duas m')) {
+      const protecoesPesadasEquipadas = protecoesHook.protecoesInventario.filter(
+        p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('pesada')
+      );
+      let maxDefPesada = 0;
+      protecoesPesadasEquipadas.forEach(p => {
+        const baseDef = Number(String(p.protecao.Defesa_Protecao || '0').replace(/[^0-9.-]+/g, '')) || 0;
+        const extraMod = (p.modificacoes || []).some(id => {
+          const m = modificacoesHook?.modificacoes?.find((mod: any) => mod.Codigo_Modif === id);
+          return m?.Nome_Modif?.trim().toLowerCase() === 'reforçada';
+        }) ? 2 : 0;
+        const extraMald = (p.maldicoes || []).reduce((acc, id) => {
+          const m = maldicoesHook?.maldicoes?.find((mald: any) => mald.Codigo_Mald === id);
+          const nm = m?.Nome_Mald?.trim().toLowerCase();
+          if (nm === 'cinética' || nm === 'letárgica') return acc + 2;
+          if (nm === 'defesa') return acc + 5;
+          return acc;
+        }, 0);
+        const totalDef = baseDef + extraMod + extraMald;
+        if (totalDef > maxDefPesada) maxDefPesada = totalDef;
+      });
+      const bonusCavaleiro = Math.floor(maxDefPesada / 2);
+      if (bonusCavaleiro > 0) {
+        extrasStr += `+${bonusCavaleiro}`;
+      }
+    }
   }
   const danoStrFull = danoSelecionadoEditado ? danoSelecionadoEditado + extrasStr : extrasStr;
   const parsedDano = parseDanoString(danoStrFull, tipoBase, tipoSecundario);

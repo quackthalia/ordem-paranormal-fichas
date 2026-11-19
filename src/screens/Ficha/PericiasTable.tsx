@@ -175,7 +175,7 @@ const ProfissaoRow = React.memo(({ prof, idx, editingProfIndex, setEditingProfIn
 
 export const PericiasTable: React.FC = React.memo(() => {
   const { 
-    periciasHook, regrasAtivas, setRegrasAtivas, regrasAutomaticasAtivas, protecoesHook,
+    periciasHook, regrasAtivas, setRegrasAtivas, regrasAutomaticasAtivas, protecoesHook, origensHook,
     trilhasHook, nivel, nex, regras,
     bloquearIntimidacaoVampiro
   } = useRPG();
@@ -293,13 +293,18 @@ export const PericiasTable: React.FC = React.memo(() => {
               const bonusRegra13 = (nome === 'Vontade' && regrasAutomaticasAtivas.has(13)) ? 2 : 0;
               const bonusRegra14 = (nome === 'Vontade' && regrasAutomaticasAtivas.has(14)) ? -2 : 0;
               const bonusRegra25 = (nome === 'Reflexos' && regrasAutomaticasAtivas.has(25) && temProtecaoLeve) ? 2 : 0;
+              const escolhaDancarino = origensHook.origemSelecionada?.Codigo_Origem === 64 ? origensHook.origemSelecionada.escolhaRegra6 : null;
+              const bonusRegra136 = regrasAutomaticasAtivas.has(136) && (
+                (nome === 'Reflexos' && escolhaDancarino === 'p2') ||
+                (nome === 'Fortitude' && escolhaDancarino === 'pesp')
+              ) ? 2 : 0;
               const bonusTrilha4 = (nome === 'Iniciativa' && temOperacoesEspeciais) ? 5 : 0;
     const bonusTrilha7 = ((nome === 'Atletismo' || nome === 'Crime') && temGatuno) ? 5 : 0;
               
               // Nota: dadosPericia.outros já inclui periciasHook.bonusVestimentas (vestimentas, utensílios, amuleto sagrado, maldições, itens amaldiçoados e trilhas) e bonusRegra40
               const bonusMonstruoso10 = 0;
               const isPericiaBloqueada = nome === 'Intimidação' && bloquearIntimidacaoVampiro;
-              const totalBonus = dadosPericia.treino + dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra14 + bonusRegra25 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10;
+              const totalBonus = dadosPericia.treino + dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra14 + bonusRegra25 + bonusRegra136 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10;
               const corTexto = isPericiaBloqueada ? '!text-zinc-600 line-through' : (COR_TREINO[dadosPericia.treino] ?? 'text-white');
               const corBorda = isPericiaBloqueada ? 'border-zinc-700 opacity-40' : (BORDA_TREINO[dadosPericia.treino] ?? 'border-zinc-600');
 

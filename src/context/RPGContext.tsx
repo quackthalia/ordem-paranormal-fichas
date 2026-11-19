@@ -2175,6 +2175,7 @@ const temPossuido = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23 && (reg
     Object.values(poderesHook.poderesEscolhidos).filter(p => p.codigoRegra === 4 || p.nome?.trim().toLowerCase() === 'patrulha').length;
   const defOutrosBonusRegra4 = qtdRegra4 > 0 ? qtdRegra4 * 2 : (regrasAutomaticasAtivas.has(4) ? 2 : 0);
   const defOutrosBonusRegra12 = regrasAutomaticasAtivas.has(12) ? 2 : 0;
+  const defOutrosBonusRegra136 = regrasAutomaticasAtivas.has(136) ? 3 : 0;
   
   const temProtecaoPesada = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('pesada')) || false;
   const defOutrosBonusRegra21 = (regrasAutomaticasAtivas.has(21) && temProtecaoPesada) ? 2 : 0;
@@ -2206,7 +2207,7 @@ const temPossuido = (trilhasHook.trilhaSelecionada?.Codigo_Trilha === 23 && (reg
   const defOutrosBonusVampiro = (temVampiro40 && vampiroArquetipo === 'Encantador' && poderesExtras['vampiro_opcao_40'] === '3' ? -2 : 0) +
     (temVampiro99 && vampiroArquetipo === 'Encantador' && poderesExtras['vampiro_opcao_99'] === '2' ? 10 : 0);
 
-  const defesaTotal = 10 + atributosFinais.AGI + defEquip + defOutros + defOutrosBonusRegra4 + defOutrosBonusRegra12 + defOutrosBonusRegra21 + defOutrosBonusRegra25 + defOutrosBonusRegra72 + defOutrosBonusRegra107 + defOutrosBonusTrilha5 + bonusDefesaTrilha34 + defOutrosBonusVampiro + totalDefesaProtecoes + (bonusVestimentas?.defesa || 0) + (bonusMaldicoes?.defesa || 0);
+  const defesaTotal = 10 + atributosFinais.AGI + defEquip + defOutros + defOutrosBonusRegra4 + defOutrosBonusRegra12 + defOutrosBonusRegra136 + defOutrosBonusRegra21 + defOutrosBonusRegra25 + defOutrosBonusRegra72 + defOutrosBonusRegra107 + defOutrosBonusTrilha5 + bonusDefesaTrilha34 + defOutrosBonusVampiro + totalDefesaProtecoes + (bonusVestimentas?.defesa || 0) + (bonusMaldicoes?.defesa || 0);
 
   // ============================================================
   // UTILITÁRIOS

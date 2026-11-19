@@ -865,7 +865,7 @@ const DefesaPanel = React.memo(function DefesaPanel() {
                 type="number"
                 onKeyDown={bloquearLetras}
                 value={(() => {
-                  const defOutrosBonusRegra = bonusDefesaRegra4 + (regrasAutomaticasAtivas.has(12) ? 2 : 0) + (defOutrosBonusRegra72 || 0) + (defOutrosBonusRegra107 || 0);
+                  const defOutrosBonusRegra = bonusDefesaRegra4 + (regrasAutomaticasAtivas.has(12) ? 2 : 0) + (regrasAutomaticasAtivas.has(136) ? 3 : 0) + (defOutrosBonusRegra72 || 0) + (defOutrosBonusRegra107 || 0);
                   const temProtecaoPesada = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('pesada')) || false;
                   const bonusRegra21 = (regrasAutomaticasAtivas.has(21) && temProtecaoPesada) ? 2 : 0;
                   const temProtecaoLeve = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('leve')) || false;
@@ -881,7 +881,7 @@ const DefesaPanel = React.memo(function DefesaPanel() {
                 title="Outros bônus de defesa"
                 onChange={e => {
                   const valDigitado = Math.max(0, Number(e.target.value));
-                  const defOutrosBonusRegra = bonusDefesaRegra4 + (regrasAutomaticasAtivas.has(12) ? 2 : 0) + (defOutrosBonusRegra72 || 0) + (defOutrosBonusRegra107 || 0);
+                  const defOutrosBonusRegra = bonusDefesaRegra4 + (regrasAutomaticasAtivas.has(12) ? 2 : 0) + (regrasAutomaticasAtivas.has(136) ? 3 : 0) + (defOutrosBonusRegra72 || 0) + (defOutrosBonusRegra107 || 0);
                   const temProtecaoPesada = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('pesada')) || false;
                   const bonusRegra21 = (regrasAutomaticasAtivas.has(21) && temProtecaoPesada) ? 2 : 0;
                   const temProtecaoLeve = protecoesHook?.protecoesInventario.some(p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('leve')) || false;

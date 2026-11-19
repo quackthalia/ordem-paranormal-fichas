@@ -147,3 +147,16 @@ button {
 .semi-card:has(.semi-badge:hover) .semi-auto-part {
   text-decoration-color: #22c55e;
 }
+
+html:has(body[style*="overflow: hidden"]),
+html:has(.fixed.inset-0) {
+  overflow: hidden !important;
+}
+
+body:has(.fixed.inset-0) {
+  overflow: hidden !important;
+}
+
+.fixed.inset-0 {
+  overscroll-behavior: contain;
+}

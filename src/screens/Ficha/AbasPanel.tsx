@@ -280,6 +280,7 @@ const AbasPanelInner: React.FC = () => {
   }, [layoutAbas.topTabs, abaDireita, setAbaDireita]);
 
   const [draggingTab, setDraggingTab] = React.useState<AbaId | null>(null);
+  const draggingTabRef = React.useRef<AbaId | null>(null);
   const [dropZoneTarget, setDropZoneTarget] = React.useState<'top' | 'bottom' | 'split-bottom' | null>(null);
   const splitContainerRef = React.useRef<HTMLDivElement>(null);
 
@@ -4751,6 +4752,20 @@ return (
   ) => (
     <div
       style={customStyle}
+      onDragOver={(e) => {
+        if (!draggingTabRef.current) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        if (dropZoneTarget !== paneId) setDropZoneTarget(paneId);
+      }}
+      onDrop={(e) => {
+        e.preventDefault();
+        const aba = (e.dataTransfer.getData('text/plain') || draggingTabRef.current) as AbaId;
+        if (ABAS_PADRAO.includes(aba)) moverAba(aba, paneId);
+        draggingTabRef.current = null;
+        setDraggingTab(null);
+        setDropZoneTarget(null);
+      }}
       className={`flex flex-col min-h-0 rounded-lg border bg-zinc-900/60 p-2.5 sm:p-3 xl:p-4 transition-colors ${
         dropZoneTarget === paneId ? 'border-green-500/80 ring-1 ring-green-500/40' : 'border-zinc-800'
       } ${layoutAbas.bottomTabs.length === 0 ? 'h-full' : 'shrink-0'}`}
@@ -4780,25 +4795,29 @@ return (
             key={aba}
             draggable
             onDragStart={(e) => {
-              setDraggingTab(aba);
+              draggingTabRef.current = aba;
               e.dataTransfer.setData('text/plain', aba);
               e.dataTransfer.effectAllowed = 'move';
+              requestAnimationFrame(() => setDraggingTab(aba));
             }}
             onDragEnd={() => {
+              draggingTabRef.current = null;
               setDraggingTab(null);
               setDropZoneTarget(null);
             }}
             onDragOver={(e) => {
-              if (!draggingTab) return;
+              if (!draggingTabRef.current) return;
               e.preventDefault();
               e.stopPropagation();
-              setDropZoneTarget(paneId);
+              e.dataTransfer.dropEffect = 'move';
+              if (dropZoneTarget !== paneId) setDropZoneTarget(paneId);
             }}
             onDrop={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              const dragged = (e.dataTransfer.getData('text/plain') || draggingTab) as AbaId;
+              const dragged = (e.dataTransfer.getData('text/plain') || draggingTabRef.current) as AbaId;
               if (ABAS_PADRAO.includes(dragged)) moverAba(dragged, paneId, idx);
+              draggingTabRef.current = null;
               setDraggingTab(null);
               setDropZoneTarget(null);
             }}
@@ -4842,24 +4861,33 @@ return (
           {renderPainelAbas(layoutAbas.topTabs, abaDireita as AbaId, (a) => setAbaDireita(a as any), 'top')}
           {draggingTab && layoutAbas.topTabs.length > 1 && (
             <div
+              onDragEnter={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setDropZoneTarget('split-bottom');
+              }}
               onDragOver={(e) => {
                 e.preventDefault();
-                setDropZoneTarget('split-bottom');
+                e.stopPropagation();
+                e.dataTransfer.dropEffect = 'move';
+                if (dropZoneTarget !== 'split-bottom') setDropZoneTarget('split-bottom');
               }}
               onDragLeave={() => {
                 if (dropZoneTarget === 'split-bottom') setDropZoneTarget(null);
               }}
               onDrop={(e) => {
                 e.preventDefault();
-                const aba = (e.dataTransfer.getData('text/plain') || draggingTab) as AbaId;
+                e.stopPropagation();
+                const aba = (e.dataTransfer.getData('text/plain') || draggingTabRef.current) as AbaId;
                 if (ABAS_PADRAO.includes(aba)) moverAba(aba, 'bottom');
+                draggingTabRef.current = null;
                 setDraggingTab(null);
                 setDropZoneTarget(null);
               }}
-              className={`absolute inset-x-2 bottom-2 h-24 z-30 rounded-lg border-2 border-dashed flex items-center justify-center text-xs font-bold uppercase tracking-wider transition-all ${
+              className={`absolute inset-x-2 bottom-2 h-28 z-30 rounded-lg border-2 border-dashed flex items-center justify-center text-xs font-bold uppercase tracking-wider transition-all ${
                 dropZoneTarget === 'split-bottom'
-                  ? 'border-green-500 bg-green-950/70 text-green-300 scale-[1.01] shadow-lg'
-                  : 'border-zinc-700 bg-zinc-950/80 text-zinc-400 backdrop-blur-sm'
+                  ? 'border-green-500 bg-green-950/75 text-green-300 shadow-lg'
+                  : 'border-zinc-600 bg-zinc-950/85 text-zinc-300 backdrop-blur-sm'
               }`}
             >
               Solte aqui para dividir embaixo

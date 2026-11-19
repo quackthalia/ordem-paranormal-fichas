@@ -4939,8 +4939,8 @@ return (
         {layoutAbas.bottomTabs.length > 0 && (
           <motion.div
             key="bottom-split-wrapper"
-            initial={{ height: '0%', opacity: 0 }}
-            animate={{ height: `${100 - layoutAbas.splitRatio}%`, opacity: 1 }}
+            initial={{ opacity: 0, y: -16, clipPath: 'inset(0% 0% 100% 0%)' }}
+            animate={{ height: `${100 - layoutAbas.splitRatio}%`, opacity: 1, y: 0, clipPath: 'inset(0% 0% 0% 0%)' }}
             exit={{ height: '0%', opacity: 0 }}
             transition={isResizingSplit ? { duration: 0 } : { duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-col shrink-0 min-h-0 overflow-hidden"

@@ -374,13 +374,14 @@ const AbasPanelInner: React.FC = () => {
       const children = Array.from(bar.querySelectorAll('[data-aba-idx]')) as HTMLElement[];
       for (let i = 0; i < children.length; i++) {
         const r = children[i].getBoundingClientRect();
-        if (x >= r.left && x <= r.right) return i;
+        const margin = r.width * 0.2;
+        if (x >= r.left + margin && x <= r.right - margin) return i;
       }
       return undefined;
     };
 
     const onMove = (ev: PointerEvent) => {
-      if (!isDragging && Math.hypot(ev.clientX - startX, ev.clientY - startY) > 5) {
+      if (!isDragging && Math.hypot(ev.clientX - startX, ev.clientY - startY) > 12) {
         isDragging = true;
         draggingTabRef.current = aba;
         setDraggingTab(aba);
@@ -4866,10 +4867,9 @@ return (
     customStyle?: React.CSSProperties
   ) => (
     <motion.div
-      layout
-      initial={paneId === 'bottom' ? { opacity: 0, y: 16, scale: 0.985 } : false}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+      initial={paneId === 'bottom' ? { opacity: 0, y: 12 } : false}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.18, ease: 'easeOut' }}
       ref={paneId === 'top' ? topPaneRef : bottomPaneRef}
       style={customStyle}
       className={`flex flex-col min-h-0 rounded-lg border bg-zinc-900/60 p-2.5 sm:p-3 xl:p-4 transition-colors ${
@@ -4884,8 +4884,8 @@ return (
       >
         {tabs.map((aba, idx) => (
           <motion.button
-            layout
-            transition={{ type: 'spring', stiffness: 520, damping: 36 }}
+            layout={Boolean(draggingTab)}
+            transition={{ type: 'spring', stiffness: 450, damping: 38 }}
             key={aba}
             data-aba-idx={idx}
             type="button"

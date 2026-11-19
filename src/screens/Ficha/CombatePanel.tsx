@@ -430,9 +430,9 @@ const ArmaCombateCard: React.FC<ArmaCombateCardProps> = React.memo(({ armaInv, e
     const empLower = (arma.Empunhadura_Arma || '').toLowerCase();
     const empParts = empLower.includes('/') ? empLower.split('/').map(s => s.trim()) : [empLower];
     const empAtual = empParts[currentDanoIdx] ?? empParts[0] ?? '';
-    if (empAtual.includes('duas m')) {
+    if (empAtual.includes('duas m') || empAtual.includes('2 m')) {
       const protecoesPesadasEquipadas = protecoesHook.protecoesInventario.filter(
-        p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('pesada')
+        p => p.equipado && p.protecao.Proficiencia?.toLowerCase().includes('pesada') && !p.protecao.Nome_Protecao?.toLowerCase().includes('escudo')
       );
       let maxDefPesada = 0;
       protecoesPesadasEquipadas.forEach(p => {

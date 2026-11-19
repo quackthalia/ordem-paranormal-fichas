@@ -260,12 +260,12 @@ const AbasPanelInner: React.FC = () => {
             topTabs: finalTop,
             bottomTabs: bottom,
             bottomActiveTab: bottom.includes(parsed.bottomActiveTab) ? parsed.bottomActiveTab : (bottom[0] || 'rituais'),
-            splitRatio: typeof parsed.splitRatio === 'number' ? Math.min(80, Math.max(20, parsed.splitRatio)) : 50,
+            splitRatio: typeof parsed.splitRatio === 'number' ? Math.min(85, Math.max(25, parsed.splitRatio)) : 66,
           };
         }
       }
     } catch {}
-    return { topTabs: ABAS_PADRAO, bottomTabs: [], bottomActiveTab: 'rituais', splitRatio: 50 };
+    return { topTabs: ABAS_PADRAO, bottomTabs: [], bottomActiveTab: 'rituais', splitRatio: 66 };
   });
 
   React.useEffect(() => {
@@ -343,7 +343,7 @@ const AbasPanelInner: React.FC = () => {
       const rect = container.getBoundingClientRect();
       if (rect.height <= 0) return;
       const pct = ((ev.clientY - rect.top) / rect.height) * 100;
-      const clamped = Math.min(80, Math.max(20, Math.round(pct * 10) / 10));
+      const clamped = Math.min(85, Math.max(25, Math.round(pct * 10) / 10));
       setLayoutAbas(prev => ({ ...prev, splitRatio: clamped }));
     };
 
@@ -4865,7 +4865,11 @@ return (
     paneId: 'top' | 'bottom',
     customStyle?: React.CSSProperties
   ) => (
-    <div
+    <motion.div
+      layout
+      initial={paneId === 'bottom' ? { opacity: 0, y: 16, scale: 0.985 } : false}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ type: 'spring', stiffness: 380, damping: 32 }}
       ref={paneId === 'top' ? topPaneRef : bottomPaneRef}
       style={customStyle}
       className={`flex flex-col min-h-0 rounded-lg border bg-zinc-900/60 p-2.5 sm:p-3 xl:p-4 transition-colors ${
@@ -4915,7 +4919,7 @@ return (
       <div className={`mt-1 flex flex-1 flex-col min-h-0 ${draggingTab ? 'pointer-events-none select-none' : ''}`}>
         {renderAbaConteudo(activeTab)}
       </div>
-    </div>
+    </motion.div>
   );
 
   return (
@@ -4926,10 +4930,10 @@ return (
           {draggingTab && layoutAbas.topTabs.length > 1 && (
             <div
               ref={splitZoneRef}
-              className={`absolute inset-x-0 top-1/2 bottom-0 z-30 rounded-lg border transition-all duration-200 pointer-events-none ${
+              className={`absolute inset-x-0 top-[66%] bottom-0 z-30 rounded-lg border transition-all duration-200 pointer-events-none ${
                 dropZoneTarget === 'split-bottom'
-                  ? 'opacity-100 border-green-500/45 bg-green-500/[0.08] backdrop-blur-[1px]'
-                  : 'opacity-40 border-zinc-700/40 bg-zinc-500/[0.03]'
+                  ? 'opacity-100 scale-100 border-green-500/45 bg-green-500/[0.08] backdrop-blur-[1px]'
+                  : 'opacity-0 scale-[0.98] border-transparent bg-transparent'
               }`}
             />
           )}

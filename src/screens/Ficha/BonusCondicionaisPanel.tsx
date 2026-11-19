@@ -102,6 +102,18 @@ export const BonusCondicionaisPanel: React.FC = () => {
               </div>
             )}
             
+            {regrasAutomaticasAtivas.has(135) && (
+              <>
+                <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                  <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                  <span>+2d20 em testes de Intuição contra pessoas que estejam alheias à sua presença (Observador Nato)</span>
+                </div>
+                <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                  <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                  <span>+2d20 em testes de Percepção para observar enquanto estiver escondido (Observador Nato)</span>
+                </div>
+              </>
+            )}
             {bonusDadosCondicionais.split('\n').filter(s => s.trim() !== '').map((bonus, idx) => (
               <div key={idx} className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex justify-between items-start group leading-snug">
                 <div className="flex gap-1.5 items-start">
@@ -167,18 +179,6 @@ export const BonusCondicionaisPanel: React.FC = () => {
                 <span className="text-red-400 font-bold mt-[-1px]">•</span>
                 <span>-1d20 em testes de Diplomacia (Mutação)</span>
               </div>
-            )}
-            {regrasAutomaticasAtivas.has(135) && (
-              <>
-                <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
-                  <span className="text-green-500 font-bold mt-[-1px]">•</span>
-                  <span>+2d20 em testes de Intuição contra pessoas que estejam alheias à sua presença (Observador Nato)</span>
-                </div>
-                <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
-                  <span className="text-green-500 font-bold mt-[-1px]">•</span>
-                  <span>+2d20 em testes de Percepção para observar enquanto estiver escondido (Observador Nato)</span>
-                </div>
-              </>
             )}
             {regrasAutomaticasAtivas.has(134) && (() => {
               const elemFerido = origensHook.origemSelecionada?.Codigo_Regra === 134

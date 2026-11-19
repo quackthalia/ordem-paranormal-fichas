@@ -446,8 +446,10 @@ export function RPGProvider({ children }: { children: React.ReactNode }) {
   // Computa o conjunto de regras automáticas ativas
   const regrasAutomaticasAtivas = useMemo(() => {
     const set = new Set<number>();
-    if (origensHook.origemSelecionada?.Codigo_Regra) {
-      set.add(Number(origensHook.origemSelecionada.Codigo_Regra));
+    if (origensHook.origemSelecionada) {
+      const origAtual = origensHook.origens?.find(o => o.Codigo_Origem === origensHook.origemSelecionada?.Codigo_Origem);
+      const codRegraOrig = origAtual?.Codigo_Regra ?? origensHook.origemSelecionada?.Codigo_Regra;
+      if (codRegraOrig) set.add(Number(codRegraOrig));
     }
     Object.entries(poderesHook.poderesEscolhidos).forEach(([key, p]) => {
       const nomeLower = p.nome?.trim().toLowerCase() || '';

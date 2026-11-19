@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { motion } from 'framer-motion';
 import { useRPG } from '../../context/RPGContext';
 import { InputOtimizado } from '../../components/InputOtimizado';
@@ -280,6 +281,7 @@ const AbasPanelInner: React.FC = () => {
     }
   }, [layoutAbas.topTabs, abaDireita, setAbaDireita]);
 
+  const [isResizingSplit, setIsResizingSplit] = React.useState(false);
   const [draggingTab, setDraggingTab] = React.useState<AbaId | null>(null);
   const floatingGhostRef = React.useRef<HTMLDivElement>(null);
   const draggingTabRef = React.useRef<AbaId | null>(null);
@@ -340,6 +342,7 @@ const AbasPanelInner: React.FC = () => {
     e.preventDefault();
     const container = splitContainerRef.current;
     if (!container) return;
+    setIsResizingSplit(true);
 
     const onMove = (ev: PointerEvent) => {
       const rect = container.getBoundingClientRect();
@@ -350,6 +353,7 @@ const AbasPanelInner: React.FC = () => {
     };
 
     const onUp = () => {
+      setIsResizingSplit(false);
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);
     };
@@ -4862,12 +4866,15 @@ return (
     <motion.div
       initial={paneId === 'bottom' ? { opacity: 0, y: 12 } : false}
       animate={{ opacity: 1, y: 0 }}
+      exit={paneId === 'bottom' ? { opacity: 0, y: 12 } : undefined}
       transition={{ duration: 0.18, ease: 'easeOut' }}
       ref={paneId === 'top' ? topPaneRef : bottomPaneRef}
       style={customStyle}
-      className={`flex flex-col min-h-0 rounded-lg border bg-zinc-900/60 p-2.5 sm:p-3 xl:p-4 transition-colors ${
+      className={`flex flex-col min-h-0 rounded-lg border bg-zinc-900/60 p-2.5 sm:p-3 xl:p-4 shrink-0 ${
+        isResizingSplit ? 'transition-colors' : 'transition-[height,border-color] duration-200 ease-out'
+      } ${
         dropZoneTarget === paneId ? 'border-green-500/80 ring-1 ring-green-500/40' : 'border-zinc-800'
-      } ${layoutAbas.bottomTabs.length === 0 ? 'h-full' : 'shrink-0'}`}
+      }`}
     >
       <div
         ref={paneId === 'top' ? topBarRef : bottomBarRef}
@@ -4918,45 +4925,45 @@ return (
 
   return (
     <div ref={splitContainerRef} className="flex flex-col h-full min-h-0 relative">
-      {layoutAbas.bottomTabs.length === 0 ? (
-        <>
-          {renderPainelAbas(layoutAbas.topTabs, abaDireita as AbaId, (a) => setAbaDireita(a as any), 'top')}
-          {draggingTab && layoutAbas.topTabs.length > 1 && (
-            <div
-              ref={splitZoneRef}
-              className={`absolute inset-x-0 top-1/2 bottom-0 z-30 rounded-lg border transition-all duration-200 pointer-events-none ${
-                dropZoneTarget === 'split-bottom'
-                  ? 'opacity-100 scale-100 border-green-500/45 bg-green-500/[0.08] backdrop-blur-[1px]'
-                  : 'opacity-0 scale-[0.98] border-transparent bg-transparent'
-              }`}
-            />
-          )}
-        </>
-      ) : (
-        <>
-          {renderPainelAbas(
-            layoutAbas.topTabs,
-            abaDireita as AbaId,
-            (a) => setAbaDireita(a as any),
-            'top',
-            { height: `calc(${layoutAbas.splitRatio}% - 4px)` }
-          )}
-          <div
-            onPointerDown={iniciarRedimensionamentoSplit}
-            title="Arraste para redimensionar os painéis"
-            className="h-2 shrink-0 cursor-row-resize flex items-center justify-center group select-none"
-          >
-            <div className="w-12 h-1 rounded-full bg-zinc-800 group-hover:bg-green-600 transition-colors" />
-          </div>
-          {renderPainelAbas(
-            layoutAbas.bottomTabs,
-            layoutAbas.bottomActiveTab,
-            (a) => setLayoutAbas(prev => ({ ...prev, bottomActiveTab: a })),
-            'bottom',
-            { height: `calc(${100 - layoutAbas.splitRatio}% - 4px)` }
-          )}
-        </>
+      {renderPainelAbas(
+        layoutAbas.topTabs,
+        abaDireita as AbaId,
+        (a) => setAbaDireita(a as any),
+        'top',
+        { height: layoutAbas.bottomTabs.length === 0 ? '100%' : `calc(${layoutAbas.splitRatio}% - 4px)` }
       )}
+
+      {layoutAbas.bottomTabs.length === 0 && draggingTab && layoutAbas.topTabs.length > 1 && (
+        <div
+          ref={splitZoneRef}
+          className={`absolute inset-x-0 top-1/2 bottom-0 z-30 rounded-lg border transition-all duration-200 pointer-events-none ${
+            dropZoneTarget === 'split-bottom'
+              ? 'opacity-100 scale-100 border-green-500/45 bg-green-500/[0.08] backdrop-blur-[1px]'
+              : 'opacity-0 scale-[0.98] border-transparent bg-transparent'
+          }`}
+        />
+      )}
+
+      <AnimatePresence>
+        {layoutAbas.bottomTabs.length > 0 && (
+          <React.Fragment key="bottom-split-group">
+            <div
+              onPointerDown={iniciarRedimensionamentoSplit}
+              title="Arraste para redimensionar os painéis"
+              className="h-2 shrink-0 cursor-row-resize flex items-center justify-center group select-none"
+            >
+              <div className="w-12 h-1 rounded-full bg-zinc-800 group-hover:bg-green-600 transition-colors" />
+            </div>
+            {renderPainelAbas(
+              layoutAbas.bottomTabs,
+              layoutAbas.bottomActiveTab,
+              (a) => setLayoutAbas(prev => ({ ...prev, bottomActiveTab: a })),
+              'bottom',
+              { height: `calc(${100 - layoutAbas.splitRatio}% - 4px)` }
+            )}
+          </React.Fragment>
+        )}
+      </AnimatePresence>
 
       {draggingTab && (
         <div

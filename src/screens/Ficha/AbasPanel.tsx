@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { useRPG } from '../../context/RPGContext';
 import { InputOtimizado } from '../../components/InputOtimizado';
 import { ModalRituais } from '../../components/ModalRituais';
@@ -280,7 +281,7 @@ const AbasPanelInner: React.FC = () => {
   }, [layoutAbas.topTabs, abaDireita, setAbaDireita]);
 
   const [draggingTab, setDraggingTab] = React.useState<AbaId | null>(null);
-  const [dragPos, setDragPos] = React.useState<{ x: number; y: number } | null>(null);
+  const floatingGhostRef = React.useRef<HTMLDivElement>(null);
   const draggingTabRef = React.useRef<AbaId | null>(null);
   const [dropZoneTarget, setDropZoneTarget] = React.useState<'top' | 'bottom' | 'split-bottom' | null>(null);
   const splitContainerRef = React.useRef<HTMLDivElement>(null);
@@ -359,6 +360,8 @@ const AbasPanelInner: React.FC = () => {
     const startX = e.clientX;
     const startY = e.clientY;
     let isDragging = false;
+    let lastTarget: 'top' | 'bottom' | 'split-bottom' | null = null;
+    let lastIdx: number | undefined = undefined;
 
     const isInside = (el: HTMLElement | null, x: number, y: number) => {
       if (!el) return false;
@@ -377,16 +380,17 @@ const AbasPanelInner: React.FC = () => {
     };
 
     const onMove = (ev: PointerEvent) => {
-      if (!isDragging && Math.hypot(ev.clientX - startX, ev.clientY - startY) > 6) {
+      if (!isDragging && Math.hypot(ev.clientX - startX, ev.clientY - startY) > 5) {
         isDragging = true;
         draggingTabRef.current = aba;
         setDraggingTab(aba);
       }
       if (!isDragging) return;
 
-      setDragPos({ x: ev.clientX, y: ev.clientY });
+      if (floatingGhostRef.current) {
+        floatingGhostRef.current.style.transform = `translate3d(${ev.clientX + 12}px, ${ev.clientY + 12}px, 0)`;
+      }
 
-      // Auto-scroll se aproximar das bordas da janela
       if (ev.clientY > window.innerHeight - 64) {
         window.scrollBy(0, 14);
       } else if (ev.clientY < 64) {
@@ -394,12 +398,40 @@ const AbasPanelInner: React.FC = () => {
       }
 
       if (isInside(splitZoneRef.current, ev.clientX, ev.clientY)) {
-        setDropZoneTarget('split-bottom');
+        if (lastTarget !== 'split-bottom') {
+          lastTarget = 'split-bottom';
+          setDropZoneTarget('split-bottom');
+        }
+      } else if (isInside(bottomBarRef.current, ev.clientX, ev.clientY)) {
+        const idx = getTabIndexAt(bottomBarRef.current, ev.clientX);
+        if (lastTarget !== 'bottom' || idx !== lastIdx) {
+          lastTarget = 'bottom';
+          lastIdx = idx;
+          setDropZoneTarget('bottom');
+          if (idx !== undefined) moverAba(aba, 'bottom', idx);
+        }
       } else if (isInside(bottomPaneRef.current, ev.clientX, ev.clientY)) {
-        setDropZoneTarget('bottom');
+        if (lastTarget !== 'bottom') {
+          lastTarget = 'bottom';
+          lastIdx = undefined;
+          setDropZoneTarget('bottom');
+        }
+      } else if (isInside(topBarRef.current, ev.clientX, ev.clientY)) {
+        const idx = getTabIndexAt(topBarRef.current, ev.clientX);
+        if (lastTarget !== 'top' || idx !== lastIdx) {
+          lastTarget = 'top';
+          lastIdx = idx;
+          setDropZoneTarget('top');
+          if (idx !== undefined) moverAba(aba, 'top', idx);
+        }
       } else if (isInside(topPaneRef.current, ev.clientX, ev.clientY)) {
-        setDropZoneTarget('top');
-      } else {
+        if (lastTarget !== 'top') {
+          lastTarget = 'top';
+          lastIdx = undefined;
+          setDropZoneTarget('top');
+        }
+      } else if (lastTarget !== null) {
+        lastTarget = null;
         setDropZoneTarget(null);
       }
     };
@@ -425,14 +457,12 @@ const AbasPanelInner: React.FC = () => {
 
       draggingTabRef.current = null;
       setDraggingTab(null);
-      setDragPos(null);
       setDropZoneTarget(null);
     };
 
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
   }, [moverAba]);
-
   const [ritualEditandoOrigem, setRitualEditandoOrigem] = React.useState<string | null>(null);
   const [ritualNomeEditando, setRitualNomeEditando] = React.useState('');
   const [ritualDescricaoEditando, setRitualDescricaoEditando] = React.useState('');
@@ -4849,18 +4879,20 @@ return (
         }`}
       >
         {tabs.map((aba, idx) => (
-          <button
+          <motion.button
+            layout
+            transition={{ type: 'spring', stiffness: 520, damping: 36 }}
             key={aba}
             data-aba-idx={idx}
             type="button"
             onPointerDown={(e) => iniciarArrasteAba(e, aba, onSelectTab)}
             title="Arraste para reordenar ou mover para outro painel"
-            className={`shrink-0 px-0.5 xl:px-1 py-1.5 2xl:py-2 text-[9.5px] xl:text-[10.5px] 2xl:text-xs font-bold uppercase tracking-tighter xl:tracking-tight 2xl:tracking-normal transition whitespace-nowrap flex-1 text-center cursor-grab active:cursor-grabbing select-none ${
+            className={`shrink-0 px-0.5 xl:px-1 py-1.5 2xl:py-2 text-[9.5px] xl:text-[10.5px] 2xl:text-xs font-bold uppercase tracking-tighter xl:tracking-tight 2xl:tracking-normal transition-colors whitespace-nowrap flex-1 text-center cursor-grab active:cursor-grabbing select-none ${
               activeTab === aba ? 'border-b-2 border-green-500 text-white' : 'border-b-2 border-transparent text-zinc-400 hover:text-white'
-            } ${draggingTab === aba ? 'opacity-40' : ''}`}
+            } ${draggingTab === aba ? 'opacity-35' : ''}`}
           >
             {LABEL_ABA[aba]}
-          </button>
+          </motion.button>
         ))}
         {paneId === 'bottom' && (
           <button
@@ -4894,29 +4926,12 @@ return (
           {draggingTab && layoutAbas.topTabs.length > 1 && (
             <div
               ref={splitZoneRef}
-              className={`absolute inset-x-0 top-1/2 bottom-0 z-30 rounded-lg border flex flex-col p-2.5 sm:p-3 xl:p-4 transition-all duration-150 pointer-events-none ${
+              className={`absolute inset-x-0 top-1/2 bottom-0 z-30 rounded-lg border transition-all duration-200 pointer-events-none ${
                 dropZoneTarget === 'split-bottom'
-                  ? 'border-green-500/60 bg-zinc-950/80 ring-1 ring-green-500/25 backdrop-blur-[2px]'
-                  : 'border-zinc-700/50 bg-zinc-950/55 backdrop-blur-[1px]'
+                  ? 'opacity-100 border-green-500/45 bg-green-500/[0.08] backdrop-blur-[1px]'
+                  : 'opacity-40 border-zinc-700/40 bg-zinc-500/[0.03]'
               }`}
-            >
-              <div className="flex items-center border-b border-zinc-800/80 pb-1">
-                <span
-                  className={`px-2 py-1.5 text-[9.5px] xl:text-[10.5px] 2xl:text-xs font-bold uppercase tracking-tight border-b-2 transition-colors ${
-                    dropZoneTarget === 'split-bottom'
-                      ? 'border-green-500 text-zinc-100'
-                      : 'border-green-500/40 text-zinc-400'
-                  }`}
-                >
-                  {LABEL_ABA[draggingTab]}
-                </span>
-              </div>
-              <div className="flex-1 flex items-center justify-center">
-                <span className={`text-[11px] font-medium transition-colors ${dropZoneTarget === 'split-bottom' ? 'text-green-400/90' : 'text-zinc-500'}`}>
-                  Solte para abrir aqui
-                </span>
-              </div>
-            </div>
+            />
           )}
         </>
       ) : (
@@ -4945,10 +4960,11 @@ return (
         </>
       )}
 
-      {draggingTab && dragPos && (
+      {draggingTab && (
         <div
-          style={{ left: dragPos.x + 12, top: dragPos.y + 12 }}
-          className="fixed z-50 pointer-events-none rounded border border-green-500/60 bg-zinc-900/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-100 shadow-xl backdrop-blur-sm"
+          ref={floatingGhostRef}
+          style={{ left: 0, top: 0, transform: 'translate3d(-9999px, -9999px, 0)' }}
+          className="fixed z-50 pointer-events-none rounded border border-green-500/50 bg-zinc-900/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-100 shadow-lg backdrop-blur-sm"
         >
           {LABEL_ABA[draggingTab]}
         </div>

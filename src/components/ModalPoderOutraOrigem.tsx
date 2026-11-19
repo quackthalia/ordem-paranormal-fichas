@@ -19,6 +19,7 @@ function formatarDescricao(texto: string): string {
     resultado = resultado.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
     resultado = resultado.replace(/_(.*?)_/g, '<em>$1</em>');
   }
+  resultado = resultado.replace(/\+\+([\s\S]*?)\+\+/g, '<span class="semi-auto-part">$1</span>');
   resultado = resultado.replace(/\n/g, '<br />');
   return resultado;
 }
@@ -127,7 +128,7 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
               const bloqRitual = precisaEscolherRitual && rituaisAprendidos.length === 0;
 
               return (
-                <div key={origem.Codigo_Origem} onClick={() => setExpandidos(prev => prev.includes(origem.Codigo_Origem) ? prev.filter(id => id !== origem.Codigo_Origem) : [...prev, origem.Codigo_Origem])} className={`bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[170px] max-h-[3000px]' : 'min-h-[170px] max-h-[170px]'} cursor-pointer`}>
+                <div key={origem.Codigo_Origem} onClick={() => setExpandidos(prev => prev.includes(origem.Codigo_Origem) ? prev.filter(id => id !== origem.Codigo_Origem) : [...prev, origem.Codigo_Origem])} className={`semi-card bg-zinc-900/40 border border-zinc-800/80 rounded p-3 hover:border-green-500/50 hover:bg-zinc-900/80 group flex flex-col overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[170px] max-h-[3000px]' : 'min-h-[170px] max-h-[170px]'} cursor-pointer`}>
                   <div 
                     className="flex items-start justify-between gap-3 mb-2 cursor-pointer"
                   >
@@ -145,7 +146,7 @@ export const ModalPoderOutraOrigem: React.FC<{ isOpen: boolean; onClose: () => v
                             className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider ${
                               isAuto
                                 ? 'bg-green-950/60 text-green-400 border border-green-800/50'
-                                : 'bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
+                                : 'semi-badge cursor-help bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
                             }`}
                           >
                             {isAuto ? (

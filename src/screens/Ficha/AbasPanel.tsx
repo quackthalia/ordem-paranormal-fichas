@@ -2838,7 +2838,7 @@ return (
 
                         return (
                           <div key={hab.id}
-                            className={`overflow-hidden rounded-r border-l-4 bg-zinc-900/50 ${corBordaLeft}`}
+                            className={`semi-card overflow-hidden rounded-r border-l-4 bg-zinc-900/50 ${corBordaLeft}`}
                           >
                             <div onClick={() => {
                               setHabilidadesExpandidas(prev =>
@@ -2878,7 +2878,7 @@ return (
                                           className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider ${
                                             isHabAuto
                                               ? 'bg-green-950/60 text-green-400 border border-green-800/50'
-                                              : 'bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
+                                              : 'semi-badge cursor-help bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
                                           }`}
                                         >
                                           {isHabAuto ? (

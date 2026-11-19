@@ -5,6 +5,22 @@ import type { Origem } from '../types';
 import { Collapse } from './Collapse';
 import { CustomSelect } from './CustomSelect';
 
+function formatarDescricao(texto: string): string {
+  if (!texto) return '';
+  let resultado = texto;
+  if (!resultado.includes('<') && !resultado.includes('&')) {
+    resultado = resultado
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    resultado = resultado.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+    resultado = resultado.replace(/_(.*?)_/g, '<em>$1</em>');
+  }
+  resultado = resultado.replace(/\+\+([\s\S]*?)\+\+/g, '<span class="semi-auto-part">$1</span>');
+  resultado = resultado.replace(/\n/g, '<br />');
+  return resultado;
+}
+
 interface ModalMudarOrigemProps {
   onClose: () => void;
 }
@@ -100,7 +116,7 @@ export const ModalMudarOrigem: React.FC<ModalMudarOrigemProps> = ({ onClose }) =
             }
 
             return (
-              <div key={origem.Codigo_Origem} className="rounded-lg border border-zinc-800 bg-zinc-900 overflow-hidden shrink-0">
+              <div key={origem.Codigo_Origem} className="semi-card rounded-lg border border-zinc-800 bg-zinc-900 overflow-hidden shrink-0">
                 <div 
                   onClick={() => toggleOrigemExpandida(origem.Codigo_Origem)}
                   className="flex cursor-pointer items-center justify-between bg-zinc-900 p-4 transition hover:bg-zinc-800/50"
@@ -118,7 +134,7 @@ export const ModalMudarOrigem: React.FC<ModalMudarOrigemProps> = ({ onClose }) =
                           className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider ${
                             isAuto
                               ? 'bg-green-950/60 text-green-400 border border-green-800/50'
-                              : 'bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
+                              : 'semi-badge cursor-help bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'
                           }`}
                         >
                           {isAuto ? (
@@ -219,7 +235,7 @@ export const ModalMudarOrigem: React.FC<ModalMudarOrigemProps> = ({ onClose }) =
                           <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Poder da Origem:</span>
                           <span className="text-sm font-bold text-zinc-100">{origem.Nome_Poder}</span>
                         </div>
-                        <div className="text-sm text-zinc-400">{origem.Descricao_Poder}</div>
+                        <div className="text-sm text-zinc-400" dangerouslySetInnerHTML={{ __html: formatarDescricao(origem.Descricao_Poder) }} />
                       </div>
                     )}
 

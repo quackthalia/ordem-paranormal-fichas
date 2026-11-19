@@ -75,7 +75,12 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
 
   React.useEffect(() => {
     document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = 'unset'; };
+    const prevHtml = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+      document.documentElement.style.overflow = prevHtml;
+    };
   }, []);
 
   const [abaElemento, setAbaElemento] = useState<string | null>(elementoFiltro || null);
@@ -131,7 +136,7 @@ export const ModalRituais: React.FC<ModalRituaisProps> = ({
 
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans" onClick={onClose}>
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans overscroll-contain" onClick={onClose}>
       <div 
         className="w-full max-w-4xl bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden transition-all duration-300 ease-in-out flex flex-col h-[90vh]"
         onClick={(e) => e.stopPropagation()}

@@ -69,8 +69,14 @@ export const ModalRituaisExtra: React.FC<ModalRituaisExtraProps> = ({
 }) => {
 
   React.useEffect(() => {
+    const prevBody = document.body.style.overflow;
+    const prevHtml = document.documentElement.style.overflow;
     document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = 'unset'; };
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevBody;
+      document.documentElement.style.overflow = prevHtml;
+    };
   }, []);
 
   const [abaElemento, setAbaElemento] = useState<string | null>(null);

@@ -174,6 +174,12 @@ export const BonusCondicionaisPanel: React.FC = () => {
                 <span>+1d20 em testes de Religião (Exorcista 40%)</span>
               </div>
             )}
+            {regrasAutomaticasAtivas.has(138) && (
+              <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
+                <span className="text-green-500 font-bold mt-[-1px]">•</span>
+                <span>+2d20 em testes de Intimidação (Pose Estóica)</span>
+              </div>
+            )}
             {regrasAutomaticasAtivas.has(9) && (
               <div className="text-xs text-zinc-300 px-2 py-1.5 rounded border border-zinc-800/50 bg-zinc-950/30 flex gap-1.5 items-start leading-snug">
                 <span className="text-red-400 font-bold mt-[-1px]">•</span>

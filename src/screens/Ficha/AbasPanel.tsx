@@ -260,12 +260,12 @@ const AbasPanelInner: React.FC = () => {
             topTabs: finalTop,
             bottomTabs: bottom,
             bottomActiveTab: bottom.includes(parsed.bottomActiveTab) ? parsed.bottomActiveTab : (bottom[0] || 'rituais'),
-            splitRatio: typeof parsed.splitRatio === 'number' ? Math.min(85, Math.max(25, parsed.splitRatio)) : 66,
+            splitRatio: typeof parsed.splitRatio === 'number' ? Math.min(85, Math.max(25, parsed.splitRatio)) : 50,
           };
         }
       }
     } catch {}
-    return { topTabs: ABAS_PADRAO, bottomTabs: [], bottomActiveTab: 'rituais', splitRatio: 66 };
+    return { topTabs: ABAS_PADRAO, bottomTabs: [], bottomActiveTab: 'rituais', splitRatio: 50 };
   });
 
   React.useEffect(() => {
@@ -328,6 +328,7 @@ const AbasPanelInner: React.FC = () => {
         topTabs: top,
         bottomTabs: bottom,
         bottomActiveTab: nextBottomActive,
+        splitRatio: bottom.length === 0 ? 50 : prev.splitRatio,
       };
     });
     if (destino === 'top') {
@@ -4898,6 +4899,7 @@ return (
                 ...prev,
                 topTabs: [...prev.topTabs, ...prev.bottomTabs],
                 bottomTabs: [],
+                splitRatio: 50,
               }));
             }}
             title="Reagrupar abas no painel principal"
@@ -4922,7 +4924,7 @@ return (
           {draggingTab && layoutAbas.topTabs.length > 1 && (
             <div
               ref={splitZoneRef}
-              className={`absolute inset-x-0 top-[66%] bottom-0 z-30 rounded-lg border transition-all duration-200 pointer-events-none ${
+              className={`absolute inset-x-0 top-1/2 bottom-0 z-30 rounded-lg border transition-all duration-200 pointer-events-none ${
                 dropZoneTarget === 'split-bottom'
                   ? 'opacity-100 scale-100 border-green-500/45 bg-green-500/[0.08] backdrop-blur-[1px]'
                   : 'opacity-0 scale-[0.98] border-transparent bg-transparent'

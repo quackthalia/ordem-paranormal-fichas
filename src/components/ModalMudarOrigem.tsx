@@ -204,7 +204,9 @@ export const ModalMudarOrigem: React.FC<ModalMudarOrigemProps> = ({ onClose }) =
                       
                       {origem.Codigo_Per_Regra === 1 && origem.Pericia_Treinada_Especial ? (
                         <div className="text-sm font-bold text-zinc-300">Escolha duas perícias entre: {nomeP1}, {nomeP2} e {nomePEsp}.</div>
-                      ) : origem.Pericia_Treinada_Especial && ![1].includes(origem.Codigo_Per_Regra || 0) ? (
+                      ) : origem.Codigo_Per_Regra === 6 && origem.Pericia_Treinada_Especial ? (
+                        <div className="text-sm font-bold text-zinc-300">{nomeP1}; escolha entre {nomeP2} ou {nomePEsp}.</div>
+                      ) : origem.Pericia_Treinada_Especial && ![1, 6].includes(origem.Codigo_Per_Regra || 0) ? (
                         <div className="text-sm font-bold text-zinc-300">{nomeP1}, {nomeP2} e {nomePEsp}</div>
                       ) : (
                         <div className="text-sm font-bold text-zinc-300">{nomeP1} e {nomeP2}</div>

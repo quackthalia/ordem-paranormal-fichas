@@ -4827,7 +4827,7 @@ return (
         {abaAtivaPane === 'descricao' && <div className="mt-5 text-center italic text-zinc-600">Conteúdo de Descrição</div>}
 
         {abaAtivaPane === 'regras' && (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-1 flex-col gap-3 overflow-y-auto pr-1 min-h-0 custom-scrollbar">
             <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-500">Regras Opcionais</h4>
             <RegraCheckbox
               nome="nex_experiencia"
@@ -4884,7 +4884,7 @@ return (
       >
         {tabs.map((aba, idx) => (
           <motion.button
-            layout={Boolean(draggingTab)}
+            layout="position"
             transition={{ type: 'spring', stiffness: 450, damping: 38 }}
             key={aba}
             data-aba-idx={idx}

@@ -198,6 +198,18 @@ function obterValorVersao(
   return normal;
 }
 
+type AbaId = 'combate' | 'habilidades' | 'rituais' | 'inventario' | 'descricao' | 'regras';
+const ABAS_PADRAO: AbaId[] = ['combate', 'habilidades', 'rituais', 'inventario', 'descricao', 'regras'];
+const LABEL_ABA: Record<AbaId, string> = {
+  combate: 'Combate',
+  habilidades: 'Habilidades',
+  rituais: 'Rituais',
+  inventario: 'Inventário',
+  descricao: 'Descrição',
+  regras: 'Regras',
+};
+const STORAGE_LAYOUT_ABAS = 'ordem_abas_direita_layout_v1';
+
 const AbasPanelInner: React.FC = () => {
   const {
     abaDireita, setAbaDireita,
@@ -232,6 +244,109 @@ const AbasPanelInner: React.FC = () => {
   } = useRPG();
 
   const [escolhendoRitualPlaceholder, setEscolhendoRitualPlaceholder] = React.useState<{ origem: string, nex?: number, maxCirculo?: number, circuloFixo?: number, elementoFiltro?: string } | null>(null);
+
+  const [layoutAbas, setLayoutAbas] = React.useState<{ topTabs: AbaId[]; bottomTabs: AbaId[]; bottomActiveTab: AbaId; splitRatio: number }>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_LAYOUT_ABAS);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        const top = Array.isArray(parsed.topTabs) ? parsed.topTabs.filter((t: any) => ABAS_PADRAO.includes(t)) : [];
+        const bottom = Array.isArray(parsed.bottomTabs) ? parsed.bottomTabs.filter((t: any) => ABAS_PADRAO.includes(t) && !top.includes(t)) : [];
+        const faltantes = ABAS_PADRAO.filter(t => !top.includes(t) && !bottom.includes(t));
+        const finalTop = [...top, ...faltantes];
+        if (finalTop.length > 0) {
+          return {
+            topTabs: finalTop,
+            bottomTabs: bottom,
+            bottomActiveTab: bottom.includes(parsed.bottomActiveTab) ? parsed.bottomActiveTab : (bottom[0] || 'rituais'),
+            splitRatio: typeof parsed.splitRatio === 'number' ? Math.min(80, Math.max(20, parsed.splitRatio)) : 50,
+          };
+        }
+      }
+    } catch {}
+    return { topTabs: ABAS_PADRAO, bottomTabs: [], bottomActiveTab: 'rituais', splitRatio: 50 };
+  });
+
+  React.useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_LAYOUT_ABAS, JSON.stringify(layoutAbas));
+    } catch {}
+  }, [layoutAbas]);
+
+  React.useEffect(() => {
+    if (layoutAbas.topTabs.length > 0 && !layoutAbas.topTabs.includes(abaDireita as AbaId)) {
+      setAbaDireita(layoutAbas.topTabs[0] as any);
+    }
+  }, [layoutAbas.topTabs, abaDireita, setAbaDireita]);
+
+  const [draggingTab, setDraggingTab] = React.useState<AbaId | null>(null);
+  const [dropZoneTarget, setDropZoneTarget] = React.useState<'top' | 'bottom' | 'split-bottom' | null>(null);
+  const splitContainerRef = React.useRef<HTMLDivElement>(null);
+
+  const moverAba = React.useCallback((aba: AbaId, destino: 'top' | 'bottom', targetIndex?: number) => {
+    setLayoutAbas(prev => {
+      let top = prev.topTabs.filter(t => t !== aba);
+      let bottom = prev.bottomTabs.filter(t => t !== aba);
+
+      if (destino === 'top') {
+        if (targetIndex !== undefined && targetIndex >= 0 && targetIndex <= top.length) {
+          top.splice(targetIndex, 0, aba);
+        } else {
+          top.push(aba);
+        }
+      } else {
+        if (top.length === 0) {
+          if (bottom.length > 0) {
+            top = [bottom[0]];
+            bottom = bottom.slice(1);
+          } else {
+            return prev;
+          }
+        }
+        if (targetIndex !== undefined && targetIndex >= 0 && targetIndex <= bottom.length) {
+          bottom.splice(targetIndex, 0, aba);
+        } else {
+          bottom.push(aba);
+        }
+      }
+
+      const nextBottomActive = destino === 'bottom'
+        ? aba
+        : (bottom.includes(prev.bottomActiveTab) ? prev.bottomActiveTab : (bottom[0] || 'rituais'));
+
+      return {
+        ...prev,
+        topTabs: top,
+        bottomTabs: bottom,
+        bottomActiveTab: nextBottomActive,
+      };
+    });
+    if (destino === 'top') {
+      setAbaDireita(aba as any);
+    }
+  }, [setAbaDireita]);
+
+  const iniciarRedimensionamentoSplit = React.useCallback((e: React.PointerEvent) => {
+    e.preventDefault();
+    const container = splitContainerRef.current;
+    if (!container) return;
+
+    const onMove = (ev: PointerEvent) => {
+      const rect = container.getBoundingClientRect();
+      if (rect.height <= 0) return;
+      const pct = ((ev.clientY - rect.top) / rect.height) * 100;
+      const clamped = Math.min(80, Math.max(20, Math.round(pct * 10) / 10));
+      setLayoutAbas(prev => ({ ...prev, splitRatio: clamped }));
+    };
+
+    const onUp = () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+    };
+
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+  }, []);
   const [ritualEditandoOrigem, setRitualEditandoOrigem] = React.useState<string | null>(null);
   const [ritualNomeEditando, setRitualNomeEditando] = React.useState('');
   const [ritualDescricaoEditando, setRitualDescricaoEditando] = React.useState('');
@@ -1207,22 +1322,11 @@ const AbasPanelInner: React.FC = () => {
     gerais: 'Poderes Gerais',
   };
 
-  return (
-    <div className="flex flex-col h-full min-h-0 rounded-lg border border-zinc-800 bg-zinc-900/60 p-2.5 sm:p-3 xl:p-4">
-      <div className="mb-5 flex flex-nowrap overflow-x-auto gap-x-0 sm:gap-x-0.5 xl:gap-x-1 border-b border-zinc-800 custom-scrollbar pb-1">
-        {(['combate','habilidades','rituais','inventario','descricao','regras'] as const).map(aba => (
-          <button key={aba} onClick={() => setAbaDireita(aba)}
-            className={`shrink-0 px-0.5 xl:px-1 py-1.5 2xl:py-2 text-[9.5px] xl:text-[10.5px] 2xl:text-xs font-bold uppercase tracking-tighter xl:tracking-tight 2xl:tracking-normal transition whitespace-nowrap flex-1 text-center cursor-pointer ${
-              abaDireita === aba ? 'border-b-2 border-green-500 text-white' : 'border-b-2 border-transparent text-zinc-400 hover:text-white'
-            }`}
-          >{aba === 'inventario' ? 'Inventário' : aba === 'descricao' ? 'Descrição' : aba === 'regras' ? 'Regras' : aba}</button>
-        ))}
-      </div>
+  const renderAbaConteudo = (abaAtivaPane: AbaId) => (
+    <>
+        {abaAtivaPane === 'combate' && <CombatePanel />}
 
-      <div className="mt-2 flex flex-1 flex-col min-h-0">
-        {abaDireita === 'combate' && <CombatePanel />}
-
-        {abaDireita === 'habilidades' && (
+        {abaAtivaPane === 'habilidades' && (
           <div className="flex flex-1 flex-col min-h-0">
             <div className="mb-5 flex flex-wrap items-center gap-3">
               <InputOtimizado value={filtroHabilidades} onChange={setFiltroHabilidades}
@@ -3174,7 +3278,7 @@ return (
           </div>
         )}
 
-        {abaDireita === 'rituais' && (() => {
+        {abaAtivaPane === 'rituais' && (() => {
           // 1. Calcular slots vazios de Poder "Aprender Ritual"
           const slotsPoderPendentesRaw = Object.entries(poderesEscolhidos)
             .filter(([nexStr, poder]) => poder.nome.trim().toLowerCase() === 'aprender ritual')
@@ -4602,10 +4706,10 @@ return (
             </div>
           );
         })()}
-        {abaDireita === 'inventario' && <InventarioPanel />}
-        {abaDireita === 'descricao' && <div className="mt-5 text-center italic text-zinc-600">Conteúdo de Descrição</div>}
+        {abaAtivaPane === 'inventario' && <InventarioPanel />}
+        {abaAtivaPane === 'descricao' && <div className="mt-5 text-center italic text-zinc-600">Conteúdo de Descrição</div>}
 
-        {abaDireita === 'regras' && (
+        {abaAtivaPane === 'regras' && (
           <div className="flex flex-col gap-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-500">Regras Opcionais</h4>
             <RegraCheckbox
@@ -4635,7 +4739,158 @@ return (
             />
           </div>
         )}
+    </>
+  );
+
+  const renderPainelAbas = (
+    tabs: AbaId[],
+    activeTab: AbaId,
+    onSelectTab: (aba: AbaId) => void,
+    paneId: 'top' | 'bottom',
+    customStyle?: React.CSSProperties
+  ) => (
+    <div
+      style={customStyle}
+      className={`flex flex-col min-h-0 rounded-lg border bg-zinc-900/60 p-2.5 sm:p-3 xl:p-4 transition-colors ${
+        dropZoneTarget === paneId ? 'border-green-500/80 ring-1 ring-green-500/40' : 'border-zinc-800'
+      } ${layoutAbas.bottomTabs.length === 0 ? 'h-full' : 'shrink-0'}`}
+    >
+      <div
+        onDragOver={(e) => {
+          if (!draggingTab) return;
+          e.preventDefault();
+          setDropZoneTarget(paneId);
+        }}
+        onDragLeave={() => {
+          if (dropZoneTarget === paneId) setDropZoneTarget(null);
+        }}
+        onDrop={(e) => {
+          e.preventDefault();
+          const aba = (e.dataTransfer.getData('text/plain') || draggingTab) as AbaId;
+          if (ABAS_PADRAO.includes(aba)) moverAba(aba, paneId);
+          setDraggingTab(null);
+          setDropZoneTarget(null);
+        }}
+        className={`mb-3 flex flex-nowrap items-center overflow-x-auto gap-x-0 sm:gap-x-0.5 xl:gap-x-1 border-b border-zinc-800 custom-scrollbar pb-1 shrink-0 ${
+          dropZoneTarget === paneId ? 'bg-green-950/20 rounded-t' : ''
+        }`}
+      >
+        {tabs.map((aba, idx) => (
+          <button
+            key={aba}
+            draggable
+            onDragStart={(e) => {
+              setDraggingTab(aba);
+              e.dataTransfer.setData('text/plain', aba);
+              e.dataTransfer.effectAllowed = 'move';
+            }}
+            onDragEnd={() => {
+              setDraggingTab(null);
+              setDropZoneTarget(null);
+            }}
+            onDragOver={(e) => {
+              if (!draggingTab) return;
+              e.preventDefault();
+              e.stopPropagation();
+              setDropZoneTarget(paneId);
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const dragged = (e.dataTransfer.getData('text/plain') || draggingTab) as AbaId;
+              if (ABAS_PADRAO.includes(dragged)) moverAba(dragged, paneId, idx);
+              setDraggingTab(null);
+              setDropZoneTarget(null);
+            }}
+            onClick={() => onSelectTab(aba)}
+            title="Arraste para reordenar ou mover para outro painel"
+            className={`shrink-0 px-0.5 xl:px-1 py-1.5 2xl:py-2 text-[9.5px] xl:text-[10.5px] 2xl:text-xs font-bold uppercase tracking-tighter xl:tracking-tight 2xl:tracking-normal transition whitespace-nowrap flex-1 text-center cursor-grab active:cursor-grabbing select-none ${
+              activeTab === aba ? 'border-b-2 border-green-500 text-white' : 'border-b-2 border-transparent text-zinc-400 hover:text-white'
+            } ${draggingTab === aba ? 'opacity-40' : ''}`}
+          >
+            {LABEL_ABA[aba]}
+          </button>
+        ))}
+        {paneId === 'bottom' && (
+          <button
+            type="button"
+            onClick={() => {
+              setLayoutAbas(prev => ({
+                ...prev,
+                topTabs: [...prev.topTabs, ...prev.bottomTabs],
+                bottomTabs: [],
+              }));
+            }}
+            title="Reagrupar abas no painel principal"
+            className="ml-1 shrink-0 rounded px-1.5 py-1 text-[10px] font-bold text-zinc-500 hover:bg-zinc-800 hover:text-zinc-200 transition"
+          >
+            ↥
+          </button>
+        )}
       </div>
+
+      <div className="mt-1 flex flex-1 flex-col min-h-0">
+        {renderAbaConteudo(activeTab)}
+      </div>
+    </div>
+  );
+
+  return (
+    <div ref={splitContainerRef} className="flex flex-col h-full min-h-0 relative">
+      {layoutAbas.bottomTabs.length === 0 ? (
+        <>
+          {renderPainelAbas(layoutAbas.topTabs, abaDireita as AbaId, (a) => setAbaDireita(a as any), 'top')}
+          {draggingTab && layoutAbas.topTabs.length > 1 && (
+            <div
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDropZoneTarget('split-bottom');
+              }}
+              onDragLeave={() => {
+                if (dropZoneTarget === 'split-bottom') setDropZoneTarget(null);
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                const aba = (e.dataTransfer.getData('text/plain') || draggingTab) as AbaId;
+                if (ABAS_PADRAO.includes(aba)) moverAba(aba, 'bottom');
+                setDraggingTab(null);
+                setDropZoneTarget(null);
+              }}
+              className={`absolute inset-x-2 bottom-2 h-24 z-30 rounded-lg border-2 border-dashed flex items-center justify-center text-xs font-bold uppercase tracking-wider transition-all ${
+                dropZoneTarget === 'split-bottom'
+                  ? 'border-green-500 bg-green-950/70 text-green-300 scale-[1.01] shadow-lg'
+                  : 'border-zinc-700 bg-zinc-950/80 text-zinc-400 backdrop-blur-sm'
+              }`}
+            >
+              Solte aqui para dividir embaixo
+            </div>
+          )}
+        </>
+      ) : (
+        <>
+          {renderPainelAbas(
+            layoutAbas.topTabs,
+            abaDireita as AbaId,
+            (a) => setAbaDireita(a as any),
+            'top',
+            { height: `calc(${layoutAbas.splitRatio}% - 4px)` }
+          )}
+          <div
+            onPointerDown={iniciarRedimensionamentoSplit}
+            title="Arraste para redimensionar os painéis"
+            className="h-2 shrink-0 cursor-row-resize flex items-center justify-center group select-none"
+          >
+            <div className="w-12 h-1 rounded-full bg-zinc-800 group-hover:bg-green-600 transition-colors" />
+          </div>
+          {renderPainelAbas(
+            layoutAbas.bottomTabs,
+            layoutAbas.bottomActiveTab,
+            (a) => setLayoutAbas(prev => ({ ...prev, bottomActiveTab: a })),
+            'bottom',
+            { height: `calc(${100 - layoutAbas.splitRatio}% - 4px)` }
+          )}
+        </>
+      )}
 
       {/* Informações de restrição para Lâmina Paranormal */}
       {(() => {

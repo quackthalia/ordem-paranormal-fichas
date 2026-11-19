@@ -280,9 +280,15 @@ const AbasPanelInner: React.FC = () => {
   }, [layoutAbas.topTabs, abaDireita, setAbaDireita]);
 
   const [draggingTab, setDraggingTab] = React.useState<AbaId | null>(null);
+  const [dragPos, setDragPos] = React.useState<{ x: number; y: number } | null>(null);
   const draggingTabRef = React.useRef<AbaId | null>(null);
   const [dropZoneTarget, setDropZoneTarget] = React.useState<'top' | 'bottom' | 'split-bottom' | null>(null);
   const splitContainerRef = React.useRef<HTMLDivElement>(null);
+  const splitZoneRef = React.useRef<HTMLDivElement>(null);
+  const topPaneRef = React.useRef<HTMLDivElement>(null);
+  const bottomPaneRef = React.useRef<HTMLDivElement>(null);
+  const topBarRef = React.useRef<HTMLDivElement>(null);
+  const bottomBarRef = React.useRef<HTMLDivElement>(null);
 
   const moverAba = React.useCallback((aba: AbaId, destino: 'top' | 'bottom', targetIndex?: number) => {
     setLayoutAbas(prev => {
@@ -348,6 +354,85 @@ const AbasPanelInner: React.FC = () => {
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
   }, []);
+  const iniciarArrasteAba = React.useCallback((e: React.PointerEvent, aba: AbaId, onSelectTab: (a: AbaId) => void) => {
+    if (e.button !== 0) return;
+    const startX = e.clientX;
+    const startY = e.clientY;
+    let isDragging = false;
+
+    const isInside = (el: HTMLElement | null, x: number, y: number) => {
+      if (!el) return false;
+      const r = el.getBoundingClientRect();
+      return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+    };
+
+    const getTabIndexAt = (bar: HTMLElement | null, x: number) => {
+      if (!bar) return undefined;
+      const children = Array.from(bar.querySelectorAll('[data-aba-idx]')) as HTMLElement[];
+      for (let i = 0; i < children.length; i++) {
+        const r = children[i].getBoundingClientRect();
+        if (x >= r.left && x <= r.right) return i;
+      }
+      return undefined;
+    };
+
+    const onMove = (ev: PointerEvent) => {
+      if (!isDragging && Math.hypot(ev.clientX - startX, ev.clientY - startY) > 6) {
+        isDragging = true;
+        draggingTabRef.current = aba;
+        setDraggingTab(aba);
+      }
+      if (!isDragging) return;
+
+      setDragPos({ x: ev.clientX, y: ev.clientY });
+
+      // Auto-scroll se aproximar das bordas da janela
+      if (ev.clientY > window.innerHeight - 64) {
+        window.scrollBy(0, 14);
+      } else if (ev.clientY < 64) {
+        window.scrollBy(0, -14);
+      }
+
+      if (isInside(splitZoneRef.current, ev.clientX, ev.clientY)) {
+        setDropZoneTarget('split-bottom');
+      } else if (isInside(bottomPaneRef.current, ev.clientX, ev.clientY)) {
+        setDropZoneTarget('bottom');
+      } else if (isInside(topPaneRef.current, ev.clientX, ev.clientY)) {
+        setDropZoneTarget('top');
+      } else {
+        setDropZoneTarget(null);
+      }
+    };
+
+    const onUp = (ev: PointerEvent) => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+
+      if (!isDragging) {
+        onSelectTab(aba);
+        return;
+      }
+
+      if (isInside(splitZoneRef.current, ev.clientX, ev.clientY)) {
+        moverAba(aba, 'bottom');
+      } else if (isInside(bottomPaneRef.current, ev.clientX, ev.clientY)) {
+        const idx = isInside(bottomBarRef.current, ev.clientX, ev.clientY) ? getTabIndexAt(bottomBarRef.current, ev.clientX) : undefined;
+        moverAba(aba, 'bottom', idx);
+      } else if (isInside(topPaneRef.current, ev.clientX, ev.clientY)) {
+        const idx = isInside(topBarRef.current, ev.clientX, ev.clientY) ? getTabIndexAt(topBarRef.current, ev.clientX) : undefined;
+        moverAba(aba, 'top', idx);
+      }
+
+      draggingTabRef.current = null;
+      setDraggingTab(null);
+      setDragPos(null);
+      setDropZoneTarget(null);
+    };
+
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+  }, [moverAba]);
+
   const [ritualEditandoOrigem, setRitualEditandoOrigem] = React.useState<string | null>(null);
   const [ritualNomeEditando, setRitualNomeEditando] = React.useState('');
   const [ritualDescricaoEditando, setRitualDescricaoEditando] = React.useState('');
@@ -4751,41 +4836,14 @@ return (
     customStyle?: React.CSSProperties
   ) => (
     <div
+      ref={paneId === 'top' ? topPaneRef : bottomPaneRef}
       style={customStyle}
-      onDragOver={(e) => {
-        if (!draggingTabRef.current) return;
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-        if (dropZoneTarget !== paneId) setDropZoneTarget(paneId);
-      }}
-      onDrop={(e) => {
-        e.preventDefault();
-        const aba = (e.dataTransfer.getData('text/plain') || draggingTabRef.current) as AbaId;
-        if (ABAS_PADRAO.includes(aba)) moverAba(aba, paneId);
-        draggingTabRef.current = null;
-        setDraggingTab(null);
-        setDropZoneTarget(null);
-      }}
       className={`flex flex-col min-h-0 rounded-lg border bg-zinc-900/60 p-2.5 sm:p-3 xl:p-4 transition-colors ${
         dropZoneTarget === paneId ? 'border-green-500/80 ring-1 ring-green-500/40' : 'border-zinc-800'
       } ${layoutAbas.bottomTabs.length === 0 ? 'h-full' : 'shrink-0'}`}
     >
       <div
-        onDragOver={(e) => {
-          if (!draggingTab) return;
-          e.preventDefault();
-          setDropZoneTarget(paneId);
-        }}
-        onDragLeave={() => {
-          if (dropZoneTarget === paneId) setDropZoneTarget(null);
-        }}
-        onDrop={(e) => {
-          e.preventDefault();
-          const aba = (e.dataTransfer.getData('text/plain') || draggingTab) as AbaId;
-          if (ABAS_PADRAO.includes(aba)) moverAba(aba, paneId);
-          setDraggingTab(null);
-          setDropZoneTarget(null);
-        }}
+        ref={paneId === 'top' ? topBarRef : bottomBarRef}
         className={`mb-3 flex flex-nowrap items-center overflow-x-auto gap-x-0 sm:gap-x-0.5 xl:gap-x-1 border-b border-zinc-800 custom-scrollbar pb-1 shrink-0 ${
           dropZoneTarget === paneId ? 'bg-green-950/20 rounded-t' : ''
         }`}
@@ -4793,35 +4851,9 @@ return (
         {tabs.map((aba, idx) => (
           <button
             key={aba}
-            draggable
-            onDragStart={(e) => {
-              draggingTabRef.current = aba;
-              e.dataTransfer.setData('text/plain', aba);
-              e.dataTransfer.effectAllowed = 'move';
-              requestAnimationFrame(() => setDraggingTab(aba));
-            }}
-            onDragEnd={() => {
-              draggingTabRef.current = null;
-              setDraggingTab(null);
-              setDropZoneTarget(null);
-            }}
-            onDragOver={(e) => {
-              if (!draggingTabRef.current) return;
-              e.preventDefault();
-              e.stopPropagation();
-              e.dataTransfer.dropEffect = 'move';
-              if (dropZoneTarget !== paneId) setDropZoneTarget(paneId);
-            }}
-            onDrop={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              const dragged = (e.dataTransfer.getData('text/plain') || draggingTabRef.current) as AbaId;
-              if (ABAS_PADRAO.includes(dragged)) moverAba(dragged, paneId, idx);
-              draggingTabRef.current = null;
-              setDraggingTab(null);
-              setDropZoneTarget(null);
-            }}
-            onClick={() => onSelectTab(aba)}
+            data-aba-idx={idx}
+            type="button"
+            onPointerDown={(e) => iniciarArrasteAba(e, aba, onSelectTab)}
             title="Arraste para reordenar ou mover para outro painel"
             className={`shrink-0 px-0.5 xl:px-1 py-1.5 2xl:py-2 text-[9.5px] xl:text-[10.5px] 2xl:text-xs font-bold uppercase tracking-tighter xl:tracking-tight 2xl:tracking-normal transition whitespace-nowrap flex-1 text-center cursor-grab active:cursor-grabbing select-none ${
               activeTab === aba ? 'border-b-2 border-green-500 text-white' : 'border-b-2 border-transparent text-zinc-400 hover:text-white'
@@ -4848,51 +4880,21 @@ return (
         )}
       </div>
 
-      <div className={`mt-1 flex flex-1 flex-col min-h-0 ${draggingTab ? 'pointer-events-none' : ''}`}>
+      <div className={`mt-1 flex flex-1 flex-col min-h-0 ${draggingTab ? 'pointer-events-none select-none' : ''}`}>
         {renderAbaConteudo(activeTab)}
       </div>
     </div>
   );
 
   return (
-    <div
-      ref={splitContainerRef}
-      onDragOver={(e) => {
-        if (!draggingTabRef.current) return;
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-      }}
-      className="flex flex-col h-full min-h-0 relative"
-    >
+    <div ref={splitContainerRef} className="flex flex-col h-full min-h-0 relative">
       {layoutAbas.bottomTabs.length === 0 ? (
         <>
           {renderPainelAbas(layoutAbas.topTabs, abaDireita as AbaId, (a) => setAbaDireita(a as any), 'top')}
           {draggingTab && layoutAbas.topTabs.length > 1 && (
             <div
-              onDragEnter={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setDropZoneTarget('split-bottom');
-              }}
-              onDragOver={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                e.dataTransfer.dropEffect = 'move';
-                if (dropZoneTarget !== 'split-bottom') setDropZoneTarget('split-bottom');
-              }}
-              onDragLeave={() => {
-                if (dropZoneTarget === 'split-bottom') setDropZoneTarget(null);
-              }}
-              onDrop={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const aba = (e.dataTransfer.getData('text/plain') || draggingTabRef.current) as AbaId;
-                if (ABAS_PADRAO.includes(aba)) moverAba(aba, 'bottom');
-                draggingTabRef.current = null;
-                setDraggingTab(null);
-                setDropZoneTarget(null);
-              }}
-              className={`absolute inset-x-0 top-1/2 bottom-0 z-30 rounded-lg border flex flex-col p-2.5 sm:p-3 xl:p-4 transition-all duration-150 ${
+              ref={splitZoneRef}
+              className={`absolute inset-x-0 top-1/2 bottom-0 z-30 rounded-lg border flex flex-col p-2.5 sm:p-3 xl:p-4 transition-all duration-150 pointer-events-none ${
                 dropZoneTarget === 'split-bottom'
                   ? 'border-green-500/60 bg-zinc-950/80 ring-1 ring-green-500/25 backdrop-blur-[2px]'
                   : 'border-zinc-700/50 bg-zinc-950/55 backdrop-blur-[1px]'
@@ -4941,6 +4943,15 @@ return (
             { height: `calc(${100 - layoutAbas.splitRatio}% - 4px)` }
           )}
         </>
+      )}
+
+      {draggingTab && dragPos && (
+        <div
+          style={{ left: dragPos.x + 12, top: dragPos.y + 12 }}
+          className="fixed z-50 pointer-events-none rounded border border-green-500/60 bg-zinc-900/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-100 shadow-xl backdrop-blur-sm"
+        >
+          {LABEL_ABA[draggingTab]}
+        </div>
       )}
 
       {/* Informações de restrição para Lâmina Paranormal */}

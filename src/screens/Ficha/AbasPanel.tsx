@@ -4892,13 +4892,28 @@ return (
                 setDraggingTab(null);
                 setDropZoneTarget(null);
               }}
-              className={`absolute inset-x-3 top-14 h-36 z-30 rounded-lg border-2 border-dashed flex items-center justify-center text-xs font-bold uppercase tracking-wider transition-all ${
+              className={`absolute inset-x-0 top-1/2 bottom-0 z-30 rounded-lg border flex flex-col p-2.5 sm:p-3 xl:p-4 transition-all duration-150 ${
                 dropZoneTarget === 'split-bottom'
-                  ? 'border-green-500 bg-green-950/75 text-green-300 shadow-lg'
-                  : 'border-zinc-600 bg-zinc-950/85 text-zinc-300 backdrop-blur-sm'
+                  ? 'border-green-500/60 bg-zinc-950/80 ring-1 ring-green-500/25 backdrop-blur-[2px]'
+                  : 'border-zinc-700/50 bg-zinc-950/55 backdrop-blur-[1px]'
               }`}
             >
-              Solte aqui para dividir embaixo
+              <div className="flex items-center border-b border-zinc-800/80 pb-1">
+                <span
+                  className={`px-2 py-1.5 text-[9.5px] xl:text-[10.5px] 2xl:text-xs font-bold uppercase tracking-tight border-b-2 transition-colors ${
+                    dropZoneTarget === 'split-bottom'
+                      ? 'border-green-500 text-zinc-100'
+                      : 'border-green-500/40 text-zinc-400'
+                  }`}
+                >
+                  {LABEL_ABA[draggingTab]}
+                </span>
+              </div>
+              <div className="flex-1 flex items-center justify-center">
+                <span className={`text-[11px] font-medium transition-colors ${dropZoneTarget === 'split-bottom' ? 'text-green-400/90' : 'text-zinc-500'}`}>
+                  Solte para abrir aqui
+                </span>
+              </div>
             </div>
           )}
         </>

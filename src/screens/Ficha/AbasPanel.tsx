@@ -4848,14 +4848,22 @@ return (
         )}
       </div>
 
-      <div className="mt-1 flex flex-1 flex-col min-h-0">
+      <div className={`mt-1 flex flex-1 flex-col min-h-0 ${draggingTab ? 'pointer-events-none' : ''}`}>
         {renderAbaConteudo(activeTab)}
       </div>
     </div>
   );
 
   return (
-    <div ref={splitContainerRef} className="flex flex-col h-full min-h-0 relative">
+    <div
+      ref={splitContainerRef}
+      onDragOver={(e) => {
+        if (!draggingTabRef.current) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+      }}
+      className="flex flex-col h-full min-h-0 relative"
+    >
       {layoutAbas.bottomTabs.length === 0 ? (
         <>
           {renderPainelAbas(layoutAbas.topTabs, abaDireita as AbaId, (a) => setAbaDireita(a as any), 'top')}
@@ -4884,7 +4892,7 @@ return (
                 setDraggingTab(null);
                 setDropZoneTarget(null);
               }}
-              className={`absolute inset-x-2 bottom-2 h-28 z-30 rounded-lg border-2 border-dashed flex items-center justify-center text-xs font-bold uppercase tracking-wider transition-all ${
+              className={`absolute inset-x-3 top-14 h-36 z-30 rounded-lg border-2 border-dashed flex items-center justify-center text-xs font-bold uppercase tracking-wider transition-all ${
                 dropZoneTarget === 'split-bottom'
                   ? 'border-green-500 bg-green-950/75 text-green-300 shadow-lg'
                   : 'border-zinc-600 bg-zinc-950/85 text-zinc-300 backdrop-blur-sm'

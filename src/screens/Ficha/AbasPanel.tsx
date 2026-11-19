@@ -284,6 +284,7 @@ const AbasPanelInner: React.FC = () => {
   const floatingGhostRef = React.useRef<HTMLDivElement>(null);
   const draggingTabRef = React.useRef<AbaId | null>(null);
   const [dropZoneTarget, setDropZoneTarget] = React.useState<'top' | 'bottom' | 'split-bottom' | null>(null);
+  const [insertHover, setInsertHover] = React.useState<{ pane: 'top' | 'bottom'; idx: number } | null>(null);
   const splitContainerRef = React.useRef<HTMLDivElement>(null);
   const splitZoneRef = React.useRef<HTMLDivElement>(null);
   const topPaneRef = React.useRef<HTMLDivElement>(null);
@@ -361,7 +362,7 @@ const AbasPanelInner: React.FC = () => {
     const startY = e.clientY;
     let isDragging = false;
     let lastTarget: 'top' | 'bottom' | 'split-bottom' | null = null;
-    let lastIdx: number | undefined = undefined;
+    let lastHoverKey = '';
 
     const isInside = (el: HTMLElement | null, x: number, y: number) => {
       if (!el) return false;
@@ -374,8 +375,7 @@ const AbasPanelInner: React.FC = () => {
       const children = Array.from(bar.querySelectorAll('[data-aba-idx]')) as HTMLElement[];
       for (let i = 0; i < children.length; i++) {
         const r = children[i].getBoundingClientRect();
-        const margin = r.width * 0.2;
-        if (x >= r.left + margin && x <= r.right - margin) return i;
+        if (x >= r.left && x <= r.right) return i;
       }
       return undefined;
     };
@@ -398,42 +398,33 @@ const AbasPanelInner: React.FC = () => {
         window.scrollBy(0, -14);
       }
 
+      let nextTarget: 'top' | 'bottom' | 'split-bottom' | null = null;
+      let nextHover: { pane: 'top' | 'bottom'; idx: number } | null = null;
+
       if (isInside(splitZoneRef.current, ev.clientX, ev.clientY)) {
-        if (lastTarget !== 'split-bottom') {
-          lastTarget = 'split-bottom';
-          setDropZoneTarget('split-bottom');
-        }
+        nextTarget = 'split-bottom';
       } else if (isInside(bottomBarRef.current, ev.clientX, ev.clientY)) {
+        nextTarget = 'bottom';
         const idx = getTabIndexAt(bottomBarRef.current, ev.clientX);
-        if (lastTarget !== 'bottom' || idx !== lastIdx) {
-          lastTarget = 'bottom';
-          lastIdx = idx;
-          setDropZoneTarget('bottom');
-          if (idx !== undefined) moverAba(aba, 'bottom', idx);
-        }
+        if (idx !== undefined) nextHover = { pane: 'bottom', idx };
       } else if (isInside(bottomPaneRef.current, ev.clientX, ev.clientY)) {
-        if (lastTarget !== 'bottom') {
-          lastTarget = 'bottom';
-          lastIdx = undefined;
-          setDropZoneTarget('bottom');
-        }
+        nextTarget = 'bottom';
       } else if (isInside(topBarRef.current, ev.clientX, ev.clientY)) {
+        nextTarget = 'top';
         const idx = getTabIndexAt(topBarRef.current, ev.clientX);
-        if (lastTarget !== 'top' || idx !== lastIdx) {
-          lastTarget = 'top';
-          lastIdx = idx;
-          setDropZoneTarget('top');
-          if (idx !== undefined) moverAba(aba, 'top', idx);
-        }
+        if (idx !== undefined) nextHover = { pane: 'top', idx };
       } else if (isInside(topPaneRef.current, ev.clientX, ev.clientY)) {
-        if (lastTarget !== 'top') {
-          lastTarget = 'top';
-          lastIdx = undefined;
-          setDropZoneTarget('top');
-        }
-      } else if (lastTarget !== null) {
-        lastTarget = null;
-        setDropZoneTarget(null);
+        nextTarget = 'top';
+      }
+
+      if (nextTarget !== lastTarget) {
+        lastTarget = nextTarget;
+        setDropZoneTarget(nextTarget);
+      }
+      const hoverKey = nextHover ? `${nextHover.pane}:${nextHover.idx}` : '';
+      if (hoverKey !== lastHoverKey) {
+        lastHoverKey = hoverKey;
+        setInsertHover(nextHover);
       }
     };
 
@@ -459,6 +450,7 @@ const AbasPanelInner: React.FC = () => {
       draggingTabRef.current = null;
       setDraggingTab(null);
       setDropZoneTarget(null);
+      setInsertHover(null);
     };
 
     window.addEventListener('pointermove', onMove);
@@ -4883,9 +4875,7 @@ return (
         }`}
       >
         {tabs.map((aba, idx) => (
-          <motion.button
-            layout="position"
-            transition={{ type: 'spring', stiffness: 450, damping: 38 }}
+          <button
             key={aba}
             data-aba-idx={idx}
             type="button"
@@ -4893,10 +4883,12 @@ return (
             title="Arraste para reordenar ou mover para outro painel"
             className={`shrink-0 px-0.5 xl:px-1 py-1.5 2xl:py-2 text-[9.5px] xl:text-[10.5px] 2xl:text-xs font-bold uppercase tracking-tighter xl:tracking-tight 2xl:tracking-normal transition-colors whitespace-nowrap flex-1 text-center cursor-grab active:cursor-grabbing select-none ${
               activeTab === aba ? 'border-b-2 border-green-500 text-white' : 'border-b-2 border-transparent text-zinc-400 hover:text-white'
-            } ${draggingTab === aba ? 'opacity-35' : ''}`}
+            } ${draggingTab === aba ? 'opacity-35' : ''} ${
+              insertHover?.pane === paneId && insertHover.idx === idx && draggingTab !== aba ? 'bg-green-500/10 text-green-300 rounded-t' : ''
+            }`}
           >
             {LABEL_ABA[aba]}
-          </motion.button>
+          </button>
         ))}
         {paneId === 'bottom' && (
           <button

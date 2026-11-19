@@ -4013,7 +4013,10 @@ return (
                             const isExtra = chave?.startsWith('extra_');
                             const nivelNum = isOrigemSlot ? 0 : (isExtra ? nex : parseInt(chave || '0', 10));
                             const nivelParaLabel = (isRegra61 || isRegra62) ? (slot as any).nex : nivelNum;
-                            const labelNex = isOrigemSlot ? 'Origem' : (isRegra61 ? `Recompensa Racional (${regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelParaLabel)}` : `NEX ${nivelParaLabel}%`})` : (isRegra62 ? `Recompensa Racional, Afinidade (${regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelParaLabel)}` : `NEX ${nivelParaLabel}%`})` : (regras['nex_experiencia'] ? `Poder Nível ${calcularNivel(nivelParaLabel)}` : `Poder NEX ${nivelParaLabel}%`)));
+                            const isFeridoPorRitualSlot = isOrigemSlot && chave === 'origem_134';
+                            const elemFeridoSlot = (slot as any).elementoFiltro;
+                            const tituloSlot = isFeridoPorRitualSlot && elemFeridoSlot ? `Escolher Ritual de ${elemFeridoSlot}` : 'Escolher Ritual';
+                            const labelNex = isFeridoPorRitualSlot ? 'Ferido por Ritual' : isOrigemSlot ? 'Origem' : (isRegra61 ? `Recompensa Racional (${regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelParaLabel)}` : `NEX ${nivelParaLabel}%`})` : (isRegra62 ? `Recompensa Racional, Afinidade (${regras['nex_experiencia'] ? `Nível ${calcularNivel(nivelParaLabel)}` : `NEX ${nivelParaLabel}%`})` : (regras['nex_experiencia'] ? `Poder Nível ${calcularNivel(nivelParaLabel)}` : `Poder NEX ${nivelParaLabel}%`)));
                             return (
                               <div
                               key={`vazio_poder_${chave}_${idx}`}
@@ -4023,7 +4026,7 @@ return (
                             >
                               <div className="flex items-center justify-between gap-3 bg-zinc-800/40 px-4 py-3 transition group-hover:bg-zinc-800/60">
                                 <div className="flex flex-col items-start gap-0.5 text-left">
-                                  <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">Escolher Ritual</span>
+                                  <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-300">{tituloSlot}</span>
                                   <span className="text-[0.65rem] font-bold uppercase tracking-wider text-zinc-500 group-hover:text-zinc-400">
                                     {labelNex}
                                   </span>

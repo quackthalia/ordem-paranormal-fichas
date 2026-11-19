@@ -181,7 +181,6 @@ export const ModalPoderOutraClasse: React.FC<{ isOpen: boolean; onClose: () => v
                         if (!isAuto && !isSemi) return null;
                         return (
                           <span
-                            title={isAuto ? 'Totalmente automático — acontece sozinho' : 'Semi-automático — parte funciona automaticamente'}
                             className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider ${
                               isAuto
                                 ? 'bg-green-950/60 text-green-400 border border-green-800/50'

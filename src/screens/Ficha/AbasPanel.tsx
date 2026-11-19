@@ -1455,7 +1455,6 @@ const AbasPanelInner: React.FC = () => {
                                         </span>
                                         {(isAuto || isSemi) && (
                                           <span
-                                            title={isAuto ? 'Totalmente automático' : 'Semi-automático'}
                                             className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.55rem] font-bold uppercase tracking-wider ${
                                               isAuto
                                                 ? 'bg-green-950/60 text-green-400 border border-green-800/50'
@@ -1984,7 +1983,6 @@ const AbasPanelInner: React.FC = () => {
                                               if (!isTrilhaAuto && !isTrilhaSemi) return null;
                                               return (
                                                 <span
-                                                  title={isTrilhaAuto ? 'Totalmente automático' : 'Semi-automático'}
                                                   className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.55rem] font-bold uppercase tracking-wider ${
                                                     isTrilhaAuto
                                                       ? 'bg-green-950/60 text-green-400 border border-green-800/50'
@@ -2136,7 +2134,6 @@ if (isTrilhaVamp && nexLvl > 10 && opcoesArq.length > 0 && !opcaoEscolhida) {
                   </span>
                   {badgeTag && (
                     <span
-                      title={badgeTag === 'Auto' ? 'Totalmente automático — acontece sozinho' : 'Semi-automático — parte funciona automaticamente'}
                       className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider ${badgeTag === 'Auto' ? 'bg-green-950/60 text-green-400 border border-green-800/50' : 'semi-badge cursor-help bg-yellow-950/60 text-yellow-400 border border-yellow-800/50'}`}
                     >
                       {badgeTag === 'Auto' ? (
@@ -2285,7 +2282,6 @@ return (
                                                     <span className={`text-sm font-bold transition-colors duration-200 ${isAtivoMonst ? 'text-zinc-100' : 'text-zinc-500 line-through'}`}>{pData.Nome}</span>
                                                     {(isAuto || isSemi) && (
                                                       <span
-                                                        title={isAuto ? 'Totalmente automático — acontece sozinho' : 'Semi-automático — parte funciona automaticamente'}
                                                         className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider ${
                                                           isAuto
                                                             ? 'bg-green-950/60 text-green-400 border border-green-800/50'
@@ -2874,7 +2870,6 @@ return (
                                     <div className="mb-3 flex items-center justify-between gap-2 border-b border-zinc-800/50 pb-2">
                                       <div className="flex items-center gap-2">
                                         <span
-                                          title={isHabAuto ? 'Totalmente automático' : 'Semi-automático'}
                                           className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6rem] font-bold uppercase tracking-wider ${
                                             isHabAuto
                                               ? 'bg-green-950/60 text-green-400 border border-green-800/50'

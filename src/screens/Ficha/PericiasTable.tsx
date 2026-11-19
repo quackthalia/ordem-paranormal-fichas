@@ -293,7 +293,9 @@ export const PericiasTable: React.FC = React.memo(() => {
               const bonusRegra13 = (nome === 'Vontade' && regrasAutomaticasAtivas.has(13)) ? 2 : 0;
               const bonusRegra14 = (nome === 'Vontade' && regrasAutomaticasAtivas.has(14)) ? -2 : 0;
               const bonusRegra25 = (nome === 'Reflexos' && regrasAutomaticasAtivas.has(25) && temProtecaoLeve) ? 2 : 0;
-              const escolhaDancarino = origensHook.origemSelecionada?.Codigo_Origem === 64 ? origensHook.origemSelecionada.escolhaRegra6 : null;
+              const escolhaDancarino = origensHook.origemSelecionada?.Codigo_Origem === 64
+                ? (origensHook.origemSelecionada.escolhaRegra6 || ((pericias['Atletismo']?.treino || 0) >= 5 && (pericias['Acrobacia']?.treino || 0) === 0 ? 'pesp' : 'p2'))
+                : null;
               const bonusRegra136 = regrasAutomaticasAtivas.has(136) && (
                 (nome === 'Reflexos' && escolhaDancarino === 'p2') ||
                 (nome === 'Fortitude' && escolhaDancarino === 'pesp')
@@ -419,11 +421,11 @@ export const PericiasTable: React.FC = React.memo(() => {
                     <input
                       type="number"
                       onKeyDown={bloquearLetras}
-                      value={(dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra14 + bonusRegra25 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10) === 0 ? '' : (dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra14 + bonusRegra25 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10)}
+                      value={(dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra14 + bonusRegra25 + bonusRegra136 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10) === 0 ? '' : (dadosPericia.outros + bonusRegra8 + bonusRegra13 + bonusRegra14 + bonusRegra25 + bonusRegra136 + bonusTrilha4 + bonusTrilha7 + bonusMonstruoso10)}
                       placeholder="0"
                       onChange={(e) => {
                         const bonusInternosHook = (periciasHook.bonusRegra40?.[nome] || 0) + (periciasHook.bonusVestimentas?.[nome] || 0) + (periciasHook.bonusAtributoDinamico?.[nome] || 0);
-                        handleMudarPericia(nome, 'outros', Math.max(0, Number(e.target.value) - bonusRegra8 - bonusRegra13 - bonusRegra14 - bonusRegra25 - bonusTrilha4 - bonusTrilha7 - bonusMonstruoso10 - bonusInternosHook));
+                        handleMudarPericia(nome, 'outros', Math.max(0, Number(e.target.value) - bonusRegra8 - bonusRegra13 - bonusRegra14 - bonusRegra25 - bonusRegra136 - bonusTrilha4 - bonusTrilha7 - bonusMonstruoso10 - bonusInternosHook));
                       }}
                       className={`w-8 2xl:w-11 border-b bg-transparent text-center font-bold outline-none text-xs 2xl:text-sm ${corTexto} ${corBorda}`}
                     />
